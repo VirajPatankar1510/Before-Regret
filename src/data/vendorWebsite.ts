@@ -1,6 +1,6 @@
 // The one rule for the website an advertiser may list (owner, 2026-10-04): their business's OWN,
 // official address -- no link shorteners, no redirects, no tracking links. Shared by both checkout
-// forms, My Placements, every server route that writes the field, and the /out/ click redirect, so
+// forms, My Ads, every server route that writes the field, and the /out/ click redirect, so
 // a check the browser skips can never be skipped on the server.
 //
 // Why it matters here specifically: a reader on this site clicks through to an advertiser trusting

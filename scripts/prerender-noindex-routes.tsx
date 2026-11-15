@@ -100,8 +100,8 @@ const ROUTES: NoindexRoute[] = [
   // with nothing a search visitor could act on.
   {
     dir: 'my-ads',
-    title: 'My Placements | Before Regret',
-    description: 'Manage your active Before Regret ad placements.',
+    title: 'My Ads | Before Regret',
+    description: 'Manage your Before Regret ads.',
     canonical: 'https://www.beforeregret.com/my-ads/',
   },
   // Inspection Report Decoder (2026-10-30): noindex while it's a preview -- see src/data/inspectionDecoderTerms.ts.

@@ -12,6 +12,7 @@ import {
 } from './types';
 import { createFallbackSummary, createFallbackReport } from './utils/reportFallback';
 import { useAuth } from './context/AuthContext';
+import { AdDetailsReminder } from './components/AdDetailsReminder';
 
 import { applyHeadSeo } from './utils/headSeo';
 import { WALKTHROUGH_JSON_LD } from './data/walkthroughChecks';
@@ -776,8 +777,8 @@ export function App() {
       });
     } else if (pseoRoute.type === 'myAds') {
       applyHeadSeo({
-        title: 'My Placements | Before Regret',
-        description: 'Manage your Before Regret ad placements.',
+        title: 'My Ads | Before Regret',
+        description: 'Manage your Before Regret ads.',
         canonicalUrl: 'https://www.beforeregret.com/my-ads/',
         robotsDirective: 'noindex, nofollow'
       });
@@ -986,6 +987,7 @@ export function App() {
         selectedAddress={selectedProperty?.displayName || selectedProperty?.formattedAddress}
         onNavigate={handleNavigate}
       />
+      <AdDetailsReminder pathname={typeof window !== 'undefined' ? window.location.pathname : '/'} onNavigate={handleNavigate} />
 
       {isLoading && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex flex-col items-center justify-center p-6 text-white text-center animate-fade-in">

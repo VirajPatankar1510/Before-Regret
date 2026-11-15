@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle2, Loader2, AlertCircle, Calendar, Hash } from 'lucide-react';
+import { AdPaidNextStep } from './AdPaidNextStep';
 
-type Status = 'capturing' | 'success' | 'error';
+type Status = 'capturing' | 'success' | 'needs-details' | 'error';
 
 interface GrantedGuide {
   articleId: number;
@@ -55,7 +56,8 @@ export const GuideAdsCheckoutSuccess: React.FC<GuideAdsCheckoutSuccessProps> = (
         setGrantedGuides(data.grantedGuides ?? []);
         setSkippedGuides(data.skippedGuides ?? []);
         setCluster(data.cluster ?? null);
-        setStatus('success');
+        // Pay-first order (2026-11-15): paid, but not live until the business details go in.
+        setStatus(data.detailsPending && (data.grantedGuides ?? []).length > 0 ? 'needs-details' : 'success');
       })
       .catch(() => {
         setErrorMessage('Could not reach the server to confirm payment.');
@@ -76,6 +78,22 @@ export const GuideAdsCheckoutSuccess: React.FC<GuideAdsCheckoutSuccessProps> = (
             <h1 className="text-2xl font-bold text-slate-900">Confirming Payment</h1>
             <p className="text-slate-600">Please wait while we activate your ad slots...</p>
           </>
+        )}
+
+        {status === 'needs-details' && (
+          <AdPaidNextStep
+            what={cluster ? `Topic sponsorship: every ${cluster.name} article` : `${grantedGuides.length} article${grantedGuides.length === 1 ? '' : 's'}, 30 days`}
+            captureId={captureId}
+            onNavigate={onNavigate}
+          >
+            {skippedGuides.length > 0 && (
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-left text-xs text-amber-900">
+                {skippedGuides.length} article{skippedGuides.length === 1 ? ' was' : 's were'} taken by someone else right before
+                your payment completed: {skippedGuides.map((g) => g.title).join('; ')}. You were still charged for{' '}
+                {skippedGuides.length === 1 ? 'it' : 'them'} -- email hello@beforeregret.com for a refund on that part.
+              </div>
+            )}
+          </AdPaidNextStep>
         )}
 
         {status === 'success' && (
@@ -149,7 +167,7 @@ export const GuideAdsCheckoutSuccess: React.FC<GuideAdsCheckoutSuccessProps> = (
                 onClick={() => onNavigate('/my-ads')}
                 className="flex-1 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors"
               >
-                Manage My Placements
+                Go to My Ads
               </button>
               <button
                 onClick={() => onNavigate('/')}

@@ -1,152 +1,113 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Loader2, CheckCircle2, XCircle, ArrowRight, AlertCircle, Lock, X } from 'lucide-react';
-import { REPORT_AD_TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE, requiresLicenceNumber, requiresBrokerageName, brokerageNameError } from '../data/sponsoredVendors';
-import { checkVendorWebsite, VENDOR_WEBSITE_RULE } from '../data/vendorWebsite';
+import React, { useEffect, useRef, useState } from 'react';
+import { Loader2, CheckCircle2, XCircle, ArrowRight, AlertCircle, Lock } from 'lucide-react';
+import { REPORT_AD_TRADE_CATEGORIES } from '../data/sponsoredVendors';
 import { useAuth } from '../context/AuthContext';
 
 const ZIPS_PER_BUNDLE = 3;
+const PRICE_USD = 29;
 
-interface BundlePricing {
-  pricePerBundleUsd: number;
-  slotDurationDays: number;
-}
+type ZipState = 'empty' | 'checking' | 'open' | 'taken' | 'invalid' | 'duplicate' | 'error';
 
-// Real self-serve checkout: pick a trade category and ZIPS_PER_BUNDLE distinct ZIP codes, check
-// live availability for each (which now also reflects other vendors' in-progress holds -- see
-// zipAdsApi.ts's countActiveOrHeldSlots), collect business details, then redirect to PayPal for
-// actual payment. The checkout submission itself atomically claims all 3 ZIPs as a short-lived
-// hold before any payment happens, ticket-booking-app style, so a ZIP picked here can't be sold
-// to someone else while this vendor is mid-checkout at PayPal. See src/server/zipAdsApi.ts.
+// The Report Ads checkout box. REBUILT 2026-11-15 after the owner's vendor survey: the old form
+// asked for the trade, then each ZIP one at a time through an "add" button, then sign-in, then a
+// business-details form, a licence field and a legal checkbox, all before PayPal. Now it asks only
+// for what defines the slot -- the trade and 3 ZIP codes, checked live as they're typed -- and the
+// button pays. The business details are added after payment in My Ads (AdDetailsForm.tsx,
+// POST /api/my-ads/details), where the same rules are enforced.
+//
+// The checkout write still atomically claims all 3 ZIPs as a short hold before PayPal, so a ZIP
+// shown as open here can't be sold to someone else mid-checkout (see zipAdsApi.ts).
+const AUTH_STASH_KEY = 'br_pending_zip_signup';
+const RENEW_STASH_KEY = 'br_renew_zip_ad';
+const PAYPAL_STASH_KEY = 'br_paypal_return_zip_ad';
+
+type Stash = { zipCodes?: string[]; tradeCategory?: string; autoBuy?: boolean };
+
+const STATE_TEXT: Record<ZipState, string> = {
+  empty: '',
+  checking: 'Checking…',
+  open: 'Available',
+  taken: 'Taken. Try another ZIP.',
+  invalid: 'Not a US ZIP code',
+  duplicate: 'Already entered',
+  error: 'Could not check',
+};
+
 export const VendorSignupForm: React.FC = () => {
   const { user, loading: authLoading, triggerClerkSignIn, getToken, requestClerkLoad } = useAuth();
 
-  // A dedicated checkout page, same reasoning as GuideAdsCheckout.tsx -- someone can land here
-  // directly without ever touching Navbar's Sign In button, so this needs its own trigger.
   useEffect(() => {
     requestClerkLoad();
   }, [requestClerkLoad]);
 
   const [tradeCategory, setTradeCategory] = useState('');
-  const [zipInput, setZipInput] = useState('');
-  const [selectedZips, setSelectedZips] = useState<string[]>([]);
-  const [checking, setChecking] = useState(false);
-  const [checkError, setCheckError] = useState<string | null>(null);
-  const [pricing, setPricing] = useState<BundlePricing | null>(null);
-
-  const [businessName, setBusinessName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [website, setWebsite] = useState('');
-  const [licenceNumber, setLicenceNumber] = useState('');
-  const [brokerageName, setBrokerageName] = useState('');
-  const [attestedAccurate, setAttestedAccurate] = useState(false);
+  const [zips, setZips] = useState<string[]>(['', '', '']);
+  const [zipStates, setZipStates] = useState<ZipState[]>(['empty', 'empty', 'empty']);
   const [submitting, setSubmitting] = useState(false);
-  const [returnNotice, setReturnNotice] = useState<string | null>(null);
-  const [submitErrors, setSubmitErrors] = useState<string[]>([]);
+  // 'auth': back from sign-in, continue only if signed in. 'click': Buy now pressed while the
+  // account was still loading, so carry on as soon as it has.
+  const [resumeBuy, setResumeBuy] = useState<'auth' | 'click' | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  // Guards against an older availability answer landing after a newer one for the same box.
+  const checkSeq = useRef([0, 0, 0]);
 
-  // Checks one ZIP against live availability (real purchases + other vendors' in-progress holds)
-  // and adds it to the selection if open. tradeCategoryOverride exists only for the prefill effect
-  // below, which calls this right after setTradeCategory -- reading the tradeCategory state
-  // variable there would still see the pre-update value due to how state updates batch, so that
-  // one caller passes the value directly instead of relying on the closure.
-  const addZip = async (rawZip: string, tradeCategoryOverride?: string) => {
-    const trade = tradeCategoryOverride ?? tradeCategory;
-    const zip = rawZip.trim();
-    setCheckError(null);
-    if (!trade) {
-      setCheckError('Choose a business type first.');
-      return;
-    }
-    if (!/^\d{5}$/.test(zip)) {
-      setCheckError('Enter a 5-digit ZIP code.');
-      return;
-    }
-    if (selectedZips.includes(zip)) {
-      setCheckError('You already added that ZIP code.');
-      return;
-    }
-    if (selectedZips.length >= ZIPS_PER_BUNDLE) return;
-    setChecking(true);
+  const setZipState = (i: number, s: ZipState) => setZipStates((prev) => prev.map((v, j) => (j === i ? s : v)));
+
+  const checkZip = async (i: number, zip: string, trade: string, all: string[]) => {
+    const seq = ++checkSeq.current[i];
+    if (zip.length < 5) return setZipState(i, 'empty');
+    if (all.some((z, j) => j !== i && z === zip)) return setZipState(i, 'duplicate');
+    if (!trade) return setZipState(i, 'empty');
+    setZipState(i, 'checking');
     try {
       const res = await fetch(`/api/zip-ads/slots?zip=${encodeURIComponent(zip)}&tradeCategory=${encodeURIComponent(trade)}`);
       const data = await res.json();
-      if (!res.ok || !data.success) {
-        setCheckError(data?.error || 'Could not check availability. Please try again.');
-        return;
-      }
-      if (!data.available) {
-        setCheckError(`Both slots for ${trade} in ZIP ${zip} are already taken -- try a different ZIP.`);
-        return;
-      }
-      setSelectedZips((prev) => (prev.includes(zip) ? prev : [...prev, zip]));
-      setZipInput('');
-      setPricing((prev) => prev ?? { pricePerBundleUsd: data.pricePerBundleUsd, slotDurationDays: data.slotDurationDays });
+      if (seq !== checkSeq.current[i]) return;
+      if (res.status === 400) return setZipState(i, 'invalid');
+      if (!res.ok || !data.success) return setZipState(i, 'error');
+      setZipState(i, data.available ? 'open' : 'taken');
     } catch {
-      setCheckError('Could not check availability. Please try again.');
-    } finally {
-      setChecking(false);
+      if (seq === checkSeq.current[i]) setZipState(i, 'error');
     }
   };
 
-  const removeZip = (zip: string) => {
-    setSelectedZips((prev) => prev.filter((z) => z !== zip));
-    setCheckError(null);
+  const recheckAll = (trade: string, all: string[]) => all.forEach((z, i) => checkZip(i, z, trade, all));
+
+  const onZipChange = (i: number, raw: string) => {
+    const value = raw.replace(/\D/g, '').slice(0, 5);
+    const next = zips.map((z, j) => (j === i ? value : z));
+    setZips(next);
+    setError(null);
+    // Re-check every box: a change in one can create or clear a duplicate in another.
+    recheckAll(tradeCategory, next);
   };
 
-  const handleAddZipSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    addZip(zipInput);
+  const onTradeChange = (trade: string) => {
+    setTradeCategory(trade);
+    setError(null);
+    recheckAll(trade, zips);
   };
 
-  // Two distinct reasons a vendor can land back on this page with the browser having done a full
-  // navigation away and back -- both wipe every useState in this component, since a real navigation
-  // (not client-side routing) remounts the whole SPA from scratch:
-  //
-  // 1. RENEW_STASH_KEY -- MyAdsPanel.tsx's Expired-section "Buy again".
-  // 2. AUTH_STASH_KEY -- clicking "Sign In / Sign Up" below. openSignIn()'s completion redirect
-  //    (forceRedirectUrl/afterSignInUrl in AuthContext.tsx) navigates the real browser, including
-  //    for an in-modal email/password signup, not just an OAuth provider hop -- so this is not an
-  //    edge case, it is what happens on the ordinary path every time. Before this stash existed, a
-  //    vendor who picked all 3 ZIPs and then signed up came back to a blank form and had to redo the
-  //    availability check from scratch, silently -- nothing here failed, so there was nothing to
-  //    show an error for, which is what made it read as a bug rather than a crash.
-  //
-  // Both are re-checked for real via addZip() rather than trusted, same reasoning either way: a ZIP
-  // can be bought by someone else in the time the vendor spent at Clerk, so only the ones still open
-  // get carried into the selection. Checked in this order (auth stash first) because it reflects the
-  // action the vendor took most recently if, somehow, both were ever present at once.
-  const AUTH_STASH_KEY = 'br_pending_zip_signup';
-  const RENEW_STASH_KEY = 'br_renew_zip_ad';
-  // Written right before the redirect to PayPal, so "Cancel and return" (?token=...) brings the
-  // vendor back to a filled form instead of an empty one (found in QA 2026-10-13).
-  const PAYPAL_STASH_KEY = 'br_paypal_return_zip_ad';
-
+  // Restore after a real navigation (sign-in redirect, PayPal cancel, "Buy again" in My Ads).
   useEffect(() => {
-    const restore = (raw: string) => {
-      const stash = JSON.parse(raw) as {
-        zipCodes: string[]; tradeCategory: string; businessName?: string; phone?: string; website?: string | null;
-        licenceNumber?: string | null; brokerageName?: string | null;
-      };
-      setTradeCategory(stash.tradeCategory || '');
-      setBusinessName(stash.businessName || '');
-      setPhone(stash.phone || '');
-      setWebsite(stash.website || '');
-      setLicenceNumber(stash.licenceNumber || '');
-      setBrokerageName(stash.brokerageName || '');
-      (async () => {
-        for (const zip of (stash.zipCodes || []).slice(0, ZIPS_PER_BUNDLE)) {
-          await addZip(zip, stash.tradeCategory);
-        }
-      })();
+    const restore = (raw: string): Stash => {
+      const stash = JSON.parse(raw) as Stash;
+      const trade = stash.tradeCategory || '';
+      const restored = [0, 1, 2].map((i) => (stash.zipCodes || [])[i] || '');
+      setTradeCategory(trade);
+      setZips(restored);
+      // Re-checked, not trusted: a ZIP can be bought by someone else while the vendor was away.
+      recheckAll(trade, restored);
+      return stash;
     };
-    // Back from PayPal's "Cancel and return": restore everything, ZIPs re-checked for availability by
-    // restore() as usual, and say what happened. Cleared on every visit so it never goes stale.
     const paypalRaw = sessionStorage.getItem(PAYPAL_STASH_KEY);
     sessionStorage.removeItem(PAYPAL_STASH_KEY);
     const params = new URLSearchParams(window.location.search);
     if (paypalRaw && params.has('token')) {
       try {
         restore(paypalRaw);
-        setReturnNotice('Your PayPal checkout was cancelled and nothing was charged. Your details are filled back in -- tick the confirmation box again to continue.');
+        setNotice('Your PayPal checkout was cancelled and nothing was charged. Your ZIP codes are filled back in.');
       } catch { /* malformed stash, ignore */ }
       params.delete('token');
       const rest = params.toString();
@@ -156,7 +117,10 @@ export const VendorSignupForm: React.FC = () => {
     const authRaw = sessionStorage.getItem(AUTH_STASH_KEY);
     if (authRaw) {
       sessionStorage.removeItem(AUTH_STASH_KEY);
-      try { restore(authRaw); } catch { /* malformed stash, ignore */ }
+      try {
+        const stash = restore(authRaw);
+        if (stash.autoBuy) setResumeBuy('auth');
+      } catch { /* malformed stash, ignore */ }
       return;
     }
     const renewRaw = sessionStorage.getItem(RENEW_STASH_KEY);
@@ -166,35 +130,27 @@ export const VendorSignupForm: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const startCheckout = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitErrors([]);
-    if (!user) return setSubmitErrors(['Please sign in first.']);
-    if (!businessName.trim()) return setSubmitErrors(['Enter your business name.']);
-    if (!phone.trim()) return setSubmitErrors(['Enter a phone number for readers to call.']);
-    if (selectedZips.length !== ZIPS_PER_BUNDLE) return setSubmitErrors([`Select ${ZIPS_PER_BUNDLE} ZIP codes first.`]);
-    // Same rule as the server enforces (requiresLicenceNumber) -- checked here only so the vendor
-    // sees the problem before being sent to PayPal, never as the actual gate.
-    if (requiresLicenceNumber(tradeCategory) && licenceNumber.trim().length < 3) {
-      return setSubmitErrors([`A licence, registration, or certification number is required for ${tradeCategory}.`]);
-    }
-    if (requiresBrokerageName(tradeCategory)) {
-      const brokerageErr = brokerageNameError(brokerageName);
-      if (brokerageErr) return setSubmitErrors([brokerageErr]);
-    }
-    // Same rule the server enforces (src/data/vendorWebsite.ts) -- caught here so the vendor hears it now.
-    const siteCheck = checkVendorWebsite(website);
-    if (!siteCheck.ok) return setSubmitErrors([siteCheck.error || VENDOR_WEBSITE_RULE]);
-    if (!attestedAccurate) return setSubmitErrors(['Tick the confirmation box to accept the Terms of Service before continuing.']);
+  const ready = Boolean(tradeCategory) && zipStates.every((s) => s === 'open');
+  const stillChecking = zipStates.some((s) => s === 'checking');
 
-    const contactEmail = user.email || `${user.uid}@beforeregret.com`;
-
+  const buy = async () => {
+    setError(null);
+    setNotice(null);
+    if (!tradeCategory) return setError('Choose your business type first.');
+    if (!ready) return setError(`Enter ${ZIPS_PER_BUNDLE} different ZIP codes that show as available.`);
+    if (authLoading) {
+      setResumeBuy('click');
+      return;
+    }
+    if (!user) {
+      sessionStorage.setItem(AUTH_STASH_KEY, JSON.stringify({ zipCodes: zips, tradeCategory, autoBuy: true } satisfies Stash));
+      triggerClerkSignIn();
+      return;
+    }
     setSubmitting(true);
-    // Verified session token, not the raw uid -- see clerkAuth.ts; the server no longer trusts a
-    // client-sent clerkUserId for who an order gets attributed to.
     const token = await getToken();
     if (!token) {
-      setSubmitErrors(['Your session has expired -- please sign in again.']);
+      setError('Your session has expired -- please sign in again.');
       setSubmitting(false);
       return;
     }
@@ -203,276 +159,107 @@ export const VendorSignupForm: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
-          businessName: businessName.trim(),
+          quick: true,
+          acceptedTerms: true,
           tradeCategory,
-          zipCodes: selectedZips,
-          phone: phone.trim(),
-          website: website.trim() || undefined,
-          licenceNumber: licenceNumber.trim() || undefined,
-          brokerageName: requiresBrokerageName(tradeCategory) ? brokerageName.trim() : undefined,
-          contactEmail,
-          attestedAccurate,
+          zipCodes: zips,
+          contactEmail: user.email || `${user.uid}@beforeregret.com`,
         }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
-        setSubmitErrors(data?.errors || [data?.error || 'Could not start checkout. Please try again.']);
-        // Lost the race on one of the 3 (someone else's hold or purchase landed first) -- clear
-        // the selection rather than let a resubmit retry the exact same, now partly-taken set.
-        if (res.status === 409) setSelectedZips([]);
+        setError((data?.errors && data.errors[0]) || data?.error || 'Could not start checkout. Please try again.');
+        // Lost the race on one of the 3: re-check them all so the taken one shows as taken.
+        if (res.status === 409) recheckAll(tradeCategory, zips);
         setSubmitting(false);
         return;
       }
-      sessionStorage.setItem(PAYPAL_STASH_KEY, JSON.stringify({
-        zipCodes: selectedZips, tradeCategory, businessName, phone, website, licenceNumber, brokerageName,
-      }));
+      sessionStorage.setItem(PAYPAL_STASH_KEY, JSON.stringify({ zipCodes: zips, tradeCategory } satisfies Stash));
       window.location.href = data.approvalUrl;
     } catch {
-      setSubmitErrors(['Could not reach the server. Please try again.']);
+      setError('Could not reach the server. Please try again.');
       setSubmitting(false);
     }
   };
 
-  const ready = selectedZips.length === ZIPS_PER_BUNDLE;
-
-  // This button only ever renders once `ready` is true (see below), so tradeCategory and all
-  // ZIPS_PER_BUNDLE zips are guaranteed non-empty here -- nothing else in this form can be filled
-  // in yet, since the business-details fields are themselves gated behind `user` being truthy.
-  // See the restore effect above for why this stash exists at all.
-  const handleSignInClick = () => {
-    sessionStorage.setItem(AUTH_STASH_KEY, JSON.stringify({ zipCodes: selectedZips, tradeCategory }));
-    triggerClerkSignIn();
-  };
+  // Back from sign-in with autoBuy: continue to PayPal once the account loads and all 3 ZIPs re-check as open.
+  useEffect(() => {
+    if (!resumeBuy || authLoading || stillChecking) return;
+    if (zipStates.some((s) => s === 'empty')) return;
+    const why = resumeBuy;
+    setResumeBuy(null);
+    if (ready && (user || why === 'click')) buy();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resumeBuy, authLoading, user, ready, stillChecking, zipStates]);
 
   return (
-    <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
-      <div className="space-y-2">
-        <div className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">Check Availability</div>
-        <h2 className="font-serif text-2xl font-bold text-slate-900">Claim Your {ZIPS_PER_BUNDLE} ZIP Codes</h2>
-        <p className="text-xs sm:text-sm text-slate-600">
-          Only {MAX_SLOTS_PER_ZIP_TRADE} businesses per trade category are shown per ZIP code, first come first served.
-        </p>
-      </div>
+    <div className="bg-white rounded-3xl border border-home-linen shadow-xl p-5 sm:p-7">
+      <label htmlFor="report-ad-trade" className="block text-sm font-bold">1. Your business type</label>
+      <select
+        id="report-ad-trade"
+        value={tradeCategory}
+        onChange={(e) => onTradeChange(e.target.value)}
+        className="mt-2 w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-base sm:text-sm"
+      >
+        <option value="">Choose…</option>
+        {REPORT_AD_TRADE_CATEGORIES.map((cat) => (
+          <option key={cat} value={cat}>{cat}</option>
+        ))}
+      </select>
 
-      <div className="space-y-3">
-        <select
-          value={tradeCategory}
-          onChange={(e) => setTradeCategory(e.target.value)}
-          disabled={selectedZips.length > 0}
-          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          <option value="">Select your business type...</option>
-          {REPORT_AD_TRADE_CATEGORIES.map((cat) => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
-
-        {/* Surfaced here, before the vendor spends effort picking 3 ZIPs, rather than only at the
-            business-details step later where the licence field itself first appears -- so it's not
-            a surprise requirement dropped on someone who's already invested time in the flow. */}
-        {tradeCategory && requiresLicenceNumber(tradeCategory) && (
-          <p className="text-[11px] text-slate-500 px-1">
-            You'll need a licence, registration, or certification number for {tradeCategory} to complete checkout.
-          </p>
-        )}
-
-        {selectedZips.length > 0 && (
-          <ul className="space-y-2">
-            {selectedZips.map((zip) => (
-              <li key={zip} className="flex items-center justify-between gap-3 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">
-                <span className="inline-flex items-center gap-2 text-sm font-bold text-emerald-800">
-                  <CheckCircle2 className="w-4 h-4 shrink-0" />
-                  <span>ZIP {zip}</span>
-                </span>
-                <button type="button" onClick={() => removeZip(zip)} className="text-emerald-700 hover:text-emerald-900 cursor-pointer" aria-label={`Remove ZIP ${zip}`}>
-                  <X className="w-4 h-4" />
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {!ready && (
-          <form onSubmit={handleAddZipSubmit} className="flex flex-col sm:flex-row gap-3">
-            <input
-              type="text"
-              inputMode="numeric"
-              placeholder="ZIP code"
-              value={zipInput}
-              onChange={(e) => setZipInput(e.target.value.replace(/\D/g, '').slice(0, 5))}
-              className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
-            />
-            <button
-              type="submit"
-              disabled={checking || !tradeCategory}
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-xl transition-all disabled:opacity-60 shrink-0"
-            >
-              {checking ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-              <span>Check &amp; Add ZIP ({selectedZips.length} of {ZIPS_PER_BUNDLE})</span>
-            </button>
-          </form>
-        )}
-        {checkError && (
-          <p className="flex items-start gap-1.5 text-xs text-red-600 font-medium">
-            <XCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" /><span>{checkError}</span>
-          </p>
-        )}
-      </div>
-
-      {ready && authLoading && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-10 flex flex-col items-center justify-center gap-3 text-slate-400">
-          <Loader2 className="w-6 h-6 animate-spin" />
-          <p className="text-xs font-medium">Checking your account…</p>
-        </div>
-      )}
-
-      {ready && !authLoading && !user && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 text-center space-y-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-mono font-bold border border-blue-100">
-            <Lock className="w-3.5 h-3.5 text-blue-600" />
-            <span>Sign-In Required</span>
-          </div>
-          <h2 className="font-serif text-xl font-bold text-slate-900">Sign in to buy this slot</h2>
-          <p className="text-xs text-slate-600 max-w-sm mx-auto leading-relaxed">
-            We use your account email for your receipt and to manage your placement -- no separate email field needed.
-          </p>
-          <button
-            type="button"
-            onClick={handleSignInClick}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl transition-all cursor-pointer"
-          >
-            <Lock className="w-4 h-4" />
-            <span>Sign In / Sign Up</span>
-          </button>
-        </div>
-      )}
-
-      {ready && !authLoading && user && (
-        <div className="space-y-5">
-          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center gap-2 text-emerald-800 text-sm font-bold">
-            <CheckCircle2 className="w-4 h-4 shrink-0" />
-            <span>{tradeCategory} in ZIP {selectedZips.join(', ')} -- all {ZIPS_PER_BUNDLE} available</span>
-          </div>
-
-          <div className="flex items-center justify-end text-xs text-slate-500">
-            <span>Signed in as <span className="font-semibold text-slate-700">{user.email || user.displayName}</span></span>
-          </div>
-
-          <form onSubmit={startCheckout} className="space-y-3">
-            <input
-              type="text" required placeholder="Business name" value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
-            />
-            <input
-              type="tel" required placeholder="Phone readers will call" value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
-            />
-            <input
-              type="url" placeholder="Website (optional)" value={website}
-              onChange={(e) => setWebsite(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
-            />
-            <p className="text-[11px] text-slate-500 leading-snug -mt-1">{VENDOR_WEBSITE_RULE}</p>
-            {/* Agents only: the brokerage name is its own required field, and the server prints it beside
-                the agent's name in the ad (sponsoredVendors.ts, BROKERAGE_REQUIRED_CATEGORIES). */}
-            {tradeCategory && requiresBrokerageName(tradeCategory) && (
-              <div className="space-y-1.5">
-                <input
-                  type="text" required placeholder="Brokerage name" value={brokerageName}
-                  onChange={(e) => setBrokerageName(e.target.value)}
-                  maxLength={80}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm"
-                />
-                <p className="text-[11px] text-slate-500 leading-relaxed px-1">
-                  Shown in your ad right after your name. Some states require it in every real estate ad
-                  (Texas, for example, requires the broker&apos;s name). Following your state&apos;s advertising
-                  rules is your responsibility.
-                </p>
-              </div>
-            )}
-            {/* Rendered only for categories that need one, so the licence-exempt trade never sees a
-                field it cannot honestly fill. The helper text states plainly that the number is
-                published and unverified -- a vendor should know their number will appear in the ad
-                before they type it, and should not read the request as us vouching for it. */}
-            {tradeCategory && requiresLicenceNumber(tradeCategory) && (
-              <div className="space-y-1.5">
-                <input
-                  type="text" required placeholder="State licence / registration number"
-                  value={licenceNumber}
-                  onChange={(e) => setLicenceNumber(e.target.value)}
-                  maxLength={60}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
-                />
-                {/* Deliberately does NOT tell the advertiser "we don't verify this" -- that fact
-                    belongs on the public-facing card (SponsoredVendorCard.tsx), where a reader
-                    needs it to know to check the number themselves. Here, saying it out loud to
-                    the person about to type the number only advertises the gap to the one party
-                    who could exploit it. Same underlying facts, aimed at deterrence instead:
-                    published verbatim, a warranted representation, and a stated consequence. */}
-                <p className="text-[11px] text-slate-500 leading-relaxed px-1">
-                  Required for {tradeCategory}. This <strong>appears in your ad</strong> exactly as
-                  you type it. You are confirming it is current, valid for this trade, and held by
-                  this business -- a false or expired number means removal without refund (Terms
-                  4.4). Movers may enter a USDOT or MC number; agents, their real estate licence number.
-                </p>
-              </div>
-            )}
-            <label className="flex items-start gap-2.5 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 cursor-pointer">
+      <p className="mt-5 text-sm font-bold">2. Your {ZIPS_PER_BUNDLE} ZIP codes</p>
+      <div className="mt-2 grid grid-cols-3 gap-2 sm:gap-3">
+        {zips.map((zip, i) => {
+          const s = zipStates[i];
+          const good = s === 'open';
+          const bad = s === 'taken' || s === 'invalid' || s === 'duplicate' || s === 'error';
+          return (
+            <div key={i}>
               <input
-                type="checkbox" checked={attestedAccurate}
-                onChange={(e) => setAttestedAccurate(e.target.checked)}
-                className="mt-0.5 w-3.5 h-3.5 shrink-0 accent-blue-600 cursor-pointer"
+                type="text"
+                inputMode="numeric"
+                autoComplete="postal-code"
+                placeholder="ZIP"
+                aria-label={`ZIP code ${i + 1}`}
+                aria-describedby={`zip-state-${i}`}
+                value={zip}
+                onChange={(e) => onZipChange(i, e.target.value)}
+                className={`w-full px-3 py-3 border rounded-xl text-base text-center tabular-nums tracking-wider ${
+                  good ? 'border-home-moss bg-home-sage/40' : bad ? 'border-rose-400 bg-rose-50' : 'border-slate-300 bg-white'
+                }`}
               />
-              <span>
-                I confirm the details above are accurate, that I'm authorized to advertise this
-                business, and that I hold any licenses and insurance my trade requires. I agree to the{' '}
-                <a href="/terms/" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Terms of Service</a>,
-                which include a binding individual arbitration agreement and class action waiver
-                (Section 7) that I may opt out of within 30 days.
-              </span>
-            </label>
-
-            {returnNotice && !submitting && (
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-800" role="status">
-                {returnNotice}
-              </div>
-            )}
-
-            {submitErrors.length > 0 && (
-              <ul className="text-xs text-red-600 font-medium space-y-0.5 flex flex-col">
-                {submitErrors.map((err, idx) => (
-                  <li key={idx} className="flex items-start gap-1.5">
-                    <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                    <span>{err}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all disabled:opacity-60"
-            >
-              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
-              <span>{submitting ? 'Taking you to PayPal…' : `Continue to PayPal -- $${(pricing?.pricePerBundleUsd ?? 29).toFixed(0)}`}</span>
-            </button>
-            {/* PayPal can take several seconds to open (QA 2026-10-13); this keeps the vendor from
-                thinking the button did nothing and clicking again. */}
-            {submitting && (
-              <p className="text-xs text-slate-600 text-center" role="status">
-                Taking you to PayPal. This can take a few seconds -- please keep this page open.
+              <p id={`zip-state-${i}`} className={`mt-1 min-h-[1rem] text-[11px] leading-tight flex items-start gap-1 ${good ? 'text-home-moss' : bad ? 'text-rose-600' : 'text-slate-500'}`}>
+                {s === 'checking' && <Loader2 className="w-3 h-3 animate-spin shrink-0" aria-hidden="true" />}
+                {good && <CheckCircle2 className="w-3 h-3 shrink-0" aria-hidden="true" />}
+                {bad && <XCircle className="w-3 h-3 shrink-0" aria-hidden="true" />}
+                <span>{zip.length === 5 && !tradeCategory ? 'Choose a type first' : STATE_TEXT[s]}</span>
               </p>
-            )}
-            <p className="text-[11px] text-slate-500 text-center">
-              ${(pricing?.pricePerBundleUsd ?? 29).toFixed(0)} flat for {ZIPS_PER_BUNDLE} ZIP codes, {pricing?.slotDurationDays ?? 30} days, no subscription and no auto-renewal.
-              First come, first served; each slot reopens automatically once it expires unless you buy another {pricing?.slotDurationDays ?? 30}-day window.
-            </p>
-          </form>
-        </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {notice && <p role="status" className="mt-3 text-xs text-home-navy bg-home-sage/40 rounded-xl p-3">{notice}</p>}
+      {error && (
+        <p role="alert" className="mt-3 flex items-start gap-1.5 text-xs text-rose-700">
+          <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" aria-hidden="true" /><span>{error}</span>
+        </p>
       )}
+
+      <button
+        type="button"
+        onClick={buy}
+        disabled={submitting || resumeBuy !== null || !ready}
+        className="mt-5 w-full inline-flex items-center justify-center gap-2 px-5 py-4 bg-home-navy hover:bg-home-ink disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-base font-bold rounded-xl transition-colors cursor-pointer"
+      >
+        {submitting || resumeBuy !== null ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : user ? <ArrowRight className="w-4 h-4" aria-hidden="true" /> : <Lock className="w-4 h-4" aria-hidden="true" />}
+        <span>{submitting ? 'Opening PayPal…' : `Buy now · $${PRICE_USD}`}</span>
+      </button>
+      <p className="mt-2.5 text-[11px] text-slate-500 leading-snug text-center">
+        Add your business name and phone after paying. By buying you agree to the{' '}
+        <a href="/terms/" target="_blank" rel="noopener noreferrer" className="underline hover:text-home-ink">Terms of Service</a>,
+        including arbitration (Section 7).
+      </p>
     </div>
   );
 };

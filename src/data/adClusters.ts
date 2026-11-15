@@ -8,7 +8,7 @@ import { guideTopic } from '../utils/relatedGuides.js';
 // of its own shows that row's ad (GET /api/guide-ads/active/:articleId falls back to it). A guide
 // already held by a single-guide advertiser keeps that advertiser; when their placement ends, the
 // sponsor's ad takes the page over. So renewal, the one-time contact edit,
-// click attribution and My Placements all keep running through the paths single-guide ads already
+// click attribution and My Ads all keep running through the paths single-guide ads already
 // use, with no second copy of any of them. A guide published into the cluster later is covered from
 // the moment it goes live, with nothing to grant, because membership is computed rather than stored.
 //

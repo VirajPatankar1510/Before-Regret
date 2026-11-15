@@ -139,6 +139,19 @@ function readVendorDetails(body: any): VendorDetails {
   };
 }
 
+// Pay first, details after (owner, 2026-11-15; see the details_pending note in db.ts). A quick
+// checkout carries no business details at all: only who is paying (the verified account's email)
+// and that they accepted the Terms. The business name, trade, phone, website and licence number
+// are collected in My Ads afterwards, where POST /api/my-ads/details applies the SAME rules
+// readVendorDetails() applies here, so no rule is lost by moving it. Until then the purchase holds
+// its slot but renders nowhere.
+function readQuickBuyer(body: any): VendorDetails {
+  const { contactEmail, acceptedTerms } = body || {};
+  if (!contactEmail || typeof contactEmail !== 'string') return { ok: false, error: 'Contact email is required.' };
+  if (acceptedTerms !== true) return { ok: false, error: 'Please accept the Terms of Service to continue.' };
+  return { ok: true, businessName: '', tradeCategory: '', phone: '', contactEmail, website: null, licenceNumber: '' };
+}
+
 /** What the success page needs to say "you sponsor the Stucco & EIFS guides" instead of naming one guide. */
 function clusterSummary(key: unknown): { key: string; name: string } | null {
   const cluster = adClusterByKey(key);
@@ -240,7 +253,7 @@ export function registerGuideAdsRoutes(app: Express) {
         FROM guide_ad_purchases p
         JOIN articles a ON a.id = p.article_id
         WHERE p.article_id = ${articleId} AND p.position = ${SLOT_POSITION} AND p.cluster_key IS NULL
-          AND p.active = true AND p.paid_through > now()
+          AND p.active = true AND p.paid_through > now() AND p.details_pending = false
           AND a.status = 'published'
         ORDER BY p.created_at DESC LIMIT 1
       `);
@@ -260,7 +273,7 @@ export function registerGuideAdsRoutes(app: Express) {
             FROM guide_ad_purchases p
             JOIN articles a ON a.id = p.article_id
             WHERE p.cluster_key = ${cluster.key} AND p.position = ${SLOT_POSITION}
-              AND p.active = true AND p.paid_through > now()
+              AND p.active = true AND p.paid_through > now() AND p.details_pending = false
               AND a.status = 'published'
             ORDER BY p.created_at DESC LIMIT 1
           `);
@@ -308,7 +321,8 @@ export function registerGuideAdsRoutes(app: Express) {
       res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
       return;
     }
-    const vendor = readVendorDetails(req.body);
+    const quick = req.body?.quick === true;
+    const vendor = quick ? readQuickBuyer(req.body) : readVendorDetails(req.body);
     if ('error' in vendor) {
       res.status(400).json({ success: false, error: vendor.error });
       return;
@@ -362,11 +376,11 @@ export function registerGuideAdsRoutes(app: Express) {
       await withDb((sql) => sql`
         INSERT INTO guide_ad_orders (
           paypal_order_id, business_name, trade_category, phone, website, contact_email, slots_json, amount_usd, status, clerk_user_id,
-          terms_version, terms_accepted_at, licence_number, slot_prices_json
+          terms_version, terms_accepted_at, licence_number, slot_prices_json, details_pending
         ) VALUES (
           ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${phone}, ${vendor.website},
           ${contactEmail}, ${JSON.stringify(uniqueSlots)}, ${amount}, 'pending', ${req.verifiedUserId as string},
-          ${TERMS_VERSION}, now(), ${vendor.licenceNumber || null}, ${JSON.stringify(quote.lines)}
+          ${TERMS_VERSION}, now(), ${vendor.licenceNumber || null}, ${JSON.stringify(quote.lines)}, ${quick}
         )
       `);
 
@@ -407,7 +421,8 @@ export function registerGuideAdsRoutes(app: Express) {
       res.status(400).json({ success: false, error: 'That topic is not available for sponsorship.' });
       return;
     }
-    const vendor = readVendorDetails(req.body);
+    const quick = req.body?.quick === true;
+    const vendor = quick ? readQuickBuyer(req.body) : readVendorDetails(req.body);
     if ('error' in vendor) {
       res.status(400).json({ success: false, error: vendor.error });
       return;
@@ -453,11 +468,11 @@ export function registerGuideAdsRoutes(app: Express) {
       await withDb((sql) => sql`
         INSERT INTO guide_ad_orders (
           paypal_order_id, business_name, trade_category, phone, website, contact_email, slots_json, amount_usd, status, clerk_user_id,
-          terms_version, terms_accepted_at, licence_number, slot_prices_json, cluster_key
+          terms_version, terms_accepted_at, licence_number, slot_prices_json, cluster_key, details_pending
         ) VALUES (
           ${paypalOrder.orderId}, ${vendor.businessName}, ${vendor.tradeCategory}, ${vendor.phone}, ${vendor.website},
           ${vendor.contactEmail}, ${JSON.stringify([anchor.id])}, ${amount}, 'pending', ${req.verifiedUserId as string},
-          ${TERMS_VERSION}, now(), ${vendor.licenceNumber || null}, ${JSON.stringify(lines)}, ${cluster.key}
+          ${TERMS_VERSION}, now(), ${vendor.licenceNumber || null}, ${JSON.stringify(lines)}, ${cluster.key}, ${quick}
         )
       `);
 
@@ -511,6 +526,7 @@ export function registerGuideAdsRoutes(app: Express) {
           grantedGuides: rows.map((r) => ({ articleId: r.article_id, slug: r.slug, title: r.title })),
           skippedGuides: [],
           cluster: clusterSummary(order.cluster_key),
+          detailsPending: Boolean(order.details_pending),
         });
         return;
       }
@@ -583,11 +599,12 @@ export function registerGuideAdsRoutes(app: Express) {
           const inserted = await sql`
             INSERT INTO guide_ad_purchases (
               order_id, article_id, position, business_name, trade_category, phone, website, paid_through,
-              licence_number, price_usd, cluster_key
+              licence_number, price_usd, cluster_key, details_pending
             )
             SELECT ${order.id}, ${articleId}, ${SLOT_POSITION}, ${order.business_name}, ${order.trade_category},
                    ${order.phone}, ${order.website}, ${paidThrough.toISOString()},
-                   ${order.licence_number ?? null}, ${quotedPrices.get(articleId) ?? null}, ${clusterKey}
+                   ${order.licence_number ?? null}, ${quotedPrices.get(articleId) ?? null}, ${clusterKey},
+                   ${Boolean(order.details_pending)}
             WHERE NOT EXISTS (
               SELECT 1 FROM guide_ad_purchases
               -- A topic sponsorship contends only with another sponsorship of the same topic: its row
@@ -633,6 +650,7 @@ export function registerGuideAdsRoutes(app: Express) {
         grantedGuides: toGuideList(grantedArticleIds),
         skippedGuides: toGuideList(skippedArticleIds),
         cluster: clusterSummary(clusterKey),
+        detailsPending: Boolean(order.details_pending),
       });
     } catch (err: any) {
       console.error('[guide-ads] capture failed:', err);
@@ -677,7 +695,7 @@ export function registerGuideAdsRoutes(app: Express) {
       // reachable directly and has to enforce the same thing itself.
       const owned = await withDb((sql) => sql`
         SELECT p.id, p.paid_through, p.trade_category, p.licence_number, o.contact_email,
-               a.status AS article_status, a.title AS article_title
+               a.status AS article_status, a.title AS article_title, p.details_pending
         FROM guide_ad_purchases p
         JOIN guide_ad_orders o ON o.id = p.order_id
         JOIN articles a ON a.id = p.article_id
@@ -685,10 +703,15 @@ export function registerGuideAdsRoutes(app: Express) {
       `);
       const purchase = (owned as unknown as Array<{
         id: number; paid_through: string; trade_category: string; licence_number: string | null; contact_email: string;
-        article_status: string; article_title: string;
+        article_status: string; article_title: string; details_pending: boolean;
       }>)[0];
       if (!purchase) {
         res.status(404).json({ success: false, error: 'Placement not found.' });
+        return;
+      }
+      // Nothing is showing yet, so there is nothing to extend: the 30 days start when the details go in.
+      if (purchase.details_pending) {
+        res.status(409).json({ success: false, error: 'Add your business details first. Your 30 days start when your ad goes live.' });
         return;
       }
       // Renewal is the one path that could keep an unlicensed ad live indefinitely: it copies the
@@ -730,7 +753,7 @@ export function registerGuideAdsRoutes(app: Express) {
       // may already belong to someone else, so that case goes through the normal "Buy again"
       // checkout flow instead (see MyAdsPanel.tsx's Expired section), not this one.
       if (new Date(purchase.paid_through).getTime() <= Date.now()) {
-        res.status(409).json({ success: false, error: 'This placement has already expired -- buy it again from My Placements instead.' });
+        res.status(409).json({ success: false, error: 'This placement has already expired -- buy it again from My Ads instead.' });
         return;
       }
 

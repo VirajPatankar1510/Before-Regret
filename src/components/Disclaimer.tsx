@@ -41,7 +41,7 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
             <ArrowLeft className="w-4 h-4 text-slate-500" />
             <span>Return to Home</span>
           </button>
-          <span className="text-xs font-mono text-slate-500">Last Revised: October 5, 2026</span>
+          <span className="text-xs font-mono text-slate-500">Last Revised: November 15, 2026</span>
         </div>
 
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xs space-y-8">
@@ -166,7 +166,7 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
                 This website carries paid advertising from local businesses, always labeled
                 "Sponsored" or "Ad". These placements are <strong>self-serve and sold without any
                 vetting process.</strong> The business name, trade category, phone number, and
-                website shown are supplied by the advertiser at checkout.
+                website shown are supplied by the advertiser.
               </p>
               <p>
                 <strong>We do not verify any advertiser's licensing, insurance, bonding,

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle2, Loader2, AlertCircle, Calendar, Hash } from 'lucide-react';
+import { AdPaidNextStep } from './AdPaidNextStep';
 
-type Status = 'capturing' | 'all-granted' | 'partial' | 'none-granted' | 'error';
+type Status = 'capturing' | 'all-granted' | 'partial' | 'none-granted' | 'needs-details' | 'error';
 
 // Not imported from zipAdsApi.ts -- this is a client bundle and that constant lives server-side.
 // Kept as a plain literal since it only ever appears in this one sentence of copy.
@@ -57,6 +58,8 @@ export const ZipAdsCheckoutSuccess: React.FC<ZipAdsCheckoutSuccessProps> = ({ on
         setCaptureId(data.captureId ?? null);
         setPaidThrough(data.paidThrough ?? null);
         if (granted.length === 0) setStatus('none-granted');
+        // Pay-first order (2026-11-15): paid, but not live until the business details go in.
+        else if (data.detailsPending) setStatus('needs-details');
         else if (skipped.length > 0) setStatus('partial');
         else setStatus('all-granted');
       })
@@ -79,6 +82,17 @@ export const ZipAdsCheckoutSuccess: React.FC<ZipAdsCheckoutSuccessProps> = ({ on
             <h1 className="text-2xl font-bold text-slate-900">Confirming Payment</h1>
             <p className="text-slate-600">Please wait while we activate your ad slots...</p>
           </>
+        )}
+
+        {status === 'needs-details' && (
+          <AdPaidNextStep what={`${tradeCategory} in ZIP ${grantedZips.join(', ')}`} captureId={captureId} onNavigate={onNavigate}>
+            {skippedZips.length > 0 && (
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-left text-xs text-amber-900">
+                ZIP {skippedZips.join(', ')} {skippedZips.length === 1 ? 'was' : 'were'} taken by another advertiser right
+                before your payment completed. Email hello@beforeregret.com for a partial refund or to swap in a different ZIP.
+              </div>
+            )}
+          </AdPaidNextStep>
         )}
 
         {status === 'all-granted' && (
@@ -111,7 +125,7 @@ export const ZipAdsCheckoutSuccess: React.FC<ZipAdsCheckoutSuccessProps> = ({ on
                 onClick={() => onNavigate('/my-ads')}
                 className="flex-1 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors"
               >
-                Manage My Placements
+                Go to My Ads
               </button>
               <button
                 onClick={() => onNavigate('/')}
@@ -146,7 +160,7 @@ export const ZipAdsCheckoutSuccess: React.FC<ZipAdsCheckoutSuccessProps> = ({ on
               onClick={() => onNavigate('/my-ads')}
               className="w-full py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors"
             >
-              Manage My Placements
+              Go to My Ads
             </button>
           </>
         )}

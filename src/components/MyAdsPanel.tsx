@@ -1,11 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Loader2, Lock, ExternalLink, Pencil, Check, X, RotateCcw, Receipt, MapPin, BookOpen, CreditCard, AlertCircle } from 'lucide-react';
+import { Loader2, Lock, ExternalLink, Pencil, Check, X, RotateCcw, Receipt, MapPin, BookOpen, CreditCard, AlertCircle, ClipboardEdit } from 'lucide-react';
+import { AdDetailsForm, type AdDetailsDefaults } from './AdDetailsForm';
+import { setAdDetailsHint } from '../utils/adDetailsHint';
 import { useAuth } from '../context/AuthContext';
 import { requiresLicenceNumber } from '../data/sponsoredVendors';
 import { checkVendorWebsite, VENDOR_WEBSITE_RULE } from '../data/vendorWebsite';
 
 interface GuidePlacement {
   purchaseId: number;
+  // Optional for older server responses. detailsPending: paid and holding its slot, but not shown
+  // anywhere until the vendor adds their business details (pay-first checkout, 2026-11-15).
+  orderId?: number;
+  detailsPending?: boolean;
   articleId: number;
   slug: string;
   title: string;
@@ -31,6 +37,7 @@ interface GuidePlacement {
 interface ZipPlacement {
   purchaseId: number;
   orderId: number;
+  detailsPending?: boolean;
   zipCode: string;
   tradeCategory: string;
   businessName: string;
@@ -75,7 +82,7 @@ function expiryLabel(paidThrough: string): string {
   return new Date(paidThrough).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-// Deliberately named "My Placements," never "Dashboard" -- this page reports no visibility metric
+// Deliberately named "My Ads," never "Dashboard" -- this page reports no visibility metric
 // for either ad product (see AdvertiseCompare.tsx's "buying a fixed placement" framing), so a page
 // called "Dashboard" would set an expectation of analytics it does not deliver. Its job is proof of
 // purchase, expiry, contact-detail edits, and renewal -- a placement manager, not a stats board.
@@ -188,12 +195,12 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   }, [user, pendingRenewal]);
 
   const activeGuides = useMemo(
-    () => (guidePlacements || []).filter((p) => p.active).sort((a, b) => new Date(a.paidThrough).getTime() - new Date(b.paidThrough).getTime()),
+    () => (guidePlacements || []).filter((p) => p.active && !p.detailsPending).sort((a, b) => new Date(a.paidThrough).getTime() - new Date(b.paidThrough).getTime()),
     [guidePlacements]
   );
   const expiredGuides = useMemo(() => (guidePlacements || []).filter((p) => !p.active), [guidePlacements]);
   const activeZips = useMemo(
-    () => (zipPlacements || []).filter((p) => p.active).sort((a, b) => new Date(a.paidThrough).getTime() - new Date(b.paidThrough).getTime()),
+    () => (zipPlacements || []).filter((p) => p.active && !p.detailsPending).sort((a, b) => new Date(a.paidThrough).getTime() - new Date(b.paidThrough).getTime()),
     [zipPlacements]
   );
   const expiredZips = useMemo(() => (zipPlacements || []).filter((p) => !p.active), [zipPlacements]);
@@ -213,6 +220,54 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
     return Array.from(map.values());
   };
   const groupedActiveZips = useMemo(() => groupZipsByOrder(activeZips), [activeZips]);
+
+  // Paid orders still waiting for business details, one card (and one form) per order. Shown first,
+  // because a paid ad that isn't live yet is the one thing on this page that needs doing.
+  const pendingOrders = useMemo(() => {
+    const out: Array<{ kind: 'guide' | 'zip'; orderId: number; label: string; items: string[]; fixedTrade?: string; holdUntil: string }> = [];
+    const guideGroups = new Map<number, GuidePlacement[]>();
+    for (const p of guidePlacements || []) {
+      if (!p.detailsPending || !p.active || p.orderId === undefined) continue;
+      guideGroups.set(p.orderId, [...(guideGroups.get(p.orderId) ?? []), p]);
+    }
+    for (const [orderId, group] of guideGroups) {
+      const cluster = group.find((p) => p.clusterName);
+      out.push({
+        kind: 'guide', orderId,
+        label: cluster ? `Topic sponsorship: every ${cluster.clusterName} article` : `Topic Ad · ${group.length} article${group.length === 1 ? '' : 's'}`,
+        items: cluster ? [] : group.map((p) => p.title),
+        holdUntil: group[0].paidThrough,
+      });
+    }
+    for (const group of groupZipsByOrder((zipPlacements || []).filter((p) => p.detailsPending && p.active))) {
+      out.push({
+        kind: 'zip', orderId: group[0].orderId,
+        label: `Report Ad · ${group[0].tradeCategory}`,
+        items: [`ZIP ${group.map((p) => p.zipCode).join(', ')}`],
+        fixedTrade: group[0].tradeCategory,
+        holdUntil: group[0].paidThrough,
+      });
+    }
+    return out;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guidePlacements, zipPlacements]);
+
+  // Prefill for the details form: the vendor's most recent live ad, if they have one.
+  // Keep this browser's pending hint in step with what the server returned, so the sitewide
+  // reminder (AdDetailsReminder.tsx) stops once every order has its details. Only after a real load.
+  useEffect(() => {
+    if (guidePlacements === null || zipPlacements === null) return;
+    setAdDetailsHint(pendingOrders.length > 0);
+  }, [guidePlacements, zipPlacements, pendingOrders.length]);
+
+  const detailDefaults = useMemo<AdDetailsDefaults | undefined>(() => {
+    const live = [...(guidePlacements || []), ...(zipPlacements || [])]
+      .filter((p) => !p.detailsPending && p.businessName)
+      .sort((a, b) => new Date(b.paidThrough).getTime() - new Date(a.paidThrough).getTime())[0];
+    return live
+      ? { businessName: live.businessName, tradeCategory: live.tradeCategory, phone: live.phone, website: live.website, licenceNumber: live.licenceNumber }
+      : undefined;
+  }, [guidePlacements, zipPlacements]);
   const groupedExpiredZips = useMemo(() => groupZipsByOrder(expiredZips), [expiredZips]);
 
   const saveLicence = async (kind: 'guide' | 'zip', purchaseId: number) => {
@@ -459,8 +514,8 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
             <Lock className="w-3.5 h-3.5 text-blue-600" />
             <span>Sign-In Required</span>
           </div>
-          <h1 className="font-serif text-xl font-bold text-slate-900">Sign in to manage your placements</h1>
-          <p className="text-xs text-slate-600 leading-relaxed">Your placements are tied to the account you checked out with.</p>
+          <h1 className="font-serif text-xl font-bold text-slate-900">Sign in to see your ads</h1>
+          <p className="text-xs text-slate-600 leading-relaxed">Your ads are tied to the account you paid with.</p>
           {pendingRenewal && (
             <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2.5 leading-relaxed">
               You approved a renewal at PayPal, but your session expired. Sign in to finish confirming it -- nothing has been charged yet.
@@ -567,7 +622,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
     <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8 font-sans text-slate-900">
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="space-y-1">
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Manage what you've bought</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">My Ads</h1>
         </div>
 
         {loadError && <p className="text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-3">{loadError}</p>}
@@ -584,6 +639,48 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
 
         {guidePlacements !== null && zipPlacements !== null && (
           <>
+            {/* --- Paid, waiting for details: the pay-first checkout's second step ---------- */}
+            {pendingOrders.length > 0 && (
+              <section className="space-y-3">
+                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Finish your ad</h2>
+                {pendingOrders.map((o) => (
+                  <div key={`${o.kind}-${o.orderId}`} className="bg-white border-2 border-home-navy rounded-2xl p-4 sm:p-6 shadow-sm">
+                    <div className="flex items-start gap-3">
+                      <span className="shrink-0 w-9 h-9 rounded-full bg-home-navy text-white flex items-center justify-center">
+                        <ClipboardEdit className="w-4 h-4" aria-hidden="true" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700">Paid ✓</p>
+                        <p className="text-base font-bold text-slate-900">{o.label}</p>
+                        {o.items.length > 0 && (
+                          <ul className="mt-1 text-xs text-slate-500 space-y-0.5">
+                            {o.items.slice(0, 6).map((t) => <li key={t}>{t}</li>)}
+                            {o.items.length > 6 && <li>and {o.items.length - 6} more</li>}
+                          </ul>
+                        )}
+                        <p className="mt-2 text-sm text-slate-700">
+                          Add your business details and your ad goes live straight away. Your 30 days start then.
+                          Your spot is held until {expiryLabel(o.holdUntil)}.
+                        </p>
+                      </div>
+                    </div>
+                    <AdDetailsForm
+                      kind={o.kind}
+                      orderId={o.orderId}
+                      fixedTrade={o.fixedTrade}
+                      defaults={detailDefaults}
+                      getToken={getToken}
+                      onSaved={(paidThrough) => {
+                        setRenewBanner({ type: 'success', message: `Your ad is live until ${expiryLabel(paidThrough)}.` });
+                        window.scrollTo(0, 0);
+                        loadPlacements();
+                      }}
+                    />
+                  </div>
+                ))}
+              </section>
+            )}
+
             {/* --- Active placements ------------------------------------------------------- */}
             <section className="space-y-3">
               <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Active</h2>

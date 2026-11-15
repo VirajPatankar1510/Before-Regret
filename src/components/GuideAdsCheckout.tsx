@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  ArrowLeft, Loader2, AlertCircle, CheckSquare, Square, Lock, Search, Megaphone, Globe,
-  ListChecks, CircleDollarSign, Phone, ExternalLink, ChevronDown, CreditCard, ShieldCheck, XCircle,
+  ArrowLeft, ArrowRight, Loader2, AlertCircle, Check, Search, ChevronDown, Lock, CreditCard, ClipboardEdit, MousePointerClick,
 } from 'lucide-react';
-import { TRADE_CATEGORIES, requiresLicenceNumber, requiresBrokerageName, brokerageNameError } from '../data/sponsoredVendors';
-import { checkVendorWebsite, VENDOR_WEBSITE_RULE } from '../data/vendorWebsite';
+import { TRADE_CATEGORIES } from '../data/sponsoredVendors';
 import { guessTradeCategoryFromTitle } from '../data/guideAdCategoryGuess';
 import { useAuth } from '../context/AuthContext';
+import { GuideAdVendorCard } from './GuideAdSlot';
 
 interface GuideRow {
   articleId: number;
@@ -14,16 +13,13 @@ interface GuideRow {
   title: string;
   taken: boolean;
   // Which price band this guide sells at -- see src/server/adPricing.ts. Optional so a stale cached
-  // response from before tiers existed still renders; the fallback treats it as standard, which is
-  // the old behaviour exactly.
+  // response from before tiers existed still renders; the fallback treats it as standard.
   tier?: 'standard' | 'geo';
   priceUsd?: number;
 }
 
 // A topic sponsorship on offer (src/data/adClusters.ts): one advertiser on every open guide in a
-// topic, for one flat price, priced and checked server-side. The server only lists topics nobody
-// sponsors that still have at least 4 open guides; `taken` marks a guide held by a single-guide
-// advertiser, which the sponsorship takes over only when that placement ends.
+// topic, for one flat price, priced and checked server-side.
 interface ClusterOffer {
   key: string;
   name: string;
@@ -39,53 +35,49 @@ interface GuideAdsCheckoutProps {
 
 const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
-    q: 'Do you verify businesses before listing them?',
-    a: 'No -- this is self-serve. Business name, trade category, contact details, and your licence or registration number are all self-reported at checkout, and you confirm they\'re accurate with a checkbox there. Your licence number is printed in the ad exactly as you enter it, but nothing is checked against a licensing board on our end -- every placement carries a line saying so, whether or not it shows a number, so readers know to verify it themselves.',
+    q: 'What do I fill in after paying?',
+    a: 'Your business name, business type, a phone number readers can call, your website if you have one, and your licence number if your trade needs one. You add them in My Ads right after PayPal, once for the whole order. Your ad goes live as soon as you save them.',
+  },
+  {
+    q: 'When do my 30 days start?',
+    a: 'When your ad goes live, which is when you save your business details. Until then the articles you bought are held for you. If details are never added, the hold ends 30 days after payment and the articles reopen.',
+  },
+  {
+    q: 'Do I need an account?',
+    a: 'Yes. You sign in with your email when you buy, so only you can see and manage your ads in My Ads.',
   },
   {
     q: 'How many people will see my ad?',
-    a: "We don't guarantee impressions, clicks, or leads -- you're buying a fixed placement for the window, not a performance number. Views can't be measured from our side either: guide pages are served from a cache that never reaches our server.",
+    a: "We don't guarantee impressions, clicks or leads. You're buying a fixed placement for 30 days, not a performance number. We can't count article views either: guide pages are served from a cache that never reaches our server.",
   },
   {
     q: 'What is a topic sponsorship?',
-    a: 'One advertiser on every guide we publish on a topic, for one flat price per 30 days. Your ad shows on each of those guides, including new ones we publish on the topic while your sponsorship is active, and no other business can advertise on them in that time. You never see or approve the articles before they publish: they stay independent.',
+    a: 'One advertiser on every guide we publish on a topic, for one flat price per 30 days. Your ad shows on each of those guides, including new ones we publish on the topic while your sponsorship is active. You never see or approve the articles before they publish: they stay independent.',
   },
   {
-    q: 'Can I pick more than one guide?',
-    a: 'Yes -- select as many as you want in one checkout. Each guide is a separate $7.99 charge, all paid in one PayPal transaction.',
-  },
-  {
-    q: 'What happens when my placement expires?',
-    a: 'It stops showing and the slot reopens for other vendors.',
-  },
-  {
-    q: 'Can I edit my phone or website after I’ve paid?',
-    a: 'Yes, once. From My Placements you can change your phone, website and licence number one time per placement, so check them before you save. Business name and trade category are locked once purchased, since those define what was sold.',
-  },
-  {
-    q: 'Is this a subscription?',
-    a: "No. It's a single flat charge for a fixed 30-day window -- nothing bills you again automatically.",
+    q: 'Is this a subscription? Can I get a refund?',
+    a: "It's a single flat charge for 30 days. Nothing bills you again automatically. There are no refunds once payment completes.",
   },
 ];
 
-// Self-serve, open-market vendor ad checkout for guide pages -- $7.99 per guide, one slot each,
-// flat 30-day window, no auto-renewal, any business can select any guide. See
-// src/server/guideAdsApi.ts. Deliberately its own page rather than folded into Vendors.tsx: that
-// page is a different, older, interest-capture-only flow (a human follows up manually, no
-// payment happens there) -- this one takes real payment immediately, and mixing the two very
-// different flows on one page would confuse both.
+// /topic-ads/ -- the Topic Ads checkout. REBUILT 2026-11-15 after the owner's vendor survey: almost
+// every vendor found the old page long and hard to follow before they ever reached PayPal (a
+// business-details form, a trade dropdown, a licence field and a legal checkbox all sat in front of
+// the button). Now the page asks for exactly one thing, which articles, and the button pays for
+// them. Everything about the business is collected AFTER payment in My Ads (see
+// AdDetailsForm.tsx and POST /api/my-ads/details), where the same rules are enforced. The "your
+// trade" dropdown survives only as an optional sort, because it is genuinely useful for finding
+// relevant articles in a long list, and it no longer has to be filled in.
 //
-// The guide list and business form render regardless of sign-in state -- only the final "Continue
-// to PayPal" step requires it. Gating the whole page behind sign-in used to mean a vendor clicking
-// GuideAdSlot.tsx's "Are you in the X business?" CTA landed on a login screen instead of the thing
-// they clicked, before ever seeing what's for sale.
-// sessionStorage keys for the form-state-survives-a-real-navigation stash -- see the restore
-// effect below for why both exist and why order matters when checking them.
+// Sign-in still happens before PayPal: the order has to belong to an account so the vendor can
+// find it again to add their details. A vendor who isn't signed in clicks Buy now, signs in, and is
+// taken straight on to PayPal with their selection intact (AUTH_STASH_KEY + autoBuy below).
 const AUTH_STASH_KEY = 'br_pending_guide_ads_signup';
 const RENEW_STASH_KEY = 'br_renew_guide_ads';
-// Written right before the redirect to PayPal. PayPal's "Cancel and return" link brings the vendor
-// back here with ?token=..., and without this the whole form came back empty (found in QA 2026-10-13).
+// Written right before the redirect to PayPal, so "Cancel and return" (?token=...) brings back the selection.
 const PAYPAL_STASH_KEY = 'br_paypal_return_guide_ads';
+
+type Stash = { articleIds?: number[]; clusterKey?: string | null; tradeCategory?: string; autoBuy?: boolean };
 
 export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }) => {
   const { user, loading: authLoading, triggerClerkSignIn, getToken, requestClerkLoad } = useAuth();
@@ -99,80 +91,40 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   // A topic sponsorship and single guides are separate purchases, so choosing one clears the other.
   const [selectedCluster, setSelectedCluster] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  // Optional: only sorts the list so articles for this trade come first. Not sent to the server.
+  const [tradeCategory, setTradeCategory] = useState('');
   const [showAllGuides, setShowAllGuides] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  const [businessName, setBusinessName] = useState('');
-  const [tradeCategory, setTradeCategory] = useState('');
-  const [phone, setPhone] = useState('');
-  const [website, setWebsite] = useState('');
-  const [licenceNumber, setLicenceNumber] = useState('');
-  const [brokerageName, setBrokerageName] = useState('');
-  const [attestedAccurate, setAttestedAccurate] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  // Shown after a vendor cancels on PayPal and lands back here with their details restored.
+  // 'auth': back from sign-in, continue only if signed in. 'click': Buy now pressed while the
+  // account was still loading, so carry on (to sign-in or PayPal) as soon as it has.
+  const [resumeBuy, setResumeBuy] = useState<'auth' | 'click' | null>(null);
   const [returnNotice, setReturnNotice] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Starts the Clerk chunk loading as soon as this page mounts -- not on the "Sign In to Pay"
-  // click itself. requestClerkLoad() only flips a flag that mounts ClerkAuthBridge; the actual
-  // sign-in trigger (clerkInstanceRef) isn't ready until that bridge reports back, which is
-  // asynchronous. Calling both requestClerkLoad() and triggerClerkSignIn() in the same click
-  // handler (the previous version of this effect) meant triggerClerkSignIn() almost always fired
-  // before Clerk had loaded and no-opped with just a console.warn -- worse, `authLoading` never
-  // resolves to false without this call at all, so the button was stuck permanently disabled
-  // (see its `disabled={authLoading}` below). Guide browsing itself stays unauthenticated either
-  // way -- this only front-loads the auth chunk, not a sign-in prompt.
+  // Load the Clerk chunk on mount, so Buy now can open sign-in at once (see AuthContext.tsx).
   useEffect(() => {
     requestClerkLoad();
   }, [requestClerkLoad]);
 
-  // Two distinct reasons a vendor can land back on this page with the browser having done a full
-  // navigation away and back -- both wipe every useState here, since a real navigation (not
-  // client-side routing) remounts the whole SPA from scratch:
-  //
-  // 1. AUTH_STASH_KEY -- clicking "Sign In to Pay" below. This form deliberately renders in full,
-  //    guide selection AND every business-details field, before sign-in is required (see this
-  //    file's own top comment on why) -- so unlike the ZIP-ad form, a vendor here can fill in
-  //    EVERYTHING and then lose all of it. openSignIn()'s completion redirect
-  //    (forceRedirectUrl/afterSignInUrl in AuthContext.tsx) navigates the real browser even for an
-  //    in-modal email/password signup, not only an OAuth provider hop, so this is the ordinary path,
-  //    not an edge case. Before this stash existed, a vendor who picked guides, wrote their business
-  //    details and licence number, and then signed up, came back to a blank form with no error
-  //    shown -- nothing failed, so there was nothing to explain, which is exactly what made it read
-  //    as a bug rather than a crash.
-  //
-  // 2. RENEW_STASH_KEY -- MyAdsPanel.tsx's "Renew" button.
-  //
-  // Same restore logic either way; checked in this order (auth stash first) because it reflects
-  // the action the vendor took most recently if, somehow, both were ever present at once. Unlike
-  // the ZIP form's restore, guide selection is NOT re-validated against live availability here --
-  // matching the pre-existing renewal behavior this is built on, and an acceptable gap, since a
-  // slot taken out from under a stashed selection just fails at submit the same way it always could.
+  // A real navigation away and back (sign-in redirect, PayPal cancel, "Buy again" in My Ads)
+  // remounts the app and wipes state, so the selection is restored from sessionStorage.
   useEffect(() => {
-    const restore = (raw: string) => {
-      const stash = JSON.parse(raw) as {
-        articleIds: number[]; businessName: string; tradeCategory: string; phone: string;
-        website: string | null; licenceNumber?: string | null; clusterKey?: string | null; brokerageName?: string | null;
-      };
-      setSelected(new Set(stash.articleIds));
+    const restore = (raw: string): Stash => {
+      const stash = JSON.parse(raw) as Stash;
+      setSelected(new Set(stash.articleIds || []));
       setSelectedCluster(stash.clusterKey || null);
-      setBusinessName(stash.businessName || '');
-      setTradeCategory(stash.tradeCategory || '');
-      setPhone(stash.phone || '');
-      setWebsite(stash.website || '');
-      setLicenceNumber(stash.licenceNumber || '');
-      setBrokerageName(stash.brokerageName || '');
+      if (stash.tradeCategory) setTradeCategory(stash.tradeCategory);
+      return stash;
     };
-    // Back from PayPal's "Cancel and return" (?token= in the URL): put their details back and say so.
-    // The stash is cleared on every visit, so it can never refill the form on some later, unrelated one.
     const paypalRaw = sessionStorage.getItem(PAYPAL_STASH_KEY);
     sessionStorage.removeItem(PAYPAL_STASH_KEY);
     const params = new URLSearchParams(window.location.search);
     if (paypalRaw && params.has('token')) {
       try {
         restore(paypalRaw);
-        setReturnNotice('Your PayPal checkout was cancelled and nothing was charged. Your details are filled back in -- tick the confirmation box again to continue.');
+        setReturnNotice('Your PayPal checkout was cancelled and nothing was charged. Your articles are still selected.');
       } catch { /* malformed stash, ignore */ }
       params.delete('token');
       const rest = params.toString();
@@ -182,7 +134,10 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     const authRaw = sessionStorage.getItem(AUTH_STASH_KEY);
     if (authRaw) {
       sessionStorage.removeItem(AUTH_STASH_KEY);
-      try { restore(authRaw); } catch { /* malformed stash, ignore */ }
+      try {
+        const stash = restore(authRaw);
+        if (stash.autoBuy) setResumeBuy('auth');
+      } catch { /* malformed stash, ignore */ }
       return;
     }
     const renewRaw = sessionStorage.getItem(RENEW_STASH_KEY);
@@ -197,15 +152,21 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
       .then((res) => res.json())
       .then((data) => {
         if (data?.success) {
-          setGuides(data.guides);
+          const rows: GuideRow[] = data.guides;
+          setGuides(rows);
           const offers: ClusterOffer[] = Array.isArray(data.clusters) ? data.clusters : [];
           setClusters(offers);
-          // /topic-ads/?topic=stucco opens with that sponsorship chosen, so a pitch email can link
-          // straight to it. Only when it is actually available, and never over a restored selection.
-          const wanted = new URLSearchParams(window.location.search).get('topic');
-          if (wanted && offers.some((c) => c.key === wanted)) {
-            setSelectedCluster((prev) => prev ?? wanted);
+          const params = new URLSearchParams(window.location.search);
+          // /topic-ads/?topic=stucco opens with that sponsorship chosen; /topic-ads/?guide=<slug>
+          // opens with that one article chosen, so a pitch can link straight to "buy this page".
+          // Only when actually available, and never over a restored selection.
+          const wantedTopic = params.get('topic');
+          if (wantedTopic && offers.some((c) => c.key === wantedTopic)) {
+            setSelectedCluster((prev) => prev ?? wantedTopic);
           }
+          const wantedGuide = params.get('guide');
+          const guide = wantedGuide ? rows.find((g) => g.slug === wantedGuide && !g.taken) : undefined;
+          if (guide) setSelected((prev) => (prev.size > 0 ? prev : new Set([guide.articleId])));
           if (typeof data.pricePerSlotUsd === 'number') setPricePerSlot(data.pricePerSlotUsd);
           if (typeof data.tierPricesUsd?.standard === 'number') setPricePerSlot(data.tierPricesUsd.standard);
           if (typeof data.slotDurationDays === 'number') setSlotDurationDays(data.slotDurationDays);
@@ -216,23 +177,9 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
       .catch(() => setLoadError('Could not reach the server.'));
   }, []);
 
-  // Clerk is already loading by the time this is clickable (see the mount effect above) -- the
-  // button itself is disabled while authLoading is true, so triggerClerkSignIn() only ever fires
-  // once clerkInstanceRef is actually populated.
-  //
-  // Stashed before triggering, not after -- there is no "after" to hook: openSignIn()'s redirect
-  // is a real browser navigation, so nothing here runs again until this component remounts from
-  // scratch (see the restore effect above). Written unconditionally: an empty selection with blank
-  // fields just restores to the same empty, blank state, which costs nothing.
-  const handleSignInClick = () => {
-    sessionStorage.setItem(AUTH_STASH_KEY, JSON.stringify({
-      articleIds: Array.from(selected), clusterKey: selectedCluster, businessName, tradeCategory, phone, website, licenceNumber, brokerageName,
-    }));
-    triggerClerkSignIn();
-  };
-
   const toggleSlot = (articleId: number) => {
     setSelectedCluster(null);
+    setSubmitError(null);
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(articleId)) next.delete(articleId);
@@ -241,11 +188,14 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     });
   };
 
-  // Guides matching the vendor's own selected trade are split into their own group -- with 96
-  // guides and no grouping otherwise, a roofer had to scroll an alphabetical wall of titles to
-  // find the handful actually relevant to their trade. "Other guides" stays collapsed behind a
-  // toggle unless the vendor is actively searching (search intent overrides grouping) or hasn't
-  // picked a trade yet (nothing to group by, so there's just one browsable list).
+  const toggleCluster = (key: string) => {
+    setSelected(new Set());
+    setSubmitError(null);
+    setSelectedCluster((prev) => (prev === key ? null : key));
+  };
+
+  // Articles for the chosen trade come first; the rest sit behind a toggle unless the vendor is
+  // searching (search overrides grouping) or hasn't picked a trade (one browsable list).
   const isSearching = search.trim().length > 0;
   const { matchedGuides, otherGuides } = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -259,62 +209,43 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     return { matchedGuides: matched, otherGuides: rest };
   }, [guides, search, tradeCategory]);
 
-  const toggleCluster = (key: string) => {
-    setSelected(new Set());
-    setSelectedCluster((prev) => (prev === key ? null : key));
-  };
-  // Topics follow the business type: a roof inspector is offered roof topics, not stucco. Before a
-  // type is picked, every topic on offer shows.
+  // Topics follow the trade filter when one is set; otherwise every topic on offer shows. A chosen
+  // topic always stays visible, so the cart never holds something the vendor can't see.
   const visibleClusters = useMemo(
-    () => (tradeCategory ? clusters.filter((c) => c.trades.includes(tradeCategory)) : clusters),
-    [clusters, tradeCategory]
+    () => clusters.filter((c) => !tradeCategory || c.trades.includes(tradeCategory) || c.key === selectedCluster),
+    [clusters, tradeCategory, selectedCluster]
   );
-  // A chosen topic that the newly picked business type no longer shows must not stay in the cart
-  // out of sight.
-  useEffect(() => {
-    if (selectedCluster && !visibleClusters.some((c) => c.key === selectedCluster)) setSelectedCluster(null);
-  }, [visibleClusters, selectedCluster]);
-  const chosenCluster = visibleClusters.find((c) => c.key === selectedCluster) ?? null;
+  const chosenCluster = clusters.find((c) => c.key === selectedCluster) ?? null;
 
   const selectedCount = selected.size;
-  // Summed per guide rather than multiplied by one rate: each guide carries its own price from its
-  // tier (src/server/adPricing.ts). Both tiers are $7.99 since 2026-10-04, but summing stays correct
-  // if they ever differ again. This is display only -- the amount actually charged is recomputed
-  // server-side from each guide's stored tier at checkout, and never taken from the client.
+  // Display only -- the amount charged is recomputed server-side from each guide's stored tier.
   const priceOf = (g: GuideRow) => (typeof g.priceUsd === 'number' ? g.priceUsd : pricePerSlot);
   const total = useMemo(() => {
     if (chosenCluster) return chosenCluster.priceUsd;
     if (!guides) return selectedCount * pricePerSlot;
     return guides.reduce((sum, g) => (selected.has(g.articleId) ? sum + priceOf(g) : sum), 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guides, selected, pricePerSlot, selectedCount, chosenCluster]);
+  const hasSelection = selectedCount > 0 || chosenCluster !== null;
 
-  const handleCheckout = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const buy = async () => {
     setSubmitError(null);
-    if (!businessName.trim()) return setSubmitError('Enter your business name.');
-    if (!tradeCategory) return setSubmitError('Choose a business type.');
-    if (!phone.trim()) return setSubmitError('Enter a phone number for readers to call.');
-    if (selectedCount === 0 && !chosenCluster) return setSubmitError('Select at least one guide below.');
-    // Mirrors the server check in guideAdsApi.ts -- surfaced early, but the server is the gate.
-    if (requiresLicenceNumber(tradeCategory) && licenceNumber.trim().length < 3) {
-      return setSubmitError(`A licence, registration, or certification number is required for ${tradeCategory}.`);
+    setReturnNotice(null);
+    if (!hasSelection) return setSubmitError('Pick at least one article first.');
+    if (authLoading) {
+      setResumeBuy('click');
+      return;
     }
-    if (requiresBrokerageName(tradeCategory)) {
-      const brokerageErr = brokerageNameError(brokerageName);
-      if (brokerageErr) return setSubmitError(brokerageErr);
+    if (!user) {
+      // Sign-in's completion is a real browser navigation, so the selection rides in sessionStorage
+      // and autoBuy carries the vendor straight on to PayPal once they're back.
+      sessionStorage.setItem(AUTH_STASH_KEY, JSON.stringify({
+        articleIds: Array.from(selected), clusterKey: selectedCluster, tradeCategory, autoBuy: true,
+      } satisfies Stash));
+      triggerClerkSignIn();
+      return;
     }
-    // Same rule the server enforces (src/data/vendorWebsite.ts) -- caught here so the vendor hears it now.
-    const siteCheck = checkVendorWebsite(website);
-    if (!siteCheck.ok) return setSubmitError(siteCheck.error || VENDOR_WEBSITE_RULE);
-    if (!attestedAccurate) return setSubmitError('Tick the confirmation box to accept the Terms of Service before continuing.');
-    if (!user) return setSubmitError('Sign in to complete your purchase.');
-
-    const contactEmail = user.email || `${user.uid}@beforeregret.com`;
-
     setSubmitting(true);
-    // A verified session token, not the raw uid -- the server checks this against Clerk's own
-    // signing keys (src/server/clerkAuth.ts) rather than trusting whatever id gets sent, so an
-    // order can no longer be attributed to an account that isn't actually the one paying.
     const token = await getToken();
     if (!token) {
       setSubmitError('Your session has expired -- please sign in again.');
@@ -322,29 +253,18 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
       return;
     }
     try {
-      const details = {
-        businessName: businessName.trim(),
-        tradeCategory,
-        phone: phone.trim(),
-        website: website.trim() || undefined,
-        licenceNumber: licenceNumber.trim() || undefined,
-        brokerageName: requiresBrokerageName(tradeCategory) ? brokerageName.trim() : undefined,
-        contactEmail,
-        attestedAccurate,
-      };
+      const base = { quick: true, acceptedTerms: true, contactEmail: user.email || `${user.uid}@beforeregret.com` };
       const res = await fetch(chosenCluster ? '/api/guide-ads/cluster-checkout' : '/api/guide-ads/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(
-          chosenCluster ? { ...details, clusterKey: chosenCluster.key } : { ...details, slots: Array.from(selected) }
-        ),
+        body: JSON.stringify(chosenCluster ? { ...base, clusterKey: chosenCluster.key } : { ...base, slots: Array.from(selected) }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
         if (data?.clusterTaken) {
-          setSubmitError('This topic was just sponsored by someone else, or one of its guides was taken -- refresh the page.');
+          setSubmitError('This topic was just sponsored by someone else, or one of its articles was taken. Refresh the page to see what is open.');
         } else if (data?.takenArticleIds) {
-          setSubmitError('One or more guides you picked were just taken by someone else -- refresh the page and try again.');
+          setSubmitError('One or more of your articles were just taken by someone else. Refresh the page and pick again.');
         } else {
           setSubmitError(data?.error || 'Could not start checkout.');
         }
@@ -352,8 +272,8 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
         return;
       }
       sessionStorage.setItem(PAYPAL_STASH_KEY, JSON.stringify({
-        articleIds: Array.from(selected), clusterKey: selectedCluster, businessName, tradeCategory, phone, website, licenceNumber, brokerageName,
-      }));
+        articleIds: Array.from(selected), clusterKey: selectedCluster, tradeCategory,
+      } satisfies Stash));
       window.location.href = data.approvalUrl;
     } catch {
       setSubmitError('Could not reach the server.');
@@ -361,9 +281,15 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     }
   };
 
-  // Shared row markup for both the "matches your trade" and "other guides" groups (and the flat
-  // search-results list) -- one definition so the taken/selected states can't visually drift
-  // between whichever group a given guide happens to render in.
+  // Back from sign-in with autoBuy: continue to PayPal once the account and the article list are ready.
+  useEffect(() => {
+    if (!resumeBuy || authLoading || !guides) return;
+    const why = resumeBuy;
+    setResumeBuy(null);
+    if (hasSelection && (user || why === 'click')) buy();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resumeBuy, authLoading, user, guides, hasSelection]);
+
   const renderGuideRow = (g: GuideRow) => {
     const isSelected = selected.has(g.articleId);
     return (
@@ -372,510 +298,256 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
         key={g.articleId}
         disabled={g.taken}
         onClick={() => toggleSlot(g.articleId)}
-        className={`w-full px-1 py-3 flex items-center justify-between gap-3 text-left transition-colors ${
-          g.taken ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-slate-50'
+        aria-pressed={isSelected}
+        className={`w-full px-3 py-3 flex items-center gap-3 text-left rounded-xl transition-colors ${
+          g.taken ? 'cursor-not-allowed opacity-50' : isSelected ? 'bg-home-sage/60' : 'cursor-pointer hover:bg-home-stone'
         }`}
       >
-        <span className="text-sm text-slate-800 min-w-0 flex-1">
-          {g.title}
-        </span>
-        <span className="text-xs font-bold text-slate-500 shrink-0 tabular-nums">${priceOf(g).toFixed(2)}</span>
         <span
-          className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border shrink-0 ${
-            g.taken
-              ? 'bg-slate-100 border-slate-200 text-slate-400'
-              : isSelected
-              ? 'bg-blue-600 border-blue-600 text-white'
-              : 'bg-white border-slate-300 text-slate-700'
+          aria-hidden="true"
+          className={`shrink-0 w-5 h-5 rounded-md border flex items-center justify-center ${
+            isSelected ? 'bg-home-navy border-home-navy text-white' : 'bg-white border-slate-300'
           }`}
         >
-          {isSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
-          <span>{g.taken ? 'Taken' : isSelected ? 'Selected' : 'Select'}</span>
+          {isSelected && <Check className="w-3.5 h-3.5" />}
+        </span>
+        <span className="text-sm text-home-ink min-w-0 flex-1">{g.title}</span>
+        <span className="text-xs font-bold text-slate-500 shrink-0 tabular-nums">
+          {g.taken ? 'Taken' : `$${priceOf(g).toFixed(2)}`}
         </span>
       </button>
     );
   };
 
+  const steps = [
+    { icon: MousePointerClick, t: 'Pick your articles' },
+    { icon: CreditCard, t: 'Pay with PayPal' },
+    { icon: ClipboardEdit, t: 'Add your details. You’re live.' },
+  ];
+
   return (
-    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8 font-sans text-slate-900">
-      <div className="max-w-4xl mx-auto space-y-10">
-        <div className="flex items-center justify-between border-b border-slate-200 pb-6">
+    <div className="min-h-screen bg-home-stone font-sans text-home-ink pb-32">
+      {/* Hero: what it is, what it costs, and the three steps, in one glance. */}
+      <section className="relative overflow-hidden bg-home-navy text-white">
+        <div aria-hidden="true" className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
           <button
-            onClick={() => onNavigate('/advertise')}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl transition-all border border-slate-200 cursor-pointer shadow-xs"
+            type="button"
+            onClick={() => onNavigate('/advertise/')}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white cursor-pointer"
           >
-            <ArrowLeft className="w-4 h-4 text-slate-500" />
-            <span>Back to Comparison</span>
+            <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" /> All ad options
           </button>
-          <span className="text-xs font-mono font-bold text-slate-500 bg-slate-200/80 px-3 py-1 rounded-full">
-            Topic Ads
-          </span>
+          <p className="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-home-oak">Topic Ads</p>
+          <h1 className="mt-3 font-serif text-[2rem] leading-[1.1] sm:text-5xl font-semibold tracking-[-0.01em] [text-wrap:balance]">
+            Your phone number on the articles people read before they buy
+          </h1>
+          <p className="mt-4 text-base sm:text-lg text-slate-300">
+            <span className="font-semibold text-white">${pricePerSlot.toFixed(2)} per article</span> for {slotDurationDays} days.
+            No subscription.
+          </p>
+          <ol className="mt-6 flex flex-wrap gap-2 text-xs font-semibold text-slate-200">
+            {steps.map(({ icon: Icon, t }, i) => (
+              <li key={t} className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5">
+                <span className="w-4 h-4 rounded-full bg-home-oak text-home-navy text-[10px] font-black flex items-center justify-center">{i + 1}</span>
+                <Icon className="w-3.5 h-3.5 text-home-oak" aria-hidden="true" />
+                {t}
+              </li>
+            ))}
+          </ol>
         </div>
+      </section>
 
-        {/* Hero -- this page used to jump straight from a plain heading into a form, which read
-            as abrupt next to /advertise and /report-ads' dark hero banners. Matches their visual
-            language so the three ad pages feel like one funnel rather than three unrelated pages. */}
-        <div className="bg-slate-900 text-white border border-slate-800 rounded-3xl p-8 sm:p-12 shadow-xl space-y-6 relative overflow-hidden">
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 -mt-6 relative space-y-8">
+        {/* The one thing to do on this page. */}
+        <section className="bg-white rounded-3xl border border-home-linen shadow-xl p-4 sm:p-6">
+          <h2 className="font-serif text-2xl font-semibold px-1">Pick your articles</h2>
 
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-xs font-mono font-bold text-blue-300">
-            <Megaphone className="w-3.5 h-3.5" />
-            <span>Topic Ads</span>
-          </div>
-
-          <div className="space-y-4 max-w-2xl">
-            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-white tracking-tight leading-tight">
-              Get your phone number in front of people researching this exact problem
-            </h1>
-            <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-              ${pricePerSlot.toFixed(2)} per guide for {slotDurationDays} days -- pick as many guides as you
-              want, pay once, and your business shows up there until it expires. Every reader of the guide
-              sees it, wherever they are.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3 pt-2">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
-              <CreditCard className="w-3.5 h-3.5 text-slate-400" />
-              No subscription
-            </span>
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
-              <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
-              Self-serve checkout
-            </span>
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
-              <XCircle className="w-3.5 h-3.5 text-slate-400" />
-              No auto-renewal
-            </span>
-          </div>
-        </div>
-
-        {/* Three value points */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-              <Globe className="w-5 h-5" />
-            </div>
-            <h3 className="font-extrabold text-base text-slate-900">Nationwide Reach</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              Shown on the educational guides you pick, across the whole site -- not tied to any one ZIP code.
-              Readers researching that exact topic see you, wherever they are.
-            </p>
-          </div>
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-              <ListChecks className="w-5 h-5" />
-            </div>
-            <h3 className="font-extrabold text-base text-slate-900">You Choose the Topics</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              Any business, any guide -- pick exactly which pages you appear on and how many, all in one checkout.
-            </p>
-          </div>
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-              <CircleDollarSign className="w-5 h-5" />
-            </div>
-            <h3 className="font-extrabold text-base text-slate-900">One Flat Price</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              ${pricePerSlot.toFixed(2)} per guide, county guides included -- a good fit if you serve customers
-              across a wide area. Serving specific ZIP codes? Report Ads are built for that.
-            </p>
-          </div>
-        </div>
-
-        {/* Visual placement preview -- mirrors GuideAdSlot.tsx's real active-vendor card exactly
-            (green border, "Ad" badge, business name/trade/phone), so this can never drift from
-            what actually renders on a live guide page. */}
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
-          <div className="space-y-2">
-            <h2 className="font-serif text-2xl font-bold text-slate-900">How Your Listing Appears</h2>
-            <p className="text-xs sm:text-sm text-slate-600">
-              This is exactly what your placement looks like on a guide page, right after the reader's Quick Answer:
-            </p>
-          </div>
-
-          <div className="relative bg-white border border-slate-200 border-l-4 border-l-emerald-500 rounded-r-2xl p-4 sm:p-5 max-w-2xl mx-auto">
-            <span className="absolute top-2 right-3 text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-              Ad
-            </span>
-            <div className="flex flex-wrap items-start justify-between gap-3 pr-10">
-              <div className="flex items-start gap-3 min-w-0">
-                <div className="shrink-0 w-9 h-9 rounded-full bg-emerald-50 flex items-center justify-center">
-                  <ListChecks className="w-4 h-4 text-emerald-700" />
-                </div>
-                <div className="min-w-0">
-                  <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">Electrician</div>
-                  <div className="text-sm font-bold text-slate-900 mt-0.5">Example Electric Co.</div>
-                </div>
-              </div>
-              <div className="flex flex-col items-start sm:items-end gap-1 shrink-0">
-                <span className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-600">
-                  <Phone className="w-3.5 h-3.5" />
-                  <span>(512) 555-0100</span>
-                </span>
-                <span className="inline-flex items-center gap-1 text-xs text-slate-500">
-                  <ExternalLink className="w-3 h-3" />
-                  <span>Visit website</span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <form onSubmit={handleCheckout} className="space-y-6">
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4">
-            <h2 className="text-sm font-bold text-slate-900">Your business</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input
-                type="text" placeholder="Business name" value={businessName}
-                onChange={(e) => setBusinessName(e.target.value)}
-                className="px-3 py-2.5 border border-slate-300 rounded-lg text-sm"
-              />
-              <select
-                value={tradeCategory} onChange={(e) => setTradeCategory(e.target.value)}
-                className="px-3 py-2.5 border border-slate-300 rounded-lg text-sm bg-white"
-              >
-                <option value="">Business type...</option>
-                {TRADE_CATEGORIES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-              {/* Lower-urgency version of the same hint in VendorSignupForm.tsx: here the licence
-                  field itself materializes in this same view the moment a category is picked, so
-                  there's no separate later step to be caught off guard by -- this just names it a
-                  beat earlier, right as the category is chosen. */}
-              {tradeCategory && requiresLicenceNumber(tradeCategory) && (
-                <p className="text-[11px] text-slate-500 sm:col-span-2 -mt-1">
-                  You'll need a licence, registration, or certification number for {tradeCategory}.
-                </p>
-              )}
-              <input
-                type="tel" placeholder="Phone number readers will call" value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="px-3 py-2.5 border border-slate-300 rounded-lg text-sm sm:col-span-2"
-              />
-              <input
-                type="url" placeholder="Website (optional)" value={website}
-                onChange={(e) => setWebsite(e.target.value)}
-                className="px-3 py-2.5 border border-slate-300 rounded-lg text-sm sm:col-span-2"
-              />
-              <p className="text-[11px] text-slate-500 leading-snug sm:col-span-2 -mt-1">{VENDOR_WEBSITE_RULE}</p>
-              {/* Agents only: the brokerage name is its own required field, and the server prints it beside
-                  the agent's name in the ad (sponsoredVendors.ts, BROKERAGE_REQUIRED_CATEGORIES). */}
-              {tradeCategory && requiresBrokerageName(tradeCategory) && (
-                <div className="sm:col-span-2 space-y-1.5">
-                  <input
-                    type="text" required placeholder="Brokerage name" value={brokerageName}
-                    onChange={(e) => setBrokerageName(e.target.value)}
-                    maxLength={80}
-                    className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm"
-                  />
-                  <p className="text-[11px] text-slate-500 leading-relaxed">
-                    Shown in your ad right after your name. Some states require it in every real estate ad
-                    (Texas, for example, requires the broker&apos;s name). Following your state&apos;s advertising
-                    rules is your responsibility.
-                  </p>
-                </div>
-              )}
-              {/* Same field and same rules as the ZIP-ad form -- see the comment on the licence
-                  input in VendorSignupForm.tsx, including why the helper text below deliberately
-                  omits "we don't verify this": that fact belongs on the public-facing card, not
-                  here, where saying it out loud only advertises the gap to the one party who could
-                  exploit it. */}
-              {tradeCategory && requiresLicenceNumber(tradeCategory) && (
-                <div className="sm:col-span-2 space-y-1.5">
-                  <input
-                    type="text" required placeholder="State licence / registration number"
-                    value={licenceNumber}
-                    onChange={(e) => setLicenceNumber(e.target.value)}
-                    maxLength={60}
-                    className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm"
-                  />
-                  <p className="text-[11px] text-slate-500 leading-relaxed">
-                    Required for {tradeCategory}. <strong>Appears in your ad</strong> exactly as
-                    typed. You are confirming it is current, valid for this trade, and held by this
-                    business -- a false or expired number means removal without refund (Terms 4.4).
-                    Movers may enter a USDOT or MC number; agents, their real estate licence number.
-                  </p>
-                </div>
-              )}
-            </div>
-            <label className="flex items-start gap-2.5 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600 cursor-pointer">
-              <input
-                type="checkbox" checked={attestedAccurate}
-                onChange={(e) => setAttestedAccurate(e.target.checked)}
-                className="mt-0.5 w-3.5 h-3.5 shrink-0 accent-blue-600 cursor-pointer"
-              />
-              <span>
-                I confirm the details above are accurate, that I'm authorized to advertise this
-                business, and that I hold any licenses and insurance my trade requires. I agree to the{' '}
-                <a href="/terms/" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-semibold hover:underline">Terms of Service</a>,
-                which include a binding individual arbitration agreement and class action waiver
-                (Section 7) that I may opt out of within 30 days.
-              </span>
-            </label>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-sm font-bold text-slate-900">Choose where you appear</h2>
-              {guides && guides.length > 0 && (
-                <span className="text-[11px] text-slate-400 font-medium">{guides.length} guides available</span>
-              )}
-            </div>
-
-            {visibleClusters.map((c) => {
-              const isChosen = selectedCluster === c.key;
-              return (
-                <div
-                  key={c.key}
-                  className={`rounded-xl border p-4 space-y-3 ${isChosen ? 'border-blue-600 bg-blue-50/60' : 'border-amber-300 bg-amber-50/60'}`}
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                    <div className="min-w-0 flex-1 space-y-1">
-                      <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-wide text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">
-                        Topic sponsorship
-                      </span>
-                      <h3 className="text-sm font-bold text-slate-900">Sponsor every {c.name} guide</h3>
-                      <p className="text-xs text-slate-600 leading-relaxed">
-                        Your ad on {c.openCount === c.guides.length ? 'all' : 'the'} {c.openCount} {c.openCount === c.guides.length ? '' : 'open '}guides below, and on every new one we add. One sponsor per topic.
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => toggleCluster(c.key)}
-                      className={`self-start inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border shrink-0 cursor-pointer ${
-                        isChosen ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-300 text-slate-700'
-                      }`}
-                    >
-                      {isChosen ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
-                      <span>{isChosen ? 'Selected' : `Sponsor: $${c.priceUsd.toFixed(2)} / ${slotDurationDays} days`}</span>
-                    </button>
-                  </div>
-                  <ul className="space-y-1 border-t border-amber-200/70 pt-2">
-                    {c.guides.map((g) => (
-                      <li key={g.articleId} className="text-xs">
-                        {g.taken ? (
-                          <span className="text-slate-400">
-                            <span className="line-through">{g.title}</span>{' '}
-                            <span className="no-underline font-semibold">(already taken)</span>
-                          </span>
-                        ) : (
-                          <a href={`/guides/${g.slug}/`} target="_blank" rel="noopener noreferrer" className="text-slate-700 hover:underline">
-                            {g.title}
-                          </a>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
-
-            {/* A topic sponsorship and single guides are two separate purchases (choosing one clears
-                the other), so the divider says so plainly rather than leaving vendors to wonder
-                whether they need both. */}
-            {visibleClusters.length > 0 && (
-              <div className="py-3 space-y-1.5" role="separator" aria-label="or choose individual guides">
-                <div className="flex items-center gap-4">
-                  <div className="h-px flex-1 bg-slate-300" />
-                  <span className="text-3xl font-black tracking-widest text-slate-400">OR</span>
-                  <div className="h-px flex-1 bg-slate-300" />
-                </div>
-                <p className="text-center text-xs font-semibold text-slate-500">
-                  Pick individual guides instead, ${pricePerSlot.toFixed(2)} each
-                </p>
-              </div>
-            )}
-
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
               <input
-                type="text" placeholder="Search guide titles..." value={search}
+                type="search" placeholder="Search articles" value={search} aria-label="Search articles"
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm"
+                className="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-xl text-sm bg-white"
               />
             </div>
+            <select
+              value={tradeCategory} onChange={(e) => setTradeCategory(e.target.value)}
+              aria-label="Show articles for your trade first"
+              className="px-3 py-2.5 border border-slate-300 rounded-xl text-sm bg-white"
+            >
+              <option value="">Show articles for: any trade</option>
+              {TRADE_CATEGORIES.map((c) => (
+                <option key={c} value={c}>Show articles for: {c}</option>
+              ))}
+            </select>
+          </div>
 
+          {visibleClusters.length > 0 && (
+            <div className="mt-5 space-y-3">
+              {visibleClusters.map((c) => {
+                const isChosen = selectedCluster === c.key;
+                return (
+                  <button
+                    type="button"
+                    key={c.key}
+                    onClick={() => toggleCluster(c.key)}
+                    aria-pressed={isChosen}
+                    className={`w-full text-left rounded-2xl border-2 p-4 transition-colors cursor-pointer ${
+                      isChosen ? 'border-home-navy bg-home-sage/40' : 'border-home-oak/60 bg-home-stone hover:border-home-oak'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span
+                        aria-hidden="true"
+                        className={`mt-0.5 shrink-0 w-5 h-5 rounded-md border flex items-center justify-center ${
+                          isChosen ? 'bg-home-navy border-home-navy text-white' : 'bg-white border-slate-300'
+                        }`}
+                      >
+                        {isChosen && <Check className="w-3.5 h-3.5" />}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-[10px] font-bold uppercase tracking-wider text-home-brass">Whole topic</span>
+                        <span className="block mt-0.5 text-base font-bold">Every {c.name} article</span>
+                        <span className="block mt-1 text-xs text-slate-600">
+                          {c.openCount} articles now, plus every new one we add. One sponsor per topic.
+                        </span>
+                      </span>
+                      <span className="shrink-0 text-sm font-bold tabular-nums">${c.priceUsd.toFixed(2)}</span>
+                    </div>
+                  </button>
+                );
+              })}
+              <p className="text-center text-xs font-semibold text-slate-500 pt-1">or pick single articles, ${pricePerSlot.toFixed(2)} each</p>
+            </div>
+          )}
+
+          <div className="mt-4">
             {loadError && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700 flex items-center gap-2">
-                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 flex items-center gap-2">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
                 <span>{loadError}</span>
               </div>
             )}
             {!guides && !loadError && (
               <div className="py-10 flex justify-center">
-                <Loader2 className="w-5 h-5 text-slate-400 animate-spin" />
+                <Loader2 className="w-5 h-5 text-slate-400 animate-spin" aria-label="Loading articles" />
               </div>
             )}
-
             {guides && guides.length === 0 && (
-              <p className="text-xs text-slate-500 py-4">No placements available yet -- check back soon.</p>
+              <p className="text-sm text-slate-500 py-4 px-1">No articles are open right now. Check back soon.</p>
             )}
-
             {guides && guides.length > 0 && matchedGuides.length + otherGuides.length === 0 && (
-              <p className="text-xs text-slate-500 py-4">No guides match "{search}".</p>
+              <p className="text-sm text-slate-500 py-4 px-1">No articles match "{search}".</p>
             )}
 
-            {/* Searching overrides grouping -- flat results, matched-trade guides still first. */}
             {guides && guides.length > 0 && isSearching && matchedGuides.length + otherGuides.length > 0 && (
-              <div className="divide-y divide-slate-100 -mx-1 max-h-[28rem] overflow-y-auto">
-                {[...matchedGuides, ...otherGuides].map(renderGuideRow)}
-              </div>
+              <div className="max-h-[28rem] overflow-y-auto -mx-1">{[...matchedGuides, ...otherGuides].map(renderGuideRow)}</div>
             )}
 
-            {/* Not searching, a trade is picked: matched guides shown expanded, everything else
-                collapsed behind a toggle -- this is the group breakdown that replaces the old
-                single 96-item scroll. */}
             {guides && guides.length > 0 && !isSearching && tradeCategory && (
               <>
-                <div className="space-y-1.5">
-                  <span className="inline-flex items-center text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-1 rounded-full">
-                    Matches {tradeCategory} ({matchedGuides.length})
-                  </span>
-                  {matchedGuides.length > 0 ? (
-                    <div className="divide-y divide-slate-100 -mx-1 border-y border-slate-100">
-                      {matchedGuides.map(renderGuideRow)}
-                    </div>
-                  ) : (
-                    <p className="text-xs text-slate-500 py-2">No guide titles matched {tradeCategory} specifically -- browse all guides below.</p>
-                  )}
-                </div>
-
+                <p className="px-1 pb-1 text-xs font-bold text-home-moss">For {tradeCategory} ({matchedGuides.length})</p>
+                {matchedGuides.length > 0 ? (
+                  <div className="-mx-1">{matchedGuides.map(renderGuideRow)}</div>
+                ) : (
+                  <p className="text-xs text-slate-500 py-2 px-1">No article titles matched {tradeCategory}. Browse the rest below.</p>
+                )}
                 {otherGuides.length > 0 && (
                   <>
                     <button
                       type="button"
                       onClick={() => setShowAllGuides((v) => !v)}
-                      className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 py-2 cursor-pointer"
+                      className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-home-ink py-3 cursor-pointer"
                     >
-                      <span>{showAllGuides ? 'Hide' : 'Show'} {otherGuides.length} other guide{otherGuides.length === 1 ? '' : 's'}</span>
-                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showAllGuides ? 'rotate-180' : ''}`} />
+                      <span>{showAllGuides ? 'Hide' : 'Show'} {otherGuides.length} other article{otherGuides.length === 1 ? '' : 's'}</span>
+                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showAllGuides ? 'rotate-180' : ''}`} aria-hidden="true" />
                     </button>
-                    {showAllGuides && (
-                      <div className="divide-y divide-slate-100 -mx-1 max-h-[24rem] overflow-y-auto">
-                        {otherGuides.map(renderGuideRow)}
-                      </div>
-                    )}
+                    {showAllGuides && <div className="max-h-[24rem] overflow-y-auto -mx-1">{otherGuides.map(renderGuideRow)}</div>}
                   </>
                 )}
               </>
             )}
 
-            {/* No trade picked yet, not searching: nothing to group by, so just offer to browse
-                everything rather than dumping all 96 titles by default. */}
+            {/* No trade and no search: the whole list, scrollable. Shown open, because picking is the job. */}
             {guides && guides.length > 0 && !isSearching && !tradeCategory && (
-              <>
-                <p className="text-xs text-slate-500">
-                  Pick a business type above to see guides matching your trade first, or browse all {otherGuides.length} guides below.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setShowAllGuides((v) => !v)}
-                  className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 py-2 cursor-pointer"
-                >
-                  <span>{showAllGuides ? 'Hide' : 'Browse all'} {otherGuides.length} guides</span>
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showAllGuides ? 'rotate-180' : ''}`} />
-                </button>
-                {showAllGuides && (
-                  <div className="divide-y divide-slate-100 -mx-1 max-h-[28rem] overflow-y-auto">
-                    {otherGuides.map(renderGuideRow)}
-                  </div>
-                )}
-              </>
+              <div className="max-h-[28rem] overflow-y-auto -mx-1">{otherGuides.map(renderGuideRow)}</div>
             )}
           </div>
+        </section>
 
-          <div className="bg-slate-900 text-white rounded-2xl p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <div className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Total</div>
-              <div className="text-2xl font-black">${total.toFixed(2)}</div>
-              <div className="text-xs text-slate-400 mt-0.5">
-                {chosenCluster
-                  ? `Topic sponsorship: every ${chosenCluster.name} guide`
-                  : `${selectedCount} guide${selectedCount === 1 ? '' : 's'} selected`}
-              </div>
+        {/* What the ad looks like, so the vendor knows what they're getting before they pay. */}
+        <section className="rounded-3xl bg-white border border-home-linen p-5 sm:p-7">
+          <h2 className="font-serif text-xl font-semibold">How your ad looks</h2>
+          <p className="mt-1 text-sm text-slate-600">Right under the article's quick answer. Example business:</p>
+          <div className="mt-4 pointer-events-none select-none" role="img" aria-label="Example Topic Ad: a business name, trade and phone number under an article's quick answer">
+            <div aria-hidden="true" inert>
+              <GuideAdVendorCard vendor={{ businessName: 'Example Plumbing Co.', tradeCategory: 'Plumber', phone: '(512) 555-0100' }} />
             </div>
-
-            {!authLoading && user ? (
-              <button
-                type="submit"
-                disabled={submitting || (selectedCount === 0 && !chosenCluster)}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition-all cursor-pointer flex items-center gap-2"
-              >
-                {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>{submitting ? 'Taking you to PayPal…' : 'Continue to PayPal'}</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={handleSignInClick}
-                disabled={authLoading}
-                className="px-6 py-3 bg-white text-slate-900 hover:bg-slate-100 disabled:opacity-60 font-bold text-sm rounded-xl transition-all cursor-pointer flex items-center gap-2"
-              >
-                {authLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
-                <span>Sign In to Pay</span>
-              </button>
-            )}
           </div>
+        </section>
 
-          {!authLoading && user && (
-            <p className="text-xs text-slate-500 -mt-2">
-              Signed in as <span className="font-semibold text-slate-700">{user.email || user.displayName}</span> --
-              we use your account email for your receipt and to manage your placements in{' '}
-              <button type="button" onClick={() => onNavigate('/my-ads')} className="text-blue-600 hover:underline font-semibold cursor-pointer">
-                My Placements
-              </button>.
-            </p>
-          )}
-
-          {/* PayPal can take several seconds to open (measured in QA 2026-10-13); without this the
-              button looked dead and invited a second click. */}
-          {submitting && (
-            <p className="text-xs text-slate-600 -mt-2" role="status">
-              Taking you to PayPal. This can take a few seconds -- please keep this page open.
-            </p>
-          )}
-
-          {returnNotice && !submitting && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800" role="status">
-              {returnNotice}
-            </div>
-          )}
-
-          {submitError && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700 flex items-center gap-2">
-              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-              <span>{submitError}</span>
-            </div>
-          )}
-
-          {/* FAQ, now below the total/CTA rather than above it -- the honest answers (no
-              verification, no view guarantee, no refunds) still exist on the page, just after the
-              price and button instead of immediately before them. */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-1">
-            <h2 className="text-sm font-bold text-slate-900 mb-2">Questions before you buy</h2>
+        <section className="rounded-3xl bg-white border border-home-linen p-5 sm:p-7">
+          <h2 className="font-serif text-xl font-semibold">Questions</h2>
+          <div className="mt-3 divide-y divide-home-linen">
             {FAQ_ITEMS.map((item, idx) => {
               const isOpen = openFaq === idx;
               return (
-                <div key={item.q} className="border-t border-slate-100 first:border-t-0 py-2.5">
+                <div key={item.q} className="py-3">
                   <button
                     type="button"
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
                     aria-expanded={isOpen}
                     className="w-full flex items-center justify-between gap-3 text-left cursor-pointer"
                   >
-                    <span className="text-xs sm:text-sm font-bold text-slate-900">{item.q}</span>
-                    <ChevronDown className={`w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                    <span className="text-sm font-bold">{item.q}</span>
+                    <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
                   </button>
-                  {isOpen && (
-                    <p className="text-xs text-slate-600 leading-relaxed mt-2">{item.a}</p>
-                  )}
+                  {isOpen && <p className="mt-2 text-sm text-slate-600 leading-relaxed">{item.a}</p>}
                 </div>
               );
             })}
           </div>
-        </form>
+        </section>
+      </div>
+
+      {/* The buy bar: always on screen, so the price and the button are never a scroll away. */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-home-linen bg-white/95 backdrop-blur shadow-[0_-8px_24px_rgba(15,23,42,0.08)]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 space-y-1.5">
+          {(submitError || returnNotice) && (
+            <p role="status" className={`text-xs flex items-start gap-1.5 ${submitError ? 'text-rose-700' : 'text-home-navy'}`}>
+              {submitError && <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" aria-hidden="true" />}
+              <span>{submitError || returnNotice}</span>
+            </p>
+          )}
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-xl font-black tabular-nums leading-none">${total.toFixed(2)}</div>
+              <div className="mt-1 text-xs text-slate-500 truncate">
+                {chosenCluster
+                  ? `Every ${chosenCluster.name} article · ${slotDurationDays} days`
+                  : selectedCount === 0
+                    ? 'Pick an article above'
+                    : `${selectedCount} article${selectedCount === 1 ? '' : 's'} · ${slotDurationDays} days`}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={buy}
+              disabled={submitting || resumeBuy !== null || !hasSelection}
+              className="shrink-0 inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 bg-home-navy hover:bg-home-ink disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition-colors cursor-pointer"
+            >
+              {submitting || resumeBuy !== null ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : user ? <ArrowRight className="w-4 h-4" aria-hidden="true" /> : <Lock className="w-4 h-4" aria-hidden="true" />}
+              <span>{submitting ? 'Opening PayPal…' : 'Buy now'}</span>
+            </button>
+          </div>
+          <p className="text-[11px] text-slate-500 leading-snug">
+            Add your business details after paying. By buying you agree to the{' '}
+            <a href="/terms/" target="_blank" rel="noopener noreferrer" className="underline hover:text-home-ink">Terms of Service</a>,
+            including arbitration (Section 7).
+          </p>
+        </div>
       </div>
     </div>
   );

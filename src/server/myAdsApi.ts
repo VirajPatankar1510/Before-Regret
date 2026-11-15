@@ -2,7 +2,7 @@ import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireVerifiedUser } from './clerkAuth.js';
 import { checkVendorWebsite } from '../data/vendorWebsite.js';
-import { requiresLicenceNumber } from '../data/sponsoredVendors.js';
+import { requiresLicenceNumber, requiresBrokerageName, brokerageNameError, composeAdvertiserName, TRADE_CATEGORIES } from '../data/sponsoredVendors.js';
 import { PRICE_PER_SLOT_USD as GUIDE_PRICE_USD, SLOT_DURATION_DAYS as RENEWAL_DAYS } from './guideAdsApi.js';
 import { PRICE_PER_BUNDLE_USD as ZIP_PRICE_USD, ZIPS_PER_BUNDLE } from './zipAdsApi.js';
 import { adClusterByKey } from '../data/adClusters.js';
@@ -69,7 +69,33 @@ export function registerMyAdsRoutes(app: Express) {
         ) AS has_any
       `);
       const hasAny = Boolean((rows as unknown as Array<{ has_any: boolean }>)[0]?.has_any);
-      res.json({ success: true, hasEverPurchased: hasAny });
+
+      // Paid orders still waiting for business details (pay-first checkout, 2026-11-15). Feeds the
+      // sitewide "your ad isn't live yet" reminder (AdDetailsReminder.tsx). Asked only when the
+      // account has bought something, so a homebuyer's check stays the single EXISTS above. Counts
+      // ORDERS, because the details form is one per order. Same still-held condition as
+      // POST /api/my-ads/details, so the banner never points at an order that form would refuse.
+      let pendingDetails = 0;
+      let heldUntil: string | null = null;
+      if (hasAny) {
+        const pend = await withDb((sql) => sql`
+          SELECT COUNT(*)::int AS n, MIN(held) AS held FROM (
+            SELECT p.order_id, MIN(p.paid_through) AS held FROM guide_ad_purchases p
+              JOIN guide_ad_orders o ON o.id = p.order_id
+              WHERE o.clerk_user_id = ${clerkUserId} AND p.details_pending = true AND p.active = true AND p.paid_through > now()
+              GROUP BY p.order_id
+            UNION ALL
+            SELECT p.order_id, MIN(p.paid_through) AS held FROM zip_ad_purchases p
+              JOIN zip_ad_orders o ON o.id = p.order_id
+              WHERE o.clerk_user_id = ${clerkUserId} AND p.details_pending = true AND p.active = true AND p.paid_through > now()
+              GROUP BY p.order_id
+          ) t
+        `);
+        const row = (pend as unknown as Array<{ n: number; held: string | Date | null }>)[0];
+        pendingDetails = Number(row?.n ?? 0);
+        heldUntil = row?.held ? new Date(row.held).toISOString() : null;
+      }
+      res.json({ success: true, hasEverPurchased: hasAny, pendingDetails, heldUntil });
     } catch (err: any) {
       console.error('[my-ads] exists check failed:', err);
       res.json({ success: true, hasEverPurchased: false });
@@ -86,7 +112,7 @@ export function registerMyAdsRoutes(app: Express) {
         SELECT p.id AS purchase_id, p.article_id, a.slug, a.title, p.business_name, p.trade_category,
                p.phone, p.website, p.licence_number, p.paid_through, p.created_at, p.contact_edited, o.id AS order_id,
                o.amount_usd, o.paypal_order_id, o.paypal_capture_id, o.created_at AS order_created_at,
-               p.price_usd, a.ad_tier, p.cluster_key
+               p.price_usd, a.ad_tier, p.cluster_key, p.details_pending
         FROM guide_ad_purchases p
         JOIN guide_ad_orders o ON o.id = p.order_id
         JOIN articles a ON a.id = p.article_id
@@ -97,7 +123,7 @@ export function registerMyAdsRoutes(app: Express) {
       const zipRows = await withDb((sql) => sql`
         SELECT p.id AS purchase_id, p.zip_code, p.trade_category, p.business_name, p.phone, p.website,
                p.licence_number, p.paid_through, p.created_at, p.contact_edited, o.id AS order_id, o.amount_usd,
-               o.paypal_order_id, o.paypal_capture_id, o.created_at AS order_created_at
+               o.paypal_order_id, o.paypal_capture_id, o.created_at AS order_created_at, p.details_pending
         FROM zip_ad_purchases p
         JOIN zip_ad_orders o ON o.id = p.order_id
         WHERE o.clerk_user_id = ${clerkUserId} AND p.active = true
@@ -143,18 +169,22 @@ export function registerMyAdsRoutes(app: Express) {
         trade_category: string; phone: string; website: string | null; licence_number: string | null;
         paid_through: string; created_at: string; contact_edited: boolean; order_id: number; amount_usd: string;
         paypal_order_id: string; paypal_capture_id: string | null; order_created_at: string;
-        price_usd: string | null; ad_tier: string; cluster_key: string | null;
+        price_usd: string | null; ad_tier: string; cluster_key: string | null; details_pending: boolean;
       };
       type ZipPurchaseRow = {
         purchase_id: number; zip_code: string; trade_category: string; business_name: string;
         phone: string; website: string | null; licence_number: string | null; paid_through: string;
         created_at: string; contact_edited: boolean; order_id: number; amount_usd: string; paypal_order_id: string;
-        paypal_capture_id: string | null; order_created_at: string;
+        paypal_capture_id: string | null; order_created_at: string; details_pending: boolean;
       };
 
       const now = Date.now();
       const guidePlacements = (guideRows as unknown as GuidePurchaseRow[]).map((r) => ({
         purchaseId: r.purchase_id,
+        orderId: r.order_id,
+        // Paid, slot held, waiting for the vendor's business details before it shows anywhere
+        // (see the details_pending note in db.ts).
+        detailsPending: r.details_pending,
         articleId: r.article_id,
         slug: r.slug,
         title: r.title,
@@ -190,6 +220,7 @@ export function registerMyAdsRoutes(app: Express) {
       const zipPlacements = (zipRows as unknown as ZipPurchaseRow[]).map((r) => ({
         purchaseId: r.purchase_id,
         orderId: r.order_id,
+        detailsPending: r.details_pending,
         zipCode: r.zip_code,
         tradeCategory: r.trade_category,
         businessName: r.business_name,
@@ -278,6 +309,115 @@ export function registerMyAdsRoutes(app: Express) {
     }
   });
 
+  // --- Pay first, details after: add the business details to a paid order ---------------------
+  //
+  // The second half of the quick checkout (owner, 2026-11-15; see the details_pending note in
+  // db.ts). One form per ORDER, not per guide or per ZIP: a vendor who bought five guides or a
+  // 3-ZIP bundle fills their details in once. Every rule the full checkout enforced is enforced
+  // here instead -- trade category, phone, the licence number for licence-required trades, the
+  // brokerage name for agents, the official-website rule, and the accuracy warranty -- so moving
+  // the form after payment loses none of them.
+  //
+  // Only ever applies to purchases still pending: this is not a second edit route, and a live ad's
+  // details still change only through the one-time edit above. paid_through is reset to now + 30
+  // days, so the vendor's 30 days start when the ad goes live. A pending purchase whose 30 days
+  // already ran out (details never added) is not revived: its slot has reopened and may be sold.
+  app.post('/api/my-ads/details', requireVerifiedUser, async (req: Request, res: Response) => {
+    if (!isDbConfigured()) return dbUnavailable(res);
+    const clerkUserId = req.verifiedUserId as string;
+    const { kind, orderId, phone, website, licenceNumber, brokerageName, attestedAccurate } = req.body || {};
+    const id = typeof orderId === 'number' ? orderId : parseInt(String(orderId), 10);
+    if ((kind !== 'guide' && kind !== 'zip') || !Number.isFinite(id)) {
+      res.status(400).json({ success: false, error: 'Invalid request.' });
+      return;
+    }
+    try {
+      type OrderRow = { id: number; trade_category: string };
+      const orders = kind === 'guide'
+        ? await withDb((sql) => sql`SELECT id, trade_category FROM guide_ad_orders WHERE id = ${id} AND clerk_user_id = ${clerkUserId} AND status = 'completed' LIMIT 1`)
+        : await withDb((sql) => sql`SELECT id, trade_category FROM zip_ad_orders WHERE id = ${id} AND clerk_user_id = ${clerkUserId} AND status = 'completed' LIMIT 1`);
+      const order = (orders as unknown as OrderRow[])[0];
+      if (!order) {
+        res.status(404).json({ success: false, error: 'Order not found.' });
+        return;
+      }
+
+      // A Report Ad's trade was chosen at checkout (it is part of the slot). A Topic Ad's is chosen here.
+      const trade: string = kind === 'zip' ? order.trade_category : (typeof req.body?.tradeCategory === 'string' ? req.body.tradeCategory : '');
+      const errors: string[] = [];
+      let name = typeof req.body?.businessName === 'string' ? req.body.businessName.trim() : '';
+      if (name.length < 2) errors.push('Enter your business name.');
+      if (name.length > 100) errors.push('That business name is too long.');
+      if (!(TRADE_CATEGORIES as readonly string[]).includes(trade)) errors.push('Choose your business type.');
+      const cleanPhone = typeof phone === 'string' ? phone.trim() : '';
+      if (cleanPhone.length < 7 || cleanPhone.length > 30) errors.push('Enter a phone number readers can call.');
+      const cleanLicence = typeof licenceNumber === 'string' ? licenceNumber.trim() : '';
+      if (requiresLicenceNumber(trade)) {
+        if (cleanLicence.length < 3) errors.push(`A licence, registration, or certification number is required for ${trade}.`);
+        else if (cleanLicence.length > 60) errors.push('That licence number looks too long -- please enter just the number.');
+      }
+      if (requiresBrokerageName(trade)) {
+        const brokerageErr = brokerageNameError(brokerageName);
+        if (brokerageErr) errors.push(brokerageErr);
+        else if (name) name = composeAdvertiserName(name, brokerageName);
+      }
+      const site = checkVendorWebsite(website);
+      if (!site.ok) errors.push(site.error as string);
+      if (attestedAccurate !== true) errors.push('Tick the box to confirm your details are accurate.');
+      if (errors.length > 0) {
+        res.status(400).json({ success: false, error: errors[0], errors });
+        return;
+      }
+
+      const licenceToStore = requiresLicenceNumber(trade) ? cleanLicence : null;
+      const liveUntil = new Date(Date.now() + RENEWAL_DAYS * 24 * 60 * 60 * 1000).toISOString();
+      // details_pending = true and paid_through > now() in the WHERE: only a still-held, still-pending
+      // purchase is published, and a double submit lands once.
+      const updated = kind === 'guide'
+        ? await withDb((sql) => sql`
+            UPDATE guide_ad_purchases
+            SET business_name = ${name}, trade_category = ${trade}, phone = ${cleanPhone}, website = ${site.url},
+                licence_number = ${licenceToStore}, details_pending = false, paid_through = ${liveUntil}
+            WHERE order_id = ${id} AND details_pending = true AND active = true AND paid_through > now()
+            RETURNING id
+          `)
+        : await withDb((sql) => sql`
+            UPDATE zip_ad_purchases
+            SET business_name = ${name}, phone = ${cleanPhone}, website = ${site.url},
+                licence_number = ${licenceToStore}, details_pending = false, paid_through = ${liveUntil}
+            WHERE order_id = ${id} AND details_pending = true AND active = true AND paid_through > now()
+            RETURNING id
+          `);
+      if ((updated as unknown[]).length === 0) {
+        res.status(409).json({
+          success: false,
+          error: 'There is nothing waiting for details on this order. It may already be live, or its 30 days ran out before details were added.',
+        });
+        return;
+      }
+      // The order row keeps the record of what the vendor submitted and when they confirmed it.
+      if (kind === 'guide') {
+        await withDb((sql) => sql`
+          UPDATE guide_ad_orders SET business_name = ${name}, trade_category = ${trade}, phone = ${cleanPhone},
+            website = ${site.url}, licence_number = ${licenceToStore}, details_pending = false,
+            details_attested_at = now(), updated_at = now()
+          WHERE id = ${id}
+        `);
+      } else {
+        await withDb((sql) => sql`
+          UPDATE zip_ad_orders SET business_name = ${name}, phone = ${cleanPhone},
+            website = ${site.url}, licence_number = ${licenceToStore}, details_pending = false,
+            details_attested_at = now(), updated_at = now()
+          WHERE id = ${id}
+        `);
+      }
+      res.json({ success: true, liveCount: (updated as unknown[]).length, paidThrough: liveUntil });
+    } catch (err: any) {
+      console.error('[my-ads] details save failed:', err);
+      res.status(500).json({ success: false, error: 'Could not save your details.' });
+    }
+  });
+
   // --- Edit the reader-facing contact details on one guide placement -------------------------
   // Business name and trade category are locked -- they define what was sold and reviewed at
   // purchase time (see the adversarial-content-tripwire pattern this app already uses elsewhere:
@@ -308,7 +448,7 @@ export function registerMyAdsRoutes(app: Express) {
       const owned = await withDb((sql) => sql`
         SELECT p.id, p.contact_edited, p.trade_category, p.licence_number
         FROM guide_ad_purchases p JOIN guide_ad_orders o ON o.id = p.order_id
-        WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} LIMIT 1
+        WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} AND p.details_pending = false LIMIT 1
       `);
       const ownedRow = (owned as unknown as Array<{
         id: number; contact_edited: boolean; trade_category: string; licence_number: string | null;
@@ -393,7 +533,7 @@ export function registerMyAdsRoutes(app: Express) {
       const owned = await withDb((sql) => sql`
         SELECT p.id, p.contact_edited, p.trade_category, p.licence_number
         FROM zip_ad_purchases p JOIN zip_ad_orders o ON o.id = p.order_id
-        WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} LIMIT 1
+        WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} AND p.details_pending = false LIMIT 1
       `);
       const ownedRow = (owned as unknown as Array<{
         id: number; contact_edited: boolean; trade_category: string; licence_number: string | null;
@@ -496,12 +636,12 @@ export function registerMyAdsRoutes(app: Express) {
         ? await withDb((sql) => sql`
             SELECT p.id, p.trade_category, p.licence_number
             FROM guide_ad_purchases p JOIN guide_ad_orders o ON o.id = p.order_id
-            WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} LIMIT 1
+            WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} AND p.details_pending = false LIMIT 1
           `)
         : await withDb((sql) => sql`
             SELECT p.id, p.trade_category, p.licence_number
             FROM zip_ad_purchases p JOIN zip_ad_orders o ON o.id = p.order_id
-            WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} LIMIT 1
+            WHERE p.id = ${purchaseId} AND o.clerk_user_id = ${clerkUserId} AND p.details_pending = false LIMIT 1
           `);
       const row = (owned as unknown as OwnedRow[])[0];
       if (!row) {

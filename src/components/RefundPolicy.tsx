@@ -28,7 +28,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
             <span>Return to Home</span>
           </button>
 
-          <span className="text-xs font-mono text-slate-500">Effective Date: October 5, 2026</span>
+          <span className="text-xs font-mono text-slate-500">Effective Date: November 15, 2026</span>
         </div>
 
         {/* Content Pane */}
@@ -130,7 +130,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
               </h2>
               <ul className="space-y-2 text-xs text-slate-600">
                 <li>
-                  <strong>Automatic Expiration:</strong> A placement runs for the fixed 30-day window it was purchased for, then expires automatically. There is no subscription to cancel and no recurring payment of any kind -- the full charge was collected once, upfront, at checkout.
+                  <strong>Automatic Expiration:</strong> A placement runs for the fixed 30-day window it was purchased for, starting when it goes live after the vendor adds their business details, then expires automatically. A purchase whose details are never added is held for 30 days from payment, then lapses without refund. There is no subscription to cancel and no recurring payment of any kind -- the full charge was collected once, upfront, at checkout.
                 </li>
                 <li>
                   <strong>Early Removal on Request:</strong> A vendor may have an active placement removed before it expires at any time by emailing <a href="mailto:hello@beforeregret.com" className="text-blue-600 font-bold hover:underline">hello@beforeregret.com</a>.
@@ -150,7 +150,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
                 4. Listing Removal & Refund Eligibility (Atmostellar-Initiated)
               </h2>
               <p>
-                Vendor placements are self-serve: Atmostellar does not independently verify a vendor's trade license, insurance, or credentials before a placement goes live -- business name, trade category, and contact details are self-reported by the vendor at checkout. Atmostellar reserves the right to remove a placement, or discontinue the placement program entirely, for administrative or business reasons, or upon becoming aware of a problem with a listing.
+                Vendor placements are self-serve: Atmostellar does not independently verify a vendor's trade license, insurance, or credentials before a placement goes live -- business name, trade category, and contact details are self-reported by the vendor. Atmostellar reserves the right to remove a placement, or discontinue the placement program entirely, for administrative or business reasons, or upon becoming aware of a problem with a listing.
               </p>
 
               <div className="space-y-3 pt-1">

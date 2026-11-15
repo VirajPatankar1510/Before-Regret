@@ -687,6 +687,24 @@ export async function ensureArticlesSchema(): Promise<void> {
   await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS terms_version TEXT`;
   await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS terms_accepted_at TIMESTAMPTZ`;
 
+  // Pay first, details after (owner, 2026-11-15). The vendor survey said the checkout form before
+  // PayPal was long and hard to follow, so checkout now takes only what defines the slot (the
+  // guides, or the trade + 3 ZIPs) and the business details are added afterwards in My Ads.
+  // A purchase with details_pending = true holds its slot exactly like a live one (every
+  // availability check ignores this column), but is never SHOWN: every query that renders an ad
+  // filters on details_pending = false. The empty-string business_name/phone it carries until then
+  // are never displayed for that reason. When the vendor submits their details, paid_through is
+  // reset to now() + 30 days, so the 30 days they paid for start when the ad goes live; a slot whose
+  // details never arrive simply lapses at payment + 30 days and reopens. details_attested_at records
+  // when the vendor confirmed those details (the accuracy/licence warranty that used to be ticked
+  // at checkout now sits on the details form, beside the fields it is about).
+  await sql`ALTER TABLE guide_ad_orders ADD COLUMN IF NOT EXISTS details_pending BOOLEAN NOT NULL DEFAULT FALSE`;
+  await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS details_pending BOOLEAN NOT NULL DEFAULT FALSE`;
+  await sql`ALTER TABLE guide_ad_purchases ADD COLUMN IF NOT EXISTS details_pending BOOLEAN NOT NULL DEFAULT FALSE`;
+  await sql`ALTER TABLE zip_ad_purchases ADD COLUMN IF NOT EXISTS details_pending BOOLEAN NOT NULL DEFAULT FALSE`;
+  await sql`ALTER TABLE guide_ad_orders ADD COLUMN IF NOT EXISTS details_attested_at TIMESTAMPTZ`;
+  await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS details_attested_at TIMESTAMPTZ`;
+
   // Dedup ledger for the FEMA-declaration county-event drafter (see
   // src/server/femaDeclarationsService.ts / countyEventGenerator.ts). OpenFEMA has no "give me
   // only what's new" cursor -- every check re-fetches a wide recent window, so this table is what

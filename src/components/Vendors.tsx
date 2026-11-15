@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Building2, ArrowLeft, Check, Sparkles, MapPin, Target,
-  HelpCircle, Phone, ExternalLink, Megaphone, ChevronDown
-} from 'lucide-react';
-import { REPORT_AD_TRADE_CATEGORIES, MAX_SLOTS_PER_ZIP_TRADE } from '../data/sponsoredVendors';
+import { ArrowLeft, ChevronDown, ClipboardEdit, CreditCard, MapPin, ClipboardList } from 'lucide-react';
+import { MAX_SLOTS_PER_ZIP_TRADE } from '../data/sponsoredVendors';
 import { VendorSignupForm } from './VendorSignupForm';
+import { SponsoredVendorCard } from './SponsoredVendorCard';
 
 interface VendorsProps {
   onBackToHome: () => void;
@@ -13,33 +11,52 @@ interface VendorsProps {
 
 const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
-    q: 'Do you verify businesses before listing them?',
-    a: 'No -- this is self-serve. Business name, trade category, contact details, and your licence or registration number are all self-reported at checkout, and you confirm they\'re accurate with a checkbox there. Your licence number is printed in the ad exactly as you enter it, but nothing is checked against a licensing board on our end -- every placement carries a line saying so, whether or not it shows a number, so readers know to verify it themselves.',
+    q: 'What do I fill in after paying?',
+    a: 'Your business name, a phone number readers can call, your website if you have one, and your licence number if your trade needs one. You add them in My Ads right after PayPal. Your ad goes live as soon as you save them.',
   },
   {
-    q: 'How many views or leads will I get?',
-    a: "We don't guarantee a specific number of views, clicks, calls, or business outcomes -- visibility depends on how many reports get generated in your selected ZIP codes.",
+    q: 'When do my 30 days start?',
+    a: 'When your ad goes live, which is when you save your business details. Until then your 3 ZIP codes are held for you. If details are never added, the hold ends 30 days after payment and the ZIP codes reopen.',
   },
   {
-    q: 'Can I cancel or get a refund?',
-    a: "No refunds once payment completes. There's nothing to cancel either way -- it's a flat 30-day charge, not a subscription.",
-  },
-  {
-    q: 'What happens when my placement expires?',
-    a: 'Your slot reopens automatically for other vendors.',
-  },
-  {
-    q: 'Can I edit my listing after I’ve paid?',
-    a: 'Yes, once. From My Placements you can change your phone, website and licence number one time per placement, so check them before you save. Business name and trade category are locked once purchased, since those define what was sold.',
+    q: 'Where does my ad appear?',
+    a: 'Inside the property report someone runs for an address in one of your ZIP codes, beside the report item that matches your trade. Where it lands depends on what the report covers for that house.',
   },
   {
     q: MAX_SLOTS_PER_ZIP_TRADE === 1 ? 'Why only one business per ZIP and trade?' : `Why only ${MAX_SLOTS_PER_ZIP_TRADE} businesses per ZIP and trade?`,
     a: MAX_SLOTS_PER_ZIP_TRADE === 1
-      ? "So the business shown is the only one in its trade for that ZIP, instead of one of a list. First come, first served: a ZIP opens up again once the current window expires or the listing is removed."
-      : "Keeps each slot meaningful instead of turning into a directory -- first come, first served, and a slot only opens up once someone's window expires or they're removed.",
+      ? 'So the business shown is the only one in its trade for that ZIP, not one of a list. First come, first served: a ZIP opens again when the current ad ends.'
+      : 'So each slot means something instead of turning into a directory. First come, first served: a slot opens again when an ad ends.',
+  },
+  {
+    q: 'How many views or leads will I get?',
+    a: "We don't guarantee views, clicks, calls or business outcomes. It depends on how many reports people run in your ZIP codes.",
+  },
+  {
+    q: 'Do you verify businesses?',
+    a: "No. Your details are self-reported, and every ad tells readers its details are advertiser-supplied and unverified. Your licence number prints on the ad exactly as you enter it, so readers can check it themselves.",
+  },
+  {
+    q: 'Is this a subscription? Can I get a refund?',
+    a: "It's a single flat charge for 30 days. Nothing bills you again automatically. There are no refunds once payment completes.",
   },
 ];
 
+const EXAMPLE_VENDOR = {
+  id: 'example',
+  zipCode: '00000',
+  businessName: 'Example Plumbing Co.',
+  tradeCategory: 'Plumber',
+  phone: '(512) 555-0100',
+  active: true,
+};
+
+// /report-ads/ -- REBUILT 2026-11-15 after the owner's vendor survey said the old page was long and
+// hard to follow before PayPal. The buy box now sits in the hero, beside the price and the three
+// steps; a vendor can choose, check and pay without scrolling. The explanations that used to come
+// first (three value cards, a pricing table, a disclaimer box) are folded into short FAQ answers
+// below, which keep every honest statement the old page made: no verification, no view guarantee,
+// no refunds, one business per ZIP and trade.
 export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -47,197 +64,93 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
     window.scrollTo(0, 0);
   }, []);
 
-  const handleReturnHome = () => {
-    if (onNavigate) onNavigate('/');
-    else onBackToHome();
-  };
+  const steps = [
+    { icon: MapPin, t: 'Pick your trade and 3 ZIP codes' },
+    { icon: CreditCard, t: 'Pay with PayPal' },
+    { icon: ClipboardEdit, t: 'Add your details. You’re live.' },
+  ];
 
   return (
-    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8 font-sans text-slate-900">
-      <div className="max-w-5xl mx-auto space-y-12">
-        
-        {/* Navigation Breadcrumb */}
-        <div className="flex items-center justify-between border-b border-slate-200 pb-6">
-          <button
-            onClick={() => (onNavigate ? onNavigate('/advertise') : handleReturnHome())}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl transition-all border border-slate-200 cursor-pointer shadow-xs"
-          >
-            <ArrowLeft className="w-4 h-4 text-slate-500" />
-            <span>Back to Comparison</span>
-          </button>
-          <span className="text-xs font-mono font-bold text-slate-500 bg-slate-200/80 px-3 py-1 rounded-full">
-            Report Ads
-          </span>
-        </div>
-
-        {/* Hero Banner */}
-        <div className="bg-slate-900 text-white border border-slate-800 rounded-3xl p-8 sm:p-12 shadow-xl space-y-6 relative overflow-hidden">
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-          
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-xs font-mono font-bold text-blue-300">
-            <Building2 className="w-3.5 h-3.5" />
-            <span>Local Business Placements</span>
-          </div>
-
-          <div className="space-y-4 max-w-3xl">
-            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-white tracking-tight leading-tight">
-              Put your business in front of people actively researching properties in your ZIP codes.
+    <div className="min-h-screen bg-home-stone font-sans text-home-ink">
+      <section className="relative overflow-hidden bg-home-navy text-white">
+        <div aria-hidden="true" className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,28rem)] gap-8 lg:gap-12 items-start">
+          <div>
+            <button
+              type="button"
+              onClick={() => (onNavigate ? onNavigate('/advertise/') : onBackToHome())}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" /> All ad options
+            </button>
+            <p className="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-home-oak">Report Ads · for local trades</p>
+            <h1 className="mt-3 font-serif text-[2rem] leading-[1.1] sm:text-5xl font-semibold tracking-[-0.01em] [text-wrap:balance]">
+              {/* "Own" is literal only while one business per trade per ZIP is the rule. */}
+              {MAX_SLOTS_PER_ZIP_TRADE === 1
+                ? 'Own your trade in the home reports for your ZIP codes'
+                : 'Put your business in the home reports for your ZIP codes'}
             </h1>
-            <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-              Your placement runs inside the actual property report someone is reading for that address -- not a banner they scroll past.
+            <p className="mt-4 text-base sm:text-lg text-slate-300">
+              <span className="font-semibold text-white">$29 for 3 ZIP codes</span>, 30 days. No subscription.
             </p>
+            <ol className="mt-6 space-y-2.5">
+              {steps.map(({ icon: Icon, t }, i) => (
+                <li key={t} className="flex items-center gap-3 text-sm text-slate-200">
+                  <span className="w-7 h-7 rounded-full bg-home-oak text-home-navy text-xs font-black flex items-center justify-center shrink-0">{i + 1}</span>
+                  <Icon className="w-4 h-4 text-home-oak shrink-0" aria-hidden="true" />
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div className="text-home-ink">
+            <VendorSignupForm />
           </div>
         </div>
+      </section>
 
-        {/* Three Core Value Points */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-              <Target className="w-5 h-5" />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14 space-y-8">
+        <section className="rounded-3xl bg-white border border-home-linen p-5 sm:p-7">
+          <h2 className="font-serif text-xl font-semibold">How your ad looks</h2>
+          <p className="mt-1 text-sm text-slate-600">Inside a property report, beside the item that matches your trade. Example business:</p>
+          <div className="mt-4 rounded-2xl border border-home-linen bg-home-stone/60 p-4">
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-home-brass">
+              <ClipboardList className="w-3.5 h-3.5" aria-hidden="true" /> Inspection priority
             </div>
-            <h3 className="font-extrabold text-base text-slate-900">Matched to Real Findings</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              Your placement appears inside the report itself, next to the specific finding, inspection priority, or seller question that matches your trade category for that property -- not in a static directory. Where exactly it lands depends on what the report actually covers for that address.
-            </p>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-              <Sparkles className="w-5 h-5" />
+            <div aria-hidden="true" className="mt-2 space-y-2">
+              <div className="h-2 rounded-full bg-home-linen w-full" />
+              <div className="h-2 rounded-full bg-home-linen w-4/5" />
             </div>
-            <h3 className="font-extrabold text-base text-slate-900">High-Intent Audience</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              Every report is generated by someone actively researching a specific address -- comparing homes, preparing an offer, or scheduling an inspection. That's a meaningfully higher-intent visitor than a generic display ad ever reaches.
-            </p>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-              <MapPin className="w-5 h-5" />
-            </div>
-            <h3 className="font-extrabold text-base text-slate-900">Zip-Code Precision</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              You choose exactly which zip codes you appear in. No spend on areas outside your service territory.
-            </p>
-          </div>
-
-        </div>
-
-        {/* Visual Example of Sponsored Block */}
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
-          <div className="space-y-2">
-            <h2 className="font-serif text-2xl font-bold text-slate-900">How Placements Appear in Reports</h2>
-            <p className="text-xs sm:text-sm text-slate-600">
-              This is exactly what your placement looks like inside a real report -- same component, same fields:
-            </p>
-          </div>
-
-          {/* Mirrors SponsoredVendorCard.tsx exactly -- same fields, same layout, so this
-              preview can never drift from what actually renders in a live report. */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 max-w-2xl mx-auto">
-            <div className="min-w-0 space-y-1">
-              <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
-                <Megaphone className="w-3 h-3" />
-                <span>Sponsored -- Roof Inspection</span>
+            <div className="mt-4 pointer-events-none select-none" role="img" aria-label="Example Report Ad: a plumber's listing with a phone number inside a property report">
+              <div aria-hidden="true" inert>
+                <SponsoredVendorCard vendor={EXAMPLE_VENDOR} />
               </div>
-              <h3 className="font-bold text-slate-900 text-base sm:text-lg">Apex Roofing &amp; Inspection LLC</h3>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl">
-                <Phone className="w-3.5 h-3.5" />
-                <span>(512) 555-0100</span>
-              </span>
-              <span className="inline-flex items-center gap-1 px-3 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl">
-                <ExternalLink className="w-3.5 h-3.5" />
-              </span>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Trade Categories Available */}
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
-          <div className="space-y-2">
-            <h2 className="font-serif text-2xl font-bold text-slate-900">Available Trade Categories</h2>
-            <p className="text-xs sm:text-sm text-slate-600">
-              Any business in these categories can buy a placement -- trade and business details, including
-              your licence or registration number, are self-reported at checkout and not independently
-              verified by us.
-            </p>
+        <section className="rounded-3xl bg-white border border-home-linen p-5 sm:p-7">
+          <h2 className="font-serif text-xl font-semibold">Questions</h2>
+          <div className="mt-3 divide-y divide-home-linen">
+            {FAQ_ITEMS.map((item, idx) => {
+              const isOpen = openFaq === idx;
+              return (
+                <div key={item.q} className="py-3">
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                    aria-expanded={isOpen}
+                    className="w-full flex items-center justify-between gap-3 text-left cursor-pointer"
+                  >
+                    <span className="text-sm font-bold">{item.q}</span>
+                    <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+                  </button>
+                  {isOpen && <p className="mt-2 text-sm text-slate-600 leading-relaxed">{item.a}</p>}
+                </div>
+              );
+            })}
           </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 text-xs font-bold text-slate-800">
-            {REPORT_AD_TRADE_CATEGORIES.map((cat, idx) => (
-              <div key={idx} className="bg-slate-50 border border-slate-200 p-3 rounded-xl text-center flex items-center justify-center gap-1.5">
-                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>{cat}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Pricing Table */}
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 space-y-8 shadow-xs">
-          <div className="text-center space-y-2 max-w-2xl mx-auto">
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">Simple, Flat Pricing</h2>
-            <p className="text-xs sm:text-sm text-slate-600">
-              Three ZIP codes, one trade category, one price. No tiers, no subscription.
-            </p>
-          </div>
-
-          <div className="max-w-sm mx-auto border-2 border-blue-600 rounded-2xl p-8 space-y-5 bg-white shadow-md text-center">
-            <div className="text-xs font-bold text-blue-600 uppercase tracking-wider font-mono">Per Bundle, Per Trade</div>
-            <div className="text-4xl font-black text-slate-900">$29 <span className="text-sm font-normal text-slate-500">for 3 ZIP codes / 30 days</span></div>
-            <div className="text-xs text-slate-500">Less than $1/day, across all 3 ZIP codes</div>
-            <ul className="text-xs text-slate-600 space-y-2 pt-3 border-t border-slate-200 text-left">
-              <li className="flex items-center gap-2">✓ Pick any 3 ZIP codes at checkout, one trade category</li>
-              <li className="flex items-center gap-2">✓ Only {MAX_SLOTS_PER_ZIP_TRADE} businesses shown per trade category, per ZIP</li>
-              <li className="flex items-center gap-2">✓ First come, first served</li>
-              <li className="flex items-center gap-2">✓ Pay once, no auto-renewal -- buy another window any time to keep your slots</li>
-              <li className="flex items-center gap-2">✓ No refunds once payment completes</li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Vendor Signup Form -- above the FAQ, so the primary action (claiming ZIPs) is what
-            greets someone ready to buy, with the honest answers (no verification, no view
-            guarantee, no refunds) right underneath for anyone who scrolls down still unsure. */}
-        <VendorSignupForm />
-
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-1">
-          <h2 className="font-serif text-xl font-bold text-slate-900 mb-4">Questions before you buy</h2>
-          {FAQ_ITEMS.map((item, idx) => {
-            const isOpen = openFaq === idx;
-            return (
-              <div key={item.q} className="border-t border-slate-100 first:border-t-0 py-3">
-                <button
-                  type="button"
-                  onClick={() => setOpenFaq(isOpen ? null : idx)}
-                  aria-expanded={isOpen}
-                  className="w-full flex items-center justify-between gap-3 text-left cursor-pointer"
-                >
-                  <span className="text-sm font-bold text-slate-900">{item.q}</span>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-                </button>
-                {isOpen && (
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-2">{item.a}</p>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Disclaimer / What is NOT Guaranteed */}
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 space-y-2 text-xs text-amber-900">
-          <div className="font-bold flex items-center gap-1.5 text-amber-950">
-            <HelpCircle className="w-4 h-4 text-amber-600 shrink-0" />
-            <span>Placement Performance Disclaimer</span>
-          </div>
-          <p className="leading-relaxed">
-            Before Regret does not guarantee a specific number of views, clicks, calls, or business outcomes from a sponsored placement. Placement visibility depends on report generation volume in your selected zip codes.
-          </p>
-        </div>
-
+        </section>
       </div>
     </div>
   );

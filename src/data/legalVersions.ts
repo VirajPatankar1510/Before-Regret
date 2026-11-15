@@ -60,4 +60,9 @@
 // vendor, hence a new string.
 // 2026-11-15: removed 4.6 (free Find a Pro listings) with the feature itself (owner decision). No
 // listing was ever live apart from the owner's own removed test, so nobody loses a right they relied on.
-export const TERMS_VERSION = '2026-11-15.1';
+// 2026-11-15 (second revision that day): pay-first vendor checkout (owner decision after a vendor
+// survey). 4.1 now says business details may be supplied after payment, that a placement shows and
+// its 30 days start only once they are, and that an unclaimed hold lapses 30 days after payment; 4.4's
+// licence number is due "before the placement goes live" instead of "at checkout". Changes what a
+// vendor agrees to, hence a new string.
+export const TERMS_VERSION = '2026-11-15.2';

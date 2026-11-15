@@ -66,7 +66,7 @@ export async function fetchActiveZipVendors(zipCode: string | undefined | null):
     const rows = await withDb((sql) => sql`
       SELECT id, zip_code, trade_category, business_name, phone, website, licence_number
       FROM zip_ad_purchases
-      WHERE zip_code = ${zipCode} AND active = true AND paid_through > now()
+      WHERE zip_code = ${zipCode} AND active = true AND paid_through > now() AND details_pending = false
       ORDER BY created_at ASC
     `);
     for (const row of rows as unknown as Array<{
@@ -154,10 +154,21 @@ export function registerZipAdsRoutes(app: Express) {
       res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
       return;
     }
-    const { tradeCategory, zipCodes, phone, website, contactEmail, attestedAccurate, licenceNumber, brokerageName } = req.body || {};
-    let { businessName } = req.body || {};
+    const { tradeCategory, zipCodes, contactEmail, attestedAccurate, brokerageName } = req.body || {};
+    let { businessName, phone, website, licenceNumber } = req.body || {};
+    // Pay first, details after (owner, 2026-11-15; see the details_pending note in db.ts). A quick
+    // checkout sends only what defines the slot (trade + 3 ZIPs), the payer's email and Terms
+    // acceptance. The business details go in afterwards through POST /api/my-ads/details, which
+    // applies the same rules this route applies to a full checkout.
+    const quick = req.body?.quick === true;
+    if (quick) {
+      businessName = '';
+      phone = '';
+      website = undefined;
+      licenceNumber = '';
+    }
     const errors: string[] = [];
-    if (typeof businessName !== 'string' || !businessName.trim()) errors.push('Business name is required.');
+    if (!quick && (typeof businessName !== 'string' || !businessName.trim())) errors.push('Business name is required.');
     // Only trades a Report Ad can render for (REPORT_AD_TRADE_CATEGORIES); the Topic-Ads-only trades are refused here.
     if (typeof tradeCategory !== 'string' || !canBuyReportAd(tradeCategory)) errors.push('Please choose a valid trade category.');
     const zipList: string[] = Array.isArray(zipCodes) ? zipCodes.filter((z) => typeof z === 'string') : [];
@@ -165,9 +176,13 @@ export function registerZipAdsRoutes(app: Express) {
     if (uniqueZips.length !== ZIPS_PER_BUNDLE || !uniqueZips.every(isValidZip)) {
       errors.push(`Select exactly ${ZIPS_PER_BUNDLE} different, real U.S. ZIP codes.`);
     }
-    if (typeof phone !== 'string' || phone.trim().length < 7) errors.push('A valid phone number is required.');
+    if (!quick && (typeof phone !== 'string' || phone.trim().length < 7)) errors.push('A valid phone number is required.');
     if (typeof contactEmail !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) errors.push('A valid contact email is required.');
-    if (attestedAccurate !== true) errors.push('You must accept the Terms of Service and confirm your business details before checking out.');
+    if (quick) {
+      if (req.body?.acceptedTerms !== true) errors.push('Please accept the Terms of Service to continue.');
+    } else if (attestedAccurate !== true) {
+      errors.push('You must accept the Terms of Service and confirm your business details before checking out.');
+    }
     // Server-side is the only place this can actually be enforced -- the client field is a
     // convenience, not a gate. Checked against the SAME requiresLicenceNumber() the form uses, so
     // the two cannot disagree about which categories need a number. Trimmed and length-bounded
@@ -176,7 +191,7 @@ export function registerZipAdsRoutes(app: Express) {
     // reject real numbers. This value is published verbatim, never verified -- see the column
     // comment in db.ts.
     const trimmedLicence = typeof licenceNumber === 'string' ? licenceNumber.trim() : '';
-    if (typeof tradeCategory === 'string' && requiresLicenceNumber(tradeCategory)) {
+    if (!quick && typeof tradeCategory === 'string' && requiresLicenceNumber(tradeCategory)) {
       if (trimmedLicence.length < 3) {
         errors.push('A licence, registration, or certification number is required for this trade category.');
       } else if (trimmedLicence.length > 60) {
@@ -185,7 +200,7 @@ export function registerZipAdsRoutes(app: Express) {
     }
     // Brokerage name for agents (sponsoredVendors.ts, BROKERAGE_REQUIRED_CATEGORIES): required here and
     // joined onto the business name server-side, so the ad always shows it beside the agent's name.
-    if (typeof tradeCategory === 'string' && requiresBrokerageName(tradeCategory)) {
+    if (!quick && typeof tradeCategory === 'string' && requiresBrokerageName(tradeCategory)) {
       const brokerageErr = brokerageNameError(brokerageName);
       if (brokerageErr) errors.push(brokerageErr);
       else if (typeof businessName === 'string') businessName = composeAdvertiserName(businessName, brokerageName);
@@ -224,12 +239,12 @@ export function registerZipAdsRoutes(app: Express) {
         INSERT INTO zip_ad_orders (
           paypal_order_id, business_name, trade_category, zip_code, zip_codes_json, phone, website,
           contact_email, amount_usd, status, clerk_user_id, hold_expires_at, terms_version, terms_accepted_at,
-          licence_number
+          licence_number, details_pending
         )
         SELECT ${paypalOrder.orderId}, ${businessName}, ${tradeCategory}, ${zip1}, ${JSON.stringify(uniqueZips)},
                ${phone}, ${site.ok ? site.url : null}, ${contactEmail}, ${amount}, 'pending',
                ${req.verifiedUserId as string}, now() + (${HOLD_DURATION_MINUTES} * interval '1 minute'),
-               ${TERMS_VERSION}, now(), ${trimmedLicence || null}
+               ${TERMS_VERSION}, now(), ${trimmedLicence || null}, ${quick}
         WHERE (
           (SELECT COUNT(*)::int FROM zip_ad_purchases WHERE zip_code = ${zip1} AND trade_category = ${tradeCategory} AND active = true AND paid_through > now())
           + (SELECT COUNT(*)::int FROM zip_ad_orders WHERE trade_category = ${tradeCategory} AND status = 'pending' AND hold_expires_at > now() AND zip_codes_json::jsonb ? ${zip1})
@@ -302,6 +317,7 @@ export function registerZipAdsRoutes(app: Express) {
           captureId: order.paypal_capture_id,
           paidThrough: purchases[0]?.paid_through ?? null,
           tradeCategory: order.trade_category,
+          detailsPending: Boolean(order.details_pending),
         });
         return;
       }
@@ -355,11 +371,11 @@ export function registerZipAdsRoutes(app: Express) {
           const inserted = await sql`
             INSERT INTO zip_ad_purchases (
               order_id, zip_code, trade_category, business_name, phone, website, paid_through,
-              licence_number
+              licence_number, details_pending
             )
             SELECT ${order.id}, ${zip}, ${order.trade_category}, ${order.business_name},
                    ${order.phone}, ${order.website}, ${paidThrough.toISOString()},
-                   ${order.licence_number ?? null}
+                   ${order.licence_number ?? null}, ${Boolean(order.details_pending)}
             WHERE (
               SELECT COUNT(*) FROM zip_ad_purchases
               WHERE zip_code = ${zip} AND trade_category = ${order.trade_category}
@@ -383,6 +399,7 @@ export function registerZipAdsRoutes(app: Express) {
         skippedZips,
         paidThrough: grantedZips.length > 0 ? paidThrough.toISOString() : null,
         tradeCategory: order.trade_category,
+        detailsPending: Boolean(order.details_pending),
       });
     } catch (err: any) {
       console.error('[zip-ads] capture failed:', err);
@@ -427,7 +444,7 @@ export function registerZipAdsRoutes(app: Express) {
       // Good enough for a renewal prefill; the vendor can still fix any one field via the edit flow.
       const owned = await withDb((sql) => sql`
         SELECT o.id AS order_id, o.zip_codes_json, o.trade_category, o.contact_email,
-               p.paid_through, p.business_name, p.phone, p.website, p.licence_number
+               p.paid_through, p.business_name, p.phone, p.website, p.licence_number, p.details_pending
         FROM zip_ad_orders o JOIN zip_ad_purchases p ON p.order_id = o.id
         WHERE o.id = ${originalOrderId} AND o.clerk_user_id = ${clerkUserId} AND p.active = true
         LIMIT 1
@@ -435,10 +452,15 @@ export function registerZipAdsRoutes(app: Express) {
       const bundle = (owned as unknown as Array<{
         order_id: number; zip_codes_json: string; trade_category: string; contact_email: string;
         paid_through: string; business_name: string; phone: string; website: string | null;
-        licence_number: string | null;
+        licence_number: string | null; details_pending: boolean;
       }>)[0];
       if (!bundle) {
         res.status(404).json({ success: false, error: 'Placement not found.' });
+        return;
+      }
+      // Nothing is showing yet, so there is nothing to extend: the 30 days start when the details go in.
+      if (bundle.details_pending) {
+        res.status(409).json({ success: false, error: 'Add your business details first. Your 30 days start when your ad goes live.' });
         return;
       }
       // Renewal is the one path that could keep an unlicensed ad live indefinitely: it copies the
@@ -466,7 +488,7 @@ export function registerZipAdsRoutes(app: Express) {
       // MyAdsPanel.tsx's Expired section), which re-checks availability (and re-claims a hold)
       // properly for a fresh 3-ZIP pick.
       if (new Date(bundle.paid_through).getTime() <= Date.now()) {
-        res.status(409).json({ success: false, error: 'This placement has already expired -- buy it again from My Placements instead.' });
+        res.status(409).json({ success: false, error: 'This placement has already expired -- buy it again from My Ads instead.' });
         return;
       }
 

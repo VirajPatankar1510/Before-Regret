@@ -120,8 +120,8 @@ export function registerAdClickRoutes(app: Express) {
     try {
       const rows = await withDb((sql) =>
         adKind === 'guide'
-          ? sql`SELECT website FROM guide_ad_purchases WHERE id = ${purchaseId} AND active = true AND paid_through > now() LIMIT 1`
-          : sql`SELECT website FROM zip_ad_purchases WHERE id = ${purchaseId} AND active = true AND paid_through > now() LIMIT 1`
+          ? sql`SELECT website FROM guide_ad_purchases WHERE id = ${purchaseId} AND active = true AND paid_through > now() AND details_pending = false LIMIT 1`
+          : sql`SELECT website FROM zip_ad_purchases WHERE id = ${purchaseId} AND active = true AND paid_through > now() AND details_pending = false LIMIT 1`
       );
       const website = (rows as unknown as Array<{ website: string | null }>)[0]?.website;
       // An expired or pulled placement stops forwarding traffic the moment it stops being paid for.
@@ -184,8 +184,8 @@ export function registerAdClickRoutes(app: Express) {
       // fabricated id can't create rows for a placement that doesn't exist.
       const rows = await withDb((sql) =>
         adKind === 'guide'
-          ? sql`SELECT 1 AS ok FROM guide_ad_purchases WHERE id = ${id} AND active = true AND paid_through > now() LIMIT 1`
-          : sql`SELECT 1 AS ok FROM zip_ad_purchases WHERE id = ${id} AND active = true AND paid_through > now() LIMIT 1`
+          ? sql`SELECT 1 AS ok FROM guide_ad_purchases WHERE id = ${id} AND active = true AND paid_through > now() AND details_pending = false LIMIT 1`
+          : sql`SELECT 1 AS ok FROM zip_ad_purchases WHERE id = ${id} AND active = true AND paid_through > now() AND details_pending = false LIMIT 1`
       );
       if ((rows as unknown[]).length === 0) return;
       await recordClick(req, adKind, id, target);

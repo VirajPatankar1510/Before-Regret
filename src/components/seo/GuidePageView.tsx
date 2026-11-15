@@ -227,7 +227,7 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
         article={article}
         relatedGuides={related}
         onNavigate={onNavigate}
-        adSlot={<GuideAdSlot articleId={article.id} guideTitle={article.title} />}
+        adSlot={<GuideAdSlot articleId={article.id} guideTitle={article.title} guideSlug={article.slug} />}
         onReportError={() => setIsErrorModalOpen(true)}
       />
       {isErrorModalOpen && (
