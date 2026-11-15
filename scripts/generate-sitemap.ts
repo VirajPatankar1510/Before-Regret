@@ -68,7 +68,8 @@ async function runSitemapGenerator() {
   // Children served live by server.ts from the database and never written to disk: a static copy would
   // freeze at build time (Vercel serves a static file before the server route). Any stale copy on disk is
   // removed by the cleanup loop below, because these are excluded from the write list.
-  const DYNAMIC_SITEMAPS = new Set(['sitemap-pros.xml']);
+  // Empty since Find a Pro (sitemap-pros.xml) was removed on 2026-11-15; kept for the next live child.
+  const DYNAMIC_SITEMAPS = new Set<string>([]);
 
   // Generate and validate EVERYTHING before touching disk. Deliberately not interleaved with the
   // writes: a guard that fires halfway through leaves a directory that is part new and part old,

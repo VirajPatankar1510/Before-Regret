@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ChevronRight, ChevronDown, Search, ShieldAlert, SearchCheck, Link2, Printer, Check, ClipboardPaste, Wrench, ArrowRight, X, Phone, Globe } from 'lucide-react';
+import { ChevronRight, ChevronDown, Search, ShieldAlert, SearchCheck, Link2, Printer, Check, ClipboardPaste, Wrench, ArrowRight, X } from 'lucide-react';
 import { ContentLink } from './home/ContentLink';
 import { reportDecoderEvent } from '../utils/ctaClickBeacon';
 import { DECODER_TERMS, DECODER_CATEGORIES, findTermsInText, normaliseForMatch, type DecoderTerm } from '../data/inspectionDecoderTerms';
@@ -13,24 +13,18 @@ import { DECODER_TERMS, DECODER_CATEGORIES, findTermsInText, normaliseForMatch, 
 // off-screen, so nobody could tell anything happened. Each term is now a row; tapping it opens the explanation right
 // under that row. Paste-scan opens every match and scrolls to the first. Once anything is open, a bar pinned to the
 // bottom of the screen offers Share and Print, which include only the open explanations.
-//
-// "SHARED BY" (owner, 2026-11-10: free for every Find a Pro listing, to give businesses a reason to list). ?via= takes
-// the listing's private share token -- 12 random characters shown only to the signed-in owner on /pros/join/ -- never a
-// slug, so nobody can make a link that appears to come from a business that never shared it (the 2026-10-30 loophole).
-// The server resolves it (GET /api/pros/shared-by/:token), active listings only; an unknown or removed token shows
-// nothing and is dropped from the URL. ?via=example stays as a clearly labelled demo.
+
+// The "Shared by" banner and ?via= links went with Find a Pro on 2026-11-15 (owner decision). An old ?via=
+// link still opens the tool; the parameter is ignored and dropped from the URL.
 
 interface Props { onNavigate: (path: string) => void }
 
 const readParams = () => {
-  if (typeof window === 'undefined') return { ids: [] as string[], via: '' };
+  if (typeof window === 'undefined') return { ids: [] as string[] };
   const p = new URLSearchParams(window.location.search);
   const ids = (p.get('t') || '').split(',').map((s) => s.trim()).filter((s) => DECODER_TERMS.some((t) => t.id === s));
-  const via = p.get('via') || '';
-  return { ids, via: via === 'example' || /^[A-Za-z0-9_-]{12}$/.test(via) ? via : '' };
+  return { ids };
 };
-
-interface Sharer { slug: string; businessName: string; tradeCategory: string; phone: string; website: string | null }
 
 const SeriousnessBadge: React.FC<{ term: DecoderTerm }> = ({ term }) => (
   term.seriousness.level === 'safety' ? (
@@ -90,22 +84,6 @@ export const InspectionDecoder: React.FC<Props> = ({ onNavigate }) => {
   const [pasted, setPasted] = useState('');
   const [scanNote, setScanNote] = useState('');
   const [copied, setCopied] = useState(false);
-  const showExample = initial.via === 'example';
-  // The business that shared this link, once the server confirms the token. A bad token clears `via`.
-  const [sharer, setSharer] = useState<Sharer | null>(null);
-  const [via, setVia] = useState(initial.via);
-  useEffect(() => {
-    if (!initial.via || initial.via === 'example') return;
-    let cancelled = false;
-    fetch(`/api/pros/shared-by/${initial.via}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (cancelled) return;
-        if (d?.success && d.sharer) { setSharer(d.sharer); reportDecoderEvent('decoder_view_via'); } else setVia('');
-      })
-      .catch(() => { if (!cancelled) setVia(''); });
-    return () => { cancelled = true; };
-  }, [initial.via]);
 
   // Private usage counts (never shown on the site): one view per visitor per day, and whether they came from a shared link.
   useEffect(() => { reportDecoderEvent(initial.ids.length ? 'decoder_view_shared' : 'decoder_view'); }, [initial.ids.length]);
@@ -119,14 +97,13 @@ export const InspectionDecoder: React.FC<Props> = ({ onNavigate }) => {
     }
   }, [initial.ids]);
 
-  // Keep the URL shareable: the open terms (and the demo via) only -- never pasted text.
+  // Keep the URL shareable: the open terms only -- never pasted text.
   useEffect(() => {
     const p = new URLSearchParams();
     if (openIds.length) p.set('t', openIds.join(','));
-    if (via) p.set('via', via);
     const qs = p.toString();
     window.history.replaceState({}, '', `/tools/inspection-decoder/${qs ? `?${qs}` : ''}`);
-  }, [openIds, via]);
+  }, [openIds]);
 
   const toggle = (id: string) => {
     if (!openIds.includes(id)) reportDecoderEvent(`decoder_open:${id}`);
@@ -164,34 +141,6 @@ export const InspectionDecoder: React.FC<Props> = ({ onNavigate }) => {
           <span className="text-home-ink font-semibold">Inspection Report Decoder</span>
         </nav>
       </div>
-
-      {showExample && (
-        <div className="bg-white border-b border-home-linen">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3 text-sm text-slate-700">
-            <p><span className="font-bold text-home-ink">Shared by Your Name</span> · Your Brokerage · Licence #00000 · (555) 555-0100 <span className="ml-1 rounded bg-amber-100 px-1.5 py-0.5 text-[11px] font-bold text-amber-800">Example: how your details would appear</span></p>
-          </div>
-        </div>
-      )}
-
-      {sharer && (
-        <div className="bg-white border-b border-home-linen">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3 text-sm text-slate-700 flex flex-wrap items-center gap-x-4 gap-y-1">
-            <p className="min-w-0">
-              Shared by{' '}
-              <ContentLink href={`/pros/${sharer.slug}/`} onNavigate={onNavigate} className="font-bold text-home-ink hover:underline">{sharer.businessName}</ContentLink>
-              <span className="text-slate-500"> · {sharer.tradeCategory}</span>
-            </p>
-            <a href={`tel:${sharer.phone}`} className="inline-flex items-center gap-1.5 font-semibold text-blue-600 hover:text-blue-700">
-              <Phone className="w-3.5 h-3.5" aria-hidden="true" />{sharer.phone}
-            </a>
-            {sharer.website && (
-              <a href={sharer.website} target="_blank" rel="nofollow ugc noopener noreferrer" className="inline-flex items-center gap-1.5 text-slate-500 hover:text-slate-700 print:hidden">
-                <Globe className="w-3.5 h-3.5" aria-hidden="true" />Website
-              </a>
-            )}
-          </div>
-        </div>
-      )}
 
       <header className="max-w-3xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-5">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-home-brass">Free tool · Preview</p>
@@ -260,18 +209,6 @@ export const InspectionDecoder: React.FC<Props> = ({ onNavigate }) => {
           <p>This preview covers {DECODER_TERMS.length} common terms, each linked to our full guide on it. More are being added.</p>
         </section>
 
-        {/* The vendor side of the loop (owner, 2026-11-10): every copy of this tool a business sends out tells the next
-            business how to get its own. */}
-        <section className="rounded-3xl bg-white border border-home-linen p-6 text-sm text-slate-600 leading-relaxed print:hidden">
-          <h2 className="text-sm font-bold text-home-ink">For inspectors, agents and contractors</h2>
-          <p className="mt-1">
-            Get your own link to this tool, with your business name and phone at the top, to send to your clients. It comes free
-            with a Find a Pro listing.{' '}
-            <a href="/pros/join/" onClick={() => reportDecoderEvent('decoder_get_own_link')} className="font-bold text-blue-600 hover:text-blue-700">
-              List your business free
-            </a>
-          </p>
-        </section>
       </main>
 
       {openIds.length > 0 && (

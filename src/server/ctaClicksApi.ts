@@ -13,8 +13,6 @@ import { DECODER_TERMS } from '../data/inspectionDecoderTerms.js';
 // measurement failure can never affect the page. Read with scripts/cta-click-report.ts.
 const CTAS = new Set([
   'guide_closing_report', 'nav_free_report',
-  // Find a Pro sign-up lines (owner, 2026-11-10): under the reusable diagrams, and in a guide's empty sponsor box.
-  'findapro_invite_diagram', 'findapro_invite_slot',
   // Add-On Finder pitch demo (public/tools/add-on-finder/, 2026-11-12): did inspectors open it, and which view.
   'addon_demo_view_inspector', 'addon_demo_view_client',
 ]);
@@ -24,8 +22,6 @@ const CTAS = new Set([
 // they opened. Read with scripts/decoder-usage-report.ts.
 const DECODER_EVENTS = new Set([
   'decoder_view', 'decoder_view_shared', 'decoder_scan_found', 'decoder_scan_none', 'decoder_share', 'decoder_print', 'decoder_guide_click',
-  // 2026-11-10: a view arriving on a business's own "Shared by" link, and a click on "get your own link".
-  'decoder_view_via', 'decoder_get_own_link',
 ]);
 const DECODER_TERM_IDS = new Set(DECODER_TERMS.map((t) => t.id));
 export const isAllowedCta = (cta: string) =>

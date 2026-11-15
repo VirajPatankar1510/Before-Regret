@@ -627,42 +627,9 @@ export async function ensureArticlesSchema(): Promise<void> {
     CREATE UNIQUE INDEX IF NOT EXISTS idx_cta_clicks_unique ON cta_clicks(page_path, cta, click_day, visitor_hash)
   `;
 
-  // Find a Pro: free business listings (src/server/proListingsApi.ts, 2026-10-18). Created by the
-  // business itself behind a verified Clerk sign-in, live as soon as it is saved. Shown ONLY in the
-  // /pros/ directory and on the listing's own page -- never in property reports, which carry paid
-  // Report Ads only (owner decision: free listings in reports would degrade paid vendors).
-  // zip_codes_json is a JSON array of the ZIPs the business serves; status 'removed' hides a listing.
-  await sql`
-    CREATE TABLE IF NOT EXISTS pro_listings (
-      id SERIAL PRIMARY KEY,
-      slug TEXT NOT NULL UNIQUE,
-      clerk_user_id TEXT NOT NULL,
-      contact_email TEXT NOT NULL,
-      business_name TEXT NOT NULL,
-      trade_category TEXT NOT NULL,
-      zip_codes_json TEXT NOT NULL,
-      city TEXT,
-      state TEXT,
-      phone TEXT NOT NULL,
-      website TEXT,
-      licence_number TEXT,
-      description TEXT,
-      status TEXT NOT NULL DEFAULT 'active',
-      terms_version TEXT NOT NULL,
-      terms_accepted_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
-    )
-  `;
-  await sql`CREATE INDEX IF NOT EXISTS idx_pro_listings_user ON pro_listings(clerk_user_id)`;
-  // One free listing per business (owner, 2026-10-20): the API checks first; this stops two racing saves.
-  await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_pro_listings_one_per_user ON pro_listings(clerk_user_id) WHERE status = 'active'`;
-  await sql`CREATE INDEX IF NOT EXISTS idx_pro_listings_status_trade ON pro_listings(status, trade_category)`;
-  // Inspection Report Decoder "Shared by" link (owner, 2026-11-10: free for every listed business). An unguessable
-  // token, shown only to the signed-in owner of the listing, so nobody can make a link that appears to come from a
-  // business that never shared it. Resolved by GET /api/pros/shared-by/:token, active listings only.
-  await sql`ALTER TABLE pro_listings ADD COLUMN IF NOT EXISTS share_token TEXT`;
-  await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_pro_listings_share_token ON pro_listings(share_token) WHERE share_token IS NOT NULL`;
+  // pro_listings (Find a Pro) is no longer created here: the feature was removed on 2026-11-15 (owner
+  // decision). The table is left in place in the database, untouched; it holds only the owner's own
+  // removed test listing from 2026-10-18.
 
   // Advertiser-supplied licence / registration / certification number, added to all four ad tables
   // at once so an order and the purchase it becomes carry the same value. See

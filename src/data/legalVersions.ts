@@ -58,4 +58,6 @@
 // 2026-10-18: added 4.6 (free Find a Pro listings: who may list, what is published, never shown in
 // reports, 4.4 warranties apply, removal at Atmostellar's discretion). New obligations for a new kind of
 // vendor, hence a new string.
-export const TERMS_VERSION = '2026-10-18.1';
+// 2026-11-15: removed 4.6 (free Find a Pro listings) with the feature itself (owner decision). No
+// listing was ever live apart from the owner's own removed test, so nobody loses a right they relied on.
+export const TERMS_VERSION = '2026-11-15.1';

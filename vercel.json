@@ -21,18 +21,33 @@
       "permanent": true
     },
     {
-      "source": "/:page(about|support|terms|privacy|refunds|disclaimer|accessibility|advertise|topic-ads|report-ads|my-ads|walkthrough|sunlight|research|pros)",
+      "source": "/pros/join",
+      "destination": "/advertise/",
+      "permanent": true
+    },
+    {
+      "source": "/pros/join/",
+      "destination": "/advertise/",
+      "permanent": true
+    },
+    {
+      "source": "/pros",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/pros/:path*",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/:page(about|support|terms|privacy|refunds|disclaimer|accessibility|advertise|topic-ads|report-ads|my-ads|walkthrough|sunlight|research)",
       "destination": "/:page/",
       "permanent": true
     },
     {
       "source": "/guides",
       "destination": "/guides/",
-      "permanent": true
-    },
-    {
-      "source": "/pros/:slug([^/.]+)",
-      "destination": "/pros/:slug/",
       "permanent": true
     },
     {
