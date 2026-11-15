@@ -5,7 +5,7 @@ import { TRADE_CATEGORIES, requiresLicenceNumber, requiresBrokerageName, brokera
 import { requireVerifiedUser } from './clerkAuth.js';
 import { TERMS_VERSION } from '../data/legalVersions.js';
 import { checkVendorWebsite } from '../data/vendorWebsite.js';
-import { AD_CLUSTERS, MIN_OPEN_GUIDES_FOR_SPONSORSHIP, adClusterByKey, adClusterForGuide } from '../data/adClusters.js';
+import { AD_CLUSTERS, MIN_OPEN_GUIDES_FOR_SPONSORSHIP, TOPIC_SPONSORSHIPS_ON_SALE, adClusterByKey, adClusterForGuide } from '../data/adClusters.js';
 import {
   AD_CLUSTER_PRICE_USD,
   GUIDE_AD_TIER_PRICES_USD,
@@ -199,7 +199,8 @@ export function registerGuideAdsRoutes(app: Express) {
       // MIN_OPEN_GUIDES_FOR_SPONSORSHIP of their guides are open (owner rule 2026-10-12). Every member
       // is listed, with `taken` marking the ones a single-guide advertiser holds, so the vendor sees
       // exactly which pages the sponsorship starts on.
-      const clusters = AD_CLUSTERS.flatMap((c) => {
+      // Off sale since 2026-11-16 (TOPIC_SPONSORSHIPS_ON_SALE): no offers listed at all.
+      const clusters = !TOPIC_SPONSORSHIPS_ON_SALE ? [] : AD_CLUSTERS.flatMap((c) => {
         const members = guideRows.filter((g) => adClusterForGuide(g.slug, g.title)?.key === c.key);
         const open = members.filter((g) => !takenSet.has(g.id));
         if (!members.some((g) => g.slug === c.anchorSlug)) return [];
@@ -414,6 +415,11 @@ export function registerGuideAdsRoutes(app: Express) {
     if (!isDbConfigured()) return dbUnavailable(res);
     if (!isPayPalConfigured()) {
       res.status(503).json({ success: false, error: 'Payment processing is not configured on this server.' });
+      return;
+    }
+    // Off sale since 2026-11-16: refuses an old tab or a stale ?topic= link too, not just the UI.
+    if (!TOPIC_SPONSORSHIPS_ON_SALE) {
+      res.status(410).json({ success: false, error: 'Topic sponsorships are no longer offered. Pick single articles instead.' });
       return;
     }
     const cluster = adClusterByKey(req.body?.clusterKey);

@@ -18,6 +18,13 @@ import { guideTopic } from '../utils/relatedGuides.js';
 //
 // The price is not here: it lives in src/server/adPricing.ts with every other ad price, and the
 // client reads it from /api/guide-ads/slots.
+/**
+ * Whether topic sponsorships are SOLD. Switched off 2026-11-16 (owner: remove the whole-topic option
+ * from Topic Ads; 0 had ever been bought). The display, capture, renewal and My Ads paths stay intact,
+ * so turning this back on is the whole change -- nothing else was deleted.
+ */
+export const TOPIC_SPONSORSHIPS_ON_SALE = false;
+
 export interface AdCluster {
   key: string;
   /** Shown to vendors and readers, e.g. "Stucco & EIFS". */

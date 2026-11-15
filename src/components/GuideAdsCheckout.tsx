@@ -51,10 +51,6 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
     a: "We don't guarantee impressions, clicks or leads. You're buying a fixed placement for 30 days, not a performance number. We can't count article views either: guide pages are served from a cache that never reaches our server.",
   },
   {
-    q: 'What is a topic sponsorship?',
-    a: 'One advertiser on every guide we publish on a topic, for one flat price per 30 days. Your ad shows on each of those guides, including new ones we publish on the topic while your sponsorship is active. You never see or approve the articles before they publish: they stay independent.',
-  },
-  {
     q: 'Is this a subscription? Can I get a refund?',
     a: "It's a single flat charge for 30 days. Nothing bills you again automatically. There are no refunds once payment completes.",
   },
