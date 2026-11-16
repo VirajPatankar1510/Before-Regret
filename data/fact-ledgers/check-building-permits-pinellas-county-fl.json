@@ -1,0 +1,258 @@
+{
+  "slug": "check-building-permits-pinellas-county-fl",
+  "question": "How do I search Pinellas County building permits by address, and what does a buyer need to check there?",
+  "verdictConfirmed": "The county's Access Portal is searchable by address without an account, but it covers only unincorporated Pinellas and six towns, and one address can come back as several entries that split the history: on our test address, permits from before late 2020 sat under different entries from the recent ones.",
+  "officialLookupUrl": "https://aca-prod.accela.com/PINELLAS/Cap/CapHome.aspx?module=Building&TabName=Building",
+  "demand": {
+    "targetQuery": "pinellas county permit search",
+    "capture": "2026-11-16-demand-austin-permit-search-bing",
+    "note": "Bing market count for the exact phrase is recorded in the capture; relative only, never stated as a volume."
+  },
+  "portalWalk": {
+    "date": "2026-11-16",
+    "address": "12520 Ulmerton Rd, Largo FL 33774 -- Florida Botanical Gardens, owned by Pinellas County (owner field: PINELLAS COUNTY, ATTN: REAL ESTATE MGMT). Public property, no private person.",
+    "observations": [
+      "Front page: 'Unregistered participants can also view information, get questions answered and access limited services.'",
+      "Build > Search Permits opens 'Search for Records'. Search types: General Search, Search by Address, Search by Licensed Professional Information, Search by Record Information.",
+      "Instructions on the search page: 'Results include records created within the past two years. Change the start date when searching for a older records.' General Search start/end defaulted to 11/16/2024 - 11/16/2026.",
+      "Search by Address: Street No. is two boxes (From and To). With 12520 in both and ULMERTON as street name: '8 search results returned matching your address' -- eight entries all reading 12520 ULMERTON RD (one as '12520 Ulmerton RD').",
+      "Entry 1: 'Showing 1-10 of 22'. Oldest two on page 3: 12/28/2020 Building Combo Permit CBP-20-01608 'CofO Issued'; 07/16/2021 CBP-21-03971 'CofC Issued'. No PER-H record among the 22.",
+      "Entries 2, 3, 4: 18, 19 and 15 records; the first ten on each were the same 2026 records as entry 1.",
+      "Entry 5: 'Showing 0-0 of 0 ... No records found.'",
+      "Entries 6 and 7: 'Showing 1-5 of 5' -- 03/25/2019 PER-H-CB19-02698, 10/21/2013 PER-H-CB13-07470, 01/25/2013 PER-H-CB13-00574, 02/25/2008 PER-H-CB08-02427, 08/24/2007 PER-H-CB07-12350, all Building Combo Permit, all Finaled.",
+      "Record PER-H-CB07-12350 (raised wood deck): Record Info menu has Record Details, Processing Status, Attachments; Payments has Fees; an Inspections tab opened without logging in. Completed (6): 'Approved - 3; Cancelled - 1; Red tag - 1; Red tag to yellow tag - 1'. B - Deck red tag entered 07/21/2008, B - Deck approved 07/24/2008, B - Final approved 09/03/2008 and 09/04/2008; one B - Deck inspection 'Cancelled by: AA CONV on 10/09/2020'.",
+      "Record Type list includes Milestone Inspection Record, Milestone Inspection Registration, Milestone Inspection Update, Storm Damage Reassessment, Building Permit Reinstatement, Express Building Permit.",
+      "General Search, Record Type = Milestone Inspection Record, default dates: '100+ Record results'. Numbers start BMS- (e.g. BMS-26-00004); statuses seen on the first page: 'Good Standing' and 'Phase I Required'. The first four were buildings at 'THE VILLAGE AT TIERRA VERDE' with addresses reading 'ST PETERSBURG FL 33715'.",
+      "General Search on Ulmerton Rd returned county records with mailing cities LARGO and CLEARWATER.",
+      "Result rows include project names and applicant names; nothing personal is reproduced in the article or the screenshot."
+    ]
+  },
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Pinellas County Building and Development Review Services issues permits for unincorporated Pinellas County, Belleair Beach, Belleair Shore, Indian Rocks Beach, Kenneth City, Safety Harbor and Oldsmar.",
+      "quote": "Pinellas County Building and Development Review Services issues permits for unincorporated Pinellas County, Belleair Beach, Belleair Shores, Indian Rocks Beach, Kenneth City, Safety Harbor and Oldsmar.",
+      "url": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "The permitting guide says the same and adds: verify your jurisdiction with My Neighborhood Services or pcpao.gov.",
+      "quote": "We serve unincorporated areas, Belleair Beach, Belleair Shore, Indian Rocks Beach, Kenneth City, Safety Harbor, and Oldsmar. ... Verify your jurisdiction by using our My Neighborhood Services search tool or the Pinellas County Property Appraiser website: pcpao.gov.",
+      "url": "https://pinellas.gov/permitting-guide/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "Belleair Bluffs moved permitting and inspections from the county to SAFEbuilt on August 15, 2025; permits already open stay with the county through final inspection.",
+      "quote": "The City of Belleair Bluffs transitioned all permitting and inspection services from Pinellas County Building, Development, and Review Services to SAFEbuilt on August 15, 2025. All open and active permits will remain with Pinellas County Building through final inspection. All new permits received on or after August 15th will be submitted through SAFEbuilt.",
+      "url": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "Cities with their own building departments in the county's list include Belleair, Clearwater, Dunedin, Gulfport, Indian Shores, Largo, Madeira Beach, North Redington Beach, Pinellas Park, Redington Shores (which also serves Redington Beach), St. Pete Beach, St. Petersburg, Seminole, South Pasadena, Tarpon Springs and Treasure Island.",
+      "quote": "If you are located in a city, contact the appropriate building department. [list: Belleair; Clearwater; Dunedin; Gulfport; Indian Shores; Largo; Madeira Beach; North Redington Beach; Pinellas Park; Redington Beach -- *All building department services administered by the Town of Redington Shores Building Department; Redington Shores; St. Pete Beach; St. Petersburg; Seminole; South Pasadena; Tarpon Springs; Treasure Island]",
+      "url": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "claim": "The portal's search instructions: start with the address number and street, then select the parcel; results include records created within the past two years unless you change the start date; % is a wildcard for partial record numbers.",
+      "quote": "We recommend starting with an address number and street, then selecting the Search button. ... Then select the parcel that matches your project site. ... Results include records created within the past two years. Change the start date when searching for a older records. When searching by a partial record number, use the use the wildcard percentage sign (%) before and/or after your criteria. Example: if you know that part of the permit number is 2906, entering %2906% will bring back all permits within your date range that have 2906 anywhere in their number.",
+      "url": "https://aca-prod.accela.com/PINELLAS/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "claim": "Our walk: 12520 Ulmerton Rd returned 8 address entries. Entry 1 listed 22 records back to 12/28/2020 and no PER-H record; entries 2-4 listed 18, 19 and 15; entry 5 none; entries 6 and 7 listed only 5 PER-H permits from 2007 to 2019.",
+      "quote": "8 search results returned matching your address | Showing 1-10 of 22 | 12/28/2020 CBP-20-01608 CofO Issued | Showing 1-5 of 5: 03/25/2019 PER-H-CB19-02698, 10/21/2013 PER-H-CB13-07470, 01/25/2013 PER-H-CB13-00574, 02/25/2008 PER-H-CB08-02427, 08/24/2007 PER-H-CB07-12350 | Showing 0-0 of 0 No records found.",
+      "url": "https://aca-prod.accela.com/PINELLAS/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f7",
+      "claim": "The 2007 deck permit's inspection history is visible without an account: a red tag on the deck on 07/21/2008, approved 07/24/2008, final approved in September 2008; result labels include Approved, Red tag, Red tag to yellow tag and Cancelled; one cancellation is stamped AA CONV on 10/09/2020.",
+      "quote": "Completed (6) Approved - 3; Cancelled - 1; Red tag - 1; Red tag to yellow tag - 1 ... Red tag B - Deck ... on 07/21/2008 ... Approved B - Deck ... on 07/24/2008 ... Approved B - Final ... on 09/04/2008 ... Approved B - Final ... on 09/03/2008 ... Cancelled B - Deck ... Cancelled by: AA CONV on 10/09/2020",
+      "url": "https://aca-prod.accela.com/PINELLAS/Cap/CapDetail.aspx?Module=Building&TabName=Building&capID1=07HIS&capID2=00000&capID3=0I27J",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f8",
+      "claim": "To view an inspection result the county says: search the permit number in the portal, open Record Info, then Inspections; or text Results to 844-746-1717 with the permit number. Inspection type 1099 is B - Final, 1097 is B - Partial Final.",
+      "quote": "Type your permit number in the search box Ex: EBP-22-01234. Select the Record Info link. Select the Inspections link. Your results will appear below. You can also check inspection results by texting “Results” to 844-746-1717. You’ll need to provide your permit number. ... 1097B – Partial Final1099B – Final",
+      "url": "https://pinellas.gov/building-inspections/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f9",
+      "claim": "Permits resulting from Hurricanes Helene and Milton are not exempt from Substantial Damage / Substantial Improvement rules.",
+      "quote": "Permits resulting from Hurricanes Helene and Milton are not exempt from Substantial Damage/Substantial Improvement rules.",
+      "url": "https://pinellas.gov/construction-in-a-floodplain/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f10",
+      "claim": "If repairs cost 49% or more of the home's value without the land, the home is Substantially Damaged and must be brought into compliance with current floodplain codes, for example by elevating or replacing it; unpermitted repairs may have to be undone at the owner's expense.",
+      "quote": "If the cost to repair the home is 49% or more of its value without the land, the home is considered Substantially Damaged and cannot be repaired without bringing it into compliance with the current floodplain codes (e.g. elevating or replacing it). ... Don’t make repairs without a permit. You might have to undo the work at your own expense.",
+      "url": "https://pinellas.gov/substantial-damage-substantial-improvement/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f11",
+      "claim": "The county mails Substantial Damage determinations in unincorporated Pinellas and has an online lookup; it shows only mailed determinations. Cities run their own process.",
+      "quote": "The County is in the process of mailing substantial damage determinations in unincorporated Pinellas County to residents whose homes have experienced substantial damage. Residents can lookup their property address to see if a determination has been made and download their substantial damage letter. ... NOTE: The look up tool only shows results for mailed determinations. ... Pinellas County Government manages Substantial Damage Assessments for unincorporated areas. If you live within a city, please contact your city",
+      "url": "https://pinellas.gov/substantial-damage-substantial-improvement/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f12",
+      "claim": "The Initial Substantial Damage Assessment map: search the address, click the red or green dot; if you disagree, request a Detailed Substantial Damage Assessment.",
+      "quote": "Use the Address Search on the map to find your Initial Substantial Damage Assessment. Click on the red or green dots on the map to view Initial Substantial Damage Information. If you disagree with the determination, the next step is to request a Detailed Substantial Damage Assessment.",
+      "url": "https://pinellas-egis.maps.arcgis.com/apps/instant/sidebar/index.html?appid=af7bca15145d4aa8ac2a12a700074a91",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f13",
+      "claim": "On pcpao.gov, searching the address and clicking FEMA/WLM Letter in the Quick Pick Tool Box shows what can be spent on repairs: up to 49% of the structure's value, not the land. A free pre-storm building value reconsideration can be requested from the Property Appraiser; a private appraisal is the next step; either can support a reassessment application.",
+      "quote": "Look up what you can spend on repairs. Visit pcpao.gov, search for your address and click “FEMA/WLM Letter in the Quick Pick Tool Box on the right. You are allowed to spend up to 49% of the value of the structure (the house, not the land). ... Submit a request for a free, pre-storm building value reconsideration to the Property Appraiser’s office. If the reconsidered value still seems too low to you, you can pay for an appraisal from a professional property appraiser. ... you can submit an application for a reassessment.",
+      "url": "https://pinellas.gov/substantial-damage-substantial-improvement/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f14",
+      "claim": "New or substantially improved buildings must be built at least one foot above the base flood elevation.",
+      "quote": "Pinellas County requires that new or substantially-improved buildings be built at least one foot above the base flood elevation.",
+      "url": "https://pinellas.gov/construction-in-a-floodplain/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f15",
+      "claim": "Coastal Barrier Resources Act: federal flood insurance is available in a CBRS unit only if the building was built (or permitted and under construction) before the unit's effective date, and an insured structure that is substantially improved or damaged loses renewal.",
+      "quote": "Federal flood insurance through the National Flood Insurance Program is available in a CBRS unit if the building was constructed (or permitted and under construction) before the CBRS unit’s effective date. If an existing insured structure is substantially improved or damaged, the federal flood insurance policy will not be renewed.",
+      "url": "https://pinellas.gov/real-estate-flood-disclosure-program/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f16",
+      "claim": "The Real Estate Flood Disclosure Program, run with the Suncoast Tampa Association of Realtors and covering the whole county including its cities, gives buyers a brochure filled in by the agent with the property's flood risk, evacuation level and insurance requirement.",
+      "quote": "The Pinellas County Real Estate Flood Disclosure Program is a joint effort between the County and its real estate professionals, through the Suncoast Tampa Association of Realtors (STAR), which covers the entire county, including its municipalities. ... Flood Information and Disclosure Brochure, which includes a fillable section for real estate professionals to enter the property’s flood risk, evacuation level and insurance requirement information.",
+      "url": "https://pinellas.gov/real-estate-flood-disclosure-program/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f17",
+      "claim": "Since January 1, 2019, the owner of a new or substantially improved structure in the special flood hazard area must record a Nonconversion Acknowledgment For Certain Structures in the Floodplain on the deed with the Clerk of the Courts before plan submittal.",
+      "quote": "Effective: 1 January 2019 ... Upon building permit plan submittal for a New or Substantially improved structure in the special flood hazard area, the owner of the structure must submit a Nonconversion Acknowledgment For Certain Structures in the Floodplain form, which has been recorded on the deed for the property and recorded with the Clerk of the Courts Office.",
+      "url": "https://pinellas.gov/wp-content/uploads/2021/11/Nonconversion_AckPolicy.pdf",
+      "readOn": "2026-11-16",
+      "method": "pdf"
+    },
+    {
+      "id": "f18",
+      "claim": "Condo and co-op buildings three stories or taller need milestone inspections at 30 years and every 10 years after; the county accepts milestone reports for unincorporated Pinellas and listed towns, owners register on the Access Portal, and Ordinance No. 24-18 governs the local process. A garage or parking area beneath living space counts as a story.",
+      "quote": "The State now requires condos and residential cooperative (co-op) association buildings three stories or taller to have structural inspections called “milestone inspections” once they reach 30 years of age and every 10 years after that. ... Condo owners must register on the Pinellas County Access Portal. ... The County has passed local ordinance No. 24-18 to help clarify, administer and enforce the local milestone inspection process. ... A garage or parking area beneath the living space also counts as a story.",
+      "url": "https://pinellas.gov/condo-milestone-inspections/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f19",
+      "claim": "Phase two of a milestone inspection is required only if phase one finds substantial structural deterioration.",
+      "quote": "If the architect or engineer finds no signs of substantial structural deterioration, phase two of the inspection is not required. ... Phase two of the milestone inspection must be performed if any substantial structural deterioration is identified during phase one.",
+      "url": "https://pinellas.gov/condo-milestone-inspections/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f20",
+      "claim": "Code enforcement liens: either the owner or a buyer must pay the debt before the lien is removed; a lien search is requested through the Access Portal and needs an account.",
+      "quote": "When a property owner owes a debt for a code compliance issue, they may have a lien placed on the property. Either the property owner or a buyer needs to pay the debt before the lien is removed. ... You will need to create an Access Portal account if you haven’t already and be logged in to follow these steps. ... select Lien/Violation Search",
+      "url": "https://pinellas.gov/services/request-lien-searches/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f21",
+      "claim": "The county has a form a contractor files to be released from a permit when a homeowner refuses access for required inspections.",
+      "quote": "This form is completed by a contractor to release them from a permit when a homeowner refuses access for required inspections.",
+      "url": "https://pinellas.gov/services/unresponsive-property-owner-policy/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f22",
+      "claim": "Code Enforcement covers the unincorporated county (about 280,000 people) and investigates unlicensed contracting countywide.",
+      "quote": "Pinellas County Code Enforcement oversees code compliance in unincorporated areas of the County. Approximately 280,000 people live in these areas. ... Investigating code complaints and unlicensed contracting (countywide)",
+      "url": "https://pinellas.gov/department/code-enforcement/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f23",
+      "claim": "Mailing cities do not show jurisdiction: county milestone records for The Village at Tierra Verde (unincorporated) read ST PETERSBURG FL 33715, and county records on Ulmerton Rd carry LARGO and CLEARWATER addresses.",
+      "quote": "BMS-26-00004 Good Standing 138 1ST ST E, ST PETERSBURG FL 33715 MASTER MILESTONE RECORD - THE VILLAGE AT TIERRA VERDE ... BMS-25-00058 Phase I Required ... 12520 ULMERTON RD, LARGO FL 33774 ... 5840 ULMERTON RD, CLEARWATER FL 33760",
+      "url": "https://aca-prod.accela.com/PINELLAS/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f24",
+      "claim": "Florida Statutes § 553.899 (8): after a phase one or phase two milestone inspection, the architect or engineer submits a sealed copy of the report with a separate summary of the material findings and recommendations to the association and to the local building official.",
+      "quote": "Upon completion of a phase one or phase two milestone inspection, the architect or engineer who performed the inspection must submit a sealed copy of the inspection report with a separate summary of, at minimum, the material findings and recommendations in the inspection report to the condominium association or cooperative association, to any other owner of any portion of the building which is not subject to the condominium or cooperative form of ownership, and to the building official of the local government which has jurisdiction.",
+      "url": "http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0500-0599/0553/Sections/0553.899.html",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f25",
+      "claim": "Florida Statutes § 553.899 (2)(a): a milestone inspection is not meant to determine whether the building complies with the Florida Building Code or the firesafety code.",
+      "quote": "The purpose of such inspection is not to determine if the condition of an existing building is in compliance with the Florida Building Code or the firesafety code.",
+      "url": "http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0500-0599/0553/Sections/0553.899.html",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "What red tag and yellow tag mean in Pinellas",
+      "why": "No county page we read defines them; the article reports the labels only."
+    },
+    {
+      "claim": "That the PER-H prefix means records converted from an older system in October 2020",
+      "why": "Inference from the AA CONV 10/09/2020 stamp and the date split; not stated by the county. The article calls it what we saw, not why."
+    },
+    {
+      "claim": "What the Nonconversion Acknowledgment restricts",
+      "why": "The form itself was not opened; only the policy PDF was read."
+    },
+    {
+      "claim": "Raleigh / Wake County permit guide",
+      "why": "Both Tyler EnerGov portals (raleighnc-energovpub.tylerhost.net, wakecountync-energovpub.tylerhost.net) answered 403 Forbidden to our browser on 2026-11-16 -- held, not worked around."
+    },
+    {
+      "claim": "Any city portal (St. Petersburg, Clearwater, Largo)",
+      "why": "Not opened; cities are named from the county's list, not linked."
+    }
+  ],
+  "blockedSources": [
+    "raleighnc-energovpub.tylerhost.net (403 Forbidden, 2026-11-16)",
+    "wakecountync-energovpub.tylerhost.net (403 Forbidden, 2026-11-16)"
+  ]
+}

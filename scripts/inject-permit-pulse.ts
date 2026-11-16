@@ -197,6 +197,24 @@ const BLOCKS: Block[] = [
       return `Sacramento County still builds mostly houses: ${share}% of the ${n(c.unitsCurrent)} units permitted so far this year are single-family. That side is ${houses}, while multifamily permits are ${dir(c.mfChangePct)} to ${n(c.mfCurrent)} units, leaving the county total ${dir(c.unitsChangePct)}. In a county where most new homes are houses, a slowdown in house permits is the number that matters for anyone comparing an older home against new construction.`;
     },
   },
+  {
+    // Added 2026-11-17 with the new Pinellas guide. Its figure: houses and the county total moved in
+    // opposite directions. The "opposite" wording is gated on the signs so a later month cannot leave
+    // it untrue. The Census county file counts every permit office in the county, cities included,
+    // which is wider than the county Access Portal the guide is about -- the last sentence says so.
+    slug: 'check-building-permits-pinellas-county-fl', fips: '12103',
+    heading: 'What Pinellas County Is Permitting Right Now',
+    prose: (c) => {
+      const opposite = c.sfChangePct > 0 && c.unitsChangePct < 0;
+      const houses = c.sfCurrent >= MIN_SF_FOR_PCT && c.sfPrior >= MIN_SF_FOR_PCT
+        ? `${dir(c.sfChangePct)}, from ${n(c.sfPrior)} to ${n(c.sfCurrent)} homes`
+        : `${n(c.sfPrior)} homes a year ago against ${n(c.sfCurrent)} now`;
+      const lead = opposite
+        ? `Pinellas County's headline permit figure points the opposite way from its house market. Single-family permits are ${houses}, while multifamily is ${dir(c.mfChangePct)}, from ${n(c.mfPrior)} to ${n(c.mfCurrent)} units, which is enough to pull the county total ${dir(c.unitsChangePct)}, ${n(c.unitsPrior)} to ${n(c.unitsCurrent)}.`
+        : `In Pinellas County, single-family permits are ${houses}, multifamily is ${dir(c.mfChangePct)} to ${n(c.mfCurrent)} units, and the county total is ${dir(c.unitsChangePct)} at ${n(c.unitsCurrent)}.`;
+      return `${lead} These counts cover every permit office in the county, St. Petersburg and Clearwater included, so they reach well beyond the area the county's own Access Portal serves.`;
+    },
+  },
 ];
 
 const trigrams = (s: string) => {
@@ -255,11 +273,14 @@ async function main() {
       action = 'REFRESH';
     } else {
       // Insert before the final "Looking Up Permits Elsewhere" cross-link if present, else append.
-      const tail = body.lastIndexOf('\n## Looking Up Permits Elsewhere');
+      // Newer guides end on "How we checked this" (method notes); the block goes above it, not under it.
+      const crossLink = body.lastIndexOf('\n## Looking Up Permits Elsewhere');
+      const method = body.lastIndexOf('\n## How we checked this');
+      const tail = crossLink > -1 ? crossLink : method;
       next = tail > -1
         ? `${body.slice(0, tail)}\n\n${block}\n${body.slice(tail)}`
         : `${body.trimEnd()}\n\n${block}\n`;
-      action = tail > -1 ? 'INSERT (before cross-link)' : 'APPEND';
+      action = crossLink > -1 ? 'INSERT (before cross-link)' : method > -1 ? 'INSERT (before method notes)' : 'APPEND';
     }
     // A refresh that changes nothing is not an update. Writing it anyway bumped updated_at on every
     // county guide each run -- a visible "Updated" date and a dateModified the page had not earned.
