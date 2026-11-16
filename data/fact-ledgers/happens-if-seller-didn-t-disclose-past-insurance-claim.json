@@ -1,0 +1,95 @@
+{
+  "_about": "Fact ledger for the 2026-11-16 restore and correction of /guides/happens-if-seller-didn-t-disclose-past-insurance-claim/ (id 165, removed in the 2026-09-02 prune, still shown by Google at ~position 6). Facts f1-f6 were verified on 2026-10-19 for the C.L.U.E. guide (data/fact-ledgers/get-clue-report-before-buying-house.json) and are reused with their original quotes.",
+  "slug": "happens-if-seller-didn-t-disclose-past-insurance-claim",
+  "question": "What happens if the seller didn't disclose a past insurance claim?",
+  "verdictConfirmed": "It depends on timing and on the state's disclosure form: before closing it is information you can still act on; after closing, whether the seller owed it depends on state law and the signed form (Texas's statutory form asks only about flood claims); the repair behind the claim is usually the bigger risk.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "CFPB listing for LexisNexis C.L.U.E.: seven years of home insurance and personal property claims.",
+      "quote": "seven years of home insurance and personal property claims",
+      "url": "https://www.consumerfinance.gov/consumer-tools/credit-reports-and-scores/consumer-reporting-companies/companies-list/comprehensive-loss-underwriting-exchange/",
+      "readOn": "2026-10-19",
+      "method": "webfetch"
+    },
+    {
+      "id": "f2",
+      "claim": "CFPB listing for Verisk A-PLUS Property: collects and reports insurance claims and loss history associated with homes.",
+      "quote": "Collects and reports insurance claims and loss history associated with homes, auto or personal property.",
+      "url": "https://consumerfinance.gov/consumer-tools/credit-reports-and-scores/consumer-reporting-companies/companies-list/a-plus-property-verisk",
+      "readOn": "2026-10-19",
+      "method": "webfetch"
+    },
+    {
+      "id": "f3",
+      "claim": "Connecticut Insurance Department: C.L.U.E. reports can be accessed only by the owner, insurer or lender; a buyer can ask the current owner; up to 7 years; insurers instructed not to report inquiries about possible coverage, but a claim filed and paid nothing may appear; no laws specifically govern use of a prior owner's loss history; an insurer that can show a relationship between the prior owner's loss and the probability of future loss may use it.",
+      "quote": "C.L.U.E. reports can be accessed only by the owner, insurer, or lender for the property. ... you can request that the current owner of the property order a C.L.U.E. report. ... The database contains up to 7 years of personal property claims history. ... Insurers have been instructed by C.L.U.E. not to report inquiries about possible coverage. ... this information would be recorded by the company and may appear on a C.L.U.E. report ... There are no laws that specifically govern the use of the prior owner's loss history ... notify you of the results within 30 days ... you can submit a personal statement ... 1-866-312-8076 ... If a company can show a relationship between the prior owner's loss and the probability of a future loss to the home, they may use the information. ... If the consumer filed an actual claim and the insurer made no loss payment on this claim, this information would be recorded by the company and may appear on a C.L.U.E. report.",
+      "url": "https://portal.ct.gov/cid/knowledge-base/articles/clue-faqs",
+      "readOn": "2026-10-19",
+      "method": "webfetch"
+    },
+    {
+      "id": "f4",
+      "claim": "Utah Insurance Department: C.L.U.E. reports can only be accessed by the owner, insurer or lender; database contains up to 5 years of claims history.",
+      "quote": "No. Under the federal FACT Act, C.L.U.E. reports can only be accessed by the owner, insurer or lender for the property. ... The database contains up to 5 years of personal property claims history.",
+      "url": "https://insurance.utah.gov/consumers/clue/",
+      "readOn": "2026-10-19",
+      "method": "webfetch"
+    },
+    {
+      "id": "f5",
+      "claim": "LexisNexis C.L.U.E. Property reports show date of loss, cause of loss and amounts paid.",
+      "quote": "Property loss history reports provide granular information on date of loss, cause of loss, amounts paid and much more.",
+      "url": "https://risk.lexisnexis.com/products/clue-property",
+      "readOn": "2026-10-19",
+      "method": "webfetch"
+    },
+    {
+      "id": "f6",
+      "claim": "Texas Property Code § 5.008 seller's disclosure notice, item 7, asks whether the seller ever filed a claim for flood damage with any insurance provider, including the NFIP; item 5 asks whether the seller is aware of any item, equipment or system in need of repair.",
+      "quote": "7. Have you (Seller) ever filed a claim for flood damage to the property with any insurance provider, including the National Flood Insurance Program (NFIP)? ... 5. Are you (Seller) aware of any item, equipment, or system in or on the property that is in need of repair?",
+      "url": "https://statutes.capitol.texas.gov/Docs/PR/htm/PR.5.htm",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f7",
+      "claim": "Fannie Mae Selling Guide B7-3-01: the property insurance policy for the property securing any first mortgage must be written by a qualifying insurer, and the lender or servicer must ensure the insurer, policy and coverage meet Fannie Mae's requirements.",
+      "quote": "The lender or servicer must ensure that the insurer, policy, and coverage meet Fannie Mae's requirements. ... The property insurance policy for the property securing any first mortgage ... must be written by an insurer that meets one of the rating requirements",
+      "url": "https://selling-guide.fanniemae.com/sel/b7-3-01/general-property-insurance-requirements-all-property-types",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "Some states require sellers to disclose any insurance claim within five to seven years",
+      "why": "no source; the one statutory form read (Texas) asks only about flood claims (f6)"
+    },
+    {
+      "claim": "A buyer's insurance agent can run a preliminary loss-history search",
+      "why": "CT and Utah say only owner, insurer or lender can access C.L.U.E.; replaced with 'get the insurer's written quote'"
+    },
+    {
+      "claim": "A phone inquiry gets logged as a zero-dollar claim",
+      "why": "Connecticut says insurers are instructed not to report inquiries; replaced with the CT wording (f3)"
+    },
+    {
+      "claim": "Insurers will deny future claims as pre-existing / non-renew for undisclosed history",
+      "why": "carrier behaviour not public; replaced with 'ask your insurer in writing how your policy treats it'"
+    },
+    {
+      "claim": "Premium spikes, water exclusions and higher deductibles as stated effects",
+      "why": "no carrier data; kept only as 'may change what you're offered'"
+    },
+    {
+      "claim": "Sellers take the payout and use unlicensed handymen to pocket money",
+      "why": "adversarial framing with no source (content standard)"
+    },
+    {
+      "claim": "The CFPB oversees the C.L.U.E. databases under the FCRA",
+      "why": "reframed: the CFPB lists both companies; the page cites the listing, not an oversight claim"
+    }
+  ],
+  "blockedSources": []
+}

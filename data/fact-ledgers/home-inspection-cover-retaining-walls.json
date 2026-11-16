@@ -1,0 +1,71 @@
+{
+  "_about": "Fact ledger for the 2026-11-16 restore and correction of /guides/home-inspection-cover-retaining-walls/ (id 195, removed in the 2026-09-02 prune, still shown by Google at ~position 6). Every number and code section on the page traces to an entry here.",
+  "slug": "home-inspection-cover-retaining-walls",
+  "question": "Does a home inspection cover retaining walls?",
+  "verdictConfirmed": "Only partly: ASHI's standard covers retaining walls likely to adversely affect the building, excludes boundary walls, soil conditions and earth stabilization, and never requires a judgment on a wall's strength or future failure. The old page's wording ('walls that support the home, driveways, or primary walkways') is not in the standard and was replaced.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "ASHI Standard of Practice for Home Inspections, effective March 1, 2014, is the version ASHI links as its standard; section 4.1.A.5: the inspector shall inspect vegetation, grading, surface drainage, and retaining walls likely to adversely affect the building.",
+      "quote": "ASHI Standard of Practice for Home Inspections Effective March 1, 2014 ... 4.1 The inspector shall: A. inspect: ... 5. vegetation, grading, surface drainage, and retaining walls that are likely to adversely affect the building.",
+      "url": "https://www.homeinspector.org/wp-content/uploads/2024/06/standards_updated3-4-2015.pdf (linked from https://www.homeinspector.org/resources/standard-of-practice/)",
+      "readOn": "2026-11-16",
+      "method": "pdf"
+    },
+    {
+      "id": "f2",
+      "claim": "ASHI SoP 4.2: the inspector is NOT required to inspect fences, boundary walls and similar structures; geological and soil conditions; erosion control and earth stabilization measures.",
+      "quote": "4.2 The inspector is NOT required to inspect: ... B. fences, boundary walls, and similar structures. C. geological and soil conditions. ... G. erosion control and earth stabilization measures.",
+      "url": "https://www.homeinspector.org/wp-content/uploads/2024/06/standards_updated3-4-2015.pdf",
+      "readOn": "2026-11-16",
+      "method": "pdf"
+    },
+    {
+      "id": "f3",
+      "claim": "ASHI SoP 13.2 general exclusions: the inspector is not required to determine strength/adequacy/effectiveness/efficiency of systems and components, or future conditions including failure; 13.2.A.16 soil conditions relating to geotechnical or hydrologic specialties.",
+      "quote": "13.2 General exclusions A. The inspector is NOT required to determine: ... 3. the strength, adequacy, effectiveness, and efficiency of systems and components. ... 6. future conditions including but not limited to failure of systems and components. ... 16. soil conditions relating to geotechnical or hydrologic specialties.",
+      "url": "https://www.homeinspector.org/wp-content/uploads/2024/06/standards_updated3-4-2015.pdf",
+      "readOn": "2026-11-16",
+      "method": "pdf"
+    },
+    {
+      "id": "f4",
+      "claim": "ASHI SoP 13.1.D: the standard does not limit inspectors from meeting state statutes that license home inspectors (states can set their own rules).",
+      "quote": "D. This Standard shall not limit or prevent the inspector from meeting state statutes which license professional home inspection and home inspectors.",
+      "url": "https://www.homeinspector.org/wp-content/uploads/2024/06/standards_updated3-4-2015.pdf",
+      "readOn": "2026-11-16",
+      "method": "pdf"
+    },
+    {
+      "id": "f5",
+      "claim": "2021 IRC R105.2 Work exempt from permit, Building item 3: retaining walls not over 4 feet (1219 mm) measured from the bottom of the footing to the top of the wall, unless supporting a surcharge.",
+      "quote": "R105.2 Work exempt from permit. ... Permits shall not be required for the following: Building: ... 3. Retaining walls that are not over 4 feet (1219 mm) in height measured from the bottom of the footing to the top of the wall, unless supporting a surcharge.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-1-scope-and-administration",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "claim": "2021 IRC R404.4: retaining walls not laterally supported at the top that retain more than 48 inches of unbalanced fill, or over 24 inches that resist lateral loads in addition to soil, shall be designed per accepted engineering practice against overturning, sliding, excessive foundation pressure and water uplift; does not apply to foundation walls supporting buildings.",
+      "quote": "R404.4 Retaining walls. Retaining walls that are not laterally supported at the top and that retain in excess of 48 inches (1219 mm) of unbalanced fill, or retaining walls exceeding 24 inches (610 mm) in height that resist lateral loads in addition to soil, shall be designed in accordance with accepted engineering practice to ensure stability against overturning, sliding, excessive foundation pressure and water uplift. Retaining walls shall be designed for a safety factor of 1.5 against lateral sliding and overturning. This section shall not apply to foundation walls supporting buildings.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-4-foundations",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f7",
+      "claim": "USGS Landslide Hazards Program maps page lists a 'U.S. Landslide Inventory and Susceptibility Map', an interactive map combining the national landslide inventory with the national susceptibility map.",
+      "quote": "U.S. Landslide Inventory and Susceptibility Map -- A web-based interactive map that combines the national landslide inventory compilation with the national landslide susceptibility map.",
+      "url": "https://www.usgs.gov/programs/landslide-hazards/maps",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    { "claim": "ASHI requires inspecting retaining walls that 'directly associate with the foundation or structurally support the home, driveways, or primary walkways'", "why": "not the standard's wording; the standard says 'likely to adversely affect the building' (f1)" },
+    { "claim": "A failing wall can cost a buyer 'tens of thousands of dollars'", "why": "no source; not in the engine or any primary document read" },
+    { "claim": "'Most municipalities require a building permit and structural engineering plans for any retaining wall over four feet'", "why": "replaced by the IRC model-code text (f5, f6) with the local-amendment caveat; no survey of municipalities was done" },
+    { "claim": "Boundary-wall repair duty falls on the higher lot in some jurisdictions", "why": "state law not surveyed; kept only as 'depends on where you live' with a surveyor/attorney next step" }
+  ],
+  "blockedSources": []
+}
