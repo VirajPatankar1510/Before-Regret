@@ -1,0 +1,300 @@
+{
+  "state": "Virginia",
+  "stateAbbrev": "VA",
+  "slug": "virginia-contractor-license-lookup",
+  "type": "A",
+  "officialLookupUrl": "https://www.dpor.virginia.gov/LicenseLookup",
+  "licensingBodies": [
+    {
+      "name": "Virginia Board for Contractors (Department of Professional and Occupational Regulation, DPOR)",
+      "licenses": "contractor firms in Class A, B or C with classifications/specialties; tradesmen; residential building energy analysts",
+      "lookupUrl": "https://www.dpor.virginia.gov/LicenseLookup"
+    }
+  ],
+  "demand": {
+    "capture": "2026-11-15-demand-virginia-contractor-license-bing",
+    "tier": "2",
+    "relatedQueries": [
+      "dpor license lookup",
+      "virginia dpor license lookup",
+      "virginia contractor license lookup",
+      "va contractor license lookup"
+    ],
+    "note": "Bing counts are relative only. 'dpor license lookup' is by far the dominant phrasing, so the title leads with DPOR. 'virginia class a contractor' had no Bing count (unknown, not zero demand)."
+  },
+  "portalWalk": {
+    "date": "2026-11-16",
+    "searchedBy": [
+      "free-text search box with a business name (a large homebuilder, not named on the page)",
+      "Advanced License Search form inspected: License Number, Name, Location, Board, License Type",
+      "Disciplinary Action Search tab inspected",
+      "free-text search for the license type Master Electrician (results: Tradesman records, Board for Contractors)"
+    ],
+    "quirks": [
+      "www.dpor.virginia.gov/LicenseLookup frames the real tool at dporweb.dpor.virginia.gov/LicenseLookup/",
+      "one search box takes a name, license number, address or license type",
+      "license numbers appear as buttons in the results; click the number to open the record",
+      "the record has no 'Active' or status line; it shows an Expiration Date",
+      "the record shows Rank (Class A/B/C) and Specialties; question-mark icons explain them",
+      "complaints sit on a separate Complaints tab of the record",
+      "a footer gives the time the data was last updated (Mon Nov 16 02:50:19 EST on our visit)",
+      "no bond or insurance information on the record"
+    ],
+    "recordSections": [
+      "License Details: Name, DBA Name(s), License Number, License Description, Firm Type, Rank, Address, Specialties, Initial Certification Date, Expiration Date",
+      "Complaints: Open Complaints, Closed Complaints (File Id, Date Case Closed, Disposition)"
+    ],
+    "screenshot": "public/images/virginia-license-record-class-specialties.jpg (two bands of the License Details tab stacked: Description/Firm Type/Rank, then Specialties and dates; the name, DBA, license number and address rows are cropped out; upscaled 2x; JPEG because no WebP encoder on this machine)"
+  },
+  "facts": [
+    {
+      "id": "f1",
+      "topic": "who-is-licensed",
+      "claim": "A Virginia contractor license has two parts: the class (A, B or C), which sets the money value of jobs allowed, and the classification/specialty, which sets the type of work. The same board also licenses tradesmen.",
+      "quote": "Contractor licenses consist of two parts: the class of license (A, B, or C), which determines the monetary value of contracts/projects that may be performed, and the classification/specialty, which determines what type of work is allowed. The Board also licenses tradesmen, as well as individuals and firms engaged in residential building energy analysis",
+      "url": "https://www.dpor.virginia.gov/Boards/Contractors",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "topic": "lookup",
+      "claim": "Class A: a single contract or project of $150,000 or more, or $1 million or more of work in any 12-month period.",
+      "quote": "\"Class A contractors\" perform or manage construction, removal, repair, or improvements when (i) the total value referred to in a single contract or project is $150,000 or more, or (ii) the total value of all such construction, removal, repair, or improvements undertaken by such person within any 12-month period is $1 million or more.",
+      "url": "https://law.lis.virginia.gov/vacode/title54.1/chapter11/section54.1-1100/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "topic": "lookup",
+      "claim": "Class B: a single contract or project of $30,000 or more but less than $150,000, or $250,000 or more but less than $1 million in any 12-month period.",
+      "quote": "\"Class B contractors\" perform or manage construction, removal, repair, or improvements when (i) the total value referred to in a single contract or project is $30,000 or more, but less than $150,000, or (ii) the total value of all such construction, removal, repair, or improvements undertaken by such person within any 12-month period is $250,000 or more, but less than $1 million.",
+      "url": "https://law.lis.virginia.gov/vacode/title54.1/chapter11/section54.1-1100/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "topic": "exemption-threshold",
+      "claim": "Class C: a single contract or project over $1,000 but less than $30,000, or less than $250,000 in any 12-month period. Electrical, plumbing and HVAC contractors must hold a master tradesman license as a condition of licensure.",
+      "quote": "\"Class C contractors\" perform or manage construction, removal, repair, or improvements when (i) the total value referred to in a single contract or project is over $1,000 but less than $30,000, or (ii) the total value of all such construction, removal, repair, or improvements undertaken by such person within any 12-month period is less than $250,000. The Board shall require a master tradesmen license as a condition of licensure for electrical, plumbing, and heating, ventilation, and air conditioning contractors.",
+      "url": "https://law.lis.virginia.gov/vacode/title54.1/chapter11/section54.1-1100/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "topic": "unlicensed-consequences",
+      "claim": "Under § 54.1-1115 A, contracting or bidding without a license, or without the proper class for the value of the work, is a Class 1 misdemeanor.",
+      "quote": "The following acts are prohibited and shall constitute the commission of a Class 1 misdemeanor: 1. Contracting for, or bidding upon the construction, removal, repair or improvements to or upon real property owned, controlled or leased by another person without a license or certificate, or without the proper class of license as defined in § 54.1-1100 for the value of work to be performed.",
+      "url": "https://law.lis.virginia.gov/vacode/title54.1/chapter11/section54.1-1115/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "topic": "unlicensed-consequences",
+      "claim": "§ 54.1-1115 B adds a fine of up to $500 per day of violation for working without a license or without the proper class.",
+      "quote": "Any person who undertakes work without (i) any valid Virginia contractor's license or certificate when a license or certificate is required by this chapter or (ii) the proper class of license as defined in § 54.1-1100 for the work undertaken, shall be fined an amount not to exceed $500 per day for each day that such person is in violation, in addition to the authorized penalties for the commission of a Class 1 misdemeanor.",
+      "url": "https://law.lis.virginia.gov/vacode/title54.1/chapter11/section54.1-1115/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f7",
+      "topic": "unlicensed-consequences",
+      "claim": "§ 54.1-1115 C: an unlicensed contractor can't enforce the contract unless they substantially performed in good faith AND didn't actually know a license was required; a failure to renew creates a rebuttable presumption that they knew.",
+      "quote": "A construction contract entered into by a person undertaking work without a valid Virginia contractor's license shall not be enforceable by the unlicensed contractor undertaking the work unless the unlicensed contractor (i) gives substantial performance within the terms of the contract in good faith and (ii) did not have actual knowledge that a license or certificate was required by this chapter to perform the work for which he seeks to recover payment. Failure to renew a license or certificate issued in accordance with this chapter shall create a rebuttable presumption of actual knowledge of such licensing or certification requirements.",
+      "url": "https://law.lis.virginia.gov/vacode/title54.1/chapter11/section54.1-1115/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f8",
+      "topic": "owner-builder",
+      "claim": "§ 54.1-1101 A 7: no license is needed to build or improve one primary residence you own and use yourself in any 24-month period.",
+      "quote": "7. Any person who performs or supervises the construction, removal, repair, or improvement of no more than one primary residence owned by him and for his own use during any 24-month period;",
+      "url": "https://law.lis.virginia.gov/vacode/title54.1/chapter11/section54.1-1101/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f9",
+      "topic": "owner-builder",
+      "claim": "§ 54.1-1101 B: an owner-builder exempt under A 7 (and A 10, 11, 12) must get a certificate of occupancy before selling, unless the buyer acknowledges in writing that none was issued and consents to buy without one. § 54.1-1101 C: these exempt builders must still follow the Uniform Statewide Building Code.",
+      "quote": "B. Any person who is exempt from the provisions of this chapter as a result of subdivision A 7, 10, 11, or 12 shall obtain a certificate of occupancy for any building constructed, repaired or improved by him prior to conveying such property to a third-party purchaser, unless such purchaser has acknowledged in writing that no certificate of occupancy has been issued and that such purchaser consents to acquire the property without a certificate of occupancy. C. Any person who is exempt from the provisions of this chapter as a result of subdivision 7, 8, 9, 10, 11, 12, or 14 of subsection A shall comply with the provisions of the Uniform Statewide Building Code (§ 36-97 et seq.).",
+      "url": "https://law.lis.virginia.gov/vacode/title54.1/chapter11/section54.1-1101/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f10",
+      "topic": "owner-builder",
+      "claim": "§ 54.1-1101 D: breaking subsection B or C is a Class 1 misdemeanor; a third conviction within 36 months is a Class 6 felony.",
+      "quote": "D. Any person who violates the provisions of subsection B or C shall be guilty of a Class 1 misdemeanor. The third or any subsequent conviction of violating subsection B or C during a 36-month period shall constitute a Class 6 felony.",
+      "url": "https://law.lis.virginia.gov/vacode/title54.1/chapter11/section54.1-1101/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f11",
+      "topic": "exemption-threshold",
+      "claim": "§ 54.1-1101 A 15: someone doing work of $25,000 or less per project on behalf of a contractor licensed in the residential building, commercial building or home improvement building classification is exempt; trade work needing an individual license still needs that license.",
+      "quote": "15. Work undertaken by a person providing construction, remodeling, repair, improvement, removal, or demolition valued at $25,000 or less per project on behalf of a properly licensed contractor, provided that such contractor holds a valid license in the (i) residential building, (ii) commercial building, or (iii) home improvement building contractor classification. However, any construction services that require an individual license or certification shall be rendered only by an individual licensed or certified in accordance with this chapter.",
+      "url": "https://law.lis.virginia.gov/vacode/title54.1/chapter11/section54.1-1101/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f12",
+      "topic": "recovery-fund",
+      "claim": "The Contractor Transaction Recovery Fund caps a single claim at $30,000 and all claims against one contractor at $100,000 per biennium (prorated if exceeded). It doesn't pay interest, punitive or exemplary damages.",
+      "quote": "State law limits a single Recovery Fund claim to $30,000. Multiple claims involving the same contractor are limited to $100,000 per biennium. If multiple claims involving one contractor exceed $100,000, the claim amounts must be prorated. The Recovery Fund does not pay interest, punitive damages, exemplary damages, or any amounts that do not constitute an actual monetary loss to the claimant.",
+      "url": "https://www.dpor.virginia.gov/Boards/Contractors_Recovery_Fund/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f13",
+      "topic": "recovery-fund",
+      "claim": "To claim, you need a Virginia court judgment against a LICENSED contractor; a bonded contractor's bond must be pursued first; the claim form is due within 12 months after the judgment is final; mere breach of contract isn't improper or dishonest conduct.",
+      "quote": "A person who has been awarded a judgment in a court of competent jurisdiction in the Commonwealth of Virginia against a licensed contractor and was subject to monetary loss may be eligible to file a claim. ... A claimant who has obtained a judgment against a bonded contractor must seek recovery through the bond. ... A Contractor Recovery Fund Claim Form must be filed with the Department of Professional and Occupational Regulation (DPOR) within 12 months after the judgment is final. ... The term \"improper or dishonest conduct\" does not include mere breach of contract.",
+      "url": "https://www.dpor.virginia.gov/Boards/Contractors_Recovery_Fund/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f14",
+      "topic": "recovery-fund",
+      "claim": "Board discipline does not by itself support a Recovery Fund claim. The fund is paid for by licensed contractors' assessments, not taxes, and covers losses from a licensed residential contractor.",
+      "quote": "NOTE: Any disciplinary action taken against a licensee by the Board for Contractors does not, by itself, satisfy any statutory requirements to support a Recovery Fund claim. ... The Virginia Contractor Transaction Recovery Act provides relief to eligible consumers who have incurred losses through the improper or dishonest conduct of a licensed residential contractor. The Recovery Fund is supported entirely by assessments paid by licensed contractors",
+      "url": "https://www.dpor.virginia.gov/Boards/Contractors_Recovery_Fund/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f15",
+      "topic": "contract-rules",
+      "claim": "18VAC50-22-260 B 8: residential contracting needs a legible written contract, signed by the consumer and the licensee before work starts or payment is accepted.",
+      "quote": "8. Failure of all those who engage in residential contracting, excluding subcontractors to the contracting parties and those who engage in routine maintenance or service contracts, to make use of a legible written contract clearly specifying the terms and conditions of the work to be performed. ... Prior to commencement of work or acceptance of payments, the contract shall be signed by both the consumer and the licensee or the licensee's agent.",
+      "url": "https://law.lis.virginia.gov/admincode/title18/agency50/chapter22/section260/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f16",
+      "topic": "contract-rules",
+      "claim": "18VAC50-22-260 B 9 lists the minimum contract terms: start and estimated completion dates; total cost by contract type; progress payments and the down payment amount; materials and work; permits, inspections and zoning assurance; cancellation rights; the signed acknowledgment of DPOR's consumer protection statement; the contractor's name, address, license number, class and specialties; written, signed changes; and a notice of the Recovery Fund.",
+      "quote": "a. When work is to begin and the estimated completion date; ... c. The amounts and schedule for progress payments, including a specific statement on the amount of the down payment; ... f. A statement of assurance that the contractor will comply with all local requirements for building permits, inspections, and zoning; g. Disclosure of the cancellation rights of the parties; h. A signed acknowledgment by the consumer that the consumer has been provided with and read the Department of Professional and Occupational Regulation statement of protection available to consumers through the Board for Contractors; i. Contractor's name, address, license number, class of license, and classifications or specialty services; j. A statement providing that any modification to the contract that changes the cost, materials, work to be performed, or estimated completion date must be in writing and signed by all parties; and k. A statement notifying consumers of the existence of the Virginia Contractor Transaction Recovery Fund that includes information on how to contact the board for claim information.",
+      "url": "https://law.lis.virginia.gov/admincode/title18/agency50/chapter22/section260/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f17",
+      "topic": "contract-rules",
+      "claim": "18VAC50-22-260 B: abandonment is stopping work without justification for 30 days or more; contractors keep contract documents for five years; failing to get a required permit or inspection is a prohibited act.",
+      "quote": "11. Failure of the contractor to maintain for a period of five years from the date of contract a complete and legible copy of all documents relating to that contract, including the contract and any addenda or change orders. ... 14. Abandonment, defined as the unjustified cessation of work under the contract for a period of 30 days or more. ... 33. Failure to obtain a building permit or applicable inspection, where required.",
+      "url": "https://law.lis.virginia.gov/admincode/title18/agency50/chapter22/section260/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f18",
+      "topic": "contract-rules",
+      "claim": "DPOR's consumer guide suggests a first deposit of no more than 10% or $1,000, whichever is less, or up to 30% for custom-made or special-order items, and says licensed contractors must give a written, signed contract for residential work.",
+      "quote": "Licensed contractors are required by law to provide a written contract for residential work, signed by both parties. ... Consider an initial deposit of no more than 10% down or $1,000, whichever is less. Unless the job requires custom-made items or special orders, in which case an initial down payment should be no more than 30% of the total value of the contract.",
+      "url": "https://www.dpor.virginia.gov/Consumers/Guide_Contractor/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f19",
+      "topic": "contract-rules",
+      "claim": "DPOR's consumer guide says a contract negotiated in your home after door-to-door solicitation carries a three-day right to cancel.",
+      "quote": "Solicits door-to-door (you have a three-day right to cancel a contract negotiated in your home!)",
+      "url": "https://www.dpor.virginia.gov/Consumers/Guide_Contractor/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f20",
+      "topic": "lookup",
+      "claim": "The record's Rank help text says the class (A, B or C) determines the monetary limits on contracts/projects.",
+      "quote": "Ranks Refer to the Statutory Definitions for descriptions of the rank or class of license (A, B, or C) that determines the monetary limits on contracts/projects.",
+      "url": "https://dporweb.dpor.virginia.gov/LicenseLookup/LicenseDetail",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f21",
+      "topic": "lookup",
+      "claim": "Our walk on 2026-11-16: a business-name search for a large homebuilder returned 2 records, both Contractor licenses under the Board for Contractors. The record we opened showed Name, DBA Name(s), License Number, License Description, Firm Type, Rank (Class A), Address, Specialties (Commercial Building (CBC), Residential Building (RBC)), Initial Certification Date (1998-09-29) and Expiration Date (2028-09-30). There was no status line and no bond or insurance field. The footer said the data was last updated Mon Nov 16 02:50:19 EST.",
+      "quote": "Showing 1 to 2 of 2 entries ... License Description Contractor Firm Type Corporation Rank Class A ... Specialties Commercial Building (CBC) Residential Building (RBC) Initial Certification Date 1998-09-29 Expiration Date 2028-09-30 ... The license information in this application was last updated at Mon Nov 16 02:50:19 EST.",
+      "url": "https://dporweb.dpor.virginia.gov/LicenseLookup/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f22",
+      "topic": "complaints",
+      "claim": "Open Complaints show only cases where an investigation found probable cause and that reached the adjudication stage; open cases are exempt from public disclosure under § 54.1-108.",
+      "quote": "\"Open Complaints\" reflect only those complaints against regulants for which a departmental investigation has determined that sufficient evidence exists to establish probable cause of a violation of the law or regulations. Only those cases that have proceeded through an investigation to the adjudication stage are displayed. State law exempts information about open cases from mandatory public disclosure [Code of Virginia Section 54.1-108].",
+      "url": "https://dporweb.dpor.virginia.gov/LicenseLookup/LicenseDetail",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f23",
+      "topic": "complaints",
+      "claim": "Closed Complaints cover cases closed since 1990; cases closed without disciplinary action are purged after three years under DPOR's retention policy; DPOR says not to assume a 'No Disciplinary Action' closure means the business performed improperly. Reasons listed include no agency authority, insufficient evidence, a withdrawn or incomplete complaint, compliance obtained, alternative dispute resolution (mediation) and a lapsed license.",
+      "quote": "\"Closed Complaints\" reflect complaints against regulants closed since 1990. Cases closed without disciplinary action are purged after three years in accordance with DPOR's record retention policy. ... Consumers should not assume that a case closed with \"No Disciplinary Action\" means an individual or business performed improperly. ... Cases may be closed with \"No Disciplinary Action\" for a variety of reasons, such as: No Agency Authority ... Insufficient Evidence ... Withdrawn/Incomplete Complaint ... Compliance Obtained ... Alternative Dispute Resolution (Complaint resolved through mediation without need for further investigation or Board action.) License Lapsed",
+      "url": "https://dporweb.dpor.virginia.gov/LicenseLookup/LicenseDetail",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f24",
+      "topic": "complaints",
+      "claim": "Observation: the record we opened still listed 5 closed cases dated 2009 to 2017, each with the disposition No Disciplinary Action, despite the three-year purge note.",
+      "quote": "2017-03-07 Violation No Disciplinary Action | 2016-08-02 Violation No Disciplinary Action | 2015-11-10 Violation No Disciplinary Action | 2015-11-10 Violation No Disciplinary Action | 2009-07-01 Violation No Disciplinary Action",
+      "url": "https://dporweb.dpor.virginia.gov/LicenseLookup/LicenseDetail",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f25",
+      "topic": "lookup",
+      "claim": "DPOR's consumer guide tells homeowners to verify license status and check past disciplinary actions using License Lookup.",
+      "quote": "Verify license status and check for any past disciplinary actions using License Lookup.",
+      "url": "https://www.dpor.virginia.gov/Consumers/Guide_Contractor/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f26",
+      "topic": "trade-licensing",
+      "claim": "Our walk on 2026-11-16: typing Master Electrician into the same search box returned individual records with License Type Tradesman under the Board for Contractors, so tradesmen are checked in the same lookup.",
+      "quote": "Tradesman | Board for Contractors (each of the first rows of results for the search text Master Electrician)",
+      "url": "https://dporweb.dpor.virginia.gov/LicenseLookup/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "Names and definitions of every classification and specialty code (e.g. HIC)",
+      "why": "Only RBC and CBC were seen on a record; the classification definitions page was not read. The statute's 'home improvement building contractor classification' wording is used only inside the A 15 fact."
+    },
+    {
+      "claim": "What the 'Violation' label beside each closed case means",
+      "why": "The page gives no definition; the page only reports what the record listed."
+    },
+    {
+      "claim": "Bond or insurance amounts required of Virginia contractors",
+      "why": "Not on the record and not read at a primary source this session."
+    }
+  ],
+  "blockedSources": []
+}

@@ -63,7 +63,7 @@ and rules: `.claude/skills/state-license-guides/SKILL.md`. Checker: `scripts/che
 | 43 | Texas | texas-contractor-license-lookup | LIVE #358 (2026-11-14) | Group 1 | tier 2 (2026-11-14-demand-texas-contractor-license) | 19 | 2.4% (vs CA) | 2026-12-19 | TDLR search walked 2026-11-14; no state GC license; TSBPE complaint page Cloudflare-blocked, no plumbing search run; image JPEG |
 | 44 | Utah | utah-contractor-license-lookup | TODO | | | | | | |
 | 45 | Vermont | vermont-contractor-license-lookup | TODO | | | | | | |
-| 46 | Virginia | virginia-contractor-license-lookup | TODO | | | | | | |
+| 46 | Virginia | virginia-contractor-license-lookup | LIVE #360 (2026-11-16) | Group 1 | tier 2 (2026-11-15-demand-virginia-contractor-license; "dpor license lookup" dominant) | 26 | 3.2% (vs TN) | 2026-12-21 | DPOR lookup walked 2026-11-16 in the in-app browser; record has no status line or bond field; complaint purge note vs 5 old closed cases still listed; image JPEG |
 | 47 | Washington | washington-contractor-license-lookup | LIVE #354 (2026-11-13) | Group 1 | tier 2 (2026-11-13-demand-washington-contractor-license) | 22 | 3.1% (vs OR) | 2026-12-18 | Verify walked 2026-11-13; RCW 18.27 read in full; image JPEG |
 | 48 | West Virginia | west-virginia-contractor-license-lookup | TODO | | | | | | |
 | 49 | Wisconsin | wisconsin-contractor-license-lookup | TODO | | | | | | |
@@ -83,3 +83,5 @@ and rules: `.claude/skills/state-license-guides/SKILL.md`. Checker: `scripts/che
 | 2026-11-14 | Texas published as #358 after a correctness pass (DBA wording fixed; unsourced "written request" line cut); 4 FAQs | READ 2026-12-19. |
 | 2026-11-14 | Tennessee: Phase 2 research and draft done; set checker (0 fails, worst 3.1%), publish dry run and quality gate pass; sent to owner for review | |
 | 2026-11-14 | Tennessee published as #359 after a ledger read-through (6 overstated lines tightened, QA fact added); 4 FAQs | READ 2026-12-19. |
+| 2026-11-16 | Virginia: research and draft done (26 facts, 1,903 words, title leads with "DPOR License Lookup"); set checker 0 fails (worst 3.2%), publish dry run and quality gate pass; sent to owner for review | |
+| 2026-11-16 | Virginia published as #360 on the owner's "publish"; 4 FAQs | READ 2026-12-21. |
