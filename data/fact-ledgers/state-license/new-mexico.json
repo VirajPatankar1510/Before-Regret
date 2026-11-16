@@ -1,0 +1,275 @@
+{
+  "state": "New Mexico",
+  "stateAbbrev": "NM",
+  "slug": "new-mexico-contractor-license-lookup",
+  "type": "A",
+  "officialLookupUrl": "https://public.psiexams.com/search.jsp",
+  "licensingBodies": [
+    {
+      "name": "Construction Industries Division (CID), New Mexico Regulation and Licensing Department",
+      "licenses": "contractors by classification (GB-2, GB-98, EE-98, ER-1, MM-1, MM-98, GS specialties, etc.), journeyman certificates, LP gas; handyman declarations",
+      "lookupUrl": "https://public.psiexams.com/search.jsp"
+    }
+  ],
+  "demand": {
+    "capture": "2026-11-16-demand-new-mexico-contractor-license-bing",
+    "tier": "2",
+    "relatedQueries": [
+      "new mexico contractor license lookup",
+      "nm rld license lookup"
+    ],
+    "note": "Bing counts relative only; \"nm contractor license lookup\" and \"new mexico handyman license\" had no count (unknown, not zero)."
+  },
+  "portalWalk": {
+    "date": "2026-11-16",
+    "searchedBy": [
+      "form inspected only: the search requires a CAPTCHA, which we do not complete (safety rule), so no search was run"
+    ],
+    "quirks": [
+      "RLD sends CID license checks to public.psiexams.com, run by the licensing vendor PSI",
+      "two modes: Search Individual (certificate number) and Search Company (license number)",
+      "company type dropdown mixes Contractor, LP-Gas and six manufactured-housing (MHD) types",
+      "business name must start with at least the first word, symbols included",
+      "3-character minimum and a CAPTCHA on every search"
+    ],
+    "recordSections": [
+      "not seen: no search run (CAPTCHA)"
+    ],
+    "screenshot": "public/images/new-mexico-license-search-form.jpg (the search form, cropped above the CAPTCHA; no names; 2x upscale; JPEG). No record screenshot: the CAPTCHA blocks automated searching and we do not solve CAPTCHAs."
+  },
+  "facts": [
+    {
+      "id": "f1",
+      "topic": "lookup",
+      "claim": "RLD's Verify a License page sends Construction Industries Division license checks to a PSI search page.",
+      "quote": "Construction Industries Division Verify a license with the Construction Industries Division using this link: https://public.psiexams.com/search.jsp",
+      "url": "https://www.rld.nm.gov/about-us/public-information-hub/verify-a-license/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "topic": "lookup",
+      "claim": "CID calls PSI its licensing vendor; license applications and status-change forms go through PSI (phone 1-877-663-9267).",
+      "quote": "You may call our licensing vendor, PSI, at 1-877-663-9267 and ask for the application to become an LP Dealer, or you may go on their website and download the application.",
+      "url": "https://www.rld.nm.gov/construction-industries/frequently-asked-questions/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "topic": "lookup",
+      "claim": "Our walk on 2026-11-16: the search page is headed New Mexico E-Services for Contractor Licensing. It has two modes. Search Individual takes a certificate number, first name, last name, city or ZIP code. Search Company needs a company type (Contractor, LP-Gas or six MHD manufactured-housing types) and takes a license number, business name, city or ZIP. The business name must start with at least the first word, including symbols. A search needs at least 3 characters and a CAPTCHA.",
+      "quote": "New Mexico E-Services for Contractor Licensing ... Search Individual Certificate Number First Name Last Name City Zip Code Search Company * Select Company Type Contractor LP-Gas MHD-Broker MHD-Crossover MHD-Dealer MHD-Installer MHD-Manufacturer MHD-Salesperson License Number Business Name (Note: You must type at least the first word of the business name, including any symbols such as A-H, B & H, 3J'S.) City Zip Code ... Note: You must type at least 3 characters in order to proceed with search. Enter Captcha",
+      "url": "https://public.psiexams.com/search.jsp",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "topic": "who-is-licensed",
+      "claim": "Under NMSA 1978 § 60-13-3 A and B, a contractor is anyone who undertakes, offers or bids on construction, alteration, repair, installation or demolition, including buildings, mechanical works, and electrical wiring, plumbing and gas piping; it includes subcontractors and specialty contractors.",
+      "quote": "A.  means any person who undertakes, offers to undertake by bid or other means or purports to have the capacity to undertake, by himself or through others, contracting. Contracting includes constructing, altering, repairing, installing or demolishing any: ... (2) building, stadium or other structure; ... (14) air conditioning, conduit, heating or other similar mechanical works; (15) electrical wiring, plumbing or plumbing fixture, consumers' gas piping, gas appliances or water conditioners; ... B.  includes subcontractor and specialty contractor;",
+      "url": "https://nmonesource.com/nmos/nmsa-unanno/en/item/18563/index.do",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "topic": "exemption-threshold",
+      "claim": "§ 60-13-3 D(14): the handyman exemption covers one project at a time, $7,200 or less in compensation a year in total, casual, minor or inconsequential work. It never covers electrical wiring, plumbing or gas fitting. The work can't be part of a larger operation, the person can't advertise or keep a sign or card saying they're qualified to contract, and they must file a declaration with the division every year.",
+      "quote": "(14)     an individual who works on one undertaking or project at a time that, in the aggregate or singly, does not exceed seven thousand two hundred dollars ($7,200) compensation a year, the work being casual, minor or inconsequential, such as handyman repairs; provided that this exemption shall not apply to any undertaking or project pertaining to the installation, connection or repair of electrical wiring, plumbing or gas fitting as defined in Section 60-13-32 NMSA 1978 and provided: (a) the work is not part of a larger or major operation undertaken by the same individual or different contractor; (b) the individual does not advertise or maintain a sign, card or other device which would indicate to the public that he is qualified to engage in the business of contracting; and (c)  the individual files annually with the division, on a form prescribed by the division, a declaration substantially to the effect that he is not a contractor within the meaning of the Construction Industries Licensing Act",
+      "url": "https://nmonesource.com/nmos/nmsa-unanno/en/item/18563/index.do",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "topic": "exemption-threshold",
+      "claim": "The division's rule 14.6.2.8 NMAC, titled Handyman Certificate, repeats the same $7,200 definition and the annual declaration.",
+      "quote": "14.6.2.8                   HANDYMAN CERTIFICATE:  Handyman is defined as: an individual who works on one undertaking or project at a time which, in the aggregate or singly, does not exceed seven thousand two hundred dollars ($7,200) compensation a year",
+      "url": "https://www.srca.nm.gov/parts/title14/14.006.0002.html",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f7",
+      "topic": "owner-builder",
+      "claim": "§ 60-13-3 D(10) and (11): an owner building or working on a single-family home they own and occupy (or will), alone or with wage-paid help, or building or improving a single-family residence for personal use, isn't a contractor, but the work must still follow the act and its codes.",
+      "quote": "(10)     an individual who, by himself or with the aid of others who are paid wages and who receive no other form of compensation, builds or makes installations, alterations or repairs in or to a single-family dwelling owned and occupied or to be occupied by him; provided that the installation, building, alteration or repair is required to be done in conformity with all other provisions of the Construction Industries Licensing Act and with the orders, rules, regulations, standards and codes adopted pursuant to that act; (11)     a person who acts on his own account to build or improve a single-family residence for his personal use",
+      "url": "https://nmonesource.com/nmos/nmsa-unanno/en/item/18563/index.do",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f8",
+      "topic": "lookup",
+      "claim": "14.6.6.8 NMAC: every license carries a symbol. The first letter is the field (G general construction, E electrical, M mechanical/plumbing), the second the type of work (A asphalt, B building, F fixed works, S specialties), and the number the specific trade; GB-2 means general construction, building, residential.",
+      "quote": "(1) The field is designated by a letter and shall be the first letter of the identifying symbol, for example: (a) G indicates General Construction. (b) E indicates Electrical. (c) M indicates Mechanical/Plumbing. (2) The type of work designation shall be the second letter of the identifying symbol, for example (a) A indicates asphalt. (b) B indicates building. (c) F indicates fixed works. (d) S indicates specialties. (3) The number following the letters designates the specific trade, for example: Classification GB-2 indicates the contractor is licensed in the General Construction field (G), Building Construction type of work (B), Residential Building (2).",
+      "url": "https://www.srca.nm.gov/parts/title14/14.006.0006.html",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f9",
+      "topic": "lookup",
+      "claim": "14.6.6.9 B(1) NMAC: GB-2 Residential covers residences and apartment houses of not more than four family units, and the GS specialty work when limited to residential construction; it needs two years of foreman-level experience.",
+      "quote": "(1) GB-2. Residential. Requires two years’ of foreman level practical or related trade experience. Erect, alter, repair or demolish residences and apartment houses accommodating not more than four family units, Groups R-1, R-2 and R-3, as those groups are defined in 14.7.2 NMAC; items included in Group U, as defined in 14.7.2 NMAC, when incidental to these structures; includes all work described by the GS specialty classifications, provided the work is limited to residential construction",
+      "url": "https://www.srca.nm.gov/parts/title14/14.006.0006.html",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f10",
+      "topic": "lookup",
+      "claim": "14.6.6.9 B(2) NMAC: GB-98 General building covers residential and commercial buildings and includes GB-2 and the GS specialties, but excludes structures covered by the EE (electrical), MM (mechanical) and other classifications; it needs four years of foreman-level experience.",
+      "quote": "(2) GB-98. General building. Requires four years of foreman level practical or related trade experience of which at two years must be commercial experience. Erect, alter, repair or demolish residential and commercial buildings, and certain structures; includes all work authorized by the GB-2, GF-5, GF-7 and GS classifications; seal coating and striping of driveways and parking lots; excludes those structures covered by the EE, MM, GA or GF classifications.",
+      "url": "https://www.srca.nm.gov/parts/title14/14.006.0006.html",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f11",
+      "topic": "trade-licensing",
+      "claim": "14.6.6 NMAC: ER-1 is residential electrical wiring; MM-1 is plumbing (four years' experience); MM-98 is the mechanical umbrella covering MM-1 to MM-4. Any classification not listed becomes GS-29.",
+      "quote": "(b) ER-1. Residential electrical wiring 5000 volts, nominal ... MM-1. Plumbing. Requires four years’ experience. Install, alter, repair, service, and maintain plumbing, plumbing fixtures, and piping ... Any classification not listed below and regulated by CID shall be issued a GS-29.",
+      "url": "https://www.srca.nm.gov/parts/title14/14.006.0006.html",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f12",
+      "topic": "unlicensed-consequences",
+      "claim": "CID's Unlicensed Violations page: the division may stop the project and file a criminal charge. Under § 60-13-52 A, work of $5,000 or less can bring 90 days in county jail or a $300 to $500 fine, or both; over $5,000, 6 months or a fine of 10% of the work's value, or both. Violators can be licensed 1 year after conviction.",
+      "quote": "If a contractor is working without a license, the Division may stop the construction project and file a criminal charge of unlicensed contracting in Metropolitan or Magistrate Court. Violators will be eligible for licensure 1 year from date of conviction. ... Penalties for unlicensed contracting are set out by law (Section 60-13-52.A of the CILA). If the dollar value of the contracting work is $5,000 or less, the contractor may be sentenced to the county jail for 90 days or to the payment of a fine of $300 to $500, or both. If the dollar value of the contracting work is over $5,000, the contractor may be sentenced to the county jail for 6 months or to the payment of a fine of 10% of the dollar value of the contracting work, or both.",
+      "url": "https://www.rld.nm.gov/construction-industries/investigation-and-enforcement/unlicensed-violations/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f13",
+      "topic": "unlicensed-consequences",
+      "claim": "§ 60-13-30: a contractor can't sue to collect payment for licensed work without alleging and proving they were licensed when the claim arose, and an unlicensed contractor has no right to file a mechanic's lien.",
+      "quote": "A.  No contractor shall act as agent or bring or maintain any action in any court of the state for the collection of compensation for the performance of any act for which a license is required by the Construction Industries Licensing Act without alleging and proving that such contractor was a duly licensed contractor at the time the alleged cause of action arose. B.  Any contractor operating without a license as required by the Construction Industries Licensing Act shall have no right to file or claim any mechanic's lien as now provided by law.",
+      "url": "https://nmonesource.com/nmos/nmsa-unanno/en/item/18563/index.do",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f14",
+      "topic": "bond-insurance",
+      "claim": "14.6.3 NMAC: each licensee keeps a $10,000 bond for the whole license period. Payment from the bond is used to cure division-certified code violations the licensee caused and didn't correct. Claims must be made within two years of final inspection or of the certificate of occupancy, whichever is earlier.",
+      "quote": "(1) Upon initial licensure and as a condition of renewal each applicant shall furnish to the division a bond in the amount of ten thousand dollars ($10,000) underwritten by a corporate surety authorized to transact business in New Mexico. ... (3) Payment from a bond required by Section 60-13-49 NMSA 1978, shall be used to cure division certified code violations caused and not corrected by the licensee. (4) Claims against the bond shall be made within two years following final inspection or within two years of issuance of a certificate of occupancy, whichever is earlier.",
+      "url": "https://www.srca.nm.gov/parts/title14/14.006.0003.html",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f15",
+      "topic": "other",
+      "claim": "14.6.3 NMAC: a license only authorizes the classification on it and on the qualifying party's certificate, and can't be lent; if the license loses its qualifying party, both must tell CID in writing within 30 days.",
+      "quote": "grant only the authority to engage in contracting in the classification specified on the license issued to the entity, and on the certificate issued to its qualifying party; (c) are not transferable and may not be used by any person other than the entity to which it is issued ... (5) In the event a licensee loses its qualifying party, through termination of employment or otherwise, both the licensee and the qualifying party must notify CID or its designee in writing of the separation within 30 days thereof.",
+      "url": "https://www.srca.nm.gov/parts/title14/14.006.0003.html",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f16",
+      "topic": "owner-builder",
+      "claim": "CID FAQ: you don't need an electrical contractor to wire your own house, but you need a permit and inspection. A homeowner electrical permit is issued only if the homeowner passes CID's homeowner electrical exam with at least 75%; a failed exam can't be retaken for 30 days, and only the permittee may do the work. Installing photovoltaic in your own house needs a contractor license.",
+      "quote": "Q: Do I need an electrical contractor to wire my house? No. However, an electrical permit and inspection are required. Q: Do I need a contractor license to install a photovoltaic system in my own house? Yes. ... the permit may be issued to the homeowner only if the homeowner passes the electrical exam for homeowners administered by CID, with a minimum passing score of 75%. Failed examinations may not be repeated sooner than 30 days after the date of the failed exam. Electrical work pursuant to the homeowner permit shall only be performed by the permittee.",
+      "url": "https://www.rld.nm.gov/construction-industries/frequently-asked-questions/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f17",
+      "topic": "owner-builder",
+      "claim": "CID FAQ: a homeowner may not run their own ductwork; replacing a water heater or furnace needs a permit pulled by a New Mexico licensed contractor before the work. A homeowner may do their own plumbing with an isometric drawing and a $25 plan review fee.",
+      "quote": "Q: As a homeowner, am I allowed to run my own ductwork? No, you need to have a New Mexico licensed contractor pull a permit, install the ductwork, and call for the required inspections. Q: Do I need to pull a permit for replacing a water heater or a furnace? Yes, a permit needs to be pulled by a New Mexico licensed contractor prior to the work being performed and inspected. ... Q: Am I allowed to do the plumbing on my own home? Yes. You will be required to submit an isometric drawing of your plumbing. The plans will need to be reviewed, and incur a $25 plan review fee.",
+      "url": "https://www.rld.nm.gov/construction-industries/frequently-asked-questions/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f18",
+      "topic": "other",
+      "claim": "CID FAQ: a re-roof needs a permit with the manufacturer's specifications; where the roof already has two or more coverings, they must come off first; pumice or granular fill must be removed before roof replacement.",
+      "quote": "Q: Do I need a re-roof permit? Yes, and manufacturer’s specifications must be included. Q: How many layers of roofing membranes are permitted? Where the existing roof has two or more applications of any type of roof covering, new roof coverings shall not be installed without first removing existing roof coverings. Q: Is pumice or other granular fill type material permitted in roof assemblies? No, neither roof assembly type is permitted. Pumice and granular fill must be removed prior to roof replacement.",
+      "url": "https://www.rld.nm.gov/construction-industries/frequently-asked-questions/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f19",
+      "topic": "other",
+      "claim": "CID FAQ: insurance may be denied if no proof of permitting, inspections or certificate of occupancy can be provided. No permit is needed for a fence, but a block wall needs one.",
+      "quote": "Additionally, insurance may be denied if no proof of permitting/inspections/Certificate of Occupancy can be provided. ... Q: Do I need a permit to build a fence? No, we do not require a permit for fencing. However, a permit is required for a block wall.",
+      "url": "https://www.rld.nm.gov/construction-industries/frequently-asked-questions/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f20",
+      "topic": "complaints",
+      "claim": "CID's Unlicensed Violations page offers an online Request for Investigation portal and a paper form.",
+      "quote": "Request an investigation using the online portal  Request for Investigation - Paper form",
+      "url": "https://www.rld.nm.gov/construction-industries/investigation-and-enforcement/unlicensed-violations/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f21",
+      "topic": "complaints",
+      "claim": "Observation 2026-11-16: RLD's Enforcement Actions page linked enforcement actions for three areas (Boards and Commissions, Cannabis Control Division, Securities Division); Construction Industries was not among them.",
+      "quote": "Please follow the links below to access enforcement actions for the different divisions. BOARDS AND COMMISSIONS ENFORCEMENT ACTIONS CANNABIS CONTROL DIVISION ENFORCEMENT ACTIONS SECURITIES DIVISION ENFORCEMENT ACTIONS",
+      "url": "https://www.rld.nm.gov/about-us/public-information-hub/enforcement-actions/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f22",
+      "topic": "who-is-licensed",
+      "claim": "The Construction Industries Division licenses contractors, enforces licensing laws and requires licensure for anyone practicing or offering to practice construction contracting.",
+      "quote": "Licensing contractors and enforcing licensing laws Requiring licensure for any person practicing or offering to practice construction contracting",
+      "url": "https://www.rld.nm.gov/construction-industries/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    },
+    {
+      "id": "f23",
+      "topic": "owner-builder",
+      "claim": "CID FAQ: homeowner building permit requirements are in 14.5.2.18 NMAC; residential permits were being processed in 3 to 4 working days.",
+      "quote": "Homeowner building permit requirements can be found at https://www.srca.nm.gov/parts/title14/14.005.0002.htmlSee section 14.5.2.18 ... Residential permits are being processed in 3 to 4 working days.",
+      "url": "https://www.rld.nm.gov/construction-industries/frequently-asked-questions/",
+      "readOn": "2026-11-16",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "What a New Mexico license record shows (status, bond, classification, expiry)",
+      "why": "The PSI search needs a CAPTCHA; we did not run a search, so no record was read. Could be added if the owner runs a search and sends a screenshot."
+    },
+    {
+      "claim": "Where CID publishes contractor discipline",
+      "why": "No CID discipline listing found; the RLD enforcement page lists three other divisions. Only the absence is reported."
+    },
+    {
+      "claim": "Exact statute text of 60-13-52",
+      "why": "Used the division page summary of 60-13-52 A instead of the statute text."
+    }
+  ],
+  "blockedSources": [
+    {
+      "url": "https://public.psiexams.com/search.jsp",
+      "what": "running a license search to read a record",
+      "how": "Search requires a CAPTCHA. Not completed, not worked around."
+    },
+    {
+      "url": "https://nmonesource.com/nmos/nmsa/en/item/4433/index.do",
+      "what": "annotated statutes via WebFetch",
+      "how": "403 to WebFetch; read the unannotated viewer in the browser instead (public, no gate)."
+    }
+  ]
+}

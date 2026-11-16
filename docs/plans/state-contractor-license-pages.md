@@ -48,7 +48,7 @@ and rules: `.claude/skills/state-license-guides/SKILL.md`. Checker: `scripts/che
 | 28 | Nevada | nevada-contractor-license-lookup | TODO | | | | | | |
 | 29 | New Hampshire | new-hampshire-contractor-license-lookup | TODO | | | | | | |
 | 30 | New Jersey | new-jersey-contractor-license-lookup | TODO | | | | | | |
-| 31 | New Mexico | new-mexico-contractor-license-lookup | TODO | | | | | | |
+| 31 | New Mexico | new-mexico-contractor-license-lookup | LIVE #361 (2026-11-16) | Group 1 | tier 2 (2026-11-16-demand-new-mexico-contractor-license) | 23 | 2.8% (vs VA) | 2026-12-21 | Lookup is PSI-hosted (public.psiexams.com); every search needs a CAPTCHA, so no record read (form screenshot only; owner could send a record screenshot); statute read in NMOneSource viewer; no CID discipline listing found; image JPEG |
 | 32 | New York | new-york-contractor-license-lookup | TODO | | | | | | |
 | 33 | North Carolina | north-carolina-contractor-license-lookup | TODO | | | | | | |
 | 34 | North Dakota | north-dakota-contractor-license-lookup | TODO | | | | | | |
@@ -85,3 +85,5 @@ and rules: `.claude/skills/state-license-guides/SKILL.md`. Checker: `scripts/che
 | 2026-11-14 | Tennessee published as #359 after a ledger read-through (6 overstated lines tightened, QA fact added); 4 FAQs | READ 2026-12-19. |
 | 2026-11-16 | Virginia: research and draft done (26 facts, 1,903 words, title leads with "DPOR License Lookup"); set checker 0 fails (worst 3.2%), publish dry run and quality gate pass; sent to owner for review | |
 | 2026-11-16 | Virginia published as #360 on the owner's "publish"; 4 FAQs | READ 2026-12-21. |
+| 2026-11-16 | New Mexico: research and draft done (23 facts, 1,556 words; angle = PSI search + license code + $7,200 handyman limit); set checker 0 fails (worst 3.2%), dry run and quality gate pass; sent to owner for review | |
+| 2026-11-16 | New Mexico published as #361 on the owner's "publish if correct" after a read-through (6 lines tightened); 4 FAQs | READ 2026-12-21. |
