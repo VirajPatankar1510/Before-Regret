@@ -65,10 +65,10 @@ const EDITS: Edit[] = [
     id: 55, slug: 'reverse-polarity-mean-electrical-inspection',
     oldTitle: 'What Does "Reverse Polarity" Mean? Is It Dangerous?',
     oldMeta: 'What reverse polarity means on an electrical inspection report, why swapped hot and neutral wires pose a shock risk, and how to resolve it before closing.',
-    // Title NOT changed: the owner's "What Does Reverse Polarity Mean on an Outlet Tester?" failed the
-    // definition-echo rule in assert-article-quality.ts (rule 5); the old title passes because of
-    // "Is It Dangerous?". Description changed only. A new title awaits the owner's choice.
-    title: 'What Does "Reverse Polarity" Mean? Is It Dangerous?',
+    // The owner's first pick, "What Does Reverse Polarity Mean on an Outlet Tester?", failed the
+    // definition-echo rule (assert-article-quality.ts rule 5). The owner then left the choice to Claude
+    // (2026-11-16): searchers' own wording ("what does reverse polarity mean") + the tester + the worry.
+    title: 'What Does Reverse Polarity Mean on a Tester? Is It Safe?',
     meta: 'Reverse polarity swaps hot and neutral. A device may still work, but parts can remain energized when switched off. What testers detect and how to fix it.',
     requires: ['How Home Inspectors Test for Reverse Polarity', 'Isolated Fix'],
   },
