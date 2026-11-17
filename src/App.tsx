@@ -522,7 +522,7 @@ export function App() {
         // scripts/prerender-homepage.tsx) -- this client-side call was still overwriting that
         // honest static copy back to the old "20+ Public Records" overclaim on every real visit,
         // since it runs on mount regardless of what the static HTML already says.
-        title: 'Before Regret — Free US Property Research',
+        title: '100% Free Property risk report for any US address.',
         description: 'Before Regret is free property research for US home buyers: the questions to ask the seller and what to inspect first, for any US home.',
         canonicalUrl: 'https://www.beforeregret.com/',
         robotsDirective: 'index, follow',
