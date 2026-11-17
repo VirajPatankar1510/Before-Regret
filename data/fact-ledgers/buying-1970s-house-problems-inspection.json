@@ -1,0 +1,118 @@
+{
+  "slug": "buying-1970s-house-problems-inspection",
+  "question": "I'm buying a house built in the 1970s. What problems are typical and what should the inspection check?",
+  "verdictConfirmed": "The decade isn't one era in our engine: 1970-1973 adds aluminum branch wiring and a cast iron sewer scope to the lead-paint disclosure; 1974-1977 keeps only the lead-paint disclosure; 1978-1979 drops it (by permit date, per EPA/HUD) and adds polybutylene supply pipe. Panel brand, roof age, HVAC age and asbestos-if-renovating apply all ten years. About one in seven US housing units (14.2%, ACS 2020-2024) was built in the 1970s.",
+  "facts": [
+    {
+      "id": "e1",
+      "claim": "Our report engine, nationally applicable rules only (no county or state restriction), split by build year: 1970-1973 lead_paint_disclosure + electrical_aluminum_wiring + sewer_cast_iron; 1974-1977 lead_paint_disclosure only; 1978-1979 polybutylene_supply. Rules that fire for every year 1970-1979: electrical_panel_brand, foundation_type_general, asbestos_materials, roof_age, hvac_age, chimney_level2, pest_inspection_general, radon_test. Windows: lead paint maxYear 1977; aluminum 1965-1973; cast iron sewer maxYear 1973; polybutylene 1978-1996; panel brand 1950-1989; asbestos maxYear 1985.",
+      "quote": "bands: [{from: 1970, to: 1973, rules: [lead_paint_disclosure, electrical_aluminum_wiring, sewer_cast_iron]}, {from: 1974, to: 1977, rules: [lead_paint_disclosure]}, {from: 1978, to: 1979, rules: [polybutylene_supply]}]; constantRules: electrical_panel_brand, foundation_type_general, asbestos_materials, roof_age, hvac_age, chimney_level2, pest_inspection_general, radon_test. lead_paint_disclosure maxYear 1977; electrical_aluminum_wiring 1965-1973; sewer_cast_iron maxYear 1973; polybutylene_supply 1978-1996; electrical_panel_brand 1950-1989; asbestos_materials maxYear 1985",
+      "url": "docs/data/1970s-housing-figures.json (engine section, from src/engine/inspectionPriorities.ts via scripts/build-1970s-housing-figures.ts)",
+      "readOn": "2026-11-17",
+      "method": "engine"
+    },
+    {
+      "id": "e2",
+      "claim": "Engine costs: aluminum wiring electrician evaluation $150 – $350, permanent repair $2,000 – $8,000+; cast iron sewer camera scope $300 – $500, spot repair $1,500 – $5,000, full replacement $4,000 – $15,000+; polybutylene whole-home repipe $4,000 – $15,000; panel replacement $1,500 – $4,000; asbestos sampling and lab analysis $200 – $600; lead-paint disclosure check free.",
+      "quote": "Dedicated electrician evaluation $150 – $350 ... Typically $2,000 – $8,000+ ... $300 – $500 for a camera scope ... Spot repair $1,500 – $5,000; full replacement $4,000 – $15,000+ ... Whole-home repipe $4,000 – $15,000 ... Panel replacement $1,500 – $4,000 ... $200 – $600 for sampling and lab analysis ... Free — required for most pre-1978 homes",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES)",
+      "readOn": "2026-11-17",
+      "method": "engine (read at run time by scripts/publish-structure-era-batch-2026-11.ts)"
+    },
+    {
+      "id": "e3",
+      "claim": "Engine era notes: cast iron for drain, waste and vent piping was common in homes built before the early 1970s and a home of this era may still have its original line; polybutylene supply piping was widely installed from the late 1970s through the mid-1990s; certain panel brands installed between roughly the 1950s and the 1980s have documented breaker failure-to-trip problems; asbestos was common in floor tile, tile mastic, ceiling texture and pipe wrap in homes built before the early 1980s, and intact, undisturbed material is generally not considered a hazard.",
+      "quote": "Homes built before the early 1970s commonly used cast iron for drain, waste, and vent piping ... a home of this era may still have its original line. ... Polybutylene supply piping was widely installed in US homes from the late 1970s through the mid-1990s. ... Certain electrical panel brands installed between roughly the 1950s and the 1980s have documented breaker failure-to-trip problems. ... Asbestos was common in floor tile, tile mastic, ceiling texture, and pipe wrap in homes built before the early 1980s. Intact, undisturbed material is generally not considered a hazard",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES eraBasis)",
+      "readOn": "2026-11-17",
+      "method": "engine"
+    },
+    {
+      "id": "n1",
+      "claim": "OUR COUNT from Census ACS 5-year 2020-2024 table B25034 (50 states + DC, 3144 counties): 20,359,888 of 143,775,355 housing units were built 1970-1979, 14.2%; the 1970s is the largest single decade of construction in 751 counties. Housing units include apartments and condos, not only houses.",
+      "quote": "national: { totalUnits: 143775355, built1970s: 20359888, share1970sPct: 14.2, countiesWhere1970sIsLargestDecade: 751 } scope: 3144 counties and county equivalents in the 50 states and DC (Puerto Rico excluded); vintage 2020-2024",
+      "url": "docs/data/1970s-housing-figures.json (scripts/build-1970s-housing-figures.ts; source https://api.census.gov/data/2024/acs/acs5)",
+      "readOn": "2026-11-17",
+      "method": "calculation"
+    },
+    {
+      "id": "n2",
+      "claim": "OUR COUNT, states by 1970s share of housing units: Hawaii 22.7%, Alaska 22.2%, Wyoming 19%, Oklahoma 17.6%, Oregon 17.4%. By number: California 2,458,155 (16.8%), Florida 1,623,493 (15.8%), Texas 1,590,340 (13.1%).",
+      "quote": "Hawaii 22.7; Alaska 22.2; Wyoming 19 (19.0); Oklahoma 17.6; Oregon 17.4 ... California 2458155 16.8; Florida 1623493 15.8; Texas 1590340 13.1",
+      "url": "docs/data/1970s-housing-figures.json (scripts/build-1970s-housing-figures.ts)",
+      "readOn": "2026-11-17",
+      "method": "calculation"
+    },
+    {
+      "id": "n3",
+      "claim": "OUR COUNT, counties with 50,000+ housing units ranked by 1970s share: Anchorage Municipality AK 27.6%; Broward County FL 25.8% (223,191 units); Pinellas County FL 25.4% (132,191 units); Jefferson Parish LA 25.2%; Jefferson County CO 24.5%.",
+      "quote": "minUnitsForCountyShare: 50000; Anchorage Municipality, Alaska 27.6; Broward County, Florida 223191 25.8; Pinellas County, Florida 132191 25.4; Jefferson Parish, Louisiana 25.2; Jefferson County, Colorado 24.5",
+      "url": "docs/data/1970s-housing-figures.json (scripts/build-1970s-housing-figures.ts)",
+      "readOn": "2026-11-17",
+      "method": "calculation"
+    },
+    {
+      "id": "l1",
+      "claim": "40 CFR 745.103: target housing is any housing constructed prior to 1978, with exceptions (housing for the elderly or persons with disabilities unless a child under 6 lives there, and 0-bedroom dwellings).",
+      "quote": "Target housing means any housing constructed prior to 1978, except housing for the elderly or persons with disabilities (unless any child who is less than 6 years of age resides or is expected to reside in such housing) or any 0-bedroom dwelling.",
+      "url": "https://www.law.cornell.edu/cfr/text/40/745.103",
+      "readOn": "2026-11-01",
+      "method": "webfetch (reused from data/fact-ledgers/when-was-my-house-built-by-address.json f1)"
+    },
+    {
+      "id": "l2",
+      "claim": "EPA and HUD interpretive guidance (August 20, 1996), question 6: 'housing constructed before 1978' means housing whose construction permit was obtained before January 1, 1978 (or, with no permit, whose construction started before then); the question was about a house started in 1977 and finished in 1978.",
+      "quote": "Does this include or exclude housing that was started in 1977, but not completed until 1978? A: EPA and HUD consider \"housing constructed before 1978\" to mean housing for which a construction permit was obtained (or if no permit was obtained, housing in which construction was started) before January 1, 1978.",
+      "url": "https://www.epa.gov/sites/default/files/documents/1018fin.pdf",
+      "readOn": "2026-11-01",
+      "method": "pdf (reused from data/fact-ledgers/when-was-my-house-built-by-address.json f4)"
+    },
+    {
+      "id": "l3",
+      "claim": "40 CFR 745.107 and 745.110: for target housing the seller must give an EPA-approved pamphlet, disclose known lead-based paint and hazards and provide available records, and allow a 10-day period for a risk assessment or inspection unless the parties agree otherwise in writing; the buyer may waive it in writing. The seller is not required to test.",
+      "quote": "shall provide the purchaser or lessee with an EPA-approved lead hazard information pamphlet ... shall disclose to the purchaser or lessee the presence of any known lead-based paint and/or lead-based paint hazards ... the seller shall permit the purchaser a 10-day period (unless the parties mutually agree, in writing, upon a different period of time) to conduct a risk assessment or inspection ... a purchaser may waive the opportunity to conduct the risk assessment or inspection by so indicating in writing.",
+      "url": "https://www.law.cornell.edu/cfr/text/40/745.110",
+      "readOn": "2026-11-01",
+      "method": "webfetch (reused from data/fact-ledgers/when-was-my-house-built-by-address.json f2, f3)"
+    },
+    {
+      "id": "r1",
+      "claim": "EPA Renovation, Repair and Painting (RRP) program: anyone paid to do work that disturbs painted surfaces in homes, childcare facilities and preschools built before 1978 must be certified in lead-safe work practices, including sole proprietorships; generally the rule does not apply to homeowners working on their own pre-1978 home (it does for landlords, home childcare and flippers).",
+      "quote": "homes, childcare facilities and preschools built before 1978 ... must be certified in lead-safe work practices. This includes all firms, even sole proprietorships. ... Generally speaking, the RRP Rule does not apply to homeowners doing RRP projects in their own pre-1978 home.",
+      "url": "https://www.epa.gov/lead/lead-renovation-repair-and-painting-program",
+      "readOn": "2026-11-17",
+      "method": "webfetch"
+    },
+    {
+      "id": "a1",
+      "claim": "EPA asbestos guidance: material in good condition that won't be disturbed should be left alone; planning to remodel is a reason to have the home inspected, and a trained and accredited asbestos professional should take samples.",
+      "quote": "Material that is in good condition and will not be disturbed (by remodeling, for example) should be left alone. ... You are planning to remodel your home (remodeling can disturb building materials) ... A trained and accredited asbestos professional should take samples for analysis",
+      "url": "https://www.epa.gov/asbestos/protect-your-family-exposures-asbestos",
+      "readOn": "2026-11-17",
+      "method": "webfetch"
+    },
+    {
+      "id": "c1",
+      "claim": "CPSC Publication 516 (June 2011): aluminum may be in cables installed between 1965 and the mid 1970s in new homes, in additions, and as part of rewired or new circuits.",
+      "quote": "Electrical cables installed between 1965 and the mid 1970s in new homes, in additions, and as part of rewired/new circuits may contain aluminum wiring.",
+      "url": "https://www.cpsc.gov/s3fs-public/516.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf"
+    },
+    {
+      "id": "d1",
+      "claim": "Read date for the sources first opened for this page: 17 November 2026 (the lead-disclosure rules were read on 1 November 2026 for our year-built guide).",
+      "quote": "Sources opened 2026-11-17 (17 November 2026); 40 CFR 745 and the EPA/HUD guidance opened 2026-11-01 (1 November 2026).",
+      "url": "https://www.epa.gov/lead/lead-renovation-repair-and-painting-program",
+      "readOn": "2026-11-17",
+      "method": "webfetch"
+    }
+  ],
+  "cut": [
+    { "claim": "1970s houses had little insulation / predate energy codes", "why": "no primary source verified for a national date; left out rather than guessed" },
+    { "claim": "Popcorn ceilings were banned in a specific year", "why": "the regulatory history is partial and contested; the page uses EPA's 'leave it alone unless remodeling' guidance and the engine's window instead" },
+    { "claim": "Federal Pacific or Zinsco were installed mostly in the 1970s", "why": "the engine's window is 1950-1989; no source narrows it to the decade" },
+    { "claim": "Counts of single-family houses only", "why": "B25034 counts all housing units; the page says so instead of implying houses" }
+  ],
+  "blockedSources": []
+}

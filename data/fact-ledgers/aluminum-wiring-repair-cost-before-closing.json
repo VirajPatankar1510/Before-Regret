@@ -1,0 +1,158 @@
+{
+  "slug": "aluminum-wiring-repair-cost-before-closing",
+  "question": "The inspector found aluminum branch wiring. What will the repair cost, and what exactly should I ask the seller for before closing?",
+  "verdictConfirmed": "Our engine puts a permanent repair at $2,000 – $8,000+ and says the number moves with the count of connections. CPSC Publication 516 accepts three permanent repairs (copper rewire, COPALUM, AlumiConn) and says the repair should cover every aluminum connection, including hard-wired appliances and panel boxes; twist-on pigtails are 'Not a Recommended Repair' and CO/ALR devices are 'at best, an incomplete repair'. So the ask is a named method, every connection, and a permit with final inspection; a seller credit is capped by the lender and can't exceed closing costs.",
+  "facts": [
+    {
+      "id": "e1",
+      "claim": "Our report engine's aluminum rule: homes built 1965 to 1973; electrician evaluation $150 – $350; permanent repair (copper rewiring, COPALUM or AlumiConn) typically $2,000 – $8,000+, depending on the number of connections and the scope of work.",
+      "quote": "id: 'electrical_aluminum_wiring', minYear: 1965, maxYear: 1973 ... costToCheck: 'Usually included in a general inspection — ask them to note the wiring material. Dedicated electrician evaluation $150 – $350.' typicalRepairCost: 'Have a qualified electrician assess the wiring and recommend a permanent repair: copper rewiring, COPALUM or AlumiConn, depending on the installation. Typically $2,000 – $8,000+, depending on the number of connections and the scope of work.'",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES electrical_aluminum_wiring)",
+      "readOn": "2026-11-17",
+      "method": "engine (read at run time by scripts/publish-structure-era-batch-2026-11.ts)"
+    },
+    {
+      "id": "c1",
+      "claim": "CPSC Publication 516 (June 2011): homes built before 1965 are unlikely to have aluminum branch wiring; cables installed between 1965 and the mid 1970s in new homes, in additions, and as part of rewired or new circuits may contain aluminum.",
+      "quote": "Homes built before 1965 are unlikely to have aluminum branch circuit wiring. Electrical cables installed between 1965 and the mid 1970s in new homes, in additions, and as part of rewired/new circuits may contain aluminum wiring. ... Publication 516 • June 2011",
+      "url": "https://www.cpsc.gov/s3fs-public/516.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf"
+    },
+    {
+      "id": "c2",
+      "claim": "CPSC approves only three methods for a permanent repair: complete replacement with copper cable, the COPALUM method, and the AlumiConn connector as the acceptable alternative.",
+      "quote": "Based on these standards, as of the date of this publication, CPSC approves of only three methods for a permanent repair. 1) Complete Replacement of Copper Cable 2) COPALUM Method of Repair 3) Acceptable Alternative Repair Method/AlumiConn Connector",
+      "url": "https://www.cpsc.gov/s3fs-public/516.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf"
+    },
+    {
+      "id": "c3",
+      "claim": "Copper rewire: a new copper branch circuit system is installed and the aluminum can be abandoned in the walls; how easy it is depends on the home's style and its unfinished spaces; it is the best method but for many homes impractical and/or prohibitively expensive.",
+      "quote": "Depending on the architectural style of your home and the number and locations of unfinished spaces (e.g., basements and attics), it may be relatively easy for a qualified electrician to rewire your home. A new copper wire branch circuit system would be installed, and the existing aluminum wire could be abandoned inside the walls. This is the best method available; but for many homes, rewiring with copper is impractical and/or prohibitively expensive.",
+      "url": "https://www.cpsc.gov/s3fs-public/516.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf"
+    },
+    {
+      "id": "c4",
+      "claim": "COPALUM repair should include every aluminum connection or splice: outlets, dimmers, switches, fixtures, appliances and junction boxes; appliances wired directly to No.12 or No.10 aluminum (dishwashers, cooling equipment, heaters, air conditioners, light fixtures) must be repaired in addition to outlets, switches, junction boxes and panel boxes.",
+      "quote": "The repair should include every connection or splice involving aluminum wire in the home, including outlets, dimmers, switches, fixtures, appliances, and junction boxes. ... Every connection of aluminum-to-aluminum or aluminum-to-copper wire should be repaired in order to obtain the maximum benefit from such repair work. All appliances connected directly to No.12 or No.10 AWG aluminum branch circuit wiring (e.g., dishwashers, cooling equipment, heaters, air conditioners, and light fixtures) must be repaired in addition to wall outlets, switches, junction boxes, and panel boxes.",
+      "url": "https://www.cpsc.gov/s3fs-public/516.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf"
+    },
+    {
+      "id": "c5",
+      "claim": "COPALUM: a metal sleeve crimped with a dedicated power tool and die (upwards of 10,000 pounds of force); only electricians trained by the manufacturer are authorized to install it; CPSC calls it practical in an occupied, furnished home and proven by more than a quarter century of field experience.",
+      "quote": "a metal sleeve intended to be installed only with a dedicated power tool and crimping die ... using upwards of 10,000 pounds of force ... Only electricians who are trained by the manufacturer to use the tool properly are authorized to install COPALUM connectors. ... This repair method has been thoroughly proven by more than a quarter of a century of field experience ... The COPALUM repair method has been shown to be practical for installation in an occupied and furnished home.",
+      "url": "https://www.cpsc.gov/s3fs-public/516.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf"
+    },
+    {
+      "id": "c6",
+      "claim": "AlumiConn: CPSC says that if COPALUM is not available, the AlumiConn setscrew connector may be considered the next best alternative; it performed well in initial tests but was too new (in 2011) for a long-term history; it should be installed by a qualified electrician. CPSC also recognises copper replacement may be cost prohibitive and COPALUM may be unavailable in a locality.",
+      "quote": "CPSC staff recognizes that copper replacement may be cost prohibitive and that the COPALUM repair may be unavailable in a locality. ... if the COPALUM repair is not available, the AlumiConn connector may be considered the next best alternative for a permanent repair. This repair method involves pigtailing using a setscrew type connector ... The AlumiConn connector has performed well in initial tests, but is too new to have developed a significant long-term safe performance history as the COPALUM repair. The repair should be conducted by a qualified electrician",
+      "url": "https://www.cpsc.gov/s3fs-public/516.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf"
+    },
+    {
+      "id": "c7",
+      "claim": "Twist-on connector pigtails and CO/ALR devices are often recommended by some electricians because they are substantially less expensive than COPALUM; CPSC does not consider either an acceptable permanent repair. Pigtailing with twist-on connectors is 'Not a Recommended Repair'.",
+      "quote": "Two other repair methods described below are often recommended by some electricians because they are substantially less expensive than COPALUM crimp connectors. CPSC staff does not consider either of these repairs an acceptable permanent repair. ... “Pigtailing” with Twist-on Connectors Is Not a Recommended Repair",
+      "url": "https://www.cpsc.gov/s3fs-public/516.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf"
+    },
+    {
+      "id": "c8",
+      "claim": "CO/ALR switches and receptacles have failed in laboratory tests with typical aluminum wire, are not available for all parts of the system (permanently wired appliances, ceiling-mounted light fixtures), and are 'at best, an incomplete repair'.",
+      "quote": "CO/ALR wiring devices have failed in laboratory tests when connected to aluminum wire typical of that installed in existing homes. ... CO/ALR connectors are not available for all parts of the wiring system (e.g., for the permanently wired appliances and ceiling mounted light fixtures). In the opinion of CPSC staff, CO/ALR devices must be considered, at best, an incomplete repair.",
+      "url": "https://www.cpsc.gov/s3fs-public/516.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf"
+    },
+    {
+      "id": "c9",
+      "claim": "Other (non-COPALUM) crimp connectors, including pliers-type hand-crimped ones sold at retailers, have not been evaluated for copper-to-aluminum; CPSC strongly recommends against them.",
+      "quote": "There are many other brands and types of crimp connectors — including those intended to be installed with a pliers-type of handtool — which are readily available to consumers at common retailers. No other crimp connectors have been evaluated for connecting copper and aluminum conductors. CPSC staff strongly recommends against their use as a repair method.",
+      "url": "https://www.cpsc.gov/s3fs-public/516.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf"
+    },
+    {
+      "id": "c10",
+      "claim": "Twist-on AL/CU pigtails or CO/ALR devices may be used as an emergency, temporary repair of a failed termination, followed by a complete repair with a CPSC-recommended method as soon as possible.",
+      "quote": "AL/CU twist-on connector pigtails or CO/ALR devices may be used as an emergency, temporary repair for a failed aluminum termination. Should such a repair be performed, CPSC staff recommends that a complete repair of the aluminum-wired system be performed using the CPSC-recommended methods as soon as possible.",
+      "url": "https://www.cpsc.gov/s3fs-public/516.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf"
+    },
+    {
+      "id": "c11",
+      "claim": "Scope limits: the repairs in Publication 516 do not apply to larger-gauge aluminum used for service entrance cables, electric clothes dryers and cooking ranges; cable marked CU-clad or Copper-clad (copper-coated aluminum) is not covered by the repair recommendations.",
+      "quote": "The repairs outlined in this publication do not apply to larger gauge aluminum wire circuits and connections used for service entrance cables, electric clothes dryers, and cooking ranges. ... the marking “CU-clad” or “Copper-clad,” in addition to the “Al” or “Aluminum,” means that the cable uses copper-coated aluminum wire and is not covered by the repair recommendations outlined in this publication",
+      "url": "https://www.cpsc.gov/s3fs-public/516.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf"
+    },
+    {
+      "id": "c12",
+      "claim": "Identification: aluminum cable is marked 'Al' or 'Aluminum' on the jacket every few feet, visible in unfinished basements, attics or garages; aluminum is sized No.10 and No.12 AWG for 20-amp and 15-amp circuits, versus No.12 and No.14 for copper. Failing connections seldom give easily detected warning signs.",
+      "quote": "Look at the printed or embossed markings on the outer jacket of the electric cables, which are visible in unfinished basements, attics, or garages. ... Cable with aluminum conductors will have “Al” or “Aluminum” and other information marked on one side of the cable jacket every few feet along its length. ... Aluminum and copper-clad aluminum cables are sized at No.10 and No.12 AWG for 20-ampere and 15-ampere rated circuits, respectively, as opposed to No.12 and No.14 AWG for copper conductors. ... failing aluminum-wired connections seldom provide easily detected warning signs.",
+      "url": "https://www.cpsc.gov/s3fs-public/516.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf"
+    },
+    {
+      "id": "c13",
+      "claim": "Code compliance: all modifications and additions to installed wiring should be performed and inspected in accordance with local regulations.",
+      "quote": "CODE COMPLIANCE AND INSPECTION All modifications and additions to installed wiring should be performed and inspected in accordance with local regulations.",
+      "url": "https://www.cpsc.gov/s3fs-public/516.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf"
+    },
+    {
+      "id": "f1",
+      "claim": "Fannie Mae Selling Guide B3-4.1-02: financing concessions (seller credits) may go toward borrower closing costs including prepaids; financing concessions that exceed the limits are sales concessions and must be deducted from the sales price; any amount exceeding the borrower's closing costs must be treated as a sales concession; IPCs cannot be used for the down payment.",
+      "quote": "Borrower closing costs, including prepaids ... Financing concessions that exceed the below limits are considered sales concessions ... must be deducted from the property's sales price ... Any amount exceeding the borrower's closing costs must be treated as a sales concession. ... Fannie Mae does not permit IPCs to be used to make the borrower's down payment",
+      "url": "https://selling-guide.fanniemae.com/sel/b3-4.1-02/interested-party-contributions-ipcs",
+      "readOn": "2026-11-17",
+      "method": "webfetch"
+    },
+    {
+      "id": "f2",
+      "claim": "Fannie Mae maximum financing concessions, on the lower of sales price or appraised value: principal residence or second home above 90% LTV/CLTV 3%; 75.01% to 90% 6%; 75% or less 9%; investment property 2%.",
+      "quote": "The table below provides maximum financing concessions, which are calculated using the lower of the sales price or appraised value (not the loan amount) of the subject transaction. ... Greater than 90% 3% 75.01% – 90% 6% 75% or less 9% ... Investment property All CLTV ratios 2%",
+      "url": "https://selling-guide.fanniemae.com/sel/b3-4.1-02/interested-party-contributions-ipcs",
+      "readOn": "2026-11-17",
+      "method": "webfetch"
+    },
+    {
+      "id": "k1",
+      "claim": "OUR CALCULATION: at the 3% cap (more than 90% LTV), an $8,000 credit (the top of our engine's range before the plus) needs a price or appraisal of at least $266,667 (8,000 / 0.03 = 266,666.67), and still only up to the buyer's actual closing costs. At the 6% cap the same credit needs $133,334 (8,000 / 0.06 = 133,333.33).",
+      "quote": "8000 / 0.03 = 266666.67 -> $266,667; 8000 / 0.06 = 133333.33 -> $133,334. Computed 2026-11-17 from e1 and f2.",
+      "url": "https://selling-guide.fanniemae.com/sel/b3-4.1-02/interested-party-contributions-ipcs",
+      "readOn": "2026-11-17",
+      "method": "calculation"
+    },
+    {
+      "id": "d1",
+      "claim": "Read date for the sources on this page: 17 November 2026. CPSC Publication 516 is dated June 2011.",
+      "quote": "All sources opened on 2026-11-17 (17 November 2026). Publication 516 • June 2011",
+      "url": "https://www.cpsc.gov/s3fs-public/516.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf"
+    }
+  ],
+  "cut": [
+    { "claim": "A per-connection price for COPALUM or AlumiConn work", "why": "no primary source publishes one; the page uses only the engine's whole-job range and explains that it scales with the connection count" },
+    { "claim": "Where to find a COPALUM installer today", "why": "Publication 516's installer link and phone number date from 2011 (Tyco); not re-verified, so the page tells the reader to ask the electrician which method they are trained in" },
+    { "claim": "Franklin Research Institute's '55 times' survey figure", "why": "true and quoted in the source, but it is about pre-1972 homes at outlets and the page is about cost and paperwork; left out to keep the tone practical" },
+    { "claim": "Whether a lender requires the repair before closing", "why": "no primary lender rule found that names aluminum wiring; left to the reader's lender" }
+  ],
+  "blockedSources": []
+}

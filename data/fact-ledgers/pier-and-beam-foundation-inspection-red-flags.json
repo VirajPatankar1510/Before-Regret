@@ -1,0 +1,126 @@
+{
+  "slug": "pier-and-beam-foundation-inspection-red-flags",
+  "question": "I'm buying a pier-and-beam house. What should the inspection look at, and what are the red flags?",
+  "verdictConfirmed": "Read where the inspector looked from first: Texas's standard requires the report to state the vantage point the crawl space was inspected from, and both Texas and Washington let an inspector skip a crawl space with under 18 inches of headroom (Washington also below 12 inches under girders, an access smaller than 18 x 24, or flooding). Red flags above the floor are the ones Texas lists (binding doors, sloping floors, frieze board separations, cracking cladding); below it, wood close to soil (IRC R317.1: joists 18 in., girders 12 in.), water, rot, missing ground cover, and vents or a sealed crawl space that don't meet IRC R408. Our engine prices pier or beam repair and releveling at $3,000 – $15,000+.",
+  "facts": [
+    {
+      "id": "e1",
+      "claim": "Our report engine's pier_and_beam rule: homes built through 1965 in the counties of our expansive-soil list (13 Texas counties: Travis, Williamson, Hays, Dallas, Tarrant, Collin, Denton, Bexar, Harris, Fort Bend, Montgomery, McLennan, Bell); title 'Have someone physically enter the crawlspace'; check usually included in a general inspection when the crawlspace is accessible; pier or beam repair and releveling $3,000 – $15,000+; ask the inspector to physically enter rather than look in from the access hatch and report on moisture, rot and pier condition.",
+      "quote": "id: 'pier_and_beam', minYear: 1800, maxYear: 1965, counties: Object.keys(EXPANSIVE_SOIL_REGIONS), title: 'Have someone physically enter the crawlspace' ... costToCheck: 'Usually included in a general inspection when the crawlspace is accessible', typicalRepairCost: 'Pier or beam repair and releveling $3,000 – $15,000+', howToCheck: 'Ask your inspector to physically enter the crawlspace rather than looking in from the access hatch, and to report on moisture, rot, and pier condition.' EXPANSIVE_SOIL_REGIONS: travis, williamson, hays, dallas, tarrant, collin, denton, bexar, harris, fort bend, montgomery, mclennan, bell (13 counties, all TX)",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES pier_and_beam, EXPANSIVE_SOIL_REGIONS)",
+      "readOn": "2026-11-17",
+      "method": "engine (read at run time by scripts/publish-structure-era-batch-2026-11.ts)"
+    },
+    {
+      "id": "t1",
+      "claim": "Texas, 22 TAC 535.228(a) (TREC standards of practice, foundations): the inspector must give an opinion on foundation performance and report the foundation type and the vantage point from which the crawl space was inspected; indicators of adverse performance include binding, out-of-square, non-latching doors; framing or frieze board separations; sloping floors; rotating, buckling, cracking or deflecting masonry cladding. Report as deficient: deteriorated materials; deficiencies in beams, joists, bridging, blocking, piers, posts, pilings, columns, sills or subfloor; crawl space ventilation that is not performing; crawl space drainage that is not performing. Adopted 2016, amended effective 2/1/2022.",
+      "quote": "the vantage point from which the crawl space was inspected; ... binding, out-of-square, non-latching doors; framing or frieze board separations; sloping floors; rotating, buckling, cracking, or deflecting masonry cladding ... deteriorated materials; deficiencies in foundation components such as; beams, joists, bridging, blocking, piers, posts, pilings, columns, sills or subfloor; ... crawl space ventilation that is not performing; and crawl space drainage that is not performing. [eff. 9/7/2016; amended eff. 2/1/2022]",
+      "url": "https://www.law.cornell.edu/regulations/texas/22-Tex-Admin-Code-SS-535-228",
+      "readOn": "2026-11-17",
+      "method": "webfetch"
+    },
+    {
+      "id": "t2",
+      "claim": "Texas: the inspector is not required to enter a crawl space where headroom is less than 18 inches or the access opening is less than 24 inches wide and 18 inches high.",
+      "quote": "headroom is less than 18 inches ... the access opening is less than 24 inches wide and 18 inches high;",
+      "url": "https://www.law.cornell.edu/regulations/texas/22-Tex-Admin-Code-SS-535-228",
+      "readOn": "2026-11-17",
+      "method": "webfetch"
+    },
+    {
+      "id": "w1",
+      "claim": "Washington WAC 308-408C-070 (structure): the inspector will enter and traverse subfloor crawlspaces where readily and safely accessible; inspect visible posts, piers, beams, joists and subfloors; inspect crawlspaces for indications of flooding and moisture penetration; probe where deterioration is suspected; report all wood rot and pest-conducive conditions; inspectors may not identify specific wood destroying insects unless currently licensed as a WA structural pest inspector, and must refer suspected insect issues to a licensed SPI or pest control operator.",
+      "quote": "Enter and traverse attics and subfloor crawlspaces where readily and safely accessible. ... The condition of visible, exposed foundations and grade slabs, walls, posts, piers, beams, joists, trusses, subfloors ... Subfloor crawlspaces and basements for indications of flooding and moisture penetration. ... Probe structural components where deterioration is suspected ... Report all wood rot and pest-conducive conditions discovered. Inspectors are prohibited from identifying specific wood destroying insects (carpenter ants, termites, wood boring beetles, etc.) unless they are a currently licensed WA-SPI. ... Refer all issues that are suspected to be insect related to a licensed structural pest inspector (SPI) or pest control operator (PCO) for follow up.",
+      "url": "https://app.leg.wa.gov/wac/default.aspx?cite=308-408C&full=true",
+      "readOn": "2026-11-17",
+      "method": "browser (full chapter text, WSR 26-15-037)"
+    },
+    {
+      "id": "w2",
+      "claim": "Washington: the inspector is not required to enter subfloor crawlspaces that require excavation or have an access opening less than 18 inches by 24 inches or headroom less than 18 inches beneath floor joists and 12 inches beneath girders (beams), or to move stored items or debris.",
+      "quote": "Subfloor crawlspaces that require excavation or have an access opening less than 18 inches by 24 inches or headroom less than 18 inches beneath floor joists and 12 inches beneath girders (beams). ... Move stored items or debris or perform excavation to gain access.",
+      "url": "https://app.leg.wa.gov/wac/default.aspx?cite=308-408C&full=true",
+      "readOn": "2026-11-17",
+      "method": "browser (full chapter text, WSR 26-15-037)"
+    },
+    {
+      "id": "w3",
+      "claim": "Washington WAC 308-408C-060: inspectors are not required to enter flooded crawlspaces; excluded areas must have the reason stated in the report.",
+      "quote": "(18) Enter flooded crawlspaces, attics that are not readily accessible, or any area that will, in the opinion of the inspector, likely be dangerous ... When systems or components designated for inspection under this SOP are excluded, the reason the item was excluded must be stated within the home inspection report.",
+      "url": "https://app.leg.wa.gov/wac/default.aspx?cite=308-408C&full=true",
+      "readOn": "2026-11-17",
+      "method": "browser (full chapter text, WSR 26-15-037)"
+    },
+    {
+      "id": "w4",
+      "claim": "Washington WAC 308-408C-150: the inspector will report missing or inadequate vapor barriers in subfloor crawlspaces with earth floors.",
+      "quote": "Report missing or inadequate vapor barriers in subfloor crawlspaces with earth floors.",
+      "url": "https://app.leg.wa.gov/wac/default.aspx?cite=308-408C&full=true",
+      "readOn": "2026-11-17",
+      "method": "browser (full chapter text, WSR 26-15-037)"
+    },
+    {
+      "id": "i1",
+      "claim": "IRC R408.2 (2021): vent openings at least 1 square foot per 150 square feet of under-floor area; one opening within 3 feet of each external corner; may be reduced to 1/1,500 of the area where the ground is covered with an approved Class I vapor retarder (then corner placement can be replaced by cross ventilation).",
+      "quote": "The minimum net area of ventilation openings shall be not less than 1 square foot (0.0929 m2) for each 150 square feet (14 m2) of under-floor area. One ventilation opening shall be within 3 feet (915 mm) of each external corner of the under-floor space. ... The total area of ventilation openings shall be permitted to be reduced to 1/1,500 of the under-floor area where the ground surface is covered with an approved Class I vapor retarder material.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-4-foundations",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "i2",
+      "claim": "IRC R408.3 (2021) unvented crawl space: exposed earth covered with a continuous Class I vapor retarder, joints overlapped 6 inches and sealed or taped, edges extending at least 6 inches up the stem wall and attached and sealed; plus one of: continuous mechanical exhaust at 1 cubic foot per minute per 50 square feet, conditioned air supply at the same rate, a plenum in existing structures, or dehumidification sized to the maker's specifications.",
+      "quote": "Exposed earth shall be covered with a continuous Class I vapor retarder. Joints of the vapor retarder shall overlap by 6 inches (152 mm) and shall be sealed or taped. The edges of the vapor retarder shall extend not less than 6 inches (152 mm) up the stem wall and shall be attached and sealed to the stem wall or insulation. ... 2.1. Continuously operated mechanical exhaust ventilation at a rate equal to 1 cubic foot per minute (0.47 L/s) for each 50 square feet (4.7 m2) of crawl space floor area ... 2.2. Conditioned air supply ... 2.3. Plenum in existing structures ... 2.4. Dehumidification sized in accordance with manufacturer’s specifications.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-4-foundations",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "i3",
+      "claim": "IRC R408.4 (2021): access to all under-floor spaces; openings through the floor at least 18 inches by 24 inches; through a perimeter wall at least 16 inches by 24 inches.",
+      "quote": "Access shall be provided to all under-floor spaces. Access openings through the floor shall be not smaller than 18 inches by 24 inches (457 mm by 610 mm). Openings through a perimeter wall shall be not less than 16 inches by 24 inches (407 mm by 610 mm).",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-4-foundations",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "i4",
+      "claim": "IRC R408.5 and R408.6 (2021): the under-floor grade must be cleaned of vegetation and organic material, and wood forms removed; where groundwater can rise to within 6 inches of the finished floor at the perimeter or surface water doesn't drain, the under-floor grade must be as high as the outside grade unless an approved drainage system is provided.",
+      "quote": "The under-floor grade shall be cleaned of all vegetation and organic material. Wood forms used for placing concrete shall be removed before a building is occupied ... where there is evidence that the groundwater table can rise to within 6 inches (152 mm) of the finished floor at the building perimeter or where there is evidence that the surface water does not readily drain from the building site, the grade in the under-floor space shall be as high as the outside finished grade, unless an approved drainage system is provided.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-4-foundations",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "i5",
+      "claim": "IRC R317.1 (2021): in crawl spaces, wood joists or the bottom of a wood floor closer than 18 inches to exposed ground, wood girders closer than 12 inches, and wood columns closer than 8 inches must be naturally durable or preservative-treated wood.",
+      "quote": "In crawl spaces or unexcavated areas located within the periphery of the building foundation, wood joists or the bottom of a wood structural floor where closer than 18 inches (457 mm) to exposed ground, wood girders where closer than 12 inches (305 mm) to exposed ground, and wood columns where closer than 8 inches (204 mm) to exposed ground.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-3-building-planning",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "k1",
+      "claim": "OUR CALCULATION for a 1,500 square foot crawl space: vented under R408.2, 1,500 / 150 = 10 square feet of net vent opening; with a Class I vapor retarder on the ground, 1,500 / 1,500 = 1 square foot; sealed under R408.3 with an exhaust fan, 1,500 / 50 = 30 cubic feet per minute.",
+      "quote": "1500 / 150 = 10; 1500 / 1500 = 1; 1500 / 50 = 30. Computed 2026-11-17 from i1 and i2.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-4-foundations",
+      "readOn": "2026-11-17",
+      "method": "calculation"
+    },
+    {
+      "id": "d1",
+      "claim": "Read date for the sources on this page: 17 November 2026; the IRC text is the 2021 edition on the ICC's free public viewer.",
+      "quote": "All sources opened on 2026-11-17 (17 November 2026). 2021 INTERNATIONAL RESIDENTIAL CODE (IRC)",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-4-foundations",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    { "claim": "Shims stacked on piers as a sign of releveling", "why": "no primary source found that names shims; the page asks for repair records when posts or piers look newer than the rest, as advice rather than a sourced claim" },
+    { "claim": "Typical pier spacing or beam spans", "why": "span tables vary by lumber and load; not a red flag a buyer can check" },
+    { "claim": "Mud tubes as proof of termites", "why": "Washington's rule bars inspectors from naming the insect unless licensed; the page routes insect questions to a WDO inspection instead of making the call" },
+    { "claim": "Which states build the most pier-and-beam houses", "why": "no first-party or primary count by foundation type found; the page only says where our engine raises the check" }
+  ],
+  "blockedSources": ["trec.texas.gov (unreachable from our location on 2026-11-13; Texas rule text read via Cornell LII instead)"]
+}

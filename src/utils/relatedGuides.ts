@@ -85,7 +85,9 @@ const GUIDE_TOPIC_PATTERNS: ReadonlyArray<readonly [string, RegExp]> = [
   // my house built", a records-by-address guide). Checked before the system buckets: a guide about reading the year
   // built mentions wiring and pipes by era but is first about the year. Verified to reclassify zero existing guides
   // when added (the housing-stock ranking guide matches nothing today and is deliberately left where it is).
-  ['house-age', /when[- ]was[- ]\w+[- ]house[- ]built|year[- ]built/],
+  // '19x0s house' added 2026-11-17 with the owner's 1970s-house title: a guide to one decade's houses is first about
+  // the house's age, even though it covers wiring and pipes. Verified to match zero existing rows when added.
+  ['house-age', /when[- ]was[- ]\w+[- ]house[- ]built|year[- ]built|\b19\d0s[- ]house/],
   // Stucco and EIFS. Added 2026-10-12 for the first sponsored topic cluster (marketing/cluster-plan.md):
   // a stucco specialist sponsors these pages, so they must not sit in one bucket with roof-insurance
   // guides. Checked before roofing-exterior, which still lists the same words but no longer wins for

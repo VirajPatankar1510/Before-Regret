@@ -1,0 +1,280 @@
+{
+  "generatedBy": "scripts/build-1970s-housing-figures.ts",
+  "input": "docs/data/oldest-housing-raw.json",
+  "source": "U.S. Census Bureau, American Community Survey 5-year estimates, table B25034 (Year Structure Built)",
+  "vintage": "2020-2024",
+  "api": "https://api.census.gov/data/2024/acs/acs5",
+  "fetchedAt": "2026-10-09T15:27:09.683Z",
+  "scope": "3144 counties and county equivalents in the 50 states and DC (Puerto Rico excluded)",
+  "national": {
+    "totalUnits": 143775355,
+    "built1970s": 20359888,
+    "share1970sPct": 14.2,
+    "countiesWhere1970sIsLargestDecade": 751
+  },
+  "topStatesByShare": [
+    {
+      "name": "Hawaii",
+      "total": 567896,
+      "b70": 128859,
+      "sharePct": 22.7
+    },
+    {
+      "name": "Alaska",
+      "total": 328491,
+      "b70": 72771,
+      "sharePct": 22.2
+    },
+    {
+      "name": "Wyoming",
+      "total": 277141,
+      "b70": 52580,
+      "sharePct": 19
+    },
+    {
+      "name": "Oklahoma",
+      "total": 1775127,
+      "b70": 312981,
+      "sharePct": 17.6
+    },
+    {
+      "name": "Oregon",
+      "total": 1857992,
+      "b70": 323199,
+      "sharePct": 17.4
+    },
+    {
+      "name": "Louisiana",
+      "total": 2108902,
+      "b70": 357108,
+      "sharePct": 16.9
+    },
+    {
+      "name": "New Mexico",
+      "total": 956964,
+      "b70": 161341,
+      "sharePct": 16.9
+    },
+    {
+      "name": "Arkansas",
+      "total": 1394673,
+      "b70": 234573,
+      "sharePct": 16.8
+    },
+    {
+      "name": "California",
+      "total": 14644735,
+      "b70": 2458155,
+      "sharePct": 16.8
+    },
+    {
+      "name": "Mississippi",
+      "total": 1341114,
+      "b70": 224191,
+      "sharePct": 16.7
+    }
+  ],
+  "topStatesByCount": [
+    {
+      "name": "California",
+      "built1970s": 2458155,
+      "sharePct": 16.8
+    },
+    {
+      "name": "Florida",
+      "built1970s": 1623493,
+      "sharePct": 15.8
+    },
+    {
+      "name": "Texas",
+      "built1970s": 1590340,
+      "sharePct": 13.1
+    },
+    {
+      "name": "New York",
+      "built1970s": 841477,
+      "sharePct": 9.8
+    },
+    {
+      "name": "Illinois",
+      "built1970s": 774206,
+      "sharePct": 14.2
+    }
+  ],
+  "minUnitsForCountyShare": 50000,
+  "topCountiesByShare": [
+    {
+      "name": "Anchorage Municipality, Alaska",
+      "total": 120348,
+      "built1970s": 33209,
+      "sharePct": 27.6
+    },
+    {
+      "name": "Broward County, Florida",
+      "total": 866019,
+      "built1970s": 223191,
+      "sharePct": 25.8
+    },
+    {
+      "name": "Pinellas County, Florida",
+      "total": 520107,
+      "built1970s": 132191,
+      "sharePct": 25.4
+    },
+    {
+      "name": "Jefferson Parish, Louisiana",
+      "total": 194418,
+      "built1970s": 49046,
+      "sharePct": 25.2
+    },
+    {
+      "name": "Jefferson County, Colorado",
+      "total": 253574,
+      "built1970s": 62112,
+      "sharePct": 24.5
+    },
+    {
+      "name": "Honolulu County, Hawaii",
+      "total": 374304,
+      "built1970s": 89024,
+      "sharePct": 23.8
+    },
+    {
+      "name": "DuPage County, Illinois",
+      "total": 367152,
+      "built1970s": 83740,
+      "sharePct": 22.8
+    },
+    {
+      "name": "Ventura County, California",
+      "total": 295878,
+      "built1970s": 67031,
+      "sharePct": 22.7
+    },
+    {
+      "name": "Gregg County, Texas",
+      "total": 53883,
+      "built1970s": 12055,
+      "sharePct": 22.4
+    },
+    {
+      "name": "El Dorado County, California",
+      "total": 94653,
+      "built1970s": 21154,
+      "sharePct": 22.3
+    }
+  ],
+  "engine": {
+    "file": "src/engine/inspectionPriorities.ts",
+    "note": "nationally applicable rules only (no counties/states field)",
+    "bands": [
+      {
+        "from": 1970,
+        "to": 1973,
+        "rules": [
+          "lead_paint_disclosure",
+          "electrical_aluminum_wiring",
+          "sewer_cast_iron"
+        ]
+      },
+      {
+        "from": 1974,
+        "to": 1977,
+        "rules": [
+          "lead_paint_disclosure"
+        ]
+      },
+      {
+        "from": 1978,
+        "to": 1979,
+        "rules": [
+          "polybutylene_supply"
+        ]
+      }
+    ],
+    "changingRules": [
+      {
+        "id": "lead_paint_disclosure",
+        "title": "Confirm you received the federal lead-paint disclosure",
+        "minYear": 1800,
+        "maxYear": 1977,
+        "costToCheck": "Free — required for most pre-1978 homes",
+        "typicalRepairCost": null
+      },
+      {
+        "id": "electrical_aluminum_wiring",
+        "title": "Identify the branch circuit wiring material",
+        "minYear": 1965,
+        "maxYear": 1973,
+        "costToCheck": "Usually included in a general inspection — ask them to note the wiring material. Dedicated electrician evaluation $150 – $350.",
+        "typicalRepairCost": "Have a qualified electrician assess the wiring and recommend a permanent repair: copper rewiring, COPALUM or AlumiConn, depending on the installation. Typically $2,000 – $8,000+, depending on the number of connections and the scope of work."
+      },
+      {
+        "id": "sewer_cast_iron",
+        "title": "Scope the sewer line",
+        "minYear": 1800,
+        "maxYear": 1973,
+        "costToCheck": "$300 – $500 for a camera scope",
+        "typicalRepairCost": "Spot repair $1,500 – $5,000; full replacement $4,000 – $15,000+"
+      },
+      {
+        "id": "polybutylene_supply",
+        "title": "Check whether the supply lines are polybutylene",
+        "minYear": 1978,
+        "maxYear": 1996,
+        "costToCheck": "Usually included in a general inspection — ask them to identify the material in writing",
+        "typicalRepairCost": "Whole-home repipe $4,000 – $15,000"
+      }
+    ],
+    "constantRules": [
+      {
+        "id": "electrical_panel_brand",
+        "title": "Record the electrical panel brand",
+        "costToCheck": "Usually included in a general inspection — just ask them to record the brand",
+        "typicalRepairCost": "Panel replacement $1,500 – $4,000"
+      },
+      {
+        "id": "foundation_type_general",
+        "title": "Identify the foundation type and check for movement",
+        "costToCheck": "Included in a general inspection",
+        "typicalRepairCost": "Varies widely by cause and severity — from minor crack sealing to $30,000+ for major structural repair"
+      },
+      {
+        "id": "asbestos_materials",
+        "title": "Test for asbestos only if you plan to renovate",
+        "costToCheck": "$200 – $600 for sampling and lab analysis",
+        "typicalRepairCost": "Abatement varies widely by material and area"
+      },
+      {
+        "id": "roof_age",
+        "title": "Get the age and remaining life of the roof in writing",
+        "costToCheck": "Included in a general inspection — ask your inspector to estimate remaining roof life and note the material and condition",
+        "typicalRepairCost": "Full replacement $8,000 – $25,000+"
+      },
+      {
+        "id": "hvac_age",
+        "title": "Get the age of the HVAC system and water heater in writing",
+        "costToCheck": "Included in a general inspection — ask for the manufacture date on the furnace, condenser, and water heater data plates",
+        "typicalRepairCost": "HVAC replacement $6,000 – $15,000; water heater replacement $1,200 – $3,000"
+      },
+      {
+        "id": "chimney_level2",
+        "title": "If the home has a fireplace or wood-burning stove, get a Level 2 chimney inspection",
+        "costToCheck": "$250 – $600 for a Level 2 inspection with a video flue scan",
+        "typicalRepairCost": "Flue liner replacement $1,500 – $5,000; partial rebuild $1,500 – $8,000; full rebuild $10,000 – $30,000+"
+      },
+      {
+        "id": "pest_inspection_general",
+        "title": "Consider a general pest and wood-destroying-insect inspection",
+        "costToCheck": "$75 – $150 for a standalone pest/WDI inspection",
+        "typicalRepairCost": "Treatment $1,200 – $5,000 depending on method; structural repair if damage is present $1,000 – $9,000+"
+      },
+      {
+        "id": "radon_test",
+        "title": "Radon test",
+        "costToCheck": "$150 – $300",
+        "typicalRepairCost": "Mitigation system $800 – $2,500"
+      }
+    ]
+  }
+}
