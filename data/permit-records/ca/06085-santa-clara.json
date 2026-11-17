@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "state": "CA",
+  "countyFips": "06085",
+  "county": "Santa Clara County",
+  "guideSlug": "check-building-permits-santa-clara-county-ca",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "The county portal holds unincorporated permits; San Jose (SJPermits) and the other cities hold their own.",
+    "claimSource": "guide #220",
+    "note": "Both portals were verified 2026-10-03; the split itself and other cities were not. plandev.santaclaracounty.gov sits behind a Cloudflare check."
+  },
+  "jurisdictions": [
+    {
+      "id": "ca-santa-clara-uninc",
+      "name": "Unincorporated Santa Clara County",
+      "kind": "county-unincorporated",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "ca-santa-clara-uninc",
+        "sourceUrl": "https://aca-prod.accela.com/sccgov/Default.aspx",
+        "evidence": [
+          "script:scripts/restore-county-batch-a.ts:27"
+        ],
+        "checkedOn": "2026-10-03",
+        "limits": "County portal confirmed; its service area was not quoted."
+      },
+      "buildingDepartment": {
+        "status": "not_researched",
+        "value": null
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "Public Permit Portal",
+          "platform": "Accela"
+        },
+        "sourceUrl": "https://aca-prod.accela.com/sccgov/Default.aspx",
+        "evidence": [
+          "script:scripts/restore-county-batch-a.ts:27"
+        ],
+        "checkedOn": "2026-10-03"
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://aca-prod.accela.com/sccgov/Default.aspx",
+        "sourceUrl": "https://aca-prod.accela.com/sccgov/Default.aspx",
+        "evidence": [
+          "script:scripts/restore-county-batch-a.ts:27"
+        ],
+        "checkedOn": "2026-10-03"
+      },
+      "searchBy": {
+        "status": "verified",
+        "value": {
+          "address": true,
+          "parcel": true,
+          "permitNumber": true,
+          "quirks": [
+            "Development > Search Records",
+            "No account needed"
+          ]
+        },
+        "sourceUrl": "https://aca-prod.accela.com/sccgov/Default.aspx",
+        "evidence": [
+          "script:scripts/restore-county-batch-a.ts:27"
+        ],
+        "checkedOn": "2026-10-03"
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No address search recorded."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "ca-santa-clara-san-jose",
+      "name": "City of San Jose",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "ca-santa-clara-san-jose",
+        "sourceUrl": "https://www.sanjoseca.gov/business/development-services-permit-center/online-permits-at-sjpermits-org/how-to-check-your-permit-status",
+        "evidence": [
+          "script:scripts/restore-county-batch-a.ts:27"
+        ],
+        "checkedOn": "2026-10-03",
+        "limits": "Inferred from the city running its own SJPermits system."
+      },
+      "buildingDepartment": {
+        "status": "not_researched",
+        "value": null
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "SJPermits"
+        },
+        "sourceUrl": "https://www.sanjoseca.gov/business/development-services-permit-center/online-permits-at-sjpermits-org/how-to-check-your-permit-status",
+        "evidence": [
+          "script:scripts/restore-county-batch-a.ts:27"
+        ],
+        "checkedOn": "2026-10-03"
+      },
+      "portalUrl": {
+        "status": "partially_verified",
+        "value": "https://www.sanjoseca.gov/business/development-services-permit-center/online-permits-at-sjpermits-org/how-to-check-your-permit-status",
+        "sourceUrl": "https://www.sanjoseca.gov/business/development-services-permit-center/online-permits-at-sjpermits-org/how-to-check-your-permit-status",
+        "evidence": [
+          "script:scripts/restore-county-batch-a.ts:27"
+        ],
+        "checkedOn": "2026-10-03",
+        "limits": "This is the city's how-to page for SJPermits; the search application's own address was not recorded."
+      },
+      "searchBy": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Search fields were read on the city's how-to page but not recorded; no search run."
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No address search recorded."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null,
+        "note": "San Jose's online date range was cut as unverifiable on 2026-10-03."
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    }
+  ],
+  "tests": [],
+  "blocked": [
+    {
+      "url": "https://plandev.santaclaracounty.gov/",
+      "result": "Cloudflare check; not worked around",
+      "date": "2026-10-03"
+    }
+  ]
+}

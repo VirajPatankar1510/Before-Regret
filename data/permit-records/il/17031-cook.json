@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "state": "IL",
+  "countyFips": "17031",
+  "county": "Cook County",
+  "guideSlug": "check-building-permits-cook-county-il",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "Our guide's title: \"Cook County Permit Portal: Search Records by Address\".",
+    "claimSource": "guide #89 (published 2026-08-10), no recorded evidence"
+  },
+  "jurisdictions": [],
+  "tests": [],
+  "blocked": []
+}

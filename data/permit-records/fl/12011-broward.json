@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "state": "FL",
+  "countyFips": "12011",
+  "county": "Broward County",
+  "guideSlug": "check-building-permits-broward-county-fl",
+  "jurisdictionCoverage": {
+    "status": "partially_verified",
+    "value": "The county's own list counts 31 cities plus unincorporated Broward. Which department holds each city's permits is recorded only for Fort Lauderdale (LauderBuild).",
+    "sourceUrl": "https://dpepp.broward.org/BCS/Default.aspx?PossePresentation=ParcelSearchByAddress",
+    "evidence": [
+      "script:scripts/restore-county-batch-a.ts:27"
+    ],
+    "checkedOn": "2026-10-03",
+    "limits": "The city count was read on 2026-10-03; the departments of the other 30 cities were not researched."
+  },
+  "jurisdictions": [
+    {
+      "id": "fl-broward-uninc",
+      "name": "Unincorporated Broward County",
+      "kind": "county-unincorporated",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "fl-broward-uninc",
+        "sourceUrl": "https://dpepp.broward.org/BCS/Default.aspx?PossePresentation=ParcelSearchByAddress",
+        "evidence": [
+          "script:scripts/restore-county-batch-a.ts:27"
+        ],
+        "checkedOn": "2026-10-03",
+        "limits": "The county search page was read; its exact service area was not quoted."
+      },
+      "buildingDepartment": {
+        "status": "not_researched",
+        "value": null
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "BCS Search for Permit by Address"
+        },
+        "sourceUrl": "https://dpepp.broward.org/BCS/Default.aspx?PossePresentation=ParcelSearchByAddress",
+        "evidence": [
+          "script:scripts/restore-county-batch-a.ts:27"
+        ],
+        "checkedOn": "2026-10-03"
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://dpepp.broward.org/BCS/Default.aspx?PossePresentation=ParcelSearchByAddress",
+        "sourceUrl": "https://dpepp.broward.org/BCS/Default.aspx?PossePresentation=ParcelSearchByAddress",
+        "evidence": [
+          "script:scripts/restore-county-batch-a.ts:27"
+        ],
+        "checkedOn": "2026-10-03"
+      },
+      "searchBy": {
+        "status": "verified",
+        "value": {
+          "address": true,
+          "parcel": true,
+          "permitNumber": null,
+          "quirks": [
+            "Searches by address, folio or parcel number"
+          ]
+        },
+        "sourceUrl": "https://dpepp.broward.org/BCS/Default.aspx?PossePresentation=ParcelSearchByAddress",
+        "evidence": [
+          "script:scripts/restore-county-batch-a.ts:27"
+        ],
+        "checkedOn": "2026-10-03"
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "The 2026-10-03 check read the search fields and formats; no address result was recorded."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-broward-fort-lauderdale",
+      "name": "City of Fort Lauderdale",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "fl-broward-fort-lauderdale",
+        "sourceUrl": "https://www.fortlauderdale.gov/Government/Departments/Development-Services/LauderBuild",
+        "evidence": [
+          "script:scripts/restore-county-batch-a.ts:27"
+        ],
+        "checkedOn": "2026-10-03",
+        "limits": "Inferred from the city running its own LauderBuild permit system."
+      },
+      "buildingDepartment": {
+        "status": "not_researched",
+        "value": null
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "LauderBuild"
+        },
+        "sourceUrl": "https://www.fortlauderdale.gov/Government/Departments/Development-Services/LauderBuild",
+        "evidence": [
+          "script:scripts/restore-county-batch-a.ts:27"
+        ],
+        "checkedOn": "2026-10-03"
+      },
+      "portalUrl": {
+        "status": "partially_verified",
+        "value": "https://www.fortlauderdale.gov/Government/Departments/Development-Services/LauderBuild",
+        "sourceUrl": "https://www.fortlauderdale.gov/Government/Departments/Development-Services/LauderBuild",
+        "evidence": [
+          "script:scripts/restore-county-batch-a.ts:27"
+        ],
+        "checkedOn": "2026-10-03",
+        "limits": "This is the city's LauderBuild page; the search application's own address was not recorded."
+      },
+      "searchBy": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "The city says anyone can search without an account; the search fields were not recorded."
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No address search recorded."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    }
+  ],
+  "tests": [],
+  "blocked": [
+    {
+      "url": "https://bcpa.net/",
+      "result": "would not load",
+      "date": "2026-10-03"
+    }
+  ]
+}

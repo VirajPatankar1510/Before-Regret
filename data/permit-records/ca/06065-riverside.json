@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "state": "CA",
+  "countyFips": "06065",
+  "county": "Riverside County",
+  "guideSlug": "check-building-permits-riverside-county-ca",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "Our guide's title: \"Riverside County Permits: PLUS Portal & City Searches\".",
+    "claimSource": "guide #216 (published 2026-08-16), no recorded evidence"
+  },
+  "jurisdictions": [],
+  "tests": [],
+  "blocked": []
+}

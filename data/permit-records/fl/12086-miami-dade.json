@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "state": "FL",
+  "countyFips": "12086",
+  "county": "Miami-Dade County",
+  "guideSlug": "check-building-permits-miami-dade-county-fl",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "Our guide's title: \"Miami-Dade Permits by Folio: EnerGov & City Portals\".",
+    "claimSource": "guide #90 (published 2026-08-10), no recorded evidence"
+  },
+  "jurisdictions": [],
+  "tests": [],
+  "blocked": []
+}

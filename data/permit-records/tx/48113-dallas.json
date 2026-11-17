@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "state": "TX",
+  "countyFips": "48113",
+  "county": "Dallas County",
+  "guideSlug": "check-building-permits-dallas-county-tx",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "Our guide's title: \"Dallas County Permit Search: City & Suburban Portals\".",
+    "claimSource": "guide #79 (published 2026-08-10), no recorded evidence"
+  },
+  "jurisdictions": [],
+  "tests": [],
+  "blocked": []
+}

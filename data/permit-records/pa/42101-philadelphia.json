@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "state": "PA",
+  "countyFips": "42101",
+  "county": "Philadelphia County",
+  "guideSlug": "check-building-permits-philadelphia-county-pa",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "Our guide's title: \"Philadelphia L&I Permit & Violation Search by Address\".",
+    "claimSource": "guide #92 (published 2026-08-10), no recorded evidence"
+  },
+  "jurisdictions": [],
+  "tests": [],
+  "blocked": []
+}

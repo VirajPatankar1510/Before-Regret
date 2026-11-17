@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "state": "CA",
+  "countyFips": "06059",
+  "county": "Orange County",
+  "guideSlug": "check-building-permits-orange-county-ca",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "Our guide's title: \"Orange County CA Permits: OCPW & City Portals (CPRA)\".",
+    "claimSource": "guide #221 (published 2026-08-16), no recorded evidence"
+  },
+  "jurisdictions": [],
+  "tests": [],
+  "blocked": []
+}

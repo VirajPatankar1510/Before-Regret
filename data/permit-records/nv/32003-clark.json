@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "state": "NV",
+  "countyFips": "32003",
+  "county": "Clark County",
+  "guideSlug": "check-building-permits-clark-county-nv",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "The county holds permits for unincorporated townships (Paradise, Spring Valley, Enterprise, Sunrise Manor, Winchester); Las Vegas, North Las Vegas and Henderson hold their own.",
+    "claimSource": "guide #87"
+  },
+  "jurisdictions": [
+    {
+      "id": "nv-clark-uninc",
+      "name": "Unincorporated Clark County",
+      "kind": "county-unincorporated",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "nv-clark-uninc",
+        "sourceUrl": "https://www.clarkcountynv.gov/government/departments/public_works_department/development/online-records-research",
+        "evidence": [
+          "script:scripts/restore-county-permit-guides.ts:120"
+        ],
+        "checkedOn": "2026-09-04",
+        "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+      },
+      "buildingDepartment": {
+        "status": "not_researched",
+        "value": null
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null,
+        "unverifiedClaim": "Citizen Access",
+        "claimSource": "guide #87",
+        "note": "Its host resolved in DNS but would not connect from here on repeated attempts (2026-09-04)."
+      },
+      "portalUrl": {
+        "status": "partially_verified",
+        "value": "https://www.clarkcountynv.gov/government/departments/public_works_department/development/online-records-research",
+        "sourceUrl": "https://www.clarkcountynv.gov/government/departments/public_works_department/development/online-records-research",
+        "evidence": [
+          "script:scripts/restore-county-permit-guides.ts:120"
+        ],
+        "checkedOn": "2026-09-04",
+        "limits": "This is the county's index of what is searchable and where, not the search portal itself. Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No address search recorded."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "nv-clark-las-vegas",
+      "name": "City of Las Vegas",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "not_researched",
+        "value": null,
+        "unverifiedClaim": "Holds its own permits.",
+        "claimSource": "guide #87"
+      }
+    },
+    {
+      "id": "nv-clark-north-las-vegas",
+      "name": "City of North Las Vegas",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "not_researched",
+        "value": null,
+        "unverifiedClaim": "Holds its own permits.",
+        "claimSource": "guide #87"
+      }
+    },
+    {
+      "id": "nv-clark-henderson",
+      "name": "City of Henderson",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "not_researched",
+        "value": null,
+        "unverifiedClaim": "Holds its own permits.",
+        "claimSource": "guide #87"
+      }
+    }
+  ],
+  "tests": [],
+  "blocked": []
+}

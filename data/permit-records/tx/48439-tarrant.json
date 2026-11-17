@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "state": "TX",
+  "countyFips": "48439",
+  "county": "Tarrant County",
+  "guideSlug": "check-building-permits-tarrant-county-tx",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "Our guide's title: \"Tarrant County Permits: Fort Worth & Arlington Portals\".",
+    "claimSource": "guide #223 (published 2026-08-16), no recorded evidence for the city split"
+  },
+  "jurisdictions": [
+    {
+      "id": "tx-tarrant-fort-worth",
+      "name": "City of Fort Worth",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "tx-tarrant-fort-worth",
+        "sourceUrl": "https://aca-prod.accela.com/CFW/",
+        "evidence": [
+          "script:scripts/publish-accela-citizen-access-permit-search.ts:19"
+        ],
+        "checkedOn": "2026-10-04",
+        "limits": "Inferred from the city running its own Accela permitting system."
+      },
+      "buildingDepartment": {
+        "status": "not_researched",
+        "value": null
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "Online Permitting System",
+          "platform": "Accela"
+        },
+        "sourceUrl": "https://aca-prod.accela.com/CFW/",
+        "evidence": [
+          "script:scripts/publish-accela-citizen-access-permit-search.ts:19"
+        ],
+        "checkedOn": "2026-10-04"
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://aca-prod.accela.com/CFW/",
+        "sourceUrl": "https://aca-prod.accela.com/CFW/",
+        "evidence": [
+          "script:scripts/publish-accela-citizen-access-permit-search.ts:19"
+        ],
+        "checkedOn": "2026-10-04"
+      },
+      "searchBy": {
+        "status": "verified",
+        "value": {
+          "address": true,
+          "parcel": null,
+          "permitNumber": true,
+          "quirks": [
+            "The same six search types as other Accela portals (General, Address, Licensed Professional, Record Information, Trade Name, Contact)"
+          ]
+        },
+        "sourceUrl": "https://aca-prod.accela.com/CFW/",
+        "evidence": [
+          "script:scripts/publish-accela-citizen-access-permit-search.ts:19"
+        ],
+        "checkedOn": "2026-10-04"
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No search was submitted on 2026-10-04 (the note says so)."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "General Search defaults to a five-year window; move the start date back for older permits."
+        ],
+        "sourceUrl": "https://aca-prod.accela.com/CFW/",
+        "evidence": [
+          "script:scripts/publish-accela-citizen-access-permit-search.ts:19"
+        ],
+        "checkedOn": "2026-10-04"
+      }
+    }
+  ],
+  "tests": [],
+  "blocked": []
+}

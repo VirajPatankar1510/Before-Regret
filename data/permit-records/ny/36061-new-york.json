@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "state": "NY",
+  "countyFips": "36061",
+  "county": "New York County",
+  "guideSlug": "check-building-permits-manhattan-ny",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "NYC Department of Buildings issues building permits citywide (records in DOB BIS and DOB NOW).",
+    "claimSource": "guide #93, no recorded evidence",
+    "note": "DOB BIS and DOB NOW answered \"Access Denied\" (Akamai) to our browser on 2026-10-03 and 2026-10-07, so nothing about them is verified. An older script note (publish-batch-b.ts:38) says the DOB walkthrough was verified for batch A; batch A's own note says DOB was blocked, so that line is wrong."
+  },
+  "jurisdictions": [
+    {
+      "id": "ny-manhattan",
+      "name": "Manhattan (New York City)",
+      "kind": "borough",
+      "permitsIssuedBy": {
+        "status": "not_researched",
+        "value": null,
+        "unverifiedClaim": "NYC Department of Buildings issues building permits citywide (records in DOB BIS and DOB NOW).",
+        "claimSource": "guide #93, no recorded evidence",
+        "note": "DOB BIS and DOB NOW answered \"Access Denied\" (Akamai) to our browser on 2026-10-03 and 2026-10-07, so nothing about them is verified. An older script note (publish-batch-b.ts:38) says the DOB walkthrough was verified for batch A; batch A's own note says DOB was blocked, so that line is wrong."
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "If the building is a designated landmark or in a historic district, the Landmarks Preservation Commission keeps a separate permit record: its online permit search covers applications from January 1, 2016; older ones need a Records Access Request."
+        ],
+        "sourceUrl": "https://www.nyc.gov/site/lpc/applications/permit-search.page",
+        "evidence": [
+          "script:scripts/restore-county-batch-a.ts:27"
+        ],
+        "checkedOn": "2026-10-03"
+      }
+    }
+  ],
+  "tests": [],
+  "blocked": [
+    {
+      "url": "NYC DOB BIS and DOB NOW (addresses not recorded in our notes)",
+      "result": "Access Denied (Akamai)",
+      "date": "2026-10-03"
+    }
+  ]
+}

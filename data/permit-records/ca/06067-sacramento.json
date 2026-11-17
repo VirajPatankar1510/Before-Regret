@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "state": "CA",
+  "countyFips": "06067",
+  "county": "Sacramento County",
+  "guideSlug": "check-building-permits-sacramento-county-ca",
+  "jurisdictionCoverage": {
+    "status": "partially_verified",
+    "value": "The City of Sacramento and the county run separate permit portals.",
+    "sourceUrl": "https://aca-prod.accela.com/SACRAMENTO/Cap/CapHome.aspx?module=Building&TabName=Building",
+    "evidence": [
+      "script:scripts/publish-batch-b.ts:22"
+    ],
+    "checkedOn": "2026-10-07",
+    "limits": "The other cities' building departments in Sacramento County were not verified (the 2026-10-07 note says so)."
+  },
+  "jurisdictions": [
+    {
+      "id": "ca-sacramento-city",
+      "name": "City of Sacramento",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "ca-sacramento-city",
+        "sourceUrl": "https://aca-prod.accela.com/SACRAMENTO/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "evidence": [
+          "script:scripts/publish-batch-b.ts:22"
+        ],
+        "checkedOn": "2026-10-07",
+        "limits": "Inferred from the city running its own permit portal."
+      },
+      "buildingDepartment": {
+        "status": "not_researched",
+        "value": null
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "Public Permit Portal",
+          "platform": "Accela"
+        },
+        "sourceUrl": "https://aca-prod.accela.com/SACRAMENTO/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "evidence": [
+          "script:scripts/publish-batch-b.ts:22"
+        ],
+        "checkedOn": "2026-10-07"
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://aca-prod.accela.com/SACRAMENTO/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "sourceUrl": "https://aca-prod.accela.com/SACRAMENTO/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "evidence": [
+          "script:scripts/publish-batch-b.ts:22"
+        ],
+        "checkedOn": "2026-10-07"
+      },
+      "searchBy": {
+        "status": "verified",
+        "value": {
+          "address": true,
+          "parcel": true,
+          "permitNumber": true,
+          "owner": null,
+          "quirks": [
+            "No account needed",
+            "Site address is street number plus street name",
+            "Contractor licence search too"
+          ]
+        },
+        "sourceUrl": "https://aca-prod.accela.com/SACRAMENTO/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "evidence": [
+          "script:scripts/publish-batch-b.ts:22"
+        ],
+        "checkedOn": "2026-10-07"
+      },
+      "addressSearchTested": {
+        "status": "partially_verified",
+        "value": "A search on a one-letter street name returned \"100+\" results.",
+        "sourceUrl": "https://aca-prod.accela.com/SACRAMENTO/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "evidence": [
+          "script:scripts/publish-batch-b.ts:22"
+        ],
+        "checkedOn": "2026-10-07",
+        "limits": "A street-name search, not a full public address."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "ca-sacramento-uninc",
+      "name": "Unincorporated Sacramento County",
+      "kind": "county-unincorporated",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "ca-sacramento-uninc",
+        "sourceUrl": "https://actonline.saccounty.gov/CitizenAccess/",
+        "evidence": [
+          "script:scripts/publish-batch-b.ts:22"
+        ],
+        "checkedOn": "2026-10-07",
+        "limits": "County portal confirmed; its service area was not quoted."
+      },
+      "buildingDepartment": {
+        "status": "not_researched",
+        "value": null
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "Sacramento County Citizen Access (ACA)",
+          "platform": "Accela"
+        },
+        "sourceUrl": "https://actonline.saccounty.gov/CitizenAccess/",
+        "evidence": [
+          "script:scripts/publish-batch-b.ts:22"
+        ],
+        "checkedOn": "2026-10-07"
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://actonline.saccounty.gov/CitizenAccess/",
+        "sourceUrl": "https://actonline.saccounty.gov/CitizenAccess/",
+        "evidence": [
+          "script:scripts/publish-batch-b.ts:22"
+        ],
+        "checkedOn": "2026-10-07"
+      },
+      "searchBy": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Building search \"requires registration and/or login\"; we did not register."
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No address search recorded."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "The county's Building search requires registration and/or login."
+        ],
+        "sourceUrl": "https://actonline.saccounty.gov/CitizenAccess/",
+        "evidence": [
+          "script:scripts/publish-batch-b.ts:22"
+        ],
+        "checkedOn": "2026-10-07"
+      }
+    }
+  ],
+  "tests": [],
+  "blocked": []
+}

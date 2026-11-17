@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "state": "AZ",
+  "countyFips": "04013",
+  "county": "Maricopa County",
+  "guideSlug": "check-building-permits-maricopa-county-az",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "The county Permit Center holds unincorporated permits; Phoenix and other cities hold their own.",
+    "claimSource": "guide #82"
+  },
+  "jurisdictions": [
+    {
+      "id": "az-maricopa-uninc",
+      "name": "Unincorporated Maricopa County",
+      "kind": "county-unincorporated",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "az-maricopa-uninc",
+        "sourceUrl": "https://www.maricopa.gov/6003/Maricopa-Countys-Permit-Center",
+        "evidence": [
+          "script:scripts/restore-county-permit-guides.ts:98"
+        ],
+        "checkedOn": "2026-09-04",
+        "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+      },
+      "buildingDepartment": {
+        "status": "not_researched",
+        "value": null
+      },
+      "currentPortal": {
+        "status": "partially_verified",
+        "value": {
+          "name": "Maricopa County Permit Center"
+        },
+        "sourceUrl": "https://www.maricopa.gov/6003/Maricopa-Countys-Permit-Center",
+        "evidence": [
+          "script:scripts/restore-county-permit-guides.ts:98"
+        ],
+        "checkedOn": "2026-09-04",
+        "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+      },
+      "portalUrl": {
+        "status": "partially_verified",
+        "value": "https://www.maricopa.gov/6003/Maricopa-Countys-Permit-Center",
+        "sourceUrl": "https://www.maricopa.gov/6003/Maricopa-Countys-Permit-Center",
+        "evidence": [
+          "script:scripts/restore-county-permit-guides.ts:98"
+        ],
+        "checkedOn": "2026-09-04",
+        "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No address search recorded."
+      },
+      "onlineRecordsFrom": {
+        "status": "partially_verified",
+        "value": "May 2009",
+        "sourceUrl": "https://www.maricopa.gov/6003/Maricopa-Countys-Permit-Center",
+        "evidence": [
+          "script:scripts/restore-county-permit-guides.ts:98"
+        ],
+        "checkedOn": "2026-09-04",
+        "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+      },
+      "historicalSystems": {
+        "status": "partially_verified",
+        "value": [
+          {
+            "name": "Permit Viewer",
+            "covers": "closed permits, planning cases and violations, 1999 to June 2024"
+          }
+        ],
+        "sourceUrl": "https://www.maricopa.gov/6003/Maricopa-Countys-Permit-Center",
+        "evidence": [
+          "script:scripts/restore-county-permit-guides.ts:98"
+        ],
+        "checkedOn": "2026-09-04",
+        "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "partially_verified",
+        "value": [
+          "The county replaced its permitting system in June 2024, so a house altered before and after that date can have records in two systems."
+        ],
+        "sourceUrl": "https://www.maricopa.gov/6003/Maricopa-Countys-Permit-Center",
+        "evidence": [
+          "script:scripts/restore-county-permit-guides.ts:98"
+        ],
+        "checkedOn": "2026-09-04",
+        "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+      }
+    },
+    {
+      "id": "az-maricopa-phoenix",
+      "name": "City of Phoenix",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "not_researched",
+        "value": null,
+        "unverifiedClaim": "Holds its own permits.",
+        "claimSource": "guide #82 title \"Maricopa County & Phoenix Permit History Search\""
+      }
+    }
+  ],
+  "tests": [],
+  "blocked": []
+}

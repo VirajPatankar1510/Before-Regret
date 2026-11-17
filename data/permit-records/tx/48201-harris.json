@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "state": "TX",
+  "countyFips": "48201",
+  "county": "Harris County",
+  "guideSlug": "check-harris-county-permit-history-before-buying",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "The county holds permits for unincorporated areas; the City of Houston holds its own.",
+    "claimSource": "guide #78",
+    "note": "The county permits page was browser-verified 2026-10-02; Houston's permitting center answered with a Cloudflare challenge and was not read."
+  },
+  "jurisdictions": [
+    {
+      "id": "tx-harris-uninc",
+      "name": "Unincorporated Harris County",
+      "kind": "county-unincorporated",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "tx-harris-uninc",
+        "sourceUrl": "https://oce.harriscountytx.gov/Services/Permits",
+        "evidence": [
+          "script:scripts/harris-retitle-and-oce-fix.ts:15"
+        ],
+        "checkedOn": "2026-10-02",
+        "limits": "The county permits page was confirmed; that it covers only unincorporated areas was not quoted."
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Harris County Office of the County Engineer",
+        "sourceUrl": "https://oce.harriscountytx.gov/Services/Permits",
+        "evidence": [
+          "script:scripts/harris-retitle-and-oce-fix.ts:15"
+        ],
+        "checkedOn": "2026-10-02"
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "ePermits (with the OCE Permits Search Tool)"
+        },
+        "sourceUrl": "https://oce.harriscountytx.gov/Services/Permits",
+        "evidence": [
+          "script:scripts/harris-retitle-and-oce-fix.ts:15"
+        ],
+        "checkedOn": "2026-10-02",
+        "note": "ePermits itself is at epermits.harriscountytx.gov (\"Check Project Status\")."
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://oce.harriscountytx.gov/Services/Permits",
+        "sourceUrl": "https://oce.harriscountytx.gov/Services/Permits",
+        "evidence": [
+          "script:scripts/harris-retitle-and-oce-fix.ts:15"
+        ],
+        "checkedOn": "2026-10-02",
+        "note": "The county permits page that links both search tools."
+      },
+      "searchBy": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Tools confirmed on the page; no search run."
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No address search recorded."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "The old county link (eng.hctx.net/permits) now redirects to the home page of the renamed Office of the County Engineer, not to permits."
+        ],
+        "sourceUrl": "https://oce.harriscountytx.gov/Services/Permits",
+        "evidence": [
+          "script:scripts/harris-retitle-and-oce-fix.ts:15"
+        ],
+        "checkedOn": "2026-10-02"
+      }
+    },
+    {
+      "id": "tx-harris-houston",
+      "name": "City of Houston",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "not_researched",
+        "value": null,
+        "unverifiedClaim": "The Houston Permitting Center holds permits for addresses inside city limits; our guide names its portal iPermits.",
+        "claimSource": "guide #78",
+        "note": "houstonpermittingcenter.org answered with a Cloudflare challenge on 2026-10-02; not bypassed."
+      }
+    }
+  ],
+  "tests": [],
+  "blocked": [
+    {
+      "url": "https://www.houstonpermittingcenter.org/",
+      "result": "Cloudflare challenge (and 403 to automated requests on 2026-09-04)",
+      "date": "2026-10-02"
+    }
+  ]
+}

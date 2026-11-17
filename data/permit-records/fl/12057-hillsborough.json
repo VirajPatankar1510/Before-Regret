@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "state": "FL",
+  "countyFips": "12057",
+  "county": "Hillsborough County",
+  "guideSlug": "check-building-permits-hillsborough-county-fl",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "The county (HillsGovHub) holds unincorporated permits; Tampa, Temple Terrace and Plant City hold their own.",
+    "claimSource": "guide #208",
+    "note": "Portal facts for the county and Tampa were verified 2026-10-02; the city split itself was not quoted, and Temple Terrace and Plant City could not be checked (403 / no permit links)."
+  },
+  "jurisdictions": [
+    {
+      "id": "fl-hillsborough-uninc",
+      "name": "Unincorporated Hillsborough County",
+      "kind": "county-unincorporated",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "fl-hillsborough-uninc",
+        "sourceUrl": "https://hcfl.gov/businesses/hillsgovhub",
+        "evidence": [
+          "script:scripts/publish-hillsborough-permit-guide.ts:21"
+        ],
+        "checkedOn": "2026-10-02",
+        "limits": "The 2026-10-02 note covers portal facts; that HillsGovHub holds exactly the unincorporated area was not quoted."
+      },
+      "buildingDepartment": {
+        "status": "not_researched",
+        "value": null
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "HillsGovHub"
+        },
+        "sourceUrl": "https://hcfl.gov/businesses/hillsgovhub",
+        "evidence": [
+          "script:scripts/publish-hillsborough-permit-guide.ts:21"
+        ],
+        "checkedOn": "2026-10-02"
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://hcfl.gov/businesses/hillsgovhub",
+        "sourceUrl": "https://hcfl.gov/businesses/hillsgovhub",
+        "evidence": [
+          "script:scripts/publish-hillsborough-permit-guide.ts:21"
+        ],
+        "checkedOn": "2026-10-02"
+      },
+      "searchBy": {
+        "status": "verified",
+        "value": {
+          "address": true,
+          "parcel": true,
+          "permitNumber": null,
+          "quirks": [
+            "Check Permit Status needs no login",
+            "A Permits by Address report is available"
+          ]
+        },
+        "sourceUrl": "https://hcfl.gov/businesses/hillsgovhub",
+        "evidence": [
+          "script:scripts/publish-hillsborough-permit-guide.ts:21"
+        ],
+        "checkedOn": "2026-10-02"
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "The 2026-10-02 check read the search options; no search result on an address was recorded."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "verified",
+        "value": [
+          {
+            "name": "PGM Store",
+            "url": "https://hcfl.gov/businesses/permits-and-records/permits/rezoning-plans-and-permit-documents-and-records-pgm-store",
+            "covers": "older permit files (shared login public/public); it does not contain HillsGovHub records"
+          }
+        ],
+        "sourceUrl": "https://hcfl.gov/businesses/permits-and-records/permits/rezoning-plans-and-permit-documents-and-records-pgm-store",
+        "evidence": [
+          "script:scripts/publish-hillsborough-permit-guide.ts:21"
+        ],
+        "checkedOn": "2026-10-02"
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "Older files are in the PGM Store and newer ones in HillsGovHub; neither contains the other, so search both.",
+          "The county removes records exempt under Florida Statutes 119.071 from public view."
+        ],
+        "sourceUrl": "https://hcfl.gov/businesses/hillsgovhub",
+        "evidence": [
+          "script:scripts/publish-hillsborough-permit-guide.ts:21"
+        ],
+        "checkedOn": "2026-10-02"
+      }
+    },
+    {
+      "id": "fl-hillsborough-tampa",
+      "name": "City of Tampa",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "fl-hillsborough-tampa",
+        "sourceUrl": "https://www.tampa.gov/construction-services",
+        "evidence": [
+          "script:scripts/publish-hillsborough-permit-guide.ts:21"
+        ],
+        "checkedOn": "2026-10-02",
+        "limits": "Inferred from the city running its own permit portal; the city/county split was not quoted."
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "City of Tampa Construction Services Division",
+        "sourceUrl": "https://www.tampa.gov/construction-services",
+        "evidence": [
+          "script:scripts/publish-hillsborough-permit-guide.ts:21"
+        ],
+        "checkedOn": "2026-10-02"
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "Accela Citizen Access",
+          "platform": "Accela"
+        },
+        "sourceUrl": "https://aca-prod.accela.com/TAMPA/Default.aspx",
+        "evidence": [
+          "script:scripts/publish-accela-citizen-access-permit-search.ts:19"
+        ],
+        "checkedOn": "2026-10-04"
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://aca-prod.accela.com/TAMPA/Default.aspx",
+        "sourceUrl": "https://aca-prod.accela.com/TAMPA/Default.aspx",
+        "evidence": [
+          "script:scripts/publish-accela-citizen-access-permit-search.ts:19"
+        ],
+        "checkedOn": "2026-10-04"
+      },
+      "searchBy": {
+        "status": "verified",
+        "value": {
+          "address": true,
+          "parcel": true,
+          "permitNumber": true,
+          "quirks": [
+            "Many functions work without a log-in",
+            "Search by Address includes a Parcel No. box",
+            "A Comprehensive Permit Summary by Address is offered"
+          ]
+        },
+        "sourceUrl": "https://aca-prod.accela.com/TAMPA/Default.aspx",
+        "evidence": [
+          "script:scripts/publish-accela-citizen-access-permit-search.ts:19"
+        ],
+        "checkedOn": "2026-10-04"
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No search was submitted on 2026-10-04 (the note says so)."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null,
+        "unverifiedClaim": "Records requests through the city portal at cityoftampa.govqa.us.",
+        "claimSource": "guide #208 link; not in the verification note"
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "General Search defaults to the last 12 months; move the start date back before concluding a permit is missing."
+        ],
+        "sourceUrl": "https://aca-prod.accela.com/TAMPA/Default.aspx",
+        "evidence": [
+          "script:scripts/publish-accela-citizen-access-permit-search.ts:19"
+        ],
+        "checkedOn": "2026-10-04"
+      }
+    },
+    {
+      "id": "fl-hillsborough-temple-terrace",
+      "name": "City of Temple Terrace",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "not_researched",
+        "value": null,
+        "unverifiedClaim": "Holds its own permits.",
+        "claimSource": "guide #208",
+        "note": "Site could not be checked on 2026-10-02 (403 / no permit links)."
+      }
+    },
+    {
+      "id": "fl-hillsborough-plant-city",
+      "name": "City of Plant City",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "not_researched",
+        "value": null,
+        "unverifiedClaim": "Holds its own permits.",
+        "claimSource": "guide #208",
+        "note": "Site could not be checked on 2026-10-02 (403 / no permit links)."
+      }
+    }
+  ],
+  "tests": [],
+  "blocked": []
+}

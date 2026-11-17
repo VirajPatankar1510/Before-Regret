@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "state": "MA",
+  "countyFips": "25017",
+  "county": "Middlesex County",
+  "guideSlug": "check-building-permits-middlesex-county-ma",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "Our guide's title: \"Middlesex County MA Permits: Town Halls & Street Files\".",
+    "claimSource": "guide #213 (published 2026-08-16), no recorded evidence"
+  },
+  "jurisdictions": [],
+  "tests": [],
+  "blocked": []
+}

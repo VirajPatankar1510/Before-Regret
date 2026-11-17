@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "state": "CA",
+  "countyFips": "06073",
+  "county": "San Diego County",
+  "guideSlug": "check-building-permits-san-diego-county-ca",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "The county holds unincorporated permits; the City of San Diego and each other incorporated city (Chula Vista, Oceanside, Escondido, Carlsbad and the rest) hold their own.",
+    "claimSource": "guide #91"
+  },
+  "jurisdictions": [
+    {
+      "id": "ca-san-diego-uninc",
+      "name": "Unincorporated San Diego County",
+      "kind": "county-unincorporated",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "ca-san-diego-uninc",
+        "sourceUrl": "https://publicservices.sandiegocounty.gov/CitizenAccess",
+        "evidence": [
+          "script:scripts/restore-county-permit-guides.ts:109"
+        ],
+        "checkedOn": "2026-09-04",
+        "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+      },
+      "buildingDepartment": {
+        "status": "not_researched",
+        "value": null
+      },
+      "currentPortal": {
+        "status": "partially_verified",
+        "value": {
+          "name": "Accela Citizen Access",
+          "platform": "Accela"
+        },
+        "sourceUrl": "https://publicservices.sandiegocounty.gov/CitizenAccess",
+        "evidence": [
+          "script:scripts/restore-county-permit-guides.ts:109"
+        ],
+        "checkedOn": "2026-09-04",
+        "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+      },
+      "portalUrl": {
+        "status": "partially_verified",
+        "value": "https://publicservices.sandiegocounty.gov/CitizenAccess",
+        "sourceUrl": "https://publicservices.sandiegocounty.gov/CitizenAccess",
+        "evidence": [
+          "script:scripts/restore-county-permit-guides.ts:109"
+        ],
+        "checkedOn": "2026-09-04",
+        "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No address search recorded."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "ca-san-diego-city",
+      "name": "City of San Diego",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "ca-san-diego-city",
+        "sourceUrl": "https://opendsd.sandiego.gov",
+        "evidence": [
+          "script:scripts/restore-county-permit-guides.ts:109"
+        ],
+        "checkedOn": "2026-09-04",
+        "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+      },
+      "buildingDepartment": {
+        "status": "partially_verified",
+        "value": "City of San Diego Development Services Department",
+        "sourceUrl": "https://opendsd.sandiego.gov",
+        "evidence": [
+          "script:scripts/restore-county-permit-guides.ts:109"
+        ],
+        "checkedOn": "2026-09-04",
+        "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+      },
+      "currentPortal": {
+        "status": "partially_verified",
+        "value": {
+          "name": "OpenDSD"
+        },
+        "sourceUrl": "https://opendsd.sandiego.gov",
+        "evidence": [
+          "script:scripts/restore-county-permit-guides.ts:109"
+        ],
+        "checkedOn": "2026-09-04",
+        "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+      },
+      "portalUrl": {
+        "status": "partially_verified",
+        "value": "https://opendsd.sandiego.gov",
+        "sourceUrl": "https://opendsd.sandiego.gov",
+        "evidence": [
+          "script:scripts/restore-county-permit-guides.ts:109"
+        ],
+        "checkedOn": "2026-09-04",
+        "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No address search recorded."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    }
+  ],
+  "tests": [],
+  "blocked": []
+}

@@ -1,0 +1,1310 @@
+{
+  "schemaVersion": 1,
+  "state": "FL",
+  "countyFips": "12103",
+  "county": "Pinellas County",
+  "guideSlug": "check-building-permits-pinellas-county-fl",
+  "jurisdictionCoverage": {
+    "status": "partially_verified",
+    "value": "The county issues permits for unincorporated Pinellas and six cities; Belleair Bluffs contracts SAFEbuilt; sixteen cities run their own departments, one of which (Redington Shores) also serves Redington Beach.",
+    "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+    "evidence": [
+      "ledger:check-building-permits-pinellas-county-fl#f1",
+      "ledger:check-building-permits-pinellas-county-fl#f3",
+      "ledger:check-building-permits-pinellas-county-fl#f4"
+    ],
+    "checkedOn": "2026-11-16",
+    "limits": "Taken from the county's list of building departments; we have not confirmed it against each city."
+  },
+  "jurisdictions": [
+    {
+      "id": "fl-pinellas-uninc",
+      "name": "Unincorporated Pinellas County",
+      "kind": "county-unincorporated",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-uninc",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f1"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Pinellas County Building and Development Review Services",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f1"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "Access Portal",
+          "platform": "Accela Citizen Access"
+        },
+        "sourceUrl": "https://aca-prod.accela.com/PINELLAS/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#portalWalk",
+          "ledger:check-building-permits-pinellas-county-fl#f20"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "Name as the county uses it for lien searches; the portal host is aca-prod.accela.com/PINELLAS."
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://aca-prod.accela.com/PINELLAS/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "sourceUrl": "https://aca-prod.accela.com/PINELLAS/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#portalWalk",
+          "ledger:check-building-permits-pinellas-county-fl#f5"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "searchBy": {
+        "status": "verified",
+        "value": {
+          "address": true,
+          "parcel": true,
+          "permitNumber": true,
+          "quirks": [
+            "Search by address, then pick the matching parcel",
+            "Results default to records created in the past two years; change the start date for older records",
+            "% is a wildcard for part of a record number"
+          ]
+        },
+        "sourceUrl": "https://aca-prod.accela.com/PINELLAS/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f5",
+          "ledger:check-building-permits-pinellas-county-fl#portalWalk"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "addressSearchTested": {
+        "status": "verified",
+        "value": "Anonymous Search by Address at 12520 Ulmerton Rd (county-owned Florida Botanical Gardens) returned 8 address entries holding different records: 22, 18, 19, 15, 0, 5 and 5 permits.",
+        "sourceUrl": "https://aca-prod.accela.com/PINELLAS/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#portalWalk",
+          "ledger:check-building-permits-pinellas-county-fl#f6"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "onlineRecordsFrom": {
+        "status": "partially_verified",
+        "value": "2007 or earlier (PER-H permits from 2007 appeared at the address we searched)",
+        "sourceUrl": "https://aca-prod.accela.com/PINELLAS/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f6",
+          "ledger:check-building-permits-pinellas-county-fl#portalWalk"
+        ],
+        "checkedOn": "2026-11-16",
+        "limits": "The county does not state where online records begin; this is the oldest record seen at one public address."
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null,
+        "note": "No separate older system identified in our research."
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "verified",
+        "value": "Yes, without an account: open the permit, Record Info, then Inspections. Results show dates and outcomes such as Approved and Red tag. The county also offers results by text message.",
+        "sourceUrl": "https://pinellas.gov/building-inspections/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f8",
+          "ledger:check-building-permits-pinellas-county-fl#f7"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "Results default to the past two years; widen the date range before concluding a permit is missing.",
+          "One street address can appear as several address entries, each holding different permits; open every entry.",
+          "The mailing city does not show the jurisdiction: unincorporated properties carry St. Petersburg, Largo or Clearwater addresses. Confirm it with My Neighborhood Services or pcpao.gov.",
+          "Belleair Bluffs moved permitting to SAFEbuilt on August 15, 2025; permits already open then stay with the county through final inspection.",
+          "The code-enforcement lien search is separate from permits and needs an Access Portal account."
+        ],
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f5",
+          "ledger:check-building-permits-pinellas-county-fl#f6",
+          "ledger:check-building-permits-pinellas-county-fl#f23",
+          "ledger:check-building-permits-pinellas-county-fl#f2",
+          "ledger:check-building-permits-pinellas-county-fl#f3",
+          "ledger:check-building-permits-pinellas-county-fl#f20"
+        ],
+        "checkedOn": "2026-11-16"
+      }
+    },
+    {
+      "id": "fl-pinellas-belleair-beach",
+      "name": "Belleair Beach",
+      "kind": "city-served-by-county",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-uninc",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f1"
+        ],
+        "checkedOn": "2026-11-16"
+      }
+    },
+    {
+      "id": "fl-pinellas-belleair-shore",
+      "name": "Belleair Shore",
+      "kind": "city-served-by-county",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-uninc",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f1"
+        ],
+        "checkedOn": "2026-11-16"
+      }
+    },
+    {
+      "id": "fl-pinellas-indian-rocks-beach",
+      "name": "Indian Rocks Beach",
+      "kind": "city-served-by-county",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-uninc",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f1"
+        ],
+        "checkedOn": "2026-11-16"
+      }
+    },
+    {
+      "id": "fl-pinellas-kenneth-city",
+      "name": "Kenneth City",
+      "kind": "city-served-by-county",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-uninc",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f1"
+        ],
+        "checkedOn": "2026-11-16"
+      }
+    },
+    {
+      "id": "fl-pinellas-safety-harbor",
+      "name": "Safety Harbor",
+      "kind": "city-served-by-county",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-uninc",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f1"
+        ],
+        "checkedOn": "2026-11-16"
+      }
+    },
+    {
+      "id": "fl-pinellas-oldsmar",
+      "name": "Oldsmar",
+      "kind": "city-served-by-county",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-uninc",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f1"
+        ],
+        "checkedOn": "2026-11-16"
+      }
+    },
+    {
+      "id": "fl-pinellas-belleair-bluffs",
+      "name": "Belleair Bluffs",
+      "kind": "municipality-contracted",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-belleair-bluffs",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f3"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "Since August 15, 2025. Permits already open on that date stay with the county through final inspection."
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "SAFEbuilt (contracted building services)",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f3"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No Belleair Bluffs portal identified or searched."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null,
+        "note": "Permits from before August 15, 2025 were county permits: search the county Access Portal."
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No Belleair Bluffs permit opened."
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "Permits from before August 15, 2025 are county permits; open ones stay with the county through final inspection."
+        ],
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f3"
+        ],
+        "checkedOn": "2026-11-16"
+      }
+    },
+    {
+      "id": "fl-pinellas-belleair",
+      "name": "Belleair",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-belleair",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Belleair building department",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says the city has its own building department; the department's own name was not read."
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-pinellas-clearwater",
+      "name": "Clearwater",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-clearwater",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Clearwater building department",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says the city has its own building department; the department's own name was not read."
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-pinellas-dunedin",
+      "name": "Dunedin",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-dunedin",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Dunedin building department",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says the city has its own building department; the department's own name was not read."
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-pinellas-gulfport",
+      "name": "Gulfport",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-gulfport",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Gulfport building department",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says the city has its own building department; the department's own name was not read."
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-pinellas-indian-shores",
+      "name": "Indian Shores",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-indian-shores",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Indian Shores building department",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says the city has its own building department; the department's own name was not read."
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-pinellas-largo",
+      "name": "Largo",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-largo",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Largo building department",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says the city has its own building department; the department's own name was not read."
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-pinellas-madeira-beach",
+      "name": "Madeira Beach",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-madeira-beach",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Madeira Beach building department",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says the city has its own building department; the department's own name was not read."
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-pinellas-north-redington-beach",
+      "name": "North Redington Beach",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-north-redington-beach",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "North Redington Beach building department",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says the city has its own building department; the department's own name was not read."
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-pinellas-pinellas-park",
+      "name": "Pinellas Park",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-pinellas-park",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Pinellas Park building department",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says the city has its own building department; the department's own name was not read."
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-pinellas-redington-shores",
+      "name": "Redington Shores",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-redington-shores",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Redington Shores building department",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says the city has its own building department; the department's own name was not read."
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-pinellas-st-pete-beach",
+      "name": "St. Pete Beach",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-st-pete-beach",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "St. Pete Beach building department",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says the city has its own building department; the department's own name was not read."
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-pinellas-st-petersburg",
+      "name": "St. Petersburg",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-st-petersburg",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "St. Petersburg building department",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says the city has its own building department; the department's own name was not read."
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-pinellas-seminole",
+      "name": "Seminole",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-seminole",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Seminole building department",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says the city has its own building department; the department's own name was not read."
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-pinellas-south-pasadena",
+      "name": "South Pasadena",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-south-pasadena",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "South Pasadena building department",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says the city has its own building department; the department's own name was not read."
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-pinellas-tarpon-springs",
+      "name": "Tarpon Springs",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-tarpon-springs",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Tarpon Springs building department",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says the city has its own building department; the department's own name was not read."
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-pinellas-treasure-island",
+      "name": "Treasure Island",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-treasure-island",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Treasure Island building department",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says the city has its own building department; the department's own name was not read."
+      },
+      "currentPortal": {
+        "status": "not_researched",
+        "value": null
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_researched",
+        "value": null
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Not researched yet."
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-pinellas-redington-beach",
+      "name": "Redington Beach",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-pinellas-redington-shores",
+        "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+        "evidence": [
+          "ledger:check-building-permits-pinellas-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-16",
+        "note": "The county's list says Redington Shores' department also serves Redington Beach."
+      }
+    }
+  ],
+  "tests": [],
+  "blocked": []
+}

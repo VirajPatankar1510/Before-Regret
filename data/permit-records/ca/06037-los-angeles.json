@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "state": "CA",
+  "countyFips": "06037",
+  "county": "Los Angeles County",
+  "guideSlug": "check-building-permits-los-angeles-county-ca",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "Our guide's title: \"LA Permit Search by Address: IDIS, LADBS & EpicLA\".",
+    "claimSource": "guide #222 (published 2026-08-16), no recorded evidence",
+    "note": "On 2026-09-04 no LA County permit URL could be verified twice: dpw.lacounty.gov failed, ladbs.org returned 403 to automated requests, EPIC-LA answered once and failed once."
+  },
+  "jurisdictions": [],
+  "tests": [],
+  "blocked": [
+    {
+      "url": "https://www.ladbs.org/",
+      "result": "403 to automated requests",
+      "date": "2026-09-04"
+    }
+  ]
+}

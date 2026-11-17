@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "state": "CA",
+  "countyFips": "06071",
+  "county": "San Bernardino County",
+  "guideSlug": "check-building-permits-san-bernardino-county-ca",
+  "jurisdictionCoverage": {
+    "status": "not_researched",
+    "value": null,
+    "unverifiedClaim": "Our guide's title: \"San Bernardino Permits: EZ Online Permitting Portal\".",
+    "claimSource": "guide #215 (published 2026-08-16), no recorded evidence"
+  },
+  "jurisdictions": [],
+  "tests": [],
+  "blocked": []
+}

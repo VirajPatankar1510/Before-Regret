@@ -1,0 +1,376 @@
+{
+  "schemaVersion": 1,
+  "state": "FL",
+  "countyFips": "12021",
+  "county": "Collier County",
+  "guideSlug": "check-building-permits-collier-county-fl",
+  "jurisdictionCoverage": {
+    "status": "partially_verified",
+    "value": "Collier County's Growth Management Community Development Department issues permits for unincorporated Collier County and runs an office in Everglades City under an interlocal agreement. The City of Naples and the City of Marco Island run their own building departments.",
+    "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction",
+    "evidence": [
+      "ledger:check-building-permits-collier-county-fl#f9",
+      "ledger:check-building-permits-collier-county-fl#f10",
+      "ledger:check-building-permits-collier-county-fl#f11"
+    ],
+    "checkedOn": "2026-11-17",
+    "limits": "We have not read a county source that lists every municipality, and the Everglades City interlocal agreement is a scanned PDF with no readable text, so its terms are unconfirmed."
+  },
+  "jurisdictions": [
+    {
+      "id": "fl-collier-uninc",
+      "name": "Unincorporated Collier County",
+      "kind": "county-unincorporated",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-collier-uninc",
+        "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f1",
+          "ledger:check-building-permits-collier-county-fl#f2"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Collier County Growth Management Community Development Department (GMCD)",
+        "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f9"
+        ],
+        "checkedOn": "2026-11-17",
+        "note": "Department name read on the same page; also recorded in docs/data/florida-permit-systems.json (jurisdictions.collier-uninc)."
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "GMCD Public Portal",
+          "platform": "CityView"
+        },
+        "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f2",
+          "ledger:check-building-permits-collier-county-fl#f3"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "portalUrl": {
+        "status": "partially_verified",
+        "value": "https://cvportal.collier.gov/CityViewWeb",
+        "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f2"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "The URL is the one the county's own page links. The portal answered HTTP 403 'not available in your region' to us, so we have not opened it."
+      },
+      "searchBy": {
+        "status": "verified",
+        "value": {
+          "address": true,
+          "parcel": null,
+          "permitNumber": true,
+          "quirks": [
+            "CD-Plus permits carry a CDP prefix in the Public Portal"
+          ]
+        },
+        "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f3",
+          "ledger:check-building-permits-collier-county-fl#f5"
+        ],
+        "checkedOn": "2026-11-17",
+        "note": "From the county's description of CityView (Search for a Property; Status and Fees). Parcel search not described."
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "CityView answered HTTP 403 'Access denied. This content is not available in your region.' Not worked around. (The legacy CDPlus system was tested; see historicalSystems.)",
+        "checkedOn": "2026-11-17"
+      },
+      "onlineRecordsFrom": {
+        "status": "verified",
+        "value": "2011",
+        "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f2"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "historicalSystems": {
+        "status": "verified",
+        "value": [
+          {
+            "name": "External CD-Plus Search (CDPlus)",
+            "url": "https://permzone.azurewebsites.net/",
+            "covers": "1989-2011"
+          },
+          {
+            "name": "Collier County Property Appraiser, Detail tab permit list",
+            "url": "https://www.collierappraiser.com/",
+            "covers": "before 1989"
+          }
+        ],
+        "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f2",
+          "ledger:check-building-permits-collier-county-fl#f4",
+          "ledger:check-building-permits-collier-county-fl#f6",
+          "test:t-collier-cdplus-1"
+        ],
+        "checkedOn": "2026-11-17",
+        "note": "CDPlus tested by us; the Property Appraiser list was not opened (terms-of-use agreement not accepted)."
+      },
+      "olderRecordsRequest": {
+        "status": "verified",
+        "value": "Request the permit file from the county Records Room by public records request; for an open permit the county also points to a property card and Building Permit Resolution Services.",
+        "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f8"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "inspectionHistoryVisible": {
+        "status": "partially_verified",
+        "value": "In CDPlus, a permit's record lists its inspection codes without an account (seen on one permit, 2011061518, which showed 5 codes and no results).",
+        "sourceUrl": "https://permzone.azurewebsites.net/",
+        "evidence": [
+          "test:t-collier-cdplus-1"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "Seen on one permit at one public address. CityView's inspection view is not tested (region-blocked)."
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "CDPlus returns at most 200 records, so at a busy address the newest permits can fall outside the list.",
+          "In CDPlus, typing a street suffix (TRL, TRAIL) or a direction returned 0 results; the bare street name worked.",
+          "The county says CD-Plus is for reference only and often not current; check whether a permit closed in the Public Portal.",
+          "In CDPlus, SUSPEND means cancelled with proper documents and closed; VOID means the permit needs action (county Bulletin 14).",
+          "The county's $25 code-enforcement lien search does not report open permits."
+        ],
+        "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+        "evidence": [
+          "test:t-collier-cdplus-1",
+          "ledger:check-building-permits-collier-county-fl#f4",
+          "ledger:check-building-permits-collier-county-fl#f24",
+          "ledger:check-building-permits-collier-county-fl#f26",
+          "ledger:check-building-permits-collier-county-fl#f27",
+          "ledger:check-building-permits-collier-county-fl#f19"
+        ],
+        "checkedOn": "2026-11-17"
+      }
+    },
+    {
+      "id": "fl-collier-everglades-city",
+      "name": "City of Everglades City",
+      "kind": "city-served-by-county",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "fl-collier-uninc",
+        "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f9"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "The county runs a permit office in Everglades City three days a week and publishes an interlocal agreement with the city, but the agreement is a scanned PDF we could not read, so which records the county holds for the city is unconfirmed.",
+        "note": "The county runs a permit office in Everglades City, open three days a week."
+      }
+    },
+    {
+      "id": "fl-collier-naples",
+      "name": "City of Naples",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-collier-naples",
+        "sourceUrl": "https://www.naplesgov.com/building",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f10"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "City of Naples Building Department",
+        "sourceUrl": "https://www.naplesgov.com/building",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f10"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "currentPortal": {
+        "status": "partially_verified",
+        "value": {
+          "name": "City of Naples public permit portal"
+        },
+        "sourceUrl": "https://www.naplesgov.com/building",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f10"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "Linked from the city's Building page. The portal itself is blocked for our region (Cloudflare 1009), so its name and platform are not confirmed on the portal."
+      },
+      "portalUrl": {
+        "status": "partially_verified",
+        "value": "https://cityview2.iharriscomputer.com/cityofnaplesflorida",
+        "sourceUrl": "https://www.naplesgov.com/building",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f10"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "The link the city's page uses; it returned Cloudflare error 1009 (country ban) to us, so we have not opened it."
+      },
+      "searchBy": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Portal blocked for our region (Cloudflare 1009), 2026-11-17.",
+        "checkedOn": "2026-11-17"
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Portal blocked for our region (Cloudflare 1009), 2026-11-17.",
+        "checkedOn": "2026-11-17"
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Portal blocked for our region.",
+        "checkedOn": "2026-11-17"
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    },
+    {
+      "id": "fl-collier-marco-island",
+      "name": "City of Marco Island",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-collier-marco-island",
+        "sourceUrl": "https://www.cityofmarcoisland.com/page/building-services",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f11"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "City of Marco Island Building Services Division",
+        "sourceUrl": "https://www.cityofmarcoisland.com/page/building-services",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f11"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "Civic Access"
+        },
+        "sourceUrl": "https://www.cityofmarcoisland.com/page/building-services",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f11"
+        ],
+        "checkedOn": "2026-11-17",
+        "note": "Name as the city's page gives it. The URL is a Tyler EnerGov host, but we have not opened the portal."
+      },
+      "portalUrl": {
+        "status": "partially_verified",
+        "value": "https://marcoislandfl-energovpub.tylerhost.net/apps/civic-access-public/home",
+        "sourceUrl": "https://www.cityofmarcoisland.com/page/building-services",
+        "evidence": [
+          "ledger:check-building-permits-collier-county-fl#f11"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "Linked from the city's page; it returned HTTP 403 to us, so we have not opened it."
+      },
+      "searchBy": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Portal returned HTTP 403 to us, 2026-11-17.",
+        "checkedOn": "2026-11-17"
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Portal returned HTTP 403 to us, 2026-11-17.",
+        "checkedOn": "2026-11-17"
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "Portal returned HTTP 403 to us.",
+        "checkedOn": "2026-11-17"
+      },
+      "localCaveats": {
+        "status": "not_researched",
+        "value": null
+      }
+    }
+  ],
+  "tests": [
+    {
+      "id": "t-collier-cdplus-1",
+      "date": "2026-11-17",
+      "system": "External CD-Plus Search, https://permzone.azurewebsites.net/",
+      "subject": "3299 and 3301 Tamiami Trl E, Naples (Collier County Government Center; owner COLLIER COUNTY)",
+      "steps": "Building Review and Permitting; Permit Address Number + Permit Street Name; variants TAMIAMI / TAMIAMI TRL / TAMIAMI TRAIL / tamiami trl / E TAMIAMI; partial permit number 2008; opened permit 2011061518.",
+      "result": "3299 + TAMIAMI: 5 permits (4 COED, 1 SUSPEND), issued 01/11/2011-07/14/2011. Suffix variants: 0 results. 3301 + TAMIAMI: 200 rows (the cap), 1989-2004; COED 148, VOID 31, SUSPEND 21. Permit 2011061518: fire alarm, SUSPEND, issued 7/14/2011, expired 1/10/2012, CO blank, 5 inspection codes with no results.",
+      "screenshots": [
+        "public/images/collier-cdplus-search-3299-tamiami.webp",
+        "public/images/collier-cdplus-permit-2011061518-suspend.webp"
+      ],
+      "limits": "One public address; CityView's view of the same permits not checked (region-blocked)."
+    }
+  ],
+  "blocked": [
+    {
+      "url": "https://cvportal.collier.gov/CityViewWeb",
+      "result": "HTTP 403 'Access denied. This content is not available in your region.'",
+      "date": "2026-11-17"
+    },
+    {
+      "url": "https://cityview2.iharriscomputer.com/cityofnaplesflorida",
+      "result": "Cloudflare error 1009 (country or region banned)",
+      "date": "2026-11-17"
+    },
+    {
+      "url": "https://marcoislandfl-energovpub.tylerhost.net/apps/civic-access-public/home",
+      "result": "HTTP 403 Forbidden",
+      "date": "2026-11-17"
+    },
+    {
+      "url": "https://www.collierappraiser.com/",
+      "result": "Terms of Use agreement; not accepted without the owner's OK",
+      "date": "2026-11-17"
+    }
+  ]
+}
