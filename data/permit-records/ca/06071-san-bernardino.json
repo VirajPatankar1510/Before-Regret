@@ -8,9 +8,16 @@
     "status": "not_researched",
     "value": null,
     "unverifiedClaim": "Our guide's title: \"San Bernardino Permits: EZ Online Permitting Portal\".",
-    "claimSource": "guide #215 (published 2026-08-16), no recorded evidence"
+    "claimSource": "guide #215 (published 2026-08-16), no recorded evidence",
+    "note": "Re-verification attempted 2026-11-17: sbcounty.gov is not approved for our browser, so nothing could be read."
   },
   "jurisdictions": [],
   "tests": [],
-  "blocked": []
+  "blocked": [
+    {
+      "url": "https://sbcounty.gov/ and https://lus.sbcounty.gov/",
+      "result": "Navigation denied (site not approved for the browser)",
+      "date": "2026-11-17"
+    }
+  ]
 }

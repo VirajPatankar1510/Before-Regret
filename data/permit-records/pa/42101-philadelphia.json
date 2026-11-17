@@ -5,12 +5,133 @@
   "county": "Philadelphia County",
   "guideSlug": "check-building-permits-philadelphia-county-pa",
   "jurisdictionCoverage": {
-    "status": "not_researched",
-    "value": null,
-    "unverifiedClaim": "Our guide's title: \"Philadelphia L&I Permit & Violation Search by Address\".",
-    "claimSource": "guide #92 (published 2026-08-10), no recorded evidence"
+    "status": "partially_verified",
+    "value": "The City of Philadelphia Department of Licenses & Inspections (L&I) is the source of permit records for Philadelphia addresses in Atlas.",
+    "sourceUrl": "https://atlas.phila.gov/",
+    "evidence": [
+      "ledger:check-building-permits-philadelphia-county-pa#f2"
+    ],
+    "checkedOn": "2026-11-17",
+    "limits": "Philadelphia is one consolidated city and county, but no page we read says so; recorded from the L&I source line only."
   },
-  "jurisdictions": [],
+  "jurisdictions": [
+    {
+      "id": "pa-philadelphia",
+      "name": "City of Philadelphia",
+      "kind": "consolidated-city-county",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "pa-philadelphia",
+        "sourceUrl": "https://atlas.phila.gov/",
+        "evidence": [
+          "ledger:check-building-permits-philadelphia-county-pa#f2"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "City of Philadelphia Department of Licenses & Inspections (L&I)",
+        "sourceUrl": "https://atlas.phila.gov/",
+        "evidence": [
+          "ledger:check-building-permits-philadelphia-county-pa#f2"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "Atlas (L&I tab) and L&I Property History"
+        },
+        "sourceUrl": "https://atlas.phila.gov/",
+        "evidence": [
+          "ledger:check-building-permits-philadelphia-county-pa#f1",
+          "ledger:check-building-permits-philadelphia-county-pa#f3"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://atlas.phila.gov/",
+        "sourceUrl": "https://atlas.phila.gov/",
+        "evidence": [
+          "ledger:check-building-permits-philadelphia-county-pa#f1"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "searchBy": {
+        "status": "verified",
+        "value": {
+          "address": true,
+          "parcel": true,
+          "permitNumber": null,
+          "quirks": [
+            "Atlas also takes an intersection or a Department of Records Map Registry number",
+            "\"Parcel\" here is the property assessment (OPA) account number",
+            "No login needed"
+          ]
+        },
+        "sourceUrl": "https://atlas.phila.gov/",
+        "evidence": [
+          "ledger:check-building-permits-philadelphia-county-pa#f1"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "addressSearchTested": {
+        "status": "verified",
+        "value": "Anonymous searches for 1400 John F Kennedy Blvd (City Hall) and 1901 Vine St (Parkway Central Library) returned 250 and 95 permits, with inspections and violations, in both Atlas and L&I Property History.",
+        "sourceUrl": "https://li.phila.gov/Property-History/",
+        "evidence": [
+          "ledger:check-building-permits-philadelphia-county-pa#portalWalk",
+          "ledger:check-building-permits-philadelphia-county-pa#f3"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "onlineRecordsFrom": {
+        "status": "partially_verified",
+        "value": "2007",
+        "sourceUrl": "https://li.phila.gov/Property-History/",
+        "evidence": [
+          "ledger:check-building-permits-philadelphia-county-pa#portalWalk",
+          "ledger:check-building-permits-philadelphia-county-pa#f3"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "At both public buildings we searched, the earliest permit was issued in 2007. The city does not state a start year on the pages we read, and no house was searched."
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "verified",
+        "value": "Yes: Atlas lists inspections with their results (for example PASSED or FAILED) at the address.",
+        "sourceUrl": "https://atlas.phila.gov/",
+        "evidence": [
+          "ledger:check-building-permits-philadelphia-county-pa#portalWalk",
+          "ledger:check-building-permits-philadelphia-county-pa#f2"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "localCaveats": {
+        "status": "partially_verified",
+        "value": [
+          "Online permit lists started in 2007 at both addresses we searched; a house built or renovated earlier may have permits that are not online.",
+          "Atlas shows a summary; the full permit list is on L&I Property History.",
+          "City Hall showed exactly 250 permits in both tools, which may be a display limit."
+        ],
+        "sourceUrl": "https://li.phila.gov/Property-History/",
+        "evidence": [
+          "ledger:check-building-permits-philadelphia-county-pa#portalWalk",
+          "ledger:check-building-permits-philadelphia-county-pa#f3"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "Read at two public buildings; the 2007 start and the 250 figure are observations, not stated by the city."
+      }
+    }
+  ],
   "tests": [],
   "blocked": []
 }

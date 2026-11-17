@@ -7,10 +7,151 @@
   "jurisdictionCoverage": {
     "status": "not_researched",
     "value": null,
-    "unverifiedClaim": "Our guide's title: \"Dallas County Permit Search: City & Suburban Portals\".",
-    "claimSource": "guide #79 (published 2026-08-10), no recorded evidence"
+    "unverifiedClaim": "Each city in Dallas County keeps its own permits; unincorporated areas go to Dallas County. The appraisal district record shows which city taxes a property.",
+    "claimSource": "guide #79, no recorded evidence",
+    "note": "Only the City of Dallas was checked (2026-11-17); dallascounty.org was not reachable from our browser."
   },
-  "jurisdictions": [],
+  "jurisdictions": [
+    {
+      "id": "tx-dallas-city",
+      "name": "City of Dallas",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "tx-dallas-city",
+        "sourceUrl": "https://dallascityhall.com/departments/sustainabledevelopment/Pages/DallasNow.aspx",
+        "evidence": [
+          "ledger:check-building-permits-dallas-county-tx#f2"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "Inferred from the city running its own permitting system; which addresses it covers was not quoted."
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "City of Dallas Planning and Development",
+        "sourceUrl": "https://dallascityhall.com/departments/sustainabledevelopment/Pages/default.aspx",
+        "evidence": [
+          "ledger:check-building-permits-dallas-county-tx#f1"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "DallasNow",
+          "platform": "Accela Citizen Access"
+        },
+        "sourceUrl": "https://dallascityhall.com/departments/sustainabledevelopment/Pages/DallasNow.aspx",
+        "evidence": [
+          "ledger:check-building-permits-dallas-county-tx#f2"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "sourceUrl": "https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "evidence": [
+          "ledger:check-building-permits-dallas-county-tx#f3",
+          "ledger:check-building-permits-dallas-county-tx#portalWalk"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "searchBy": {
+        "status": "verified",
+        "value": {
+          "address": true,
+          "parcel": true,
+          "permitNumber": true,
+          "quirks": [
+            "Search by Address has an Appraisal Parcel ID box",
+            "No login needed to search"
+          ]
+        },
+        "sourceUrl": "https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "evidence": [
+          "ledger:check-building-permits-dallas-county-tx#f3",
+          "ledger:check-building-permits-dallas-county-tx#portalWalk"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "addressSearchTested": {
+        "status": "verified",
+        "value": "Anonymous Search by Address for 1500 Marilla St (Dallas City Hall) listed 100+ records; a General Search limited to 1980-2024 found 54 older records on the street.",
+        "sourceUrl": "https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "evidence": [
+          "ledger:check-building-permits-dallas-county-tx#portalWalk"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "onlineRecordsFrom": {
+        "status": "partially_verified",
+        "value": "2009 or earlier (the oldest record we found on the street searched)",
+        "sourceUrl": "https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "evidence": [
+          "ledger:check-building-permits-dallas-county-tx#portalWalk"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "The city does not state how far back DallasNow reaches. Older records carry an older number format, so they appear to be migrated, and one street is all we searched."
+      },
+      "historicalSystems": {
+        "status": "partially_verified",
+        "value": [
+          {
+            "name": "Records from earlier city systems, shown inside DallasNow",
+            "covers": "before DallasNow; an older record-number format (e.g. 2411213061_194396666-001)"
+          }
+        ],
+        "sourceUrl": "https://dallascityhall.com/departments/sustainabledevelopment/Pages/DallasNow.aspx",
+        "evidence": [
+          "ledger:check-building-permits-dallas-county-tx#f2",
+          "ledger:check-building-permits-dallas-county-tx#portalWalk"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "DallasNow says it integrates 15 systems including PDOX; that the older-format records came from those systems is our reading, not stated."
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No record detail page was opened."
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "General Search starts at a default date (12/05/2015 when we checked); set the Start Date earlier before concluding an older permit is missing.",
+          "An address search lists only the newest 100 records; use General Search with a date range to reach older ones.",
+          "The address number filter in General Search is loose, so check each result's address."
+        ],
+        "sourceUrl": "https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building",
+        "evidence": [
+          "ledger:check-building-permits-dallas-county-tx#portalWalk"
+        ],
+        "checkedOn": "2026-11-17"
+      }
+    },
+    {
+      "id": "tx-dallas-uninc",
+      "name": "Unincorporated Dallas County",
+      "kind": "county-unincorporated",
+      "permitsIssuedBy": {
+        "status": "not_researched",
+        "value": null,
+        "unverifiedClaim": "Dallas County Public Works or the county development department handles unincorporated permits; records usually by Texas Public Information Act request.",
+        "claimSource": "guide #79",
+        "note": "dallascounty.org was not reachable from our browser on 2026-11-17."
+      }
+    }
+  ],
   "tests": [],
-  "blocked": []
+  "blocked": [
+    {
+      "url": "https://www.dallascounty.org/departments/pubworks/",
+      "result": "Navigation denied (site not on the browser's allowed list)",
+      "date": "2026-11-17"
+    }
+  ]
 }

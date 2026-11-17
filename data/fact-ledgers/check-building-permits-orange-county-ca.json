@@ -1,0 +1,49 @@
+{
+  "slug": "check-building-permits-orange-county-ca",
+  "question": "Re-verification of the live Orange County CA permit guide (#221, published 2026-08-16) for the permit records database. Facts read 2026-11-17 in the in-app browser.",
+  "verdictConfirmed": "Partly. OC Public Works Building and Safety covers the unincorporated areas, and the county takes public records requests online. We found no public permit-history search: myOC eServices is for applying, paying and service requests. The guide's step 'Search by Address or APN' on the OCPW portal is not confirmed.",
+  "officialLookupUrl": "https://pwds.oc.gov/service-areas/oc-development-services/permitting-services",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "OC Public Works Building and Safety covers grading and building projects in the unincorporated areas of Orange County and County-owned projects.",
+      "quote": "Building and Safety is committed to ensuring safe design and construction of grading and building projects within the unincorporated areas of Orange County and for County owned projects",
+      "url": "https://pwds.oc.gov/service-areas/oc-development-services/building-safety",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "OC Development Services Permitting Services lists property records research among its services and links Online Permits to myOC eServices; phone (714) 667-8888.",
+      "quote": "Some of the services we provide include: Traditional Plan Check Over-the-counter plan review Property records research Online Permits ... phone(714) 667-8888",
+      "url": "https://pwds.oc.gov/service-areas/oc-development-services/permitting-services",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "myOC eServices offers service requests, applications for permits, a Research Map (an Esri map of service requests), account access and payments; we found no option there to search a property's permit history.",
+      "quote": "Service Requests and Complaints ... Apply for... Apply for permits, applications, maps, registrations, inspection requests and bonds. Research Map View Research Map ... Make Payments or Access Certificate",
+      "url": "https://myoceservices.ocgov.com/",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "OC Public Works links a Public Records Request form on the county's NextRequest portal.",
+      "quote": "Public Records Request -> https://orangecounty.nextrequest.com/requests/new?dept_id=1045",
+      "url": "https://pw.oc.gov/",
+      "readOn": "2026-11-17",
+      "method": "browser (link target)"
+    }
+  ],
+  "cut": [
+    "Guide: search the OCPW / MyOCeServices portal by address or 8-digit APN for permit histories -- no such search found on the pages read (f3).",
+    "Guide: pre-mid-1990s permit cards and microfilm in Santa Ana -- not stated on the pages read.",
+    "Guide: 34 incorporated cities; city tools (Irvine Sunrise, Anaheim, Newport Beach CiViC, HB MyPortal) -- not checked.",
+    "Guide: CPRA 10-day response -- statute not read in this pass."
+  ],
+  "blockedSources": [
+    { "url": "https://ocpw.ocgov.com/", "result": "ERR_NAME_NOT_RESOLVED, 2026-11-17 (the department now uses pw.oc.gov / pwds.oc.gov)." }
+  ]
+}

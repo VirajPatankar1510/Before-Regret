@@ -1,0 +1,40 @@
+{
+  "slug": "check-building-permits-middlesex-county-ma",
+  "question": "Re-verification of the live Middlesex County MA permit guide (#213, published 2026-08-16) for the permit records database. Facts read 2026-11-17 in the in-app browser.",
+  "verdictConfirmed": "Only one city was checked. Cambridge's Inspectional Services Department takes permit applications through an OpenGov portal and publishes building-permit datasets on its open data portal. The guide's county-wide claims (town halls, street files) were not checked; a state source saying each municipality issues its own permits was not found in this pass.",
+  "officialLookupUrl": "https://www.cambridgema.gov/inspection",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Cambridge's Inspectional Services Department handles building, electric and plumbing permits; its page links Online Permitting to the city's OpenGov portal.",
+      "quote": "Inspectional Services - City of Cambridge, Massachusetts ... Building / Electric / Plumbing Permits ... Online Permitting ... click here -> https://cambridgema.portal.opengov.com/",
+      "url": "https://www.cambridgema.gov/inspection",
+      "readOn": "2026-11-17",
+      "method": "browser (page title and link targets)"
+    },
+    {
+      "id": "f2",
+      "claim": "The Cambridge OpenGov portal (City of Cambridge Permitting and Licensing System) is for applying for services; its public page offers no record search, only 'Your Records' and 'Claim a Record' after login.",
+      "quote": "City of Cambridge Permitting and Licensing System Access service information and apply online – all from here. ... Your Records ... Claim a Record",
+      "url": "https://cambridgema.portal.opengov.com/",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "Cambridge's open data portal publishes building-permit datasets from Inspectional Services, including 'Building Permits: Addition/Alteration' (updated daily; only completed applications are listed; about 14.5K rows on 2026-11-17), 'Building Permits: New Construction', roof, siding and mechanical permits, and 'Housing Permits 1996 - Present'.",
+      "quote": "Data Provided by City of Cambridge Inspectional Services Department ... Limitations Only completed applications are listed in this dataset. ... Estimated Update Frequency Daily ... Rows 14.5K",
+      "url": "https://data.cambridgema.gov/Inspectional-Services/Building-Permits-Addition-Alteration/qu2z-8suj/about_data",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    "Guide: permits are held by each of the county's cities and towns, with physical 'street files' at town hall -- not checked against a state or town source in this pass.",
+    "Guide: other towns' online permitting portals -- not checked.",
+    "Cambridge: the datasets do not state a start year; no address was searched in them; no older-records route was found on the permit FAQ."
+  ],
+  "blockedSources": [
+    { "url": "https://www.mass.gov/info-details/obtaining-a-building-permit", "result": "HTTP 404 (a URL we guessed; not a real page). mass.gov search returned no readable results to our browser, 2026-11-17." }
+  ]
+}

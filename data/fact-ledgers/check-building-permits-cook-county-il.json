@@ -1,0 +1,62 @@
+{
+  "slug": "check-building-permits-cook-county-il",
+  "question": "Re-verification of the live Cook County permit guide (#89, published 2026-08-10) for the permit records database. Facts read 2026-11-17 in the in-app browser.",
+  "verdictConfirmed": "Partly. The county/municipal split and Chicago's online permit data are confirmed. A finding the guide does not make: the county's own permit status search needs BOTH the permit number and the PIN, so a buyer cannot look up an unincorporated property's permits by address.",
+  "officialLookupUrl": "https://bzpermits.cookcountyil.gov/permit-status/",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Cook County's Department of Building and Zoning handles building and zoning in unincorporated Cook County and the Forest Preserves; properties in municipalities go to the local authority.",
+      "quote": "The Department oversees all building and zoning matters in the unincorporated areas of Cook County and all of the Forest Preserves of Cook County. Inquiries regarding permits, zoning certificates and other matters for properties located in incorporated jurisdictions (municipalities) should contact the applicable local building and zoning authority.",
+      "url": "https://www.cookcountyil.gov/agency/building-and-zoning",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "The county cannot process permits for the City of Chicago or suburban cities and villages; CookViewer shows whether a property is unincorporated.",
+      "quote": "Permits cannot be processed for properties located in the City of Chicago or properties within the incorporated municipal boundaries of suburban cities and villages. ... To find out if your property is in unincorporated Cook County, please use this interactive mapping application: COOKVIEWER",
+      "url": "https://www.cookcountyil.gov/service/e-permits",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "The county's ePermit portal (bzpermits.cookcountyil.gov/epermit/) is for filing applications for listed permit types; it offers no public record search.",
+      "quote": "Electronic Permits are available on specific projects. ... Deck, Driveway, Fence, Flatwork, Generator, HVAC, Pool, Re-roof, Rooftop Solar, Shed/Detached Garage, Signs, Spa, Tent, Window or Door Replacement",
+      "url": "https://bzpermits.cookcountyil.gov/epermit/",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "The county's Building Permit Status Search needs the building permit application number AND the Property Index Number; it is meant for applicants.",
+      "quote": "The Department of Building & Zoning allows building permit applicants to view the status of their application at any time online. You will need your Building Permit application number as well as the property's Property Index Number (PIN) to view the status information.",
+      "url": "https://bzpermits.cookcountyil.gov/permit-status/",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "claim": "Chicago's Building Permits dataset covers permits issued by the City of Chicago from 2006 to the present, excluding permits voided or revoked after issuance; data owner Department of Buildings; updated daily.",
+      "quote": "This dataset includes information about building permits issued by the City of Chicago from 2006 to the present, excluding permits that have been voided or revoked after issuance. ... Data Owner Department of Buildings ... Time Period 2006 to present ... Frequency Data are updated daily",
+      "url": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "claim": "The dataset page links a City search for issued building permits by permit number or street address.",
+      "quote": "Search building permits ... Search for issued building permits by permit number or street address.",
+      "url": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    "Guide section 'Online Permit Searches' for unincorporated Cook: no address search exists on the county's pages; the status search needs permit number + PIN (f4).",
+    "Guide claims on Illinois FOIA for county permit records and on suburban village portals: not checked.",
+    "The City search linked from the dataset (f6) was not opened, so its own address and behaviour are unconfirmed."
+  ],
+  "blockedSources": []
+}

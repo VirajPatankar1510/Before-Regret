@@ -1,0 +1,64 @@
+{
+  "slug": "check-building-permits-miami-dade-county-fl",
+  "question": "Re-verification of the live Miami-Dade permit guide (#90, published 2026-08-10) for the permit records database. Facts read 2026-11-17 in the in-app browser.",
+  "verdictConfirmed": "Partly. Folio-based lookup and the county/municipal split are confirmed. The county's permit menu is not EnerGov (the guide's title says EnerGov; the county menu is an older e-Permitting application), and the county publishes which construction years have plans on file, including years that have none.",
+  "officialLookupUrl": "https://www.miamidade.gov/Apps/RER/ePermittingMenu/Home/Permits",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Miami-Dade County keeps permit and plan records for properties in unincorporated areas; a folio number starting with 30 means unincorporated, otherwise ask the municipality.",
+      "quote": "Miami-Dade County keeps records of all permits and plans for properties located in unincorporated areas, so buyers and owners may obtain a building's full history. ... If your property is in Miami-Dade County your folio number will start with \"30.\" If not, you need to inquire with the appropriate municipality.",
+      "url": "https://www.miamidade.gov/global/economy/building/microfilm-plan-library.page",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "Records are filed by permit number, usually found from the address or folio; digitized plans download from E-Microfilm, plans still on film need an appointment (786-315-2340).",
+      "quote": "Plans that have already been digitized may be downloaded from E-Microfilm. To view or obtain copies of building plans that have yet to be digitized, meaning they are on film, you must schedule an appointment by calling 786-315-2340. All records are filed by permit number. In most cases, the permit number can be located by the address or the folio number of the property.",
+      "url": "https://www.miamidade.gov/global/economy/building/microfilm-plan-library.page",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "Available years of plan research: built after 1990 available; 1979-1989 may be available; single-family homes built 1961-1972 and portions of 1973-1978 not available; condos and buildings of more than two units count as commercial and may be available; built before 1938 not available.",
+      "quote": "Properties built AFTER 1990 are available Residential and commercial properties built between 1979 and 1989 may be available Residential (single-family residences) built between 1961 and 1972, and portions of 1973 through 1978 are not available. Condominiums and multi-family units (more than two units) are commercial properties and if built during these years, may be available. Properties built BEFORE 1938 are not available.",
+      "url": "https://www.miamidade.gov/global/economy/building/microfilm-plan-library.page",
+      "readOn": "2026-11-17",
+      "method": "browser (Available Years of Research accordion)"
+    },
+    {
+      "id": "f4",
+      "claim": "Plan research carries a non-refundable research fee of $18.75 for residential or $46.34 for commercial properties, paid before the appointment.",
+      "quote": "there is a non-refundable $18.75 for residential properties and/or $46.34 for commercial properties fee for research fee that must be paid prior to the appointment",
+      "url": "https://www.miamidade.gov/global/economy/building/microfilm-plan-library.page",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "claim": "The county Building home page links a Building Permits Search, a Code Compliance Violations Search and a Public Records Request (GovQA).",
+      "quote": "Building Permits Search -> https://www.miamidade.gov/Apps/RER/ePermittingMenu/Home/Permits ; Code Compliance Violations Search ; Public Records Request (GovQA)",
+      "url": "https://www.miamidade.gov/global/economy/building/home.page",
+      "readOn": "2026-11-17",
+      "method": "browser (link targets)"
+    },
+    {
+      "id": "f6",
+      "claim": "The county's Building Permit Selection Menu searches mostly by permit number; by address it offers Process/Permit Number Cross-Reference and Open Master Permits; by folio, Open Permits by Folio; it also has Permit Inspection History and Permit History Inquiry by permit number.",
+      "quote": "Permit Inspection History (Permit Number) ... Permit History Inquiry (Permit Number) ... Process/Permit Number Cross-Reference (Address) Open Master Permits (Address) ... Open Permits by Folio (Folio Number)",
+      "url": "https://www.miamidade.gov/Apps/RER/ePermittingMenu/Home/Permits",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    "No search was submitted: the permit menu page carries a reCAPTCHA, which we do not complete or bypass.",
+    "Guide's city portal claims (City of Miami iBuild, Miami Beach Citizen Access, Coral Gables EnerGov, Hialeah records requests) and the Municipal Lien Search: not checked.",
+    "The guide title's 'EnerGov' does not describe the county system read here."
+  ],
+  "blockedSources": [
+    { "url": "https://www.miamidade.gov/Apps/RER/ePermittingMenu/Home/Permits", "result": "Page loads, but the form carries a reCAPTCHA; no search submitted, 2026-11-17." }
+  ]
+}

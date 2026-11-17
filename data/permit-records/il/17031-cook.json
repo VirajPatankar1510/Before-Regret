@@ -5,12 +5,216 @@
   "county": "Cook County",
   "guideSlug": "check-building-permits-cook-county-il",
   "jurisdictionCoverage": {
-    "status": "not_researched",
-    "value": null,
-    "unverifiedClaim": "Our guide's title: \"Cook County Permit Portal: Search Records by Address\".",
-    "claimSource": "guide #89 (published 2026-08-10), no recorded evidence"
+    "status": "verified",
+    "value": "Cook County Building and Zoning handles unincorporated Cook County and the Forest Preserves. The City of Chicago and the suburban cities and villages handle their own permits.",
+    "sourceUrl": "https://www.cookcountyil.gov/agency/building-and-zoning",
+    "evidence": [
+      "ledger:check-building-permits-cook-county-il#f1",
+      "ledger:check-building-permits-cook-county-il#f2"
+    ],
+    "checkedOn": "2026-11-17"
   },
-  "jurisdictions": [],
+  "jurisdictions": [
+    {
+      "id": "il-cook-uninc",
+      "name": "Unincorporated Cook County",
+      "kind": "county-unincorporated",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "il-cook-uninc",
+        "sourceUrl": "https://www.cookcountyil.gov/agency/building-and-zoning",
+        "evidence": [
+          "ledger:check-building-permits-cook-county-il#f1"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Cook County Department of Building and Zoning",
+        "sourceUrl": "https://www.cookcountyil.gov/agency/building-and-zoning",
+        "evidence": [
+          "ledger:check-building-permits-cook-county-il#f1"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "currentPortal": {
+        "status": "partially_verified",
+        "value": {
+          "name": "Building Permit Status Search"
+        },
+        "sourceUrl": "https://bzpermits.cookcountyil.gov/permit-status/",
+        "evidence": [
+          "ledger:check-building-permits-cook-county-il#f4",
+          "ledger:check-building-permits-cook-county-il#f3"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "Built for applicants checking their own application; we found no public permit search by address on the county's pages. The ePermit portal only takes applications."
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://bzpermits.cookcountyil.gov/permit-status/",
+        "sourceUrl": "https://bzpermits.cookcountyil.gov/permit-status/",
+        "evidence": [
+          "ledger:check-building-permits-cook-county-il#f4"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "searchBy": {
+        "status": "verified",
+        "value": {
+          "address": false,
+          "parcel": false,
+          "permitNumber": true,
+          "quirks": [
+            "Needs the permit application number AND the Property Index Number (PIN) together"
+          ]
+        },
+        "sourceUrl": "https://bzpermits.cookcountyil.gov/permit-status/",
+        "evidence": [
+          "ledger:check-building-permits-cook-county-il#f4"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "addressSearchTested": {
+        "status": "verified",
+        "value": "Not possible in the county tool: it asks for the permit number and the PIN, not an address.",
+        "sourceUrl": "https://bzpermits.cookcountyil.gov/permit-status/",
+        "evidence": [
+          "ledger:check-building-permits-cook-county-il#f4"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "The county's online status search needs both the permit number and the PIN, so it cannot find permits you don't already know about.",
+          "Check with CookViewer whether a property is unincorporated; the county cannot process permits inside Chicago or the suburban municipalities."
+        ],
+        "sourceUrl": "https://www.cookcountyil.gov/service/e-permits",
+        "evidence": [
+          "ledger:check-building-permits-cook-county-il#f2",
+          "ledger:check-building-permits-cook-county-il#f4"
+        ],
+        "checkedOn": "2026-11-17"
+      }
+    },
+    {
+      "id": "il-cook-chicago",
+      "name": "City of Chicago",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "il-cook-chicago",
+        "sourceUrl": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+        "evidence": [
+          "ledger:check-building-permits-cook-county-il#f5"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "City of Chicago Department of Buildings",
+        "sourceUrl": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+        "evidence": [
+          "ledger:check-building-permits-cook-county-il#f5"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "Building Permits dataset, Chicago Data Portal"
+        },
+        "sourceUrl": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+        "evidence": [
+          "ledger:check-building-permits-cook-county-il#f5"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+        "sourceUrl": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+        "evidence": [
+          "ledger:check-building-permits-cook-county-il#f5"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "searchBy": {
+        "status": "partially_verified",
+        "value": {
+          "address": true,
+          "parcel": null,
+          "permitNumber": true,
+          "quirks": [
+            "The dataset page links a City search for issued permits by permit number or street address"
+          ]
+        },
+        "sourceUrl": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+        "evidence": [
+          "ledger:check-building-permits-cook-county-il#f6"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "The linked City search was not opened."
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No address search recorded."
+      },
+      "onlineRecordsFrom": {
+        "status": "verified",
+        "value": "2006",
+        "sourceUrl": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+        "evidence": [
+          "ledger:check-building-permits-cook-county-il#f5"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "The data covers permits issued from 2006; older permits are not in it.",
+          "Permits voided or revoked after issuance are left out of the data."
+        ],
+        "sourceUrl": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+        "evidence": [
+          "ledger:check-building-permits-cook-county-il#f5"
+        ],
+        "checkedOn": "2026-11-17"
+      }
+    }
+  ],
   "tests": [],
   "blocked": []
 }

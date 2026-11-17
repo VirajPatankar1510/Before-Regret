@@ -1,0 +1,51 @@
+{
+  "slug": "check-building-permits-philadelphia-county-pa",
+  "question": "Re-verification of the live Philadelphia permit guide (#92, published 2026-08-10) for the permit records database. Facts read 2026-11-17 in the in-app browser.",
+  "verdictConfirmed": "Yes for the core claim: Atlas and L&I Property History search permits, inspections and violations by address with no login, and the source is the Department of Licenses & Inspections. A finding the guide does not state: at both public buildings we searched, the online permit list starts in 2007.",
+  "officialLookupUrl": "https://atlas.phila.gov/",
+  "portalWalk": {
+    "date": "2026-11-17",
+    "system": "Atlas (https://atlas.phila.gov/) Licenses & Inspections tab, and L&I Property History (https://li.phila.gov/Property-History/), which Atlas links as 'See all permits at L&I Property History'. No login used.",
+    "address": "1400 John F Kennedy Blvd (City Hall, owner City of Philadelphia) and 1901 Vine St (Parkway Central Library, owner City of Philadelphia). Public buildings only.",
+    "observations": [
+      "Atlas L&I tab for City Hall: Building Certifications (3), Permits (250), Zoning Permit Documents (7, labelled 'formerly Zoning Archive'), Inspections (36) with results such as PASSED and FAILED, Violations (59), L&I Appeals (2).",
+      "With the Atlas permit table set to show all rows, exactly 250 permits were listed; the oldest were issued in 2007 (an electrical permit on 02/01/2007), the newest in 2026.",
+      "L&I Property History for City Hall also reported '250 Permits for this property', with a Year issued filter running 2007 to 2026. It also lists Appeals, Building Certifications, Investigations, Business licenses and Violations, plus the L&I district and owner.",
+      "L&I Property History for 1901 Vine St reported '95 Permits for this property', Year issued filter 2007 to 2026 (no 2020).",
+      "Permit types seen include Alteration, Electrical, Plumbing, Mechanical / Fuel Gas, Demolition, Zoning/Use, Commercial Building and Operations permits."
+    ],
+    "limits": "Two public, non-residential buildings. Both lists start in 2007, which points to 2007 as where online permit records begin, but the city does not say so on the pages we read. City Hall's count of exactly 250 in both tools may be a display limit; not confirmed. No house was searched."
+  },
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Atlas is the City of Philadelphia's address tool; it gives the history of permits, licenses and inspections at any address, and searches by address, intersection, property assessment (OPA) account number or Department of Records Map Registry number.",
+      "quote": "Get the history of permits, licenses, and inspections at any address ... type an address, intersection, property assessment account number, or Department of Records Map Registry number into the search box.",
+      "url": "https://atlas.phila.gov/",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "Atlas's Licenses & Inspections tab names the Department of Licenses & Inspections as its source and covers licenses, inspections, permits, property maintenance violations and zoning permit documents.",
+      "quote": "Licenses, inspections, permits, property maintenance violations, and zoning permit documents at your search address. Source: Department of Licenses & Inspections",
+      "url": "https://atlas.phila.gov/",
+      "readOn": "2026-11-17",
+      "method": "browser (L&I tab at 1400 John F Kennedy Blvd)"
+    },
+    {
+      "id": "f3",
+      "claim": "Atlas links each address's full permit list to L&I Property History on li.phila.gov, which also shows appeals, building certifications, investigations, business licenses and violations, and offers a route to report corrections.",
+      "quote": "See all permits at L&I Property History -> https://li.phila.gov/Property-History/search?address=1400%20JOHN%20F%20KENNEDY%20BLVD ; To report corrections, submit an official inquiry.",
+      "url": "https://li.phila.gov/Property-History/search?address=1400%20JOHN%20F%20KENNEDY%20BLVD",
+      "readOn": "2026-11-17",
+      "method": "browser (link target and page text)"
+    }
+  ],
+  "cut": [
+    "How to get permit records from before 2007 (eCLIPSE, records requests, Right-to-Know): not read.",
+    "Whether City Hall's 250 is a display cap: not confirmed.",
+    "That Philadelphia city and county share one boundary: true in general knowledge but not quoted from a page we read."
+  ],
+  "blockedSources": []
+}

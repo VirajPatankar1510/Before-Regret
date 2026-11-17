@@ -1,0 +1,86 @@
+{
+  "slug": "check-building-permits-riverside-county-ca",
+  "question": "Re-verification of the live Riverside County permit guide (#216, published 2026-08-16) for the permit records database. Facts read 2026-11-17 in the in-app browser.",
+  "verdictConfirmed": "Yes for the county's own records, and with a firmer answer than the guide gives. The county's Building and Safety says its permit records date back to about 1963, that earlier ones were destroyed, and that permits issued after 1997 can be seen online. Our test of its Permit Lookup agrees: the earliest issued date there is 1997-06-20.",
+  "officialLookupUrl": "https://publiclookup.rivco.org/",
+  "portalWalk": {
+    "date": "2026-11-17",
+    "system": "TLMA Permit Lookup (https://publiclookup.rivco.org/) and PLUS Online public search (https://rivcoplus.org/EnerGov_Prod/SelfService#/search). No login used; no CAPTCHA.",
+    "address": "No single house. A database-wide query sorted by issued date; a street name taken from that result list; and 37701 Warren Rd, Winchester (Lake Skinner Recreation Area, a county park). Personal names and phone numbers shown in the results were not recorded.",
+    "observations": [
+      "Permit Lookup searches by permit number, permit type, work class, street name, city, APN (no dashes), project, description, subdivision, tract, lot, contact, square footage and applied, issued, finalized and expired dates.",
+      "A query for permits issued before 1990-01-01 returned 'No results found for your search.'",
+      "A query for permits issued from 1990-01-01, sorted oldest first, returned 'Total Rows: 658098' and 'Permit Count: 471219'; the earliest issued date was 1997-06-20.",
+      "A street-name search on a street from that list returned 30 permits, so the street search works.",
+      "37701 Warren Rd, and Warren Rd with city Winchester, returned no results.",
+      "The work-class list includes historical classes, e.g. 'BZ - Old Build', 'BLH - Blythe Permit Historic' and 'Permit Historical March JPA (MJPA)'.",
+      "The result rows show applicant and contact names and phone numbers; Permit Lookup offers Print, Excel and PDF export.",
+      "PLUS Online's public search page loads without logging in and searches Permit, Plan, Inspection, Code Case, Request and Project records."
+    ],
+    "limits": "No house was searched, and no PLUS Online search was submitted. A park address returning nothing shows only that an address can return zero results, not why."
+  },
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Riverside County Building and Safety's permit records date back to approximately 1963; earlier building permit records were destroyed; for older properties the Assessor's CAP report / Residential Building Record may give building history.",
+      "quote": "Our permit records date back to approximately 1963.  All building permit records prior to that have been destroyed.  If you need a record for a property that is older than 1963, you may contact the Tax Assessors office ... to request a CAP report/Residential Building Record",
+      "url": "https://building.rctlma.org/records-request",
+      "readOn": "2026-11-17",
+      "method": "browser (FAQ accordion)"
+    },
+    {
+      "id": "f2",
+      "claim": "Permits issued after 1997 can be viewed or printed online; public records can be searched in PLUS Online or the public lookup website.",
+      "quote": "Permits issued after 1997 are available to view or print from our website. ... You may also search public records by visiting our Plus Online website: https://rivcoplus.org/EnerGov_Prod/SelfService#/home or by using our public lookup website: https://publiclookup.rivco.org/.",
+      "url": "https://building.rctlma.org/records-request",
+      "readOn": "2026-11-17",
+      "method": "browser (FAQ accordion)"
+    },
+    {
+      "id": "f3",
+      "claim": "Map My County's parcel report, searched by APN or address, lists a property's permits under 'Building and Safety Cases'.",
+      "quote": "You may use our Map My County (MMC) public use self-help tool ... you may choose to search by single APN, multiple APN's or the address. ... Click on \"full report for this parcel\", then scroll down to \"Building and Safety Cases\" to view a list of permits for this property.",
+      "url": "https://building.rctlma.org/records-request",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "Building and Safety does not keep residential building plans (returned to the applicant or destroyed once the project is complete); commercial plans are kept and viewable by appointment, with copying under Health and Safety Code section 19851.",
+      "quote": "The Building & Safety department does not maintain residential building plans.  They are either returned to the applicant or destroyed once the project is complete.  Commercial building plans are kept on file, and available to view by appointment only, but require permission to copy.",
+      "url": "https://building.rctlma.org/records-request",
+      "readOn": "2026-11-17",
+      "method": "browser (FAQ accordion)"
+    },
+    {
+      "id": "f5",
+      "claim": "Archived records are requested from the Building and Safety Records Division (4080 Lemon Street, 2nd Floor, Riverside; Records@rivco.org; 951-955-2017) with an address or APN; a fee applies to copies or research of archived records.",
+      "quote": "Department of Building & Safety Records Division 4080 Lemon Street, 2nd Floor ... Email: Records@rivco.org Phone: 951-955-2017 ... A FEE WILL BE CHARGED FOR REQUESTS REQUIRING COPIES OR RESEARCH OF ARCHIVED RECORDS.",
+      "url": "https://building.rctlma.org/records-request",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "claim": "Permit Lookup data is updated once daily and may be up to 24 hours behind the official system.",
+      "quote": "Disclaimer: The permit information shown on this site is updated once daily and may be up to 24 hours behind the official system.",
+      "url": "https://publiclookup.rivco.org/",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f7",
+      "claim": "The TLMA home page links PLUS Online, Permit Look Up and a Public Records Request portal (NextRequest).",
+      "quote": "Online -> https://rivcoplus.org/EnerGov_Prod/SelfService#/home ; Public Records Request -> https://riversidecountyca.nextrequest.com/ ; Permit Look Up -> https://publiclookup.rivco.org/",
+      "url": "https://rctlma.org/",
+      "readOn": "2026-11-17",
+      "method": "browser (link targets)"
+    }
+  ],
+  "cut": [
+    "Which areas the county's Building and Safety covers (unincorporated vs. cities) is not stated on the pages read.",
+    "Guide claims about the incorporated cities' own portals: not checked.",
+    "Map My County parcel report (f3): not opened."
+  ],
+  "blockedSources": []
+}

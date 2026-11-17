@@ -5,11 +5,13 @@
   "county": "Kings County",
   "guideSlug": "check-building-permits-brooklyn-ny",
   "jurisdictionCoverage": {
-    "status": "not_researched",
-    "value": null,
-    "unverifiedClaim": "NYC Department of Buildings issues building permits citywide (records in DOB BIS and DOB NOW).",
-    "claimSource": "guide #94, no recorded evidence",
-    "note": "DOB BIS and DOB NOW answered \"Access Denied\" (Akamai) to our browser on 2026-10-03 and 2026-10-07, so nothing about them is verified. An older script note (publish-batch-b.ts:38) says the DOB walkthrough was verified for batch A; batch A's own note says DOB was blocked, so that line is wrong."
+    "status": "verified",
+    "value": "The NYC Department of Buildings issues construction and demolition permits across the City of New York, including this borough.",
+    "sourceUrl": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+    "evidence": [
+      "ledger:nyc-dob-permit-records#f1"
+    ],
+    "checkedOn": "2026-11-17"
   },
   "jurisdictions": [
     {
@@ -17,31 +19,118 @@
       "name": "Brooklyn (New York City)",
       "kind": "borough",
       "permitsIssuedBy": {
-        "status": "not_researched",
+        "status": "verified",
+        "value": "ny-brooklyn",
+        "sourceUrl": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+        "evidence": [
+          "ledger:nyc-dob-permit-records#f1"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "NYC Department of Buildings (DOB)",
+        "sourceUrl": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+        "evidence": [
+          "ledger:nyc-dob-permit-records#f1"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "DOB NOW: Build"
+        },
+        "sourceUrl": "https://www.nyc.gov/site/buildings/property-or-business-owner/obtaining-a-permit.page",
+        "evidence": [
+          "ledger:nyc-dob-permit-records#f2"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://a810-dobnow.nyc.gov/publish/#!/",
+        "sourceUrl": "https://www.nyc.gov/site/buildings/index.page",
+        "evidence": [
+          "ledger:nyc-dob-permit-records#f5"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "searchBy": {
+        "status": "not_tested",
         "value": null,
-        "unverifiedClaim": "NYC Department of Buildings issues building permits citywide (records in DOB BIS and DOB NOW).",
-        "claimSource": "guide #94, no recorded evidence",
-        "note": "DOB BIS and DOB NOW answered \"Access Denied\" (Akamai) to our browser on 2026-10-03 and 2026-10-07, so nothing about them is verified. An older script note (publish-batch-b.ts:38) says the DOB walkthrough was verified for batch A; batch A's own note says DOB was blocked, so that line is wrong."
+        "reason": "BIS and DOB NOW refuse connections from outside the United States, so their search options could not be checked."
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "BIS and DOB NOW refuse connections from outside the United States."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "partially_verified",
+        "value": [
+          {
+            "name": "Buildings Information System (BIS)",
+            "url": "http://www.nyc.gov/bis",
+            "covers": "jobs filed in BIS; complaints, violations, actions, applications and inspections"
+          },
+          {
+            "name": "NYC Open Data: DOB Permit Issuance",
+            "url": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+            "covers": "permits issued in BIS only"
+          }
+        ],
+        "sourceUrl": "https://www.nyc.gov/site/buildings/property-or-business-owner/guide-to-bis-dobnow-efiling.page",
+        "evidence": [
+          "ledger:nyc-dob-permit-records#f3",
+          "ledger:nyc-dob-permit-records#f4"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "How far back BIS and the dataset reach is not stated on the pages we read."
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "DOB says BIS shows inspections, but BIS refuses connections from outside the United States, so we could not open one."
       },
       "localCaveats": {
         "status": "verified",
         "value": [
+          "Permits are split between DOB NOW (most current permits) and BIS (older jobs); search both before concluding a permit is missing.",
+          "NYC Open Data publishes BIS permits and DOB NOW permits as separate datasets.",
+          "BIS and DOB NOW accept connections only from inside the United States.",
           "If the building is a designated landmark or in a historic district, the Landmarks Preservation Commission keeps a separate permit record: its online permit search covers applications from January 1, 2016; older ones need a Records Access Request."
         ],
-        "sourceUrl": "https://www.nyc.gov/site/lpc/applications/permit-search.page",
+        "sourceUrl": "https://www.nyc.gov/site/buildings/property-or-business-owner/obtaining-a-permit.page",
         "evidence": [
-          "script:scripts/restore-county-batch-a.ts:27"
+          "ledger:nyc-dob-permit-records#f2",
+          "ledger:nyc-dob-permit-records#f4",
+          "ledger:nyc-dob-permit-records#f6",
+          "quote:Access is restricted to locations within the United States. For security reasons, any attempt to connect from outside the country will be blocked."
         ],
-        "checkedOn": "2026-10-03"
+        "checkedOn": "2026-11-17"
       }
     }
   ],
   "tests": [],
   "blocked": [
     {
-      "url": "NYC DOB BIS and DOB NOW (addresses not recorded in our notes)",
-      "result": "Access Denied (Akamai)",
-      "date": "2026-10-03"
+      "url": "https://a810-bisweb.nyc.gov/bisweb/bsqpm01.jsp",
+      "result": "HTTP 403 'Access is restricted to locations within the United States.'",
+      "date": "2026-11-17"
+    },
+    {
+      "url": "https://a810-dobnow.nyc.gov/publish/#!/",
+      "result": "HTTP 403 'Access is restricted to locations within the United States.'",
+      "date": "2026-11-17"
     }
   ]
 }

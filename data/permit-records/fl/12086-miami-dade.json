@@ -5,12 +5,193 @@
   "county": "Miami-Dade County",
   "guideSlug": "check-building-permits-miami-dade-county-fl",
   "jurisdictionCoverage": {
-    "status": "not_researched",
-    "value": null,
-    "unverifiedClaim": "Our guide's title: \"Miami-Dade Permits by Folio: EnerGov & City Portals\".",
-    "claimSource": "guide #90 (published 2026-08-10), no recorded evidence"
+    "status": "verified",
+    "value": "Miami-Dade County holds permits and plans for unincorporated areas, where folio numbers start with 30. For any other folio, the municipality holds the records.",
+    "sourceUrl": "https://www.miamidade.gov/global/economy/building/microfilm-plan-library.page",
+    "evidence": [
+      "ledger:check-building-permits-miami-dade-county-fl#f1"
+    ],
+    "checkedOn": "2026-11-17"
   },
-  "jurisdictions": [],
+  "jurisdictions": [
+    {
+      "id": "fl-miami-dade-uninc",
+      "name": "Unincorporated Miami-Dade County",
+      "kind": "county-unincorporated",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "fl-miami-dade-uninc",
+        "sourceUrl": "https://www.miamidade.gov/global/economy/building/microfilm-plan-library.page",
+        "evidence": [
+          "ledger:check-building-permits-miami-dade-county-fl#f1"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "buildingDepartment": {
+        "status": "partially_verified",
+        "value": "Miami-Dade County Regulatory and Economic Resources (RER), Building and Construction",
+        "sourceUrl": "https://www.miamidade.gov/global/economy/building/microfilm-plan-library.page",
+        "evidence": [
+          "ledger:check-building-permits-miami-dade-county-fl#f1"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "Read from the page's breadcrumb, not quoted."
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "e-Permitting Building Permit Selection Menu"
+        },
+        "sourceUrl": "https://www.miamidade.gov/Apps/RER/ePermittingMenu/Home/Permits",
+        "evidence": [
+          "ledger:check-building-permits-miami-dade-county-fl#f6",
+          "ledger:check-building-permits-miami-dade-county-fl#f5"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://www.miamidade.gov/Apps/RER/ePermittingMenu/Home/Permits",
+        "sourceUrl": "https://www.miamidade.gov/Apps/RER/ePermittingMenu/Home/Permits",
+        "evidence": [
+          "ledger:check-building-permits-miami-dade-county-fl#f6"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "searchBy": {
+        "status": "verified",
+        "value": {
+          "address": true,
+          "parcel": true,
+          "permitNumber": true,
+          "quirks": [
+            "By address: a cross-reference to permit numbers, and open master permits",
+            "By folio: open permits only",
+            "Most lookups (history, inspections, fees) need the permit number"
+          ]
+        },
+        "sourceUrl": "https://www.miamidade.gov/Apps/RER/ePermittingMenu/Home/Permits",
+        "evidence": [
+          "ledger:check-building-permits-miami-dade-county-fl#f6"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "The search form carries a reCAPTCHA; we do not complete bot checks, so no search was submitted (2026-11-17)."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "verified",
+        "value": [
+          {
+            "name": "E-Microfilm",
+            "covers": "building plans already digitized"
+          },
+          {
+            "name": "Microfilm Section (by appointment)",
+            "covers": "plans still on film"
+          }
+        ],
+        "sourceUrl": "https://www.miamidade.gov/global/economy/building/microfilm-plan-library.page",
+        "evidence": [
+          "ledger:check-building-permits-miami-dade-county-fl#f2"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "olderRecordsRequest": {
+        "status": "verified",
+        "value": "Digitized plans download from E-Microfilm; plans still on film need an appointment with the Microfilm Section (786-315-2340). A non-refundable research fee of $18.75 (residential) or $46.34 (commercial) is paid first.",
+        "sourceUrl": "https://www.miamidade.gov/global/economy/building/microfilm-plan-library.page",
+        "evidence": [
+          "ledger:check-building-permits-miami-dade-county-fl#f2",
+          "ledger:check-building-permits-miami-dade-county-fl#f4"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "inspectionHistoryVisible": {
+        "status": "partially_verified",
+        "value": "The menu offers Permit Inspection History by permit number.",
+        "sourceUrl": "https://www.miamidade.gov/Apps/RER/ePermittingMenu/Home/Permits",
+        "evidence": [
+          "ledger:check-building-permits-miami-dade-county-fl#f6"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "Not opened: the form carries a reCAPTCHA."
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "The county says plans are not available for single-family homes built 1961-1972 and parts of 1973-1978, or for anything built before 1938; 1979-1989 may be available.",
+          "Records are filed by permit number; find it from the address or folio first."
+        ],
+        "sourceUrl": "https://www.miamidade.gov/global/economy/building/microfilm-plan-library.page",
+        "evidence": [
+          "ledger:check-building-permits-miami-dade-county-fl#f3",
+          "ledger:check-building-permits-miami-dade-county-fl#f2"
+        ],
+        "checkedOn": "2026-11-17"
+      }
+    },
+    {
+      "id": "fl-miami-dade-miami",
+      "name": "City of Miami",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "not_researched",
+        "value": null,
+        "unverifiedClaim": "Holds its own permits (our guide names iBuild for Miami, Citizen Access for Miami Beach, EnerGov for Coral Gables, records requests for Hialeah).",
+        "claimSource": "guide #90",
+        "note": "City portals not checked on 2026-11-17."
+      }
+    },
+    {
+      "id": "fl-miami-dade-miami-beach",
+      "name": "City of Miami Beach",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "not_researched",
+        "value": null,
+        "unverifiedClaim": "Holds its own permits (our guide names iBuild for Miami, Citizen Access for Miami Beach, EnerGov for Coral Gables, records requests for Hialeah).",
+        "claimSource": "guide #90",
+        "note": "City portals not checked on 2026-11-17."
+      }
+    },
+    {
+      "id": "fl-miami-dade-coral-gables",
+      "name": "City of Coral Gables",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "not_researched",
+        "value": null,
+        "unverifiedClaim": "Holds its own permits (our guide names iBuild for Miami, Citizen Access for Miami Beach, EnerGov for Coral Gables, records requests for Hialeah).",
+        "claimSource": "guide #90",
+        "note": "City portals not checked on 2026-11-17."
+      }
+    },
+    {
+      "id": "fl-miami-dade-hialeah",
+      "name": "City of Hialeah",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "not_researched",
+        "value": null,
+        "unverifiedClaim": "Holds its own permits (our guide names iBuild for Miami, Citizen Access for Miami Beach, EnerGov for Coral Gables, records requests for Hialeah).",
+        "claimSource": "guide #90",
+        "note": "City portals not checked on 2026-11-17."
+      }
+    }
+  ],
   "tests": [],
-  "blocked": []
+  "blocked": [
+    {
+      "url": "https://www.miamidade.gov/Apps/RER/ePermittingMenu/Home/Permits",
+      "result": "Form carries a reCAPTCHA; no search submitted",
+      "date": "2026-11-17"
+    }
+  ]
 }

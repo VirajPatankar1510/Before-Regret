@@ -1,0 +1,55 @@
+{
+  "slug": "check-building-permits-dallas-county-tx",
+  "question": "Re-verification of the live Dallas County permit guide (#79, published 2026-08-10) for the permit records database. Facts read 2026-11-17 in the in-app browser.",
+  "verdictConfirmed": "Partly. The City of Dallas has a public address search, but the guide's details are out of date: the department is now Planning and Development, and the portal is DallasNow (Accela Citizen Access). Its General Search starts at a default date in December 2015. Unincorporated Dallas County and the suburban cities were not checked.",
+  "officialLookupUrl": "https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building",
+  "portalWalk": {
+    "date": "2026-11-17",
+    "system": "DallasNow (Accela Citizen Access), Building tab, https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building. No login used; no CAPTCHA on the search.",
+    "address": "1500 Marilla St, Dallas TX 75201 (Dallas City Hall, a public building).",
+    "observations": [
+      "Search by Address for 1500 Marilla returned '43 search results returned matching your address' (address variants and suites); the main address listed 'Showing 1-10 of 100+' records.",
+      "The 100+ list only loads the newest 100 records: sorted oldest-first it began at 07/31/2025.",
+      "General Search's date fields defaulted to Start Date 12/05/2015 and End Date 11/17/2026 (today).",
+      "General Search with Start Date 01/01/1980, End Date 12/31/2024, street number 1500, street Marilla returned '54 Record results'; the street-number filter was loose (other Marilla St numbers appeared).",
+      "In that set the oldest record on Marilla St was 01/30/2009 (an address assignment); the oldest at 1500 Marilla itself was a Certificate of Occupancy dated 09/12/2019. Pre-2025 records carry an older numbering format (e.g. 2411213061_194396666-001), unlike DallasNow numbers such as COM-ALT-ADD-26-002184.",
+      "Record types seen include Commercial Alteration Addition, Commercial Electrical, Commercial Plumbing, Certificate of Occupancy, Access Control, and Water and Wastewater Installation."
+    ],
+    "limits": "One public building and its street. Older permits appear in DallasNow with an older record-number format, but the city does not say how far back the migrated records reach. Our oldest record was from 2009, and City Hall's own oldest record was from 2019. No house was searched, and no record detail or inspection page was opened."
+  },
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "The City of Dallas department page is titled Planning and Development and links to DallasNow for permitting.",
+      "quote": "Planning and Development Home page ... DallasNow -> https://dallascityhall.com/departments/sustainabledevelopment/Pages/DallasNow.aspx ; Visit Permitting",
+      "url": "https://dallascityhall.com/departments/sustainabledevelopment/Pages/default.aspx",
+      "readOn": "2026-11-17",
+      "method": "browser (page title and link targets)"
+    },
+    {
+      "id": "f2",
+      "claim": "DallasNow is the City of Dallas's land management system, combining permitting, planning, platting, inspections and engineering; it integrates 15 systems including PDOX and GIS; the portal is at aca-prod.accela.com/dallastx.",
+      "quote": "DallasNow a new system that integrates Permitting, Planning, Platting, Inspections and Engineering, into one unified platform. DallasNow is the new land management system for the City of Dallas. The state-of-the-art system is a cloud-based application that integrates 15 systems, including PDOX and GIS ... You can access DallasNow portal on this page or directly at https://aca-prod.accela.com/dallastx.",
+      "url": "https://dallascityhall.com/departments/sustainabledevelopment/Pages/DallasNow.aspx",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "DallasNow's public record search finds records by site address, contractor licence, parcel number, record information or contact, with address search including an Appraisal Parcel ID box.",
+      "quote": "Search for Records Enter information below to search for records. • Site Address • Contractor License Information • Parcel Number • Record Information • Contact Information ... Appraisal Parcel ID:",
+      "url": "https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    "Guide: 'City of Dallas Department of Development Services' -- the department page is titled Planning and Development (f1).",
+    "Guide: unincorporated Dallas County permits fall to Public Works or 'Department of Development Services' -- dallascounty.org was not reachable from our browser (site not approved); not checked.",
+    "Guide claims about Irving, Garland, Grand Prairie, Richardson, Mesquite, Highland Park and University Park portals: not checked.",
+    "Guide: Dallas Central Appraisal District lists the taxing city -- not checked."
+  ],
+  "blockedSources": [
+    { "url": "https://www.dallascounty.org/departments/pubworks/", "result": "Navigation denied (site not on the browser's allowed list), 2026-11-17. Not retried." }
+  ]
+}

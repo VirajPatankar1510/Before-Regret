@@ -7,10 +7,164 @@
   "jurisdictionCoverage": {
     "status": "not_researched",
     "value": null,
-    "unverifiedClaim": "Our guide's title: \"Riverside County Permits: PLUS Portal & City Searches\".",
-    "claimSource": "guide #216 (published 2026-08-16), no recorded evidence"
+    "unverifiedClaim": "The county (TLMA Building and Safety) holds permits for unincorporated areas; each incorporated city holds its own.",
+    "claimSource": "guide #216, no recorded evidence",
+    "note": "The county pages read on 2026-11-17 do not state which areas they cover."
   },
-  "jurisdictions": [],
-  "tests": [],
+  "jurisdictions": [
+    {
+      "id": "ca-riverside-uninc",
+      "name": "Unincorporated Riverside County",
+      "kind": "county-unincorporated",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "ca-riverside-uninc",
+        "sourceUrl": "https://building.rctlma.org/records-request",
+        "evidence": [
+          "ledger:check-building-permits-riverside-county-ca#f5"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "The county runs its own permit records; the pages we read do not say which areas they cover."
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Riverside County Transportation and Land Management Agency (TLMA), Department of Building and Safety",
+        "sourceUrl": "https://building.rctlma.org/records-request",
+        "evidence": [
+          "ledger:check-building-permits-riverside-county-ca#f5"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "PLUS Online and TLMA Permit Lookup",
+          "platform": "Tyler EnerGov Self Service (PLUS Online)"
+        },
+        "sourceUrl": "https://building.rctlma.org/records-request",
+        "evidence": [
+          "ledger:check-building-permits-riverside-county-ca#f2",
+          "ledger:check-building-permits-riverside-county-ca#f7"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://publiclookup.rivco.org/",
+        "sourceUrl": "https://publiclookup.rivco.org/",
+        "evidence": [
+          "ledger:check-building-permits-riverside-county-ca#f6",
+          "ledger:check-building-permits-riverside-county-ca#portalWalk"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "searchBy": {
+        "status": "verified",
+        "value": {
+          "address": true,
+          "parcel": true,
+          "permitNumber": true,
+          "quirks": [
+            "Permit Lookup searches by street name, APN (no dashes), tract, lot, dates and permit type",
+            "Map My County's parcel report lists permits under \"Building and Safety Cases\"",
+            "No login needed"
+          ]
+        },
+        "sourceUrl": "https://publiclookup.rivco.org/",
+        "evidence": [
+          "ledger:check-building-permits-riverside-county-ca#portalWalk",
+          "ledger:check-building-permits-riverside-county-ca#f6"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "addressSearchTested": {
+        "status": "verified",
+        "value": "Anonymous Permit Lookup searches: a street name returned 30 permits; a county park address (37701 Warren Rd, Winchester) returned none.",
+        "sourceUrl": "https://publiclookup.rivco.org/",
+        "evidence": [
+          "ledger:check-building-permits-riverside-county-ca#portalWalk"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "onlineRecordsFrom": {
+        "status": "verified",
+        "value": "1997 (permits issued after 1997 are online; the earliest issued date in Permit Lookup was 1997-06-20)",
+        "sourceUrl": "https://building.rctlma.org/records-request",
+        "evidence": [
+          "ledger:check-building-permits-riverside-county-ca#f2",
+          "test:riverside-lookup-earliest"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "historicalSystems": {
+        "status": "verified",
+        "value": [
+          {
+            "name": "Archived permit records, Records Division",
+            "covers": "about 1963 to 1997 (not online)"
+          },
+          {
+            "name": "Assessor CAP report / Residential Building Record",
+            "url": "https://www.rivcoacr.org/Contact-Us",
+            "covers": "before 1963, building history or details such as year built"
+          }
+        ],
+        "sourceUrl": "https://building.rctlma.org/records-request",
+        "evidence": [
+          "ledger:check-building-permits-riverside-county-ca#f1",
+          "ledger:check-building-permits-riverside-county-ca#f2"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "olderRecordsRequest": {
+        "status": "verified",
+        "value": "Request archived records from the Building and Safety Records Division (Records@rivco.org, 951-955-2017) with the address or APN; a fee applies to copies or research. Before 1963, ask the Assessor for a CAP report.",
+        "sourceUrl": "https://building.rctlma.org/records-request",
+        "evidence": [
+          "ledger:check-building-permits-riverside-county-ca#f5",
+          "ledger:check-building-permits-riverside-county-ca#f1"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "inspectionHistoryVisible": {
+        "status": "partially_verified",
+        "value": "The county says individual inspections can be viewed online by permit number.",
+        "sourceUrl": "https://building.rctlma.org/records-request",
+        "evidence": [
+          "quote:Repeat these steps on \"Building Permit Inspection history\" to see the individual inspections."
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "We did not open an inspection record."
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "Permit records before about 1963 were destroyed.",
+          "Only permits issued after 1997 are online; 1963-1997 permits need a records request.",
+          "Residential building plans are not kept: they are returned to the applicant or destroyed once the project is complete.",
+          "Permit Lookup is updated once a day and can be up to 24 hours behind."
+        ],
+        "sourceUrl": "https://building.rctlma.org/records-request",
+        "evidence": [
+          "ledger:check-building-permits-riverside-county-ca#f1",
+          "ledger:check-building-permits-riverside-county-ca#f2",
+          "ledger:check-building-permits-riverside-county-ca#f4",
+          "ledger:check-building-permits-riverside-county-ca#f6"
+        ],
+        "checkedOn": "2026-11-17"
+      }
+    }
+  ],
+  "tests": [
+    {
+      "id": "riverside-lookup-earliest",
+      "date": "2026-11-17",
+      "system": "TLMA Permit Lookup, https://publiclookup.rivco.org/",
+      "subject": "The whole Permit Lookup database (no property).",
+      "steps": "Issued To 1990-01-01; then Issued From 1990-01-01 sorted by Issued Date ascending.",
+      "result": "Before 1990: \"No results found for your search.\" From 1990: Total Rows 658098, Permit Count 471219, earliest issued date 1997-06-20.",
+      "limits": "Permits with no issued date are not covered by an issued-date filter."
+    }
+  ],
   "blocked": []
 }

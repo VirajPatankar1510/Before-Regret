@@ -8,9 +8,108 @@
     "status": "not_researched",
     "value": null,
     "unverifiedClaim": "Our guide's title: \"Middlesex County MA Permits: Town Halls & Street Files\".",
-    "claimSource": "guide #213 (published 2026-08-16), no recorded evidence"
+    "claimSource": "guide #213 (published 2026-08-16), no recorded evidence",
+    "note": "Only Cambridge was checked (2026-11-17). No state source for \"each city and town issues its own permits\" was read."
   },
-  "jurisdictions": [],
+  "jurisdictions": [
+    {
+      "id": "ma-middlesex-cambridge",
+      "name": "City of Cambridge",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "ma-middlesex-cambridge",
+        "sourceUrl": "https://www.cambridgema.gov/inspection",
+        "evidence": [
+          "ledger:check-building-permits-middlesex-county-ma#f1"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "Inferred from the city running its own permit department; which department covers which addresses was not quoted."
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "City of Cambridge Inspectional Services Department",
+        "sourceUrl": "https://www.cambridgema.gov/inspection",
+        "evidence": [
+          "ledger:check-building-permits-middlesex-county-ma#f1"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "currentPortal": {
+        "status": "partially_verified",
+        "value": {
+          "name": "City of Cambridge Permitting and Licensing System",
+          "platform": "OpenGov"
+        },
+        "sourceUrl": "https://cambridgema.portal.opengov.com/",
+        "evidence": [
+          "ledger:check-building-permits-middlesex-county-ma#f2"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "For applying; no public record search on its public page."
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "The open data datasets can be filtered, but we did not search them by address."
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No address search recorded."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "partially_verified",
+        "value": [
+          {
+            "name": "Cambridge Open Data: Building Permits datasets",
+            "url": "https://data.cambridgema.gov/Inspectional-Services/Building-Permits-Addition-Alteration/qu2z-8suj/about_data",
+            "covers": "not stated (Housing Permits dataset: 1996 to present)"
+          }
+        ],
+        "sourceUrl": "https://data.cambridgema.gov/Inspectional-Services/Building-Permits-Addition-Alteration/qu2z-8suj/about_data",
+        "evidence": [
+          "ledger:check-building-permits-middlesex-county-ma#f3"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "Start years of the building-permit datasets are not stated, and we did not search them."
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "Cambridge's Building Permits: Addition/Alteration open dataset lists only completed applications."
+        ],
+        "sourceUrl": "https://data.cambridgema.gov/Inspectional-Services/Building-Permits-Addition-Alteration/qu2z-8suj/about_data",
+        "evidence": [
+          "ledger:check-building-permits-middlesex-county-ma#f3"
+        ],
+        "checkedOn": "2026-11-17"
+      }
+    }
+  ],
   "tests": [],
-  "blocked": []
+  "blocked": [
+    {
+      "url": "https://search.mass.gov/",
+      "result": "No readable results returned to our browser",
+      "date": "2026-11-17"
+    }
+  ]
 }

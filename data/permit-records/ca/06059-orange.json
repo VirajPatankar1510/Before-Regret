@@ -5,12 +5,107 @@
   "county": "Orange County",
   "guideSlug": "check-building-permits-orange-county-ca",
   "jurisdictionCoverage": {
-    "status": "not_researched",
-    "value": null,
-    "unverifiedClaim": "Our guide's title: \"Orange County CA Permits: OCPW & City Portals (CPRA)\".",
-    "claimSource": "guide #221 (published 2026-08-16), no recorded evidence"
+    "status": "partially_verified",
+    "value": "OC Public Works Building and Safety covers the unincorporated areas of Orange County. Properties inside a city go to that city.",
+    "sourceUrl": "https://pwds.oc.gov/service-areas/oc-development-services/building-safety",
+    "evidence": [
+      "ledger:check-building-permits-orange-county-ca#f1"
+    ],
+    "checkedOn": "2026-11-17",
+    "limits": "The county page names only its own area; the list of cities and their departments was not checked."
   },
-  "jurisdictions": [],
+  "jurisdictions": [
+    {
+      "id": "ca-orange-uninc",
+      "name": "Unincorporated Orange County",
+      "kind": "county-unincorporated",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "ca-orange-uninc",
+        "sourceUrl": "https://pwds.oc.gov/service-areas/oc-development-services/building-safety",
+        "evidence": [
+          "ledger:check-building-permits-orange-county-ca#f1"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "OC Public Works, OC Development Services, Building and Safety",
+        "sourceUrl": "https://pwds.oc.gov/service-areas/oc-development-services/building-safety",
+        "evidence": [
+          "ledger:check-building-permits-orange-county-ca#f1"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "currentPortal": {
+        "status": "partially_verified",
+        "value": {
+          "name": "myOC eServices (applications, payments, service requests)"
+        },
+        "sourceUrl": "https://myoceservices.ocgov.com/",
+        "evidence": [
+          "ledger:check-building-permits-orange-county-ca#f3"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "We found no option to search a property's permit history in it."
+      },
+      "portalUrl": {
+        "status": "not_researched",
+        "value": null
+      },
+      "searchBy": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No public permit-history search found on the county pages we read, so nothing could be tested."
+      },
+      "addressSearchTested": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No public permit-history search found to test."
+      },
+      "onlineRecordsFrom": {
+        "status": "not_researched",
+        "value": null
+      },
+      "historicalSystems": {
+        "status": "not_researched",
+        "value": null
+      },
+      "olderRecordsRequest": {
+        "status": "verified",
+        "value": "Ask Permitting Services for property records research ((714) 667-8888), or file a public records request on the county's NextRequest portal.",
+        "sourceUrl": "https://pwds.oc.gov/service-areas/oc-development-services/permitting-services",
+        "evidence": [
+          "ledger:check-building-permits-orange-county-ca#f2",
+          "ledger:check-building-permits-orange-county-ca#f4"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "No permit record opened."
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "We found no public online permit-history search for unincorporated Orange County; records come through Permitting Services or a public records request."
+        ],
+        "sourceUrl": "https://pwds.oc.gov/service-areas/oc-development-services/permitting-services",
+        "evidence": [
+          "ledger:check-building-permits-orange-county-ca#f2",
+          "ledger:check-building-permits-orange-county-ca#f3"
+        ],
+        "checkedOn": "2026-11-17"
+      }
+    }
+  ],
   "tests": [],
-  "blocked": []
+  "blocked": [
+    {
+      "url": "https://ocpw.ocgov.com/",
+      "result": "ERR_NAME_NOT_RESOLVED (old hostname)",
+      "date": "2026-11-17"
+    }
+  ]
 }

@@ -1,0 +1,71 @@
+{
+  "slug": "check-building-permits-los-angeles-county-ca",
+  "question": "Re-verification of the live LA permit guide (#222, published 2026-08-16) for the permit records database. Facts read 2026-11-17 in the in-app browser.",
+  "verdictConfirmed": "Partly. The county split (Public Works for unincorporated areas and contract cities) and EPIC-LA's public search are confirmed. The City of LA side (LADBS, IDIS) could not be checked: ladbs.org blocks our region.",
+  "officialLookupUrl": "https://losangelescountyca-energovweb.tylerhost.net/apps/selfservice#/search",
+  "portalWalk": {
+    "date": "2026-11-17",
+    "system": "EPIC-LA public search (Tyler EnerGov Self Service), https://losangelescountyca-energovweb.tylerhost.net/apps/selfservice#/search. No login used.",
+    "address": "13650 Mindanao Way, Marina del Rey 90292 -- Burton Chace Park, a county park in unincorporated Marina del Rey. Public property.",
+    "observations": [
+      "The search page loads without logging in: 'Search for public records with keywords or addresses'; type list All / Permit / Plan / Inspection / License / Project; an Exact Phrase box; sort by Relevance, Permit Number, Project, Address, Issued Date or Finalized Date.",
+      "Permit search for '13650 Mindanao' (exact phrase): 'Found 53 results'.",
+      "Sorted by Issued Date ascending, the ten oldest: PWRP2017050065 Road Encroachment applied 08/05/2015, issued 02/16/2016; then nine records applied 01/12/2018 to 01/08/2019 (Film, Express Utility Permit, Road Encroachment, Road Construction Permit, Road Excavation).",
+      "Types seen on the result pages: Express Utility Permit, Film, Road Encroachment, Road Construction Permit, Road Excavation, Sidewalk Vending Registration Certificate. No building permit among the ten oldest.",
+      "Statuses seen: Finaled, On Hold, Canceled, Waiting for Applicant."
+    ],
+    "limits": "One public address, and it is a park: the results are mostly road, utility and film permits, so this shows EPIC-LA's public search works and how far back its records reach at this address, not the range of its building permits."
+  },
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "LA County Building and Safety (Public Works) serves unincorporated communities and contract cities: HQ, 10 district offices for unincorporated communities, and 8 contract city offices serving incorporated cities.",
+      "quote": "Building services are provided to unincorporated communities at the Public Works headquarters, at one of the 10 Building and Safety District Offices serving unincorporated communities and at the 8 Contract City Offices serving incorporated cities.",
+      "url": "https://dpw.lacounty.gov/building-and-safety/about",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "The same page's office list names 11 county offices and 5 contract city offices (Cerritos, Industry, La Mirada, Rolling Hills, Westlake Village) -- not the 10 and 8 its text gives.",
+      "quote": "County Offices: Altadena, Antelope Valley, Calabasas, East Los Angeles, La Puente, Lomita, San Gabriel Valley, Santa Clarita Valley, South Whittier, Southwest, Universal. Contract City Offices: City of Cerritos, City of Industry, City of La Mirada, City of Rolling Hills, City of Westlake Village",
+      "url": "https://dpw.lacounty.gov/building-and-safety/about",
+      "readOn": "2026-11-17",
+      "method": "browser (Locations map list)"
+    },
+    {
+      "id": "f3",
+      "claim": "The Building and Safety home page links EPIC-LA at losangelescountyca-energovweb.tylerhost.net/apps/selfservice and a Building Permit Viewer at dpw.lacounty.gov/bsd/bpv/.",
+      "quote": "EPIC-LA -> https://losangelescountyca-energovweb.tylerhost.net/apps/selfservice#/home ; Building Permit Viewer -> https://dpw.lacounty.gov/bsd/bpv/",
+      "url": "https://dpw.lacounty.gov/building-and-safety/",
+      "readOn": "2026-11-17",
+      "method": "browser (link targets)"
+    },
+    {
+      "id": "f4",
+      "claim": "EPIC-LA's public search works without an account and searches permits, plans, inspections, licenses and projects by keyword or address.",
+      "quote": "Search for public records with keywords or addresses ... All / Permit / Plan / Inspection / License / Project",
+      "url": "https://losangelescountyca-energovweb.tylerhost.net/apps/selfservice#/search",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "claim": "From July 6, 2026, Building and Safety permits for the unincorporated Torrance and Harbor City areas are handled by the Lomita District Office.",
+      "quote": "Beginning July 6th, 2026, all Building and Safety permits in the unincorporated LA County areas of Torrance and Harbor City will be managed by the Lomita District Office, located at 24320 S. Narbonne Ave, Lomita, CA 90717.",
+      "url": "https://dpw.lacounty.gov/building-and-safety/",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    "Guide claim 'EpicLA ... newer permits and projects processed from roughly 2018 onward': not stated by the county; our one address showed records from 2015/2016 and mostly 2018 on, none of them building permits. Not confirmed.",
+    "Guide claim '88 independent incorporated cities': not checked.",
+    "Guide claims about LADBS IDIS contents (permits and certificates of occupancy back to the early 20th century): ladbs.org blocked, not checked.",
+    "Guide claim that older county records need a district office visit or records request: no county page read says so."
+  ],
+  "blockedSources": [
+    { "url": "https://www.ladbs.org/services/online-services/search-permits-inspections-records", "result": "HTTP 403 'The request is blocked.', 2026-11-17. Not worked around." },
+    { "url": "https://dpw.lacounty.gov/bsd/bpv/", "result": "Redirects to apps.gis.lacounty.gov Geocortex viewer, which stayed on its loading splash for over 10 seconds, 2026-11-17." }
+  ]
+}

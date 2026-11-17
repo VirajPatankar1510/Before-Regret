@@ -5,19 +5,237 @@
   "county": "Los Angeles County",
   "guideSlug": "check-building-permits-los-angeles-county-ca",
   "jurisdictionCoverage": {
-    "status": "not_researched",
-    "value": null,
-    "unverifiedClaim": "Our guide's title: \"LA Permit Search by Address: IDIS, LADBS & EpicLA\".",
-    "claimSource": "guide #222 (published 2026-08-16), no recorded evidence",
-    "note": "On 2026-09-04 no LA County permit URL could be verified twice: dpw.lacounty.gov failed, ladbs.org returned 403 to automated requests, EPIC-LA answered once and failed once."
+    "status": "partially_verified",
+    "value": "LA County Public Works (Building and Safety) serves unincorporated communities and contract cities. Its page says 8 contract city offices but its office list names 5. Other incorporated cities, including the City of Los Angeles, are not covered by the county.",
+    "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/about",
+    "evidence": [
+      "ledger:check-building-permits-los-angeles-county-ca#f1",
+      "ledger:check-building-permits-los-angeles-county-ca#f2"
+    ],
+    "checkedOn": "2026-11-17",
+    "limits": "The 3 unnamed contract cities and which incorporated cities run their own departments are not confirmed; ladbs.org (City of LA) blocks our region."
   },
-  "jurisdictions": [],
+  "jurisdictions": [
+    {
+      "id": "ca-la-uninc",
+      "name": "Unincorporated Los Angeles County",
+      "kind": "county-unincorporated",
+      "permitsIssuedBy": {
+        "status": "verified",
+        "value": "ca-la-uninc",
+        "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/about",
+        "evidence": [
+          "ledger:check-building-permits-los-angeles-county-ca#f1"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "buildingDepartment": {
+        "status": "verified",
+        "value": "Los Angeles County Public Works, Building and Safety Division",
+        "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/about",
+        "evidence": [
+          "ledger:check-building-permits-los-angeles-county-ca#f1"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "currentPortal": {
+        "status": "verified",
+        "value": {
+          "name": "EPIC-LA",
+          "platform": "Tyler EnerGov Self Service"
+        },
+        "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/",
+        "evidence": [
+          "ledger:check-building-permits-los-angeles-county-ca#f3",
+          "ledger:check-building-permits-los-angeles-county-ca#f4"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "portalUrl": {
+        "status": "verified",
+        "value": "https://losangelescountyca-energovweb.tylerhost.net/apps/selfservice#/search",
+        "sourceUrl": "https://losangelescountyca-energovweb.tylerhost.net/apps/selfservice#/search",
+        "evidence": [
+          "ledger:check-building-permits-los-angeles-county-ca#f4",
+          "ledger:check-building-permits-los-angeles-county-ca#portalWalk"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "searchBy": {
+        "status": "verified",
+        "value": {
+          "address": true,
+          "parcel": null,
+          "permitNumber": null,
+          "quirks": [
+            "One keyword-or-address box; filter by Permit, Plan, Inspection, License or Project",
+            "No account needed to search"
+          ]
+        },
+        "sourceUrl": "https://losangelescountyca-energovweb.tylerhost.net/apps/selfservice#/search",
+        "evidence": [
+          "ledger:check-building-permits-los-angeles-county-ca#f4",
+          "ledger:check-building-permits-los-angeles-county-ca#portalWalk"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "addressSearchTested": {
+        "status": "verified",
+        "value": "Anonymous search for 13650 Mindanao Way (Burton Chace Park, a county park) returned 53 records: road, utility, film and vending permits, issued 2016 to 2026.",
+        "sourceUrl": "https://losangelescountyca-energovweb.tylerhost.net/apps/selfservice#/search",
+        "evidence": [
+          "ledger:check-building-permits-los-angeles-county-ca#portalWalk"
+        ],
+        "checkedOn": "2026-11-17"
+      },
+      "onlineRecordsFrom": {
+        "status": "partially_verified",
+        "value": "2015 or earlier (a record applied for in 2015 at the address we searched)",
+        "sourceUrl": "https://losangelescountyca-energovweb.tylerhost.net/apps/selfservice#/search",
+        "evidence": [
+          "ledger:check-building-permits-los-angeles-county-ca#portalWalk"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "The county does not state where EPIC-LA records begin, and no building permit appeared at our test address, so building-permit coverage is unconfirmed."
+      },
+      "historicalSystems": {
+        "status": "partially_verified",
+        "value": [
+          {
+            "name": "Building Permit Viewer",
+            "url": "https://dpw.lacounty.gov/bsd/bpv/",
+            "covers": "not stated"
+          }
+        ],
+        "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/",
+        "evidence": [
+          "ledger:check-building-permits-los-angeles-county-ca#f3"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "Linked from the county page; it stayed on its loading screen for us, so what it holds is unknown."
+      },
+      "olderRecordsRequest": {
+        "status": "not_researched",
+        "value": null
+      },
+      "inspectionHistoryVisible": {
+        "status": "not_tested",
+        "value": null,
+        "reason": "EPIC-LA offers an Inspection search type, but we did not open an inspection record."
+      },
+      "localCaveats": {
+        "status": "verified",
+        "value": [
+          "EPIC-LA results mix building permits with road, utility, film and vending permits; filter by type.",
+          "Since July 6, 2026, permits for the unincorporated Torrance and Harbor City areas are handled by the Lomita District Office."
+        ],
+        "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/",
+        "evidence": [
+          "ledger:check-building-permits-los-angeles-county-ca#portalWalk",
+          "ledger:check-building-permits-los-angeles-county-ca#f5"
+        ],
+        "checkedOn": "2026-11-17"
+      }
+    },
+    {
+      "id": "ca-la-cerritos",
+      "name": "City of Cerritos",
+      "kind": "city-served-by-county",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "ca-la-uninc",
+        "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/about",
+        "evidence": [
+          "ledger:check-building-permits-los-angeles-county-ca#f2"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "Listed among the county's Contract City Offices. The page's text says 8 contract city offices, so the list may be incomplete."
+      }
+    },
+    {
+      "id": "ca-la-industry",
+      "name": "City of Industry",
+      "kind": "city-served-by-county",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "ca-la-uninc",
+        "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/about",
+        "evidence": [
+          "ledger:check-building-permits-los-angeles-county-ca#f2"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "Listed among the county's Contract City Offices. The page's text says 8 contract city offices, so the list may be incomplete."
+      }
+    },
+    {
+      "id": "ca-la-la-mirada",
+      "name": "City of La Mirada",
+      "kind": "city-served-by-county",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "ca-la-uninc",
+        "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/about",
+        "evidence": [
+          "ledger:check-building-permits-los-angeles-county-ca#f2"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "Listed among the county's Contract City Offices. The page's text says 8 contract city offices, so the list may be incomplete."
+      }
+    },
+    {
+      "id": "ca-la-rolling-hills",
+      "name": "City of Rolling Hills",
+      "kind": "city-served-by-county",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "ca-la-uninc",
+        "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/about",
+        "evidence": [
+          "ledger:check-building-permits-los-angeles-county-ca#f2"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "Listed among the county's Contract City Offices. The page's text says 8 contract city offices, so the list may be incomplete."
+      }
+    },
+    {
+      "id": "ca-la-westlake-village",
+      "name": "City of Westlake Village",
+      "kind": "city-served-by-county",
+      "permitsIssuedBy": {
+        "status": "partially_verified",
+        "value": "ca-la-uninc",
+        "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/about",
+        "evidence": [
+          "ledger:check-building-permits-los-angeles-county-ca#f2"
+        ],
+        "checkedOn": "2026-11-17",
+        "limits": "Listed among the county's Contract City Offices. The page's text says 8 contract city offices, so the list may be incomplete."
+      }
+    },
+    {
+      "id": "ca-la-los-angeles",
+      "name": "City of Los Angeles",
+      "kind": "city",
+      "permitsIssuedBy": {
+        "status": "not_researched",
+        "value": null,
+        "unverifiedClaim": "The Los Angeles Department of Building and Safety (LADBS) holds permits; scanned records are in IDIS.",
+        "claimSource": "guide #222",
+        "note": "ladbs.org answered HTTP 403 \"The request is blocked.\" on 2026-11-17 (and to automated requests on 2026-09-04)."
+      }
+    }
+  ],
   "tests": [],
   "blocked": [
     {
       "url": "https://www.ladbs.org/",
-      "result": "403 to automated requests",
-      "date": "2026-09-04"
+      "result": "HTTP 403 'The request is blocked.'",
+      "date": "2026-11-17"
+    },
+    {
+      "url": "https://dpw.lacounty.gov/bsd/bpv/",
+      "result": "Building Permit Viewer stayed on its loading screen",
+      "date": "2026-11-17"
     }
   ]
 }

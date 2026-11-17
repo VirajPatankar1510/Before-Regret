@@ -49,6 +49,25 @@ Totals: 24 county files and 54 jurisdictions. Pinellas alone has 25, from the co
 
 **Found while building it:** `publish-batch-b.ts:38` says the NYC DOB walkthrough was verified for batch A, but batch A's own note says DOB answered "Access Denied". DOB is recorded as not researched.
 
+### Browser re-verification (2026-11-17)
+
+The owner said yes to re-checking the guides that had no recorded evidence. Each one now has a fact ledger in `data/fact-ledgers/`. Verified fields are out of the total fields recorded.
+
+| County | Verified | What we found |
+|---|---|---|
+| Los Angeles | 7/17 | EPIC-LA public search works without a login. The county lists 5 contract cities but its text says 8. ladbs.org (City of LA) returns 403, so nothing for the City of LA. |
+| Cook | 12/22 | The county's permit status search needs both the permit number and the PIN, so there is **no search by address** for unincorporated Cook. Chicago's online data covers 2006 on. |
+| Miami-Dade | 7/15 | The county publishes which years have plans on file, including years with none (e.g. single-family 1961–1972). Its permit menu has a reCAPTCHA, so no search was run. The guide's "EnerGov" title does not match the county system. |
+| Philadelphia | 7/11 | Atlas and L&I Property History search by address with no login and show inspection results. At two public buildings, online permits start in **2007**. |
+| Dallas | 6/12 | The department is now "Planning and Development" and the portal is DallasNow (Accela). General Search defaults to a 12/05/2015 start date, and an address search lists only the newest 100 records. Dallas County's site was not approved for our browser. |
+| Orange CA | 4/11 | Building and Safety covers unincorporated areas. We found **no public permit-history search**; records come through Permitting Services or a public records request. The old ocpw.ocgov.com hostname no longer resolves. |
+| Riverside | 9/11 | The county states records go back to about 1963 (older ones were destroyed) and that permits issued after 1997 are online. Our Permit Lookup test agrees: the earliest issued date is 1997-06-20. Residential plans are not kept. |
+| Middlesex | 2/11 | Cambridge only: OpenGov is for applying, and the open data lists only completed applications. No state source was read. |
+| NYC (4 boroughs) | 5/11 each | DOB issues permits citywide. Most current permits are in DOB NOW, older jobs in BIS, and the open data splits the two. BIS and DOB NOW are **US-only (HTTP 403)**, so no search was run. |
+| San Bernardino | 0 | sbcounty.gov is not approved for our browser. Still not researched. |
+
+The queue (`--queue`) now lists 94 items. It grew from 72 because re-verified fields that are only partly confirmed now carry stated limits.
+
 ## Decision 2 (approved): one tool page, no generated county URLs
 
 - **One canonical, indexable URL:** `https://www.beforeregret.com/tools/permit-records-finder/`.

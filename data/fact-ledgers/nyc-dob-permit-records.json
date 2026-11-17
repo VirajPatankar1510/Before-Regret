@@ -1,0 +1,64 @@
+{
+  "slug": "nyc-dob-permit-records",
+  "question": "Re-verification of the NYC Department of Buildings claims shared by the four borough permit guides (#93 Manhattan, #94 Brooklyn, #138 Queens, #140 Bronx) for the permit records database. Facts read 2026-11-17 in the in-app browser.",
+  "verdictConfirmed": "Partly. DOB issues construction and demolition permits in the City of New York; most permits now go through DOB NOW, older jobs sit in BIS, and BIS permits are published as open data. BIS and DOB NOW themselves refuse connections from outside the United States, so no property search was possible.",
+  "officialLookupUrl": "https://www.nyc.gov/site/buildings/property-or-business-owner/guide-to-bis-dobnow-efiling.page",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "The Department of Buildings issues permits for construction and demolition in the City of New York; each work type gets a separate permit.",
+      "quote": "The Department of Buildings (DOB) issues permits for construction and demolition activities in the City of New York. ... Each job type can have multiple work types, such as general construction, boiler, elevator, and plumbing. Each work type will receive a separate permit.",
+      "url": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "Most permits are obtained through DOB NOW: Build; during the transition, permit renewals for BIS jobs and some applications remain in eFiling.",
+      "quote": "Most permits are obtained through DOB NOW: Build, a self-service online tool to do business with the Department. During the transition of all permit applications to the DOB NOW system, permit renewals for jobs in the Buildings Information System (BIS) and some applications such as green roof and solar remain in the eFiling system.",
+      "url": "https://www.nyc.gov/site/buildings/property-or-business-owner/obtaining-a-permit.page",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "BIS lets anyone search general information on a property, including complaints, violations, actions, applications and inspections; DOB NOW will replace the BIS mainframe.",
+      "quote": "Using BIS, you can search for general information on a property in the city including recorded complaints, violations, actions, applications, and inspections ... These efforts reduce the number of in-person visits to Department offices and will replace the current Building Information System (BIS) mainframe system.",
+      "url": "https://www.nyc.gov/site/buildings/property-or-business-owner/guide-to-bis-dobnow-efiling.page",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "NYC Open Data's 'DOB Permit Issuance' dataset (from DOB, updated daily, 3.99M rows on 2026-11-17) includes only permits issued in BIS; most current permits are in the 'DOB NOW: Build - Approved Permits' dataset.",
+      "quote": "Note: This dataset only includes permits issued in the Buildings Information System (BIS), most current permits are now issued in DOB NOW -- see the DOB NOW: Build – Approved Permits dataset.",
+      "url": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "claim": "The DOB home page links DOB NOW (a810-dobnow.nyc.gov) and the Buildings Information System (www.nyc.gov/bis, which redirects to a810-bisweb.nyc.gov).",
+      "quote": "DOB NOW -> https://a810-dobnow.nyc.gov/publish/#!/ ; Buildings Information System -> http://www.nyc.gov/bis",
+      "url": "https://www.nyc.gov/site/buildings/index.page",
+      "readOn": "2026-11-17",
+      "method": "browser (link targets)"
+    },
+    {
+      "id": "f6",
+      "claim": "The Landmarks Preservation Commission's own permit search covers applications filed and permits issued since January 1, 2016; for older applications, make a Records Access Request.",
+      "quote": "This search tool allows you to look up the current status of permit applications filed and permits issued since January 1, 2016. ... If you would like to know the status of an application filed before January 1, 2016, please make a Records Access Request.",
+      "url": "https://www.nyc.gov/site/lpc/applications/permit-search.page",
+      "readOn": "2026-11-17",
+      "method": "browser (re-read; first verified 2026-10-03)"
+    }
+  ],
+  "cut": [
+    "How far back BIS and the open data reach, and whether a BIS search shows inspection results: not checked (BIS geo-blocked; dataset start year not stated).",
+    "The 'DOB NOW: Build - Approved Permits' dataset: not opened."
+  ],
+  "blockedSources": [
+    { "url": "https://a810-bisweb.nyc.gov/bisweb/bsqpm01.jsp", "result": "HTTP 403: 'Access is restricted to locations within the United States. For security reasons, any attempt to connect from outside the country will be blocked.' 2026-11-17. Not worked around." },
+    { "url": "https://a810-dobnow.nyc.gov/publish/#!/", "result": "HTTP 403, same US-only message, 2026-11-17. Not worked around." }
+  ]
+}
