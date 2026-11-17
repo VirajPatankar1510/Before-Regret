@@ -136,6 +136,12 @@ function main() {
     '/guides/buying-house-unpermitted-deck-before-closing/', // owner 2026-10-13: exact title (70 chars)
     '/guides/home-insurance-nonrenewal-roof-photo/', // owner 2026-10-13: exact title (68 chars)
     '/guides/city-utilities-vs-septic-water-sewer-costs/', // owner 2026-11-02: kept the report's exact title (67 chars)
+    // Owner 2026-11-17: "Your exact titles" for the five seasonal guides (title 2 with "or Cords" added by the owner).
+    '/guides/thanksgiving-home-cooking-fires-what-to-check/', // 74 chars
+    '/guides/daisy-chaining-power-strips-holiday-decorations/', // 103 chars
+    '/guides/snow-hide-winter-home-inspection/', // 74 chars
+    '/guides/leaving-home-thanksgiving-checklist/', // 76 chars
+    '/guides/best-time-to-buy-house-christmas-by-city/', // 67 chars
   ]);
   for (const f of walk(DIST).filter((p) => p.endsWith('index.html'))) {
     const html = fs.readFileSync(f, 'utf8');

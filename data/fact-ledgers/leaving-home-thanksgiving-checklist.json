@@ -1,0 +1,110 @@
+{
+  "slug": "leaving-home-thanksgiving-checklist",
+  "question": "Leaving home for Thanksgiving -- what should I do to the house before I go?",
+  "verdictConfirmed": "Keep the heat on (Red Cross: no lower than 55 F, same day and night), open sink cabinets, close the garage, finish the outdoor taps, hold the mail (USPS, 3-30 days, free), leave a key with someone, and read your policy's heating/unoccupied wording: Massachusetts' regulator says burst-pipe cover usually depends on the home being properly heated and not left unoccupied; Connecticut's says it may not apply if the furnace was turned off without winterizing.",
+  "facts": [
+    {
+      "id": "t1",
+      "claim": "Red Cross: if going away in cold weather, leave the heat on, no lower than 55 F",
+      "quote": "If you will be going away during cold weather, leave the heat on in your home, set to a temperature no lower than 55° F.",
+      "url": "https://www.redcross.org/get-help/how-to-prepare-for-emergencies/types-of-emergencies/winter-storm/frozen-pipes.html",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "t2",
+      "claim": "Red Cross: keep the thermostat at the same temperature day and night",
+      "quote": "Keep the thermostat set to the same temperature both during the day and at night. By temporarily suspending the use of lower nighttime temperatures, you may incur a higher heating bill, but you can prevent a much more costly repair job if pipes freeze and burst.",
+      "url": "https://www.redcross.org/get-help/how-to-prepare-for-emergencies/types-of-emergencies/winter-storm/frozen-pipes.html",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "t3",
+      "claim": "Red Cross: keep garage doors closed if there are water supply lines in the garage; open kitchen and bathroom cabinet doors (move chemicals out of children's reach)",
+      "quote": "Keep garage doors closed if there are water supply lines in the garage. Open kitchen and bathroom cabinet doors to allow warmer air to circulate around the plumbing. Be sure to move any harmful cleaners and household chemicals up out of the reach of children.",
+      "url": "https://www.redcross.org/get-help/how-to-prepare-for-emergencies/types-of-emergencies/winter-storm/frozen-pipes.html",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "t4",
+      "claim": "Red Cross: pipes that freeze most often -- outdoor hose bibs, pool and sprinkler lines; supply pipes in unheated basements, crawl spaces, attics, garages or kitchen cabinets; pipes on exterior walls with little or no insulation",
+      "quote": "Pipes that are exposed to severe cold, like outdoor hose bibs, swimming pool supply lines, and water sprinkler lines. Water supply pipes in unheated interior areas like basements and crawl spaces, attics, garages, or kitchen cabinets. Pipes that run against exterior walls that have little or no insulation.",
+      "url": "https://www.redcross.org/get-help/how-to-prepare-for-emergencies/types-of-emergencies/winter-storm/frozen-pipes.html",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "t5",
+      "claim": "Red Cross on thawing: a trickle from a faucet suggests a frozen pipe; keep the faucet open; apply heat with a heating pad, hair dryer, space heater or hot towels; no open flame; call a licensed plumber if you can't find or thaw it; check other faucets",
+      "quote": "If you turn on a faucet and only a trickle comes out, suspect a frozen pipe. Likely places for frozen pipes include against exterior walls or where your water service enters your home through the foundation. Keep the faucet open. ... Do not use a blowtorch, kerosene or propane heater, charcoal stove, or other open flame device. ... If you are unable to locate the frozen area, if the frozen area is not accessible, or if you can not thaw the pipe, call a licensed plumber. Check all other faucets in your home to find out if you have additional frozen pipes. If one pipe freezes, others may freeze, too.",
+      "url": "https://www.redcross.org/get-help/how-to-prepare-for-emergencies/types-of-emergencies/winter-storm/frozen-pipes.html",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "t6",
+      "claim": "Massachusetts Division of Insurance (1/21/2026): in 2024, 48.6% of homeowners' claims in MA were non-flood water losses and freezing-related damage; most homeowners' insurance covers sudden and accidental burst-pipe water damage only if the home was properly heated and not left unoccupied",
+      "quote": "According to our most recent home insurance report, in 2024, 48.6% of homeowners’ insurance claims in Massachusetts were for non‑flood water losses and freezing‑related damage. ... Most homeowners’ insurance covers “sudden and accidental” water damage from a burst pipe only if the home was properly heated and not left unoccupied.",
+      "url": "https://www.mass.gov/news/massachusetts-cold-snap-dont-let-frozen-pipes-become-your-next-insurance-claim",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "t7",
+      "claim": "Massachusetts DOI tips: keep the home adequately heated; shut off and cover exterior faucets; consider opening cabinet doors under sinks",
+      "quote": "Keep your home adequately heated, especially during extreme cold. Shut off and cover exterior faucets used for garden hoses. Consider opening cabinet doors under sinks to allow warm air to circulate around pipes during cold snaps.",
+      "url": "https://www.mass.gov/news/massachusetts-cold-snap-dont-let-frozen-pipes-become-your-next-insurance-claim",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "t8",
+      "claim": "Connecticut Insurance Department: frozen pipes -- most policies cover pipe replacement and water damage, but coverage may not apply if the furnace was turned off for the winter without winterizing; policies vary",
+      "quote": "Frozen pipes – Most policies cover pipe replacement and water damage. However, coverage may not apply if you turned off the furnace for the winter without winterizing the home. ... (Note: Policies may vary in coverage. Contact your agent or the Insurance Department with questions about the specifics of your policy)",
+      "url": "https://portal.ct.gov/cid/searchable-archive/natural-catastrophe-information/winter-damage-tips-for-making-insurance-claims",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "t9",
+      "claim": "Connecticut claims tips: call the 24-hour claims number; photograph damage; make repairs to prevent further damage but not permanent repairs before the insurer inspects; save receipts; keep a diary",
+      "quote": "Call your insurance company’s 24-hour claims phone number as soon as possible; provide policy number and other relevant information and documents. Take photographs/video of the damage. Make repairs necessary to prevent further damage, but do not make permanent repairs until your insurance company inspects the damage. Save all receipts from temporary repairs. Keep a diary of all conversations, e-mails and other correspondence with the company.",
+      "url": "https://portal.ct.gov/cid/searchable-archive/natural-catastrophe-information/winter-damage-tips-for-making-insurance-claims",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "t10",
+      "claim": "USPS Hold Mail: free; minimum 3 days, maximum 30; holds all mail and packages for everyone at the address; request online up to 30 days ahead",
+      "quote": "USPS Hold Mail® Service is a free service that pauses ALL mail delivery (letters and packages) to an address for a minimum of 3 days and a maximum of 30 days for ALL individuals at a specified eligible* address. ... You can enter an online USPS Hold Mail request up to 30 days in advance of the start date or as early as the next scheduled delivery day.",
+      "url": "https://faq.usps.com/s/article/USPS-Hold-Mail-The-Basics",
+      "readOn": "2026-11-17",
+      "method": "browser (rendered page text)"
+    },
+    {
+      "id": "t11",
+      "claim": "IRC P2603.5 (2021): where the winter design temperature is 32 F or lower, water pipes may not be in exterior walls, attics, crawl spaces or other freezing places unless protected from freezing by insulation or heat or both",
+      "quote": "In localities having a winter design temperature of 32°F (0°C) or lower as shown in Table R301.2 of this code, a water, soil or waste pipe shall not be installed outside of a building, in exterior walls, in attics or crawl spaces, or in any other place subjected to freezing temperature unless adequate provision is made to protect it from freezing by insulation or heat or both.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-26-general-plumbing-requirements",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "ISO homeowners form wording on freezing and vacancy",
+      "why": "no primary copy of the form found; the page tells readers to read their own policy's wording"
+    },
+    {
+      "claim": "Shut the main water valve when travelling",
+      "why": "no primary source found recommending it for a short trip; Connecticut's line about turning off heat without winterizing argues against improvising"
+    },
+    {
+      "claim": "Water heater vacation mode",
+      "why": "maker-specific; not verified"
+    }
+  ],
+  "blockedSources": []
+}

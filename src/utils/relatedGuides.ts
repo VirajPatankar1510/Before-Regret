@@ -75,6 +75,12 @@ const GUIDE_TOPIC_PATTERNS: ReadonlyArray<readonly [string, RegExp]> = [
   // purpose: a maintenance checklist that mentions furnaces and gutters is first a maintenance guide. Verified to
   // reclassify zero existing guides when added.
   ['maintenance', /maintenance[- ]checklist|home[- ]maintenance/],
+  // Holiday home safety and seasonal buying. Added 2026-11-17 with the owner's five seasonal titles (Thanksgiving
+  // cooking fires, daisy-chained power strips, leaving home for Thanksgiving / snow and the winter inspection,
+  // Christmas buying by city). None of the five matched any bucket. Checked before the system buckets: a holiday
+  // page that mentions circuits or pipes is first a holiday page. Verified to match zero of the 209 existing rows.
+  ['holiday-safety', /thanksgiving|daisy[- ]chain|holiday[- ]decorat|christmas[- ]tree|cooking[- ]fire/],
+  ['seasonal-buying', /winter[- ]home[- ]inspection|snow[- ]hide|best[- ]time[- ]to[- ]buy/],
   // How old a house is and where its year built is recorded. Added 2026-11-01 with the first guide on it ("when was
   // my house built", a records-by-address guide). Checked before the system buckets: a guide about reading the year
   // built mentions wiring and pipes by era but is first about the year. Verified to reclassify zero existing guides

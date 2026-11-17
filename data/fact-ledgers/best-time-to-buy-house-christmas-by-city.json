@@ -1,0 +1,99 @@
+{
+  "slug": "best-time-to-buy-house-christmas-by-city",
+  "question": "Is Christmas the best time to buy a house -- and does it depend on the city?",
+  "verdictConfirmed": "From FHFA's own seasonally adjusted vs unadjusted purchase-only indexes, 2016-2025: nationally, prices on loans made in January sat 0.85% below trend and in June 2.18% above. Across 100 metros the median gap between the summer peak quarter and the lower winter quarter was 2.29 points, from 0.47 (Cape Coral) to 4.89 (Seattle). In 58 metros the lowest quarter was Q4, in 42 it was Q1; in Seattle and Denver, Q1 sat above trend.",
+  "facts": [
+    {
+      "id": "c1",
+      "claim": "FHFA: the flagship index is the Purchase-Only index, built from Fannie Mae / Freddie Mac purchase data and seasonally adjusted",
+      "quote": "The flagship FHFA HPI is the Purchase-Only index, which is constructed from purchase transaction data received from Fannie Mae or Freddie Mac (the Enterprises) and is seasonally adjusted.",
+      "url": "https://www.fhfa.gov/faqs/hpi",
+      "readOn": "2026-11-17",
+      "method": "browser (FAQ last updated October 7, 2026)"
+    },
+    {
+      "id": "c2",
+      "claim": "FHFA: Enterprise data give broad coverage but do not encompass all residential mortgage transactions",
+      "quote": "their mortgage data provide broad coverage of the U.S. housing market, although they do not encompass all residential mortgage transactions.",
+      "url": "https://www.fhfa.gov/faqs/hpi",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "c3",
+      "claim": "FHFA dates each transaction by the loan origination date",
+      "quote": "For model estimation, we use the loan origination date as the relevant transaction date.",
+      "url": "https://www.fhfa.gov/faqs/hpi",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "c4",
+      "claim": "FHFA publishes indexes both seasonally adjusted and not; the adjustment removes recurring calendar-year patterns, using the Census Bureau's X-13 ARIMA procedure",
+      "quote": "We provide many of the FHFA HPIs in both seasonally adjusted and non-seasonally adjusted terms. We design the seasonal adjustment to remove recurring calendar year patterns or seasonal variation from the HPI that would otherwise partially confound month-to-month or quarter-to-quarter comparisons of appreciation.FHFA uses the Census Bureau’s X-13 autoregressive integrated moving average (ARIMA) procedure",
+      "url": "https://www.fhfa.gov/faqs/hpi",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "c5",
+      "claim": "Our computation (scripts/analyze-fhfa-seasonality.py -> docs/data/fhfa-seasonality-2016-2025.json): seasonal factor = index_nsa / index_sa - 1, averaged 2016-2025. Monthly, United States: December -0.52%, January -0.85% (the low), June +2.18% (the peak), peak-to-low 3.03 points. Divisions: East North Central Jan -1.58 / Jun 2.78 / gap 4.36; New England Jan -0.83 / Jun 2.73 / 3.56; West North Central Jan -1.09 / Jun 2.5 / 3.59; Middle Atlantic Feb -0.68 low, Jul 2.3 peak, Jan -0.58, gap 2.98; Mountain Jan -1.04 / May 1.78 / 2.82; Pacific Jan -1.09 / May 1.65 / 2.74; West South Central Jan -0.77 / Jun 1.91 / 2.68; East South Central Jan -0.59 / Jun 1.97 / 2.56; South Atlantic Jan -0.57 / May 1.96 / 2.53; December: ENC -0.96, NE -0.78, WNC -0.8, MA -0.49, Mountain -0.75, Pacific -1.03, WSC -0.41, ESC -0.16, SA -0.13",
+      "quote": "computed from https://www.fhfa.gov/hpi/download/monthly/hpi_master.csv (downloaded 2026-11-17, monthly data through 2026 month 8)",
+      "url": "docs/data/fhfa-seasonality-2016-2025.json",
+      "readOn": "2026-11-17",
+      "method": "our calculation"
+    },
+    {
+      "id": "c6",
+      "claim": "Our computation, 100 metros (quarterly purchase-only MSA series): winter dip = max(Q2,Q3) - min(Q4,Q1); median 2.29 points; lowest quarter Q4 in 58 metros, Q1 in 42; 66 metros below trend in both Q4 and Q1; 5 metros under 1 point, 23 at 3 or more. Smallest: Cape Coral-Fort Myers 0.47, Miami 0.79, New York 0.91, Lakeland 0.94, West Palm Beach 0.95. Largest: Seattle 4.89, Everett 4.63, Austin 4.34, Rochester NY 3.9, San Jose 3.85, Buffalo 3.74, Denver 3.7; metros missing any of the 40 quarters are skipped (none were)",
+      "quote": "computed from https://www.fhfa.gov/hpi/download/monthly/hpi_master.csv (quarterly purchase-only MSA rows, 2016-2025)",
+      "url": "docs/data/fhfa-seasonality-2016-2025.json",
+      "readOn": "2026-11-17",
+      "method": "our calculation"
+    },
+    {
+      "id": "c7",
+      "claim": "Selected metros (Q4 / Q1 / summer peak / dip / lowest): Seattle -2.22 / 1.04 / Q2 2.67 / 4.89 / Q4; Denver -1.35 / 0.7 / Q2 2.35 / 3.7 / Q4; San Francisco -0.34 / -0.0 / Q2 3.19 / 3.53 / Q4; Detroit -0.48 / -0.94 / Q2 2.47 / 3.41 / Q1; Chicago -1.23 / -0.81 / Q2 2.15 / 3.38 / Q4; Minneapolis -1.5 / -0.83 / Q2 1.83 / 3.33 / Q4; Washington DC -0.84 / -0.13 / Q2 2.24 / 3.08 / Q4; Boston 0.09 / -0.24 / Q2 2.52 / 2.76 / Q1; Dallas -0.64 / 0.24 / Q2 1.96 / 2.6 / Q4; Philadelphia -0.31 / -0.44 / Q2 1.9 / 2.34 / Q1; Tampa -0.81 / -0.05 / Q2 1.19 / 2.0 / Q4; Atlanta -0.45 / -0.25 / Q2 1.3 / 1.75 / Q4; Houston -0.34 / 0.07 / Q3 1.16 / 1.5 / Q4; Los Angeles 0.15 / 0.62 / Q2 1.45 / 1.3 / Q4; Phoenix -0.5 / -0.12 / Q2 0.56 / 1.06 / Q4; New York -0.12 / -0.26 / Q2 0.65 / 0.91 / Q1; Miami -0.03 / 0.05 / Q2 0.76 / 0.79 / Q4. Q1 above trend by more than half a point in Seattle, Denver, Tacoma 0.62, Anaheim 0.71, Los Angeles, Jacksonville 0.55, Lakeland 1.55; 25 metros had Q1 above zero. Same values as printed in the page's tables to two decimals: 2.50, -0.80, 2.30, 0.70, 3.70, 2.00, 0.00, 1.30, 1.50, 2.60, 1.90, -1.50, -0.50",
+      "quote": "rows of docs/data/fhfa-seasonality-2016-2025.json",
+      "url": "docs/data/fhfa-seasonality-2016-2025.json",
+      "readOn": "2026-11-17",
+      "method": "our calculation"
+    },
+    {
+      "id": "c8",
+      "claim": "Our arithmetic on a hypothetical $400,000 house: 2.29 points = about $9,160; 4.89 points = about $19,560; 0.79 points = about $3,160",
+      "quote": "400,000 x 0.0229 = 9,160; 400,000 x 0.0489 = 19,560; 400,000 x 0.0079 = 3,160",
+      "url": "docs/data/fhfa-seasonality-2016-2025.json",
+      "readOn": "2026-11-17",
+      "method": "calculation"
+    },
+    {
+      "id": "c9",
+      "claim": "FHFA: a separate Expanded-Data index adds purchase-money mortgages from other sources (conforming and non-conforming) and cash sales -- i.e. the purchase-only index leaves them out",
+      "quote": "Do you have an FHFA HPI that includes loans which are not purchased or securitized by Fannie Mae or Freddie Mac? Yes. The Expanded-Data index includes purchase-money mortgages from other sources (conforming and non-conforming) and cash sales to capture transactions that could potentially make up the complete single-family home market.",
+      "url": "https://www.fhfa.gov/faqs/hpi",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "Redfin / realtor.com 'best week to list' or seasonal discount figures",
+      "why": "Redfin data terms say all rights reserved; realtor.com blocked our visit. FHFA public data used instead"
+    },
+    {
+      "claim": "Typical days from contract to closing",
+      "why": "no primary source opened; the page says 'weeks later' only"
+    },
+    {
+      "claim": "Winter inventory is lower / sellers in winter are more motivated",
+      "why": "not measured here; the index says nothing about motive"
+    }
+  ],
+  "blockedSources": [
+    {
+      "url": "https://www.realtor.com/",
+      "why": "blocked for both the in-app browser and fetch on 2026-11-17"
+    }
+  ]
+}

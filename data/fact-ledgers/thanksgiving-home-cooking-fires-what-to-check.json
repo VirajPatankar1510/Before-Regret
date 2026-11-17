@@ -1,0 +1,214 @@
+{
+  "slug": "thanksgiving-home-cooking-fires-what-to-check",
+  "question": "Thanksgiving is the peak day for home cooking fires -- what should a household check in the house before the day?",
+  "verdictConfirmed": "Thanksgiving is the peak day (NFPA). The checks that change the odds are the kitchen-side smoke alarm (distance, type, age), the kitchen circuits, and knowing the lid/oven-door response; the 2024 CPSC-commissioned survey shows half of kitchen-side alarms sit too close to the stove.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Thanksgiving is the peak day for home cooking fires, more than three times the daily average",
+      "quote": "Thanksgiving is the peak day for home cooking fires with more than three times the daily average for such incidents.",
+      "url": "https://www.nfpa.org/education-and-research/home-fire-safety/thanksgiving",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "1,139 home cooking fires on Thanksgiving Day 2024, 321 percent of the daily average",
+      "quote": "On Thanksgiving day alone, an estimated 1,139 home cooking fires were reported to U.S fire departments in 2024, reflecting 321 percent of the daily average.",
+      "url": "https://www.nfpa.org/education-and-research/home-fire-safety/thanksgiving",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "Christmas Day and Christmas Eve rank second and third",
+      "quote": "Christmas Day and Christmas Eve ranked second and third, with both having nearly twice the daily average.",
+      "url": "https://www.nfpa.org/education-and-research/home-fire-safety/thanksgiving",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "Unattended cooking is the leading factor",
+      "quote": "Unattended cooking was by far the leading contributing factor in cooking fires and fire deaths.",
+      "url": "https://www.nfpa.org/education-and-research/home-fire-safety/thanksgiving",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "claim": "80% of structure fires on Thanksgiving are cooking fires (annual estimates 2020-2024)",
+      "quote": "Structure fires occurring on Thanksgiving Day – 80% are due to cooking. ... These are annual estimates for the period 2020 – 2024",
+      "url": "https://www.nfpa.org/education-and-research/home-fire-safety/thanksgiving",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "claim": "Ranges or cooktops account for 51% of home cooking fires; unattended equipment a factor in 25% and half the deaths (2020-2024 averages)",
+      "quote": "Ranges or cooktops account for over half (51%) of home cooking fire incidents. Unattended equipment is a factor in one quarter (25%) of reported home cooking fires and half of the associated deaths.",
+      "url": "https://www.nfpa.org/education-and-research/home-fire-safety/cooking",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f7",
+      "claim": "Grease fire: slide a lid over the pan and turn off the stovetop; leave it covered until cool",
+      "quote": "Keep a lid nearby when you’re cooking to smother small grease fires. Smother the fire by sliding the lid over the pan and turn off the stovetop. Leave the pan covered until it is completely cooled.",
+      "url": "https://www.nfpa.org/education-and-research/home-fire-safety/cooking",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f8",
+      "claim": "Oven fire: turn off heat, keep the door closed; never throw water; get out and call from outside",
+      "quote": "For an oven fire, turn off the heat and keep the door closed. ... Never throw water on the fire. ... Just get out! When you leave, close the door behind you to help contain the fire.",
+      "url": "https://www.nfpa.org/education-and-research/home-fire-safety/cooking",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f9",
+      "claim": "Oil turkey fryers: NFPA says not safe and strongly discourages them; buy fried or use an oil-free fryer",
+      "quote": "Turkey fryers that use cooking oil are not safe. ... If you want a fried turkey for your Thanksgiving meal, purchase it from a grocery store, restaurant or buy a fryer that does not use oil. ... NFPA strongly discourages the use of turkey fryers.",
+      "url": "https://www.nfpa.org/education-and-research/home-fire-safety/thanksgiving",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f10",
+      "claim": "Kids should stay three feet from the stove",
+      "quote": "Keep children away from the stove. The stove will be hot and kids should stay three feet away.",
+      "url": "https://www.nfpa.org/education-and-research/home-fire-safety/thanksgiving",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f11",
+      "claim": "Smoke alarms at least 10 feet (3 meters) from the stove",
+      "quote": "Keep smoke alarms away from the kitchen to reduce nuisance, or false, alarms. They should be at least 10 feet (3 meters) from the stove.",
+      "url": "https://www.nfpa.org/education-and-research/home-fire-safety/smoke-alarms",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f12",
+      "claim": "Photoelectric alarms are best near the kitchen; multi-criteria alarms say 'helps reduce cooking nuisance alarms' on the box",
+      "quote": "Photoelectric smoke alarms are the best type of alarms to be installed near the kitchen and bathrooms to reduce nuisance alarms. ... New multi-criteria smoke alarm technology will state “helps reduce cooking nuisance alarms” on the packaging.",
+      "url": "https://www.nfpa.org/education-and-research/home-fire-safety/smoke-alarms",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f13",
+      "claim": "Replace every smoke alarm 10 years after its manufacturing date",
+      "quote": "All smoke alarms must be replaced 10 years after its manufacturing date.",
+      "url": "https://www.nfpa.org/education-and-research/home-fire-safety/smoke-alarms",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f14",
+      "claim": "Of the 703 alarms nearest the kitchen, 53% were within 10 feet of the stovetop, 13% under 6 feet; 46% a proper distance",
+      "quote": "Among the 703 smoke alarms closest to the kitchen (which could have been in the kitchen or a nearby room such as the dining room, family/living room, or one of the hallways), half (53%) were installed too close to the stovetop (within 10 feet), including 13% less than 6 feet away. Of the 46% of alarms that were a proper distance from the stovetop, they were usually 11-20 feet away (36%).",
+      "url": "https://cpsc.gov/s3fs-public/CPSC_SCOA_Study_Full_Report_Final_6b_09_06_24.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf (page 36 of the PDF)"
+    },
+    {
+      "id": "f15",
+      "claim": "42% of households had a no-fire alarm in the past 12 months; 77% of them blamed cooking",
+      "quote": "In the past 12 months for each household with smoke alarms, 42% indicated their smoke alarms had gone off in their homes when there was no fire. As reported in Figure 4.2.4-1, three-quarters of these households (77%) reported they believed their fire alarms were set off because of cooking.",
+      "url": "https://cpsc.gov/s3fs-public/CPSC_SCOA_Study_Full_Report_Final_6b_09_06_24.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf (page 42)"
+    },
+    {
+      "id": "f16",
+      "claim": "Among households that said not all their alarms worked, 27% had deliberately disabled them",
+      "quote": "More than one-quarter of these households (27%) admit their smoke alarms were not working because they took deliberate action to disable them; this includes households that removed the batteries and households that disconnected their smoke alarm.",
+      "url": "https://cpsc.gov/s3fs-public/CPSC_SCOA_Study_Full_Report_Final_6b_09_06_24.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf (page 39)"
+    },
+    {
+      "id": "f17",
+      "claim": "Only half (51%) of households were accurate about the age of all their tested alarms; manufacture years ranged 1988 to 2023; average 2015 among 528 devices",
+      "quote": "only half (51%) of households were accurate about the age of all their tested alarms. ... Tested alarms with manufacturers’ years that could be identified ranged from 1988 to 2023 ... the average was 2015 (standard deviation of 6 years) among the 528 devices where the information was found.",
+      "url": "https://cpsc.gov/s3fs-public/CPSC_SCOA_Study_Full_Report_Final_6b_09_06_24.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf (pages 11, 29, 34)"
+    },
+    {
+      "id": "f18",
+      "claim": "1,314 devices tested; 9% non-functional even after correction; 13% needed battery correction",
+      "quote": "In total, 1,314 devices were tested in various room locations and levels of homes. Ultimately, 9% of the alarms tested were non-functional even after corrective action was attempted, and 13% of alarms required corrective action to the battery to restore function.",
+      "url": "https://cpsc.gov/s3fs-public/CPSC_SCOA_Study_Full_Report_Final_6b_09_06_24.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf (page 26)"
+    },
+    {
+      "id": "f19",
+      "claim": "The SCOA report is a EurekaFacts contractor report for CPSC, fielded 2019 and 2021-2024, not reviewed or accepted by the Commission",
+      "quote": "THIS DOCUMENT HAS NOT BEEN REVIEWED OR ACCEPTED BY THE COMMISSION ... CPSC SCOA Survey, Jan. 1, 2019 - May 30, 2019; Mar. 23, 2021 – Feb. 16, 2024.",
+      "url": "https://cpsc.gov/s3fs-public/CPSC_SCOA_Study_Full_Report_Final_6b_09_06_24.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf (every page footer)"
+    },
+    {
+      "id": "f20",
+      "claim": "ULSE 2026 survey: 31% of holiday cooks removed or disabled a smoke alarm, 11% of those never reinstalled it; 17% did so over frequent false alarms; n=2,008, Aug 25 - Sep 1 2026",
+      "quote": "31% of holiday home cooks removed or disabled one of their smoke alarms; of those, 11% never reinstalled it ... 17% of holiday cooks admit to removing or disabling a smoke alarm due to frequent false alarms at some point ... This nationally representative survey of n=2,008 U.S. adults was designed by ULSE and conducted online by BV Insights between August 25-September 1, 2026.",
+      "url": "https://ulse.org/holiday-safety-guide/",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f21",
+      "claim": "The residential code requires at least two 20-ampere circuits for kitchen and dining receptacles",
+      "quote": "E3703.2 Kitchen and dining area receptacles. A minimum of two 20-ampere-rated branch circuits shall be provided for all receptacle outlets specified by Section E3901.3. [210.11(C)(1)]",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-37-branch-circuit-and-feeder-requirements",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f22",
+      "claim": "Hardwired smoke alarms should be installed by qualified electricians",
+      "quote": "Only qualified electricians should install hardwired smoke alarms.",
+      "url": "https://www.nfpa.org/education-and-research/home-fire-safety/smoke-alarms",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f23",
+      "claim": "The report was released with a CPSC staff statement in September 2024",
+      "quote": "CPSC_SCOA_Study_Full_Report_Final_6b_09_06_24.pdf (file name: final report dated 09/06/24)",
+      "url": "https://cpsc.gov/s3fs-public/CPSC_SCOA_Study_Full_Report_Final_6b_09_06_24.pdf",
+      "readOn": "2026-11-17",
+      "method": "pdf"
+    },
+    {
+      "id": "f24",
+      "claim": "NFPA: if you have a cooking fire, get out, close the door behind you, and call 9-1-1 or the local emergency number after you leave",
+      "quote": "Just get out! When you leave, close the door behind you to help contain the fire. Call 9-1-1 or the local emergency number after you leave.",
+      "url": "https://www.nfpa.org/education-and-research/home-fire-safety/cooking",
+      "readOn": "2026-11-17",
+      "method": "browser (page source)"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "Range anti-tip brackets as a Thanksgiving check",
+      "why": "CPSC figures found were 1980-2008 and the bracket start date differs between CPSC documents (1988 vs 1991); not current enough to state"
+    },
+    {
+      "claim": "UL 217 8th edition cooking nuisance test and its effective date",
+      "why": "only secondary sources found; UL standard text not opened"
+    },
+    {
+      "claim": "ULSE's 240% / daily average 430 Thanksgiving figure",
+      "why": "a different dataset from NFPA's 2024 figure; using one source avoids two conflicting numbers on one page"
+    }
+  ],
+  "blockedSources": []
+}
