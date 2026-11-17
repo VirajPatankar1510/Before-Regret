@@ -1,0 +1,49 @@
+{
+  "generatedAt": "2026-11-17T12:42:05.705Z",
+  "source": "U.S. Census Bureau, American Community Survey 5-year estimates, table B25034 (Year Structure Built)",
+  "vintage": "2020-2024",
+  "input": "docs/data/oldest-housing-by-county.csv",
+  "note": "Shares of all housing units by decade built (Census bands). Year built is not permit year.",
+  "counties": {
+    "Brevard": {
+      "fips": "12009",
+      "housingUnits": 299305,
+      "medianYearBuilt": 1988,
+      "builtBefore1980Pct": 32.1,
+      "built1980sPct": 23.8,
+      "built1990to2009Pct": 33.2,
+      "built2010OrLaterPct": 10.9,
+      "builtBefore2010Pct": 89.1
+    },
+    "Collier": {
+      "fips": "12021",
+      "housingUnits": 239406,
+      "medianYearBuilt": 1996,
+      "builtBefore1980Pct": 16.6,
+      "built1980sPct": 19,
+      "built1990to2009Pct": 46.3,
+      "built2010OrLaterPct": 18.1,
+      "builtBefore2010Pct": 81.9
+    },
+    "Manatee": {
+      "fips": "12081",
+      "housingUnits": 221234,
+      "medianYearBuilt": 1991,
+      "builtBefore1980Pct": 33.1,
+      "built1980sPct": 15.9,
+      "built1990to2009Pct": 28.6,
+      "built2010OrLaterPct": 22.4,
+      "builtBefore2010Pct": 77.6
+    },
+    "Sarasota": {
+      "fips": "12115",
+      "housingUnits": 266492,
+      "medianYearBuilt": 1988,
+      "builtBefore1980Pct": 35.7,
+      "built1980sPct": 18.6,
+      "built1990to2009Pct": 30.5,
+      "built2010OrLaterPct": 15.2,
+      "builtBefore2010Pct": 84.8
+    }
+  }
+}

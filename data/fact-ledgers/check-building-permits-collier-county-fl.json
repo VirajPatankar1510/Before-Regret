@@ -1,0 +1,291 @@
+{
+  "slug": "check-building-permits-collier-county-fl",
+  "question": "How do I search Collier County building permits by address, and how do I find the older ones a current-portal search won't show?",
+  "verdictConfirmed": "Collier splits its permit history across three systems by date: CityView from 2011, the External CD-Plus Search for 1989 to 2011, and the Property Appraiser's permit list before 1989. The county itself warns that CD-Plus data is often not current, so a status there has to be checked against CityView. Bulletin 14 defines CDPlus SUSPEND as cancelled and closed, and VOID as needing action, the opposite of how they sound.",
+  "officialLookupUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+  "demand": {
+    "targetQuery": "collier county permit search",
+    "capture": "2026-11-17-demand-collier-county-permit-search-bing",
+    "note": "Tier 2: Bing records the exact phrase and 'collier county building permits'; not shown for this site on Google or Bing. Relative only, never stated as a volume."
+  },
+  "portalWalk": {
+    "date": "2026-11-17",
+    "system": "External CD-Plus Search, https://permzone.azurewebsites.net/ (Building Review and Permitting > Permit Tracking and Inspection). No account, no bot check.",
+    "address": "3299 and 3301 Tamiami Trl E, Naples -- the Collier County Government Center. Owner field reads COLLIER COUNTY (one 1998 row reads SPRINT FLORIDA INC, a utility). Public property, no private person.",
+    "observations": [
+      "Search form fields: Permit Number, Owner Name, Owner Address, Permit Address Number, Permit Street Name. Red notice: 'Only the top 200 records will be returned.'",
+      "3299 + TAMIAMI: 5 results, all owner COLLIER COUNTY, issued 01/11/2011 to 07/14/2011. Statuses: 4 COED, 1 SUSPEND (2011061518).",
+      "3299 + 'TAMIAMI TRL', 'TAMIAMI TRAIL', 'tamiami trl' and 'E TAMIAMI': 0 results each. Only the bare street name 'TAMIAMI' returned records. Stored address reads '3299 TAMIAMI TRL E'.",
+      "3301 + TAMIAMI: exactly 200 rows (the cap). Issued dates run 01/23/1989 to 2004; nothing later appeared although the system covers 1989-2011. Statuses in the 200: COED 148, VOID 31, SUSPEND 21.",
+      "Number formats at 3301: 12 nine-digit numbers (e.g. 880003352 issued 01/23/1989; 900010108 issued 11/27/1990; 940009388 issued 08/31/1994), 8 eight-digit numbers (e.g. 97040151 issued 04/16/1997; 98090635 issued 10/27/1998), 180 ten-digit numbers starting with 1998100261 issued 10/07/1998.",
+      "Partial permit number '2008' with 3301 + TAMIAMI: 0 results.",
+      "Permit 2011061518 detail (Permit History Report): JOB DESC FIRE ALARM; STATUS SUSPEND; JOB LOCATION 3299 TAMIAMI TRL E; BLOCK BLDG F; FLOOD ZONE X; OWNER NAME COLLIER COUNTY; JOB VALUE $1,638; APPLY 6/30/2011; APPROVE 7/14/2011; ISSUED 7/14/2011; CO blank; EXPIRE 1/10/2012; CANCEL blank. Inspection history lists codes 603, 604, 618, 650 and 901 with no request date, result or inspector on any of them.",
+      "Screenshots taken of the 3299 results list and the 2011061518 detail; the detail is cropped to remove the contractor and the contact-person rows."
+    ]
+  },
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "The county page says a historical permit review may be done at a sale to check for open permits, and that permit information is public through the Property Appraiser, the External CD-Plus Search and the Public Portal.",
+      "quote": "A Historical Permit Reviewmay be done when there is a sale of a property. The purpose is to check if there are any open permits associated with the property being sold. Open permits may impact the sale of a property. All permit information is available and accessible to the public through the Property Appraiser, External CD-Plus Search, and the Public Portal.",
+      "url": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "The county splits the record by era: 2011 to present in CityView, 1989 to 2011 in CDPlus, prior to 1989 via the Property Appraiser.",
+      "quote": "2011 to Present CityView | 1989 to 2011 CDPlus | Prior to 1989",
+      "url": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "readOn": "2026-11-17",
+      "method": "browser (accordion headings)"
+    },
+    {
+      "id": "f3",
+      "claim": "In CityView, permits are searched by address with Search for a Property, or by number under Status and Fees.",
+      "quote": "Permits can be searched by address using \"Search for a Property\" at the top of the portal or by permit number using the \"Status and Fees\" under the application group.",
+      "url": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "The county warns that CD-Plus is for reference only, covers 1989 to 2011, is often not current, and that closure must be checked in the Public Portal.",
+      "quote": "The External CD-Plus Search should ONLY be used for reference. The External CD-Plus Search will ONLY generate permits between 1989 – 2011. Large portions of permit data are not current. To verify if a permit in this search has been closed out, check the Public Portal.",
+      "url": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "claim": "CD-Plus permits carry a CDP prefix in the Public Portal.",
+      "quote": "The acronym CDP will appear before the permit number (ex. CDP123456789).",
+      "url": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "claim": "For pre-1989 permits, the Property Appraiser's Detail tab lists permit numbers as year applied and number; a blank CO Date means the permit is open; documents come through a public records request.",
+      "quote": "Select ‘Property Search’ Select tab to search by: i.e. Owner, Site Address, Parcel, etc. Permit numbers, including pre-1989 permits are listed on the 'Detail' tab Permits are read as [Year Applied – Permit Number; 88-02967] If there is no date in the CO Date column the permit is open. Permit documents can be obtained through a Public Records Request Property Cards are shown on the 'Cards' tab --- Important Information --- Please read the Property Appraisers full disclaimer regarding permits listed on their website.",
+      "url": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f7",
+      "claim": "The county defines five closed statuses; any other status is open.",
+      "quote": "Permit(s) in a status: COED, Finaled, Abandoned, Denied, or Cancelled are CLOSED and require no further action. Permit(s) in any status other than previously mentioned are OPEN and require further action.",
+      "url": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f8",
+      "claim": "Steps the county gives for an open permit: request the file from the Records Room, get a property card, contact Building Permit Resolution Services.",
+      "quote": "Request the permit file record from our Records Room GMDPublicRecordRequest@collier.gov Request a property card from Property Appraisers office (239) 252-8141 or locate it under the property record at CollierAppraiser.com Contact Building Permit Resolution Services BPRS@collier.gov",
+      "url": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f9",
+      "claim": "The county runs permit offices including one in Everglades City, open three days a week, and publishes an interlocal agreement with the City of Everglades on its permitting pages.",
+      "quote": "Everglades City 102 Copeland Avenue, Everglades City, FL 34139 239-252-2400 - Monday, Wednesday, Friday 9:00 a.m. - 3:00 p.m. | Collier County and the City of Everglades Interlocal Agreement",
+      "url": "https://www.collier.gov/Business-Resources/Building-Permits-Construction",
+      "readOn": "2026-11-17",
+      "method": "browser (Building Permits & Construction contact block; Permitting Resources index)"
+    },
+    {
+      "id": "f10",
+      "claim": "The City of Naples has its own Building Department and public portal.",
+      "quote": "Public Portal - Electronic Permitting & Permit Search The City of Naples Building Department has a goal of providing the highest standard of service to our residents and customers",
+      "url": "https://www.naplesgov.com/building",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f11",
+      "claim": "The City of Marco Island has its own Building Services Division with a Civic Access permitting portal.",
+      "quote": "The Division provides building permit services, construction plan reviews, and inspections to ensure compliance with applicable building codes and standards. ... Civic Access Permitting Portal",
+      "url": "https://www.cityofmarcoisland.com/page/building-services",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f12",
+      "claim": "Collier County's notice: from July 1, 2026 certain qualifying work under $7,500 is exempt from building permits.",
+      "quote": "Beginning July 1st, 2026, certain qualifying work valued under $7500.00 will be exempt from building permits subject to certain exemptions.",
+      "url": "https://www.collier.gov/Business-Resources/Building-Permits-Construction",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f13",
+      "claim": "Florida Statutes s. 553.79(1)(g)1 (2026): local governments shall exempt single-family owners or their contractors from a permit for work valued at less than $7,500.",
+      "quote": "A local government that issues building permits shall exempt an owner of a single-family dwelling or the owner’s contractor from the requirement to obtain a building permit to perform any work valued at less than $7,500 on the owner’s property.",
+      "url": "http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0500-0599/0553/Sections/0553.79.html",
+      "readOn": "2026-11-17",
+      "method": "browser (The 2026 Florida Statutes)"
+    },
+    {
+      "id": "f14",
+      "claim": "s. 553.79(1)(g)2: the exemption does not apply in a flood hazard area or to electrical, plumbing, structural, mechanical or gas work; no project splitting.",
+      "quote": "The exemption under subparagraph 1. does not apply to any of the following: a. Work on a property that is partially or entirely located in a flood hazard area as defined by the Florida Building Code. b. Any electrical, plumbing, structural, mechanical, or gas work performed on property containing a single-family dwelling. A construction project may not be divided into more than one project for the purpose of evading the requirements of this paragraph.",
+      "url": "http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0500-0599/0553/Sections/0553.79.html",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f15",
+      "claim": "s. 553.79(1)(g)3-4: to qualify, a written exemption request with the contract or other documentation goes to the local enforcement agency; the local government has no legal duty for exempted work.",
+      "quote": "To qualify for the exemption under subparagraph 1., the owner or the owner’s contractor must submit a written request for exemption to the local enforcement agency with a copy of the contract or other documentation demonstrating the nature and the value of the work to be performed. 4. A local government has no legal duty to the owner, contractor, or successors or assigns thereof for exempted work performed under this paragraph.",
+      "url": "http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0500-0599/0553/Sections/0553.79.html",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f16",
+      "claim": "s. 553.79(1)(c): a single-family dwelling permit expires 1 year after issuance or on the next Florida Building Code edition's effective date, whichever is later; local governments may extend.",
+      "quote": "A building permit issued by a local government for a single-family dwelling expires 1 year after the issuance of the permit or on the effective date of the next edition of the Florida Building Code, whichever is later. However, this paragraph does not prevent a local government from extending a building permit beyond the expiration date.",
+      "url": "http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0500-0599/0553/Sections/0553.79.html",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f17",
+      "claim": "These provisions came from CS/CS/HB 803 (2026), approved by the Governor as Chapter No. 2026-63; the Senate summary gives July 1, 2026 as the effective date.",
+      "quote": "Approved by Governor | Chapter No. 2026-63 | If approved by the Governor, or allowed to become law without the Governor’s signature, these provisions take effect on July 1, 2026.",
+      "url": "https://www.flsenate.gov/Session/Bill/2026/803/?Tab=BillHistory ; https://www.flsenate.gov/Committees/BillSummaries/2026/html/803",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f18",
+      "claim": "s. 553.79(16)(a): any property owner, listed on the application or not, may close a permit, including by hiring a different licensed contractor.",
+      "quote": "A property owner, regardless of whether the property owner is the one listed on the application for the building permit, may close a building permit by complying with the following requirements: 1. The property owner may retain the original contractor listed on the permit or hire a different contractor appropriately licensed in this state",
+      "url": "http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0500-0599/0553/Sections/0553.79.html",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f19",
+      "claim": "Collier Code Enforcement's lien search costs $25 per address, does not report open permits, and is requested through the county portal with an account.",
+      "quote": "The cost for this service is $25 per property address ... *Lien search results will not report issues beyond the Code Enforcement Department’s jurisdiction, such as open permits and utility bills, and payoff information is not included in lien search results.* ... Please note, an account will need to be created in order to submit requests.",
+      "url": "https://www.collier.gov/Business-Resources/Code-Enforcement/Lien-Search-and-Payoff-Request",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f20",
+      "claim": "Code enforcement liens are capped at 20 years under the county's reading of F.S. 162.09(3).",
+      "quote": "No Code Enforcement lien shall continue for a period longer than 20 years.",
+      "url": "https://www.collier.gov/Business-Resources/Code-Enforcement/Lien-Search-and-Payoff-Request",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f21",
+      "claim": "Collier Code Enforcement tells buyers that existing violations, fines and liens pass to the new owner.",
+      "quote": "All existing code violations, fines, and liens go with the property and become the responsibility of the new owner when sold.",
+      "url": "https://www.collier.gov/Business-Resources/Code-Enforcement/Thinking-about-Buying-a-Home",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f22",
+      "claim": "First-party: share of Collier housing units by decade built mapped onto the three record systems (Census ACS 5-year 2020-2024, table B25034):81.9% built before 2010; 16.6% before 1980; 19.0% (shown as 19%) in the 1980s; 46.3% 1990-2009; 18.1% 2010 or later; 239,406 units; median year built 1996.",
+      "quote": "builtBefore2010Pct 81.9; builtBefore1980Pct 16.6; built1980sPct 19; built1990to2009Pct 46.3; built2010OrLaterPct 18.1; housingUnits 239406; medianYearBuilt 1996",
+      "url": "docs/data/florida-permit-era-shares.json (scripts/build-florida-permit-era-shares.ts)",
+      "readOn": "2026-11-17",
+      "method": "our computation"
+    },
+    {
+      "id": "f23",
+      "claim": "The Property Appraiser's property search opens with a Terms of Use and Cookies agreement that must be accepted; it states that it welcomes AI assistants and points bulk users to Data Downloads.",
+      "quote": "The Property Search welcomes people and the tools they use, including AI assistants. All users must respect the site’s limits. ... By clicking I Agree, you accept our Terms of Use and our use of cookies.",
+      "url": "https://www.collierappraiser.com/",
+      "readOn": "2026-11-17",
+      "method": "browser (not accepted: needs owner OK)"
+    },
+    {
+      "id": "f24",
+      "claim": "The External CD-Plus Search (Building Review and Permitting) has five search fields and warns that only 200 records are returned.",
+      "quote": "Permit Tracking and Inspection ... Only the top 200 records will be returned. Permit Number: Owner Name: Owner Address: Permit Address Number: Permit Street Name:",
+      "url": "https://permzone.azurewebsites.net/",
+      "readOn": "2026-11-17",
+      "method": "browser"
+    },
+    {
+      "id": "f25",
+      "claim": "Bulletin 14 (Permit Status Explanations) was amended August 2, 2023.",
+      "quote": "Bulletin 14: Permit Status Explanations Date: September 1, 2016 Effective date: September 1, 2016 Amended: August 2, 2023",
+      "url": "https://www.collier.gov/files/assets/county/v/2/building-plan-review/documents/bulletins/bulletin-14-permit-status.pdf",
+      "readOn": "2026-11-17",
+      "method": "PDF downloaded with owner OK, text extracted"
+    },
+    {
+      "id": "f26",
+      "claim": "CDPlus SUSPEND means cancelled with proper documents, no further action, not an open issue.",
+      "quote": "SUSPEND – Applies to CDPlus permits only. Permit has been cancelled with proper docs provided and no further action needed. This permit is no longer considered an open issue.",
+      "url": "https://www.collier.gov/files/assets/county/v/2/building-plan-review/documents/bulletins/bulletin-14-permit-status.pdf",
+      "readOn": "2026-11-17",
+      "method": "PDF downloaded with owner OK, text extracted"
+    },
+    {
+      "id": "f27",
+      "claim": "VOID means the application or permit requires action: reapply, or cancel by request.",
+      "quote": "VOID – Application or permit requires action to be taken. Either the application needs to be reapplied for or needs to be cancelled.",
+      "url": "https://www.collier.gov/files/assets/county/v/2/building-plan-review/documents/bulletins/bulletin-14-permit-status.pdf",
+      "readOn": "2026-11-17",
+      "method": "PDF downloaded with owner OK, text extracted"
+    },
+    {
+      "id": "f28",
+      "claim": "CDPlus CANCEL is not closed: it needs research and may need extension, reapplication or suspension.",
+      "quote": "CANCEL – Applies to CDPlus permits only. This permit status requires additional research to be performed and may require the permit to be extended, reapplied for or set to suspend.",
+      "url": "https://www.collier.gov/files/assets/county/v/2/building-plan-review/documents/bulletins/bulletin-14-permit-status.pdf",
+      "readOn": "2026-11-17",
+      "method": "PDF downloaded with owner OK, text extracted"
+    },
+    {
+      "id": "f29",
+      "claim": "CDPlus COED means completed, inspected, conditions resolved, CO or CC issued.",
+      "quote": "COED – Applies to CDPlus permits only. Job was completed, inspected and all conditions resolved. Either a certificate of Completion or Occupancy has been issued. No further action needed.",
+      "url": "https://www.collier.gov/files/assets/county/v/2/building-plan-review/documents/bulletins/bulletin-14-permit-status.pdf",
+      "readOn": "2026-11-17",
+      "method": "PDF downloaded with owner OK, text extracted"
+    },
+    {
+      "id": "f30",
+      "claim": "EXPIRED needs research and may need extension, reapplication or cancellation.",
+      "quote": "EXPIRED – Application for a permit or an issued permit has not been actively pursued as required by the Florida Building Code. This permit status requires additional research to be performed and may require the permit to be extended, reapplied for, or cancelled.",
+      "url": "https://www.collier.gov/files/assets/county/v/2/building-plan-review/documents/bulletins/bulletin-14-permit-status.pdf",
+      "readOn": "2026-11-17",
+      "method": "PDF downloaded with owner OK, text extracted"
+    }
+  ],
+  "cut": [
+    "Where Collier files HB 803 exemption requests and whether they appear in CityView -- unknown; the page says so.",
+    "How permit 2011061518 reads in CityView today -- CityView is region-blocked; unknown, and the page says so.",
+    "Everglades City interlocal agreement: downloaded with owner OK 2026-11-17 but it is a scanned image with no text layer; terms not read."
+  ],
+  "blockedSources": [
+    {
+      "url": "https://cvportal.collier.gov/CityViewWeb",
+      "result": "HTTP 403 'Access denied. This content is not available in your region.' (Varnish, error 54113), 2026-11-17. Not worked around."
+    },
+    {
+      "url": "https://cityview2.iharriscomputer.com/cityofnaplesflorida",
+      "result": "Cloudflare error 1009: the site owner bans the country or region of our IP, 2026-11-17. Not worked around."
+    },
+    {
+      "url": "https://marcoislandfl-energovpub.tylerhost.net/apps/civic-access-public/home",
+      "result": "HTTP 403 Forbidden, 2026-11-17. Not worked around."
+    },
+    {
+      "url": "https://www.collierappraiser.com/ (Property Search)",
+      "result": "Terms of Use and Cookies agreement; accepting terms needs the owner's explicit OK. Not accepted."
+    }
+  ]
+}

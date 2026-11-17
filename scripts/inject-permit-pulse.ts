@@ -215,6 +215,23 @@ const BLOCKS: Block[] = [
       return `${lead} These counts cover every permit office in the county, St. Petersburg and Clearwater included, so they reach well beyond the area the county's own Access Portal serves.`;
     },
   },
+  {
+    // Added 2026-11-17 with the new Collier guide. Collier is one of the gated set's "headline misleading"
+    // counties: the total rose while houses fell, so the rise is apartments. The split wording is gated on
+    // the signs. The Census county file includes Naples and Marco Island, which run their own departments.
+    slug: 'check-building-permits-collier-county-fl', fips: '12021',
+    heading: 'What Collier County Is Permitting Right Now',
+    prose: (c) => {
+      const split = c.unitsChangePct > 0 && c.sfChangePct < 0;
+      const houses = c.sfCurrent >= MIN_SF_FOR_PCT && c.sfPrior >= MIN_SF_FOR_PCT
+        ? `${dir(c.sfChangePct)}, ${n(c.sfPrior)} homes a year ago against ${n(c.sfCurrent)} now`
+        : `${n(c.sfPrior)} homes a year ago against ${n(c.sfCurrent)} now`;
+      const lead = split
+        ? `Collier's overall count is ${dir(c.unitsChangePct)}, at ${n(c.unitsCurrent)} units so far this year, but the growth is in apartments: multifamily units rose from ${n(c.mfPrior)} to ${n(c.mfCurrent)}, ${dir(c.mfChangePct)}. Single-family permits are ${houses}.`
+        : `Collier's overall count is ${dir(c.unitsChangePct)} at ${n(c.unitsCurrent)} units so far this year; single-family permits are ${houses}, and multifamily is ${dir(c.mfChangePct)} to ${n(c.mfCurrent)} units.`;
+      return `${lead} If you're weighing an older house against new construction, watch the single-family line rather than the total. The Census file also counts permits from Naples and Marco Island, which keep their own records.`;
+    },
+  },
 ];
 
 const trigrams = (s: string) => {

@@ -1,0 +1,452 @@
+{
+  "about": "Florida building-permit due-diligence records, normalized. Stage 2 of docs/plans/florida-permit-cluster-2026-11.md. One verified county so far (Collier, 2026-11-17). Every row traces to source_registry; every test row is something we actually ran. Nothing here is rendered on the site yet.",
+  "schemaVersion": 1,
+  "tables": {
+    "jurisdictions": "id, county, name, kind (county-unincorporated | city | city-served-by-county), permits_issued_by (jurisdiction id), notes, sources[]",
+    "permit_record_systems": "id, jurisdiction_id, name, platform, url, coverage_from, coverage_to (null = present), account_needed, reachable_from_us (true | false | unknown), status (current | legacy | list-only), sources[]",
+    "historical_sources": "id, jurisdiction_id, name, covers_before, what_it_holds, how_to_get_documents, sources[]",
+    "search_capabilities": "system_id, by_address, by_permit_number, by_owner, by_parcel, partial_number, result_cap, quirks[], verified_by (test id | source id)",
+    "verification_tests": "id, system_id, date, subject (public property only), steps, result, screenshot, limits",
+    "permit_status_definitions": "jurisdiction_id, system_id, status, county_meaning (quoted, or null if unread), closed (true | false | unknown), source",
+    "source_registry": "id, title, url, kind (county-page | city-page | statute | bill | portal | dataset | pdf-unread), read_on, method, blocked (null | reason)"
+  },
+  "jurisdictions": [
+    {
+      "id": "collier-uninc",
+      "county": "Collier",
+      "name": "Unincorporated Collier County",
+      "kind": "county-unincorporated",
+      "permits_issued_by": "collier-uninc",
+      "notes": "Growth Management Community Development Department; offices at North Horseshoe, Immokalee, Everglades City, Heritage Bay.",
+      "sources": [
+        "s-collier-bpc"
+      ]
+    },
+    {
+      "id": "everglades-city",
+      "county": "Collier",
+      "name": "City of Everglades City",
+      "kind": "city-served-by-county",
+      "permits_issued_by": "collier-uninc",
+      "notes": "County runs an office at 102 Copeland Avenue (Mon/Wed/Fri) and publishes an interlocal agreement. Agreement terms NOT read (PDF).",
+      "sources": [
+        "s-collier-bpc",
+        "s-collier-everglades"
+      ]
+    },
+    {
+      "id": "naples",
+      "county": "Collier",
+      "name": "City of Naples",
+      "kind": "city",
+      "permits_issued_by": "naples",
+      "notes": "Own Building Department, 295 Riverside Cir.; own public portal.",
+      "sources": [
+        "s-naples-building"
+      ]
+    },
+    {
+      "id": "marco-island",
+      "county": "Collier",
+      "name": "City of Marco Island",
+      "kind": "city",
+      "permits_issued_by": "marco-island",
+      "notes": "Own Building Services Division; Tyler Civic Access portal.",
+      "sources": [
+        "s-marco-building"
+      ]
+    }
+  ],
+  "permit_record_systems": [
+    {
+      "id": "collier-cityview",
+      "jurisdiction_id": "collier-uninc",
+      "name": "GMCD Public Portal (CityView)",
+      "platform": "CityView",
+      "url": "https://cvportal.collier.gov/CityViewWeb",
+      "coverage_from": "2011",
+      "coverage_to": null,
+      "account_needed": "not for search (per county page); unverified",
+      "reachable_from_us": false,
+      "status": "current",
+      "sources": [
+        "s-collier-history",
+        "s-block-cityview"
+      ]
+    },
+    {
+      "id": "collier-cdplus",
+      "jurisdiction_id": "collier-uninc",
+      "name": "External CD-Plus Search",
+      "platform": "CDPlus (Azure-hosted lookup)",
+      "url": "https://permzone.azurewebsites.net/",
+      "coverage_from": "1989",
+      "coverage_to": "2011",
+      "account_needed": false,
+      "reachable_from_us": true,
+      "status": "legacy",
+      "sources": [
+        "s-collier-history",
+        "s-cdplus"
+      ]
+    },
+    {
+      "id": "collier-pa-list",
+      "jurisdiction_id": "collier-uninc",
+      "name": "Collier County Property Appraiser, Property Search > Detail tab",
+      "platform": "Property Appraiser site",
+      "url": "https://www.collierappraiser.com/",
+      "coverage_from": null,
+      "coverage_to": "1989",
+      "account_needed": false,
+      "reachable_from_us": "terms-of-use gate not accepted",
+      "status": "list-only",
+      "sources": [
+        "s-collier-history",
+        "s-collier-pa"
+      ]
+    },
+    {
+      "id": "naples-cityview",
+      "jurisdiction_id": "naples",
+      "name": "City of Naples public portal",
+      "platform": "CityView (Harris)",
+      "url": "https://cityview2.iharriscomputer.com/cityofnaplesflorida",
+      "coverage_from": null,
+      "coverage_to": null,
+      "account_needed": "unknown",
+      "reachable_from_us": false,
+      "status": "current",
+      "sources": [
+        "s-naples-building",
+        "s-block-naples"
+      ]
+    },
+    {
+      "id": "marco-energov",
+      "jurisdiction_id": "marco-island",
+      "name": "Marco Island Civic Access",
+      "platform": "Tyler EnerGov",
+      "url": "https://marcoislandfl-energovpub.tylerhost.net/apps/civic-access-public/home",
+      "coverage_from": null,
+      "coverage_to": null,
+      "account_needed": "unknown",
+      "reachable_from_us": false,
+      "status": "current",
+      "sources": [
+        "s-marco-building",
+        "s-block-marco"
+      ]
+    }
+  ],
+  "historical_sources": [
+    {
+      "id": "collier-pa-pre1989",
+      "jurisdiction_id": "collier-uninc",
+      "name": "Property Appraiser permit list",
+      "covers_before": "1989",
+      "what_it_holds": "Permit numbers read as year applied - number (88-02967) and a CO Date column; blank CO Date = open (county).",
+      "how_to_get_documents": "Public records request; county Records Room GMDPublicRecordRequest@collier.gov",
+      "sources": [
+        "s-collier-history"
+      ]
+    }
+  ],
+  "search_capabilities": [
+    {
+      "system_id": "collier-cdplus",
+      "by_address": "street number + street name",
+      "by_permit_number": "exact only (partial '2008' returned 0)",
+      "by_owner": true,
+      "by_parcel": false,
+      "partial_number": false,
+      "result_cap": 200,
+      "quirks": [
+        "street suffix (TRL, TRAIL) or direction prefix returns 0; bare name works",
+        "results sorted by permit number, so the cap hides the newest permits at busy addresses",
+        "2011 permits appear here although CityView starts in 2011"
+      ],
+      "verified_by": "t-collier-cdplus-1"
+    },
+    {
+      "system_id": "collier-cityview",
+      "by_address": "Search for a Property (county page)",
+      "by_permit_number": "Status and Fees under the application group (county page); CD-Plus permits carry a CDP prefix",
+      "by_owner": "unknown",
+      "by_parcel": "unknown",
+      "partial_number": "unknown",
+      "result_cap": "unknown",
+      "quirks": [],
+      "verified_by": "s-collier-history (county description only; not tested)"
+    }
+  ],
+  "verification_tests": [
+    {
+      "id": "t-collier-cdplus-1",
+      "system_id": "collier-cdplus",
+      "date": "2026-11-17",
+      "subject": "3299 and 3301 Tamiami Trl E, Naples (Collier County Government Center, owner COLLIER COUNTY)",
+      "steps": "Building Review and Permitting; Permit Address Number + Permit Street Name; variants TAMIAMI / TAMIAMI TRL / TAMIAMI TRAIL / tamiami trl / E TAMIAMI; partial permit number 2008; opened 2011061518",
+      "result": "3299+TAMIAMI: 5 permits (4 COED, 1 SUSPEND), issued 01/11/2011-07/14/2011. Suffix variants: 0. 3301+TAMIAMI: 200 rows (cap), 1989-2004, COED 148 / VOID 31 / SUSPEND 21. 2011061518: fire alarm, SUSPEND, issued 7/14/2011, expired 1/10/2012, CO blank, 5 inspection codes with no results.",
+      "screenshot": [
+        "public/images/collier-cdplus-search-3299-tamiami.webp",
+        "public/images/collier-cdplus-permit-2011061518-suspend.webp"
+      ],
+      "limits": "Pattern seen at one public address; CityView view of the same permits not checked (region-blocked)."
+    }
+  ],
+  "permit_status_definitions": [
+    {
+      "jurisdiction_id": "collier-uninc",
+      "system_id": "*",
+      "status": "Abandoned",
+      "county_meaning": null,
+      "closed": true,
+      "source": "s-collier-history"
+    },
+    {
+      "jurisdiction_id": "collier-uninc",
+      "system_id": "*",
+      "status": "Denied",
+      "county_meaning": null,
+      "closed": true,
+      "source": "s-collier-history"
+    },
+    {
+      "jurisdiction_id": "collier-uninc",
+      "system_id": "collier-cdplus",
+      "status": "COED",
+      "county_meaning": "CDPlus: job completed, inspected, all conditions resolved; CO or CC issued.",
+      "closed": true,
+      "source": "s-bulletin14"
+    },
+    {
+      "jurisdiction_id": "collier-uninc",
+      "system_id": "collier-cdplus",
+      "status": "SUSPEND",
+      "county_meaning": "CDPlus: permit has been cancelled with proper docs provided; no further action; no longer an open issue.",
+      "closed": true,
+      "source": "s-bulletin14"
+    },
+    {
+      "jurisdiction_id": "collier-uninc",
+      "system_id": "*",
+      "status": "VOID",
+      "county_meaning": "Application or permit requires action: reapply, or cancel by request.",
+      "closed": false,
+      "source": "s-bulletin14"
+    },
+    {
+      "jurisdiction_id": "collier-uninc",
+      "system_id": "collier-cdplus",
+      "status": "CANCEL",
+      "county_meaning": "CDPlus: requires additional research; may need extension, reapplication or suspension.",
+      "closed": false,
+      "source": "s-bulletin14"
+    },
+    {
+      "jurisdiction_id": "collier-uninc",
+      "system_id": "*",
+      "status": "EXPIRED",
+      "county_meaning": "Not actively pursued as the FBC requires; needs research; may need extension, reapplication or cancellation.",
+      "closed": false,
+      "source": "s-bulletin14"
+    },
+    {
+      "jurisdiction_id": "collier-uninc",
+      "system_id": "*",
+      "status": "Cancelled",
+      "county_meaning": "Cancelled with proper docs; no further action; not an open issue.",
+      "closed": true,
+      "source": "s-bulletin14"
+    },
+    {
+      "jurisdiction_id": "collier-uninc",
+      "system_id": "*",
+      "status": "Finaled",
+      "county_meaning": "Completed, inspected, conditions resolved; CO or CC issued.",
+      "closed": true,
+      "source": "s-bulletin14"
+    },
+    {
+      "jurisdiction_id": "collier-uninc",
+      "system_id": "*",
+      "status": "NOTE",
+      "county_meaning": "The county web page's closed list (COED, Finaled, Abandoned, Denied, Cancelled) omits SUSPEND, which Bulletin 14 defines as closed.",
+      "closed": null,
+      "source": "s-collier-history + s-bulletin14"
+    }
+  ],
+  "statewide_rules": [
+    {
+      "id": "fl-553.79-1g",
+      "rule": "From 2026-07-01 a local government shall exempt a single-family owner or contractor from a permit for work valued at less than $7,500; not electrical, plumbing, structural, mechanical or gas work; not in a flood hazard area; written exemption request with contract required.",
+      "source": "s-fs-553.79"
+    },
+    {
+      "id": "fl-553.79-1c",
+      "rule": "A single-family dwelling permit expires 1 year after issuance or on the next FBC edition's effective date, whichever is later; local government may extend.",
+      "source": "s-fs-553.79"
+    },
+    {
+      "id": "fl-553.79-16",
+      "rule": "Any property owner may close a building permit, including with a different licensed contractor.",
+      "source": "s-fs-553.79"
+    }
+  ],
+  "source_registry": [
+    {
+      "id": "s-collier-history",
+      "title": "View Permit History & Permit Search",
+      "url": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "kind": "county-page",
+      "read_on": "2026-11-17",
+      "method": "browser",
+      "blocked": null
+    },
+    {
+      "id": "s-collier-bpc",
+      "title": "Building Permits & Construction",
+      "url": "https://www.collier.gov/Business-Resources/Building-Permits-Construction",
+      "kind": "county-page",
+      "read_on": "2026-11-17",
+      "method": "browser",
+      "blocked": null
+    },
+    {
+      "id": "s-collier-everglades",
+      "title": "Everglades City (permitting resources)",
+      "url": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/Everglades-City",
+      "kind": "county-page",
+      "read_on": "2026-11-17",
+      "method": "browser",
+      "blocked": null
+    },
+    {
+      "id": "s-collier-lien",
+      "title": "Lien Search and Payoff Request",
+      "url": "https://www.collier.gov/Business-Resources/Code-Enforcement/Lien-Search-and-Payoff-Request",
+      "kind": "county-page",
+      "read_on": "2026-11-17",
+      "method": "browser",
+      "blocked": null
+    },
+    {
+      "id": "s-collier-buying",
+      "title": "Thinking about Buying a Home?",
+      "url": "https://www.collier.gov/Business-Resources/Code-Enforcement/Thinking-about-Buying-a-Home",
+      "kind": "county-page",
+      "read_on": "2026-11-17",
+      "method": "browser",
+      "blocked": null
+    },
+    {
+      "id": "s-cdplus",
+      "title": "External CD-Plus Search",
+      "url": "https://permzone.azurewebsites.net/",
+      "kind": "portal",
+      "read_on": "2026-11-17",
+      "method": "browser, searches run",
+      "blocked": null
+    },
+    {
+      "id": "s-collier-pa",
+      "title": "Collier County Property Appraiser",
+      "url": "https://www.collierappraiser.com/",
+      "kind": "portal",
+      "read_on": "2026-11-17",
+      "method": "browser",
+      "blocked": "Terms of Use and Cookies agreement; not accepted without owner OK"
+    },
+    {
+      "id": "s-block-cityview",
+      "title": "Collier GMCD Public Portal",
+      "url": "https://cvportal.collier.gov/CityViewWeb",
+      "kind": "portal",
+      "read_on": "2026-11-17",
+      "method": "browser",
+      "blocked": "HTTP 403 'not available in your region'"
+    },
+    {
+      "id": "s-naples-building",
+      "title": "City of Naples Building",
+      "url": "https://www.naplesgov.com/building",
+      "kind": "city-page",
+      "read_on": "2026-11-17",
+      "method": "browser",
+      "blocked": null
+    },
+    {
+      "id": "s-block-naples",
+      "title": "City of Naples public portal",
+      "url": "https://cityview2.iharriscomputer.com/cityofnaplesflorida",
+      "kind": "portal",
+      "read_on": "2026-11-17",
+      "method": "browser",
+      "blocked": "Cloudflare 1009 country ban"
+    },
+    {
+      "id": "s-marco-building",
+      "title": "City of Marco Island Building Services",
+      "url": "https://www.cityofmarcoisland.com/page/building-services",
+      "kind": "city-page",
+      "read_on": "2026-11-17",
+      "method": "browser",
+      "blocked": null
+    },
+    {
+      "id": "s-block-marco",
+      "title": "Marco Island Civic Access",
+      "url": "https://marcoislandfl-energovpub.tylerhost.net/apps/civic-access-public/home",
+      "kind": "portal",
+      "read_on": "2026-11-17",
+      "method": "browser",
+      "blocked": "HTTP 403"
+    },
+    {
+      "id": "s-fs-553.79",
+      "title": "The 2026 Florida Statutes, s. 553.79",
+      "url": "http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0500-0599/0553/Sections/0553.79.html",
+      "kind": "statute",
+      "read_on": "2026-11-17",
+      "method": "browser",
+      "blocked": null
+    },
+    {
+      "id": "s-hb803",
+      "title": "CS/CS/HB 803 (2026), bill history and Senate summary; Chapter No. 2026-63",
+      "url": "https://www.flsenate.gov/Session/Bill/2026/803",
+      "kind": "bill",
+      "read_on": "2026-11-17",
+      "method": "browser",
+      "blocked": null
+    },
+    {
+      "id": "s-bulletin14",
+      "title": "Collier Bulletin 14, permit status",
+      "url": "https://www.collier.gov/files/assets/county/v/2/building-plan-review/documents/bulletins/bulletin-14-permit-status.pdf",
+      "kind": "county-pdf",
+      "read_on": "2026-11-17",
+      "method": "downloaded with owner OK; text extracted; amended August 2, 2023",
+      "blocked": null
+    },
+    {
+      "id": "s-acs-eras",
+      "title": "Our Census B25034 era shares",
+      "url": "docs/data/florida-permit-era-shares.json",
+      "kind": "dataset",
+      "read_on": "2026-11-17",
+      "method": "scripts/build-florida-permit-era-shares.ts",
+      "blocked": null
+    },
+    {
+      "id": "s-everglades-ila",
+      "title": "Everglades City interlocal agreement (recorded)",
+      "url": "https://www.collier.gov/files/assets/county/v/1/building-plan-review/documents/everglades-city-interlocal-agreement-recorde.pdf",
+      "kind": "pdf-unread",
+      "read_on": "2026-11-17",
+      "method": "downloaded; scanned image, no text layer",
+      "blocked": "not machine-readable"
+    }
+  ]
+}
