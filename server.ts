@@ -403,6 +403,17 @@ export async function createApp() {
   // unavailable" (owner report, 2026-11-18; reproduced: 2 of 6 parallel requests got 429). So: answers
   // are cached briefly per instance (the submit is usually a repeat of the last suggestion query), and
   // a 429 is retried after a short wait instead of being passed straight to the visitor.
+  // Second fix (same day, after launch): retries alone still lost 2 of 8 parallel lookups to 429, and one person typing
+  // sends suggestion requests ~350 ms apart. So calls from this instance are also spaced out (a queue of time slots,
+  // GEO_GAP_MS apart), and a 429 is retried over ~6 s instead of ~2 s.
+  const GEO_GAP_MS = 550;
+  let geoNextSlot = 0;
+  async function geoSlot(): Promise<void> {
+    const now = Date.now();
+    const at = Math.max(now, geoNextSlot);
+    geoNextSlot = at + GEO_GAP_MS;
+    if (at > now) await new Promise((r) => setTimeout(r, at - now));
+  }
   const geoCache = new Map<string, { at: number; status: number; body: unknown }>();
   const GEO_TTL_MS = 15 * 60 * 1000;
   const GEO_CACHE_MAX = 500;
@@ -412,11 +423,12 @@ export async function createApp() {
     if (hit && Date.now() - hit.at < GEO_TTL_MS) return hit;
     const withKey = new URLSearchParams(params);
     withKey.set("key", process.env.LOCATIONIQ_API_KEY || "");
-    const waits = [0, 700, 1500];
+    const waits = [0, 1000, 2000, 3000];
     let status = 0;
     let body: unknown = null;
     for (const wait of waits) {
       if (wait) await new Promise((r) => setTimeout(r, wait));
+      await geoSlot();
       const upstream = await fetch(`https://us1.locationiq.com/v1/${path}?${withKey.toString()}`);
       status = upstream.status;
       if (upstream.ok) {

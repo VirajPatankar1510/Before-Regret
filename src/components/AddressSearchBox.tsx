@@ -492,7 +492,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
       } catch (err) {
         console.warn('Suggestions fetch error:', err);
       }
-    }, 350);
+    // 600 ms, not 350: every pause while typing costs a geocoder call, and the key allows only a couple per second
+    // shared by all visitors (2026-11-18).
+    }, 600);
 
     return () => clearTimeout(timer);
   }, [mapSearchQuery]);
@@ -679,9 +681,15 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     try {
       const q = mapSearchQuery.trim();
       const cached = lastSuggestRef.current?.q === q ? lastSuggestRef.current.data : null;
-      const res = cached
+      const url = `/api/geocode/search?q=${encodeURIComponent(q)}&addressdetails=1&limit=8`;
+      let res = cached
         ? new Response(JSON.stringify(cached), { status: 200, headers: { 'Content-Type': 'application/json' } })
-        : await fetch(`/api/geocode/search?q=${encodeURIComponent(q)}&addressdetails=1&limit=8`);
+        : await fetch(url);
+      // The geocoder's per-second limit is shared by every visitor; one more try after a pause usually gets through.
+      if (res.status === 429 || res.status >= 500) {
+        await new Promise((r) => setTimeout(r, 1500));
+        res = await fetch(url);
+      }
       // A non-OK response previously fell through this whole block silently: no result, no error,
       // the spinner just stopped and the user was left staring at an unchanged form with no idea
       // anything had failed. A geocoder 5xx or rate-limit is exactly when a person most needs to
