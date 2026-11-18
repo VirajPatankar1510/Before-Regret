@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, Check, ChevronRight, ClipboardCopy, FileSearch, Home, Lightbulb, Printer, ShieldCheck, Droplets, ScrollText,
+  ArrowLeft, ArrowRight, Check, ChevronRight, ClipboardCopy, FileSearch, Home, Lightbulb, Loader2, Printer, ShieldCheck, Droplets, ScrollText,
 } from 'lucide-react';
 import type { PropertySearchResult } from '../../types';
 import { AddressSearchBox } from '../AddressSearchBox';
@@ -11,6 +11,9 @@ import {
   type BuyingStage, type EraItem, type QuestionId, type ResearchState, type WorkKey,
 } from './researchState';
 import { PermitView } from './PermitView';
+import { FinalReportView, buildFullReport } from './FinalReport';
+import { ReportAssentNotice } from '../ReportAssentNotice';
+import type { PropertyReport } from '../../types';
 import { BackToPlan, SolvedBadge, btnGhost, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
 
 // Guided research tool -- UNPUBLISHED (owner, 2026-11-18: "don't publish until our entire tool is ready").
@@ -41,6 +44,24 @@ const STAGE_LABEL: Record<BuyingStage, string> = { looking: 'Just looking', offe
 export const HouseResearchTool: React.FC<Props> = ({ onNavigate, onQuickReport }) => {
   const [state, setState] = useState<ResearchState | null>(() => loadResearch());
   const topRef = useRef<HTMLDivElement>(null);
+  const [finalReport, setFinalReport] = useState<PropertyReport | null>(null);
+  const [building, setBuilding] = useState(false);
+  const [buildError, setBuildError] = useState<string | null>(null);
+
+  const finish = async () => {
+    if (!state || building) return;
+    setBuilding(true);
+    setBuildError(null);
+    const result = await buildFullReport(state.property);
+    setBuilding(false);
+    if ('report' in result) {
+      setFinalReport(result.report);
+      update({ finalReportId: result.report.id, view: 'final' });
+    } else {
+      setBuildError(result.error);
+    }
+  };
+  const reset = () => { setFinalReport(null); setState(null); };
 
   useEffect(() => { saveResearch(state); }, [state]);
 
@@ -51,8 +72,24 @@ export const HouseResearchTool: React.FC<Props> = ({ onNavigate, onQuickReport }
   const viewKey = state ? `${state.view}-${state.setupStep}-${state.era.solved}-${state.permits.stage}` : 'start';
   useEffect(() => { window.scrollTo(0, 0); }, [viewKey]);
 
+  if (state?.view === 'final') {
+    return (
+      <FinalReportView state={state} update={update} report={finalReport} setReport={setFinalReport} onReset={reset}
+        findings={<ResearchFindings state={state} compact />} />
+    );
+  }
+
   return (
     <div ref={topRef} className="min-h-screen bg-home-stone font-sans text-home-ink pb-24">
+      {building && (
+        <div className="fixed inset-0 z-50 bg-home-ink/70 backdrop-blur-sm flex items-center justify-center p-6" role="status">
+          <div className="rounded-3xl bg-white p-8 max-w-sm text-center space-y-3 shadow-2xl">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto text-home-moss" />
+            <p className="font-bold text-lg">Building your report</p>
+            <p className="text-sm text-slate-600">Adding the neighborhood profile and the rest of the free report to what you found.</p>
+          </div>
+        </div>
+      )}
       <div className="border-b border-home-linen bg-white/70 print:hidden">
         <nav aria-label="Breadcrumb" className="max-w-2xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-1.5 text-xs text-slate-500 font-medium">
           <ContentLink href="/" onNavigate={onNavigate} className="hover:text-home-ink">Before Regret</ContentLink>
@@ -70,9 +107,9 @@ export const HouseResearchTool: React.FC<Props> = ({ onNavigate, onQuickReport }
         ) : state.view === 'permits' ? (
           <PermitView state={state} update={update} onNavigate={onNavigate} />
         ) : state.view === 'report' ? (
-          <ReportView state={state} update={update} />
+          <ReportView state={state} update={update} onFinish={finish} error={buildError} hasFinal={!!state.finalReportId} />
         ) : (
-          <PlanView state={state} update={update} onReset={() => setState(null)} />
+          <PlanView state={state} update={update} onReset={reset} />
         )}
       </main>
     </div>
@@ -291,6 +328,9 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
         </div>
       </div>
 
+      {state.finalReportId && (
+        <button type="button" className={btnPrimary} onClick={() => update({ view: 'final' })}>Open your full report <ArrowRight className="w-4 h-4" /></button>
+      )}
       {done > 0 && (
         <button type="button" className={btnGhost} onClick={() => update({ view: 'report' })}>See your report so far</button>
       )}
@@ -454,26 +494,12 @@ const CopyList: React.FC<{ title: string; lines: string[] }> = ({ title, lines }
   );
 };
 
-const ReportView: React.FC<{ state: ResearchState; update: Updater }> = ({ state, update }) => {
+/** The visitor's own findings. Used on "your report so far" and, compact, at the top of the full report. */
+export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolean }> = ({ state, compact }) => {
   const p = state.property;
   const { checklist, permitRows, seller, verify } = collectFindings(state);
-  const dl = daysLeft(state.deadline);
-  const live = QUESTIONS.filter((q) => q.live);
-  const open = live.filter((q) => !isSolved(state, q.id));
-  const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-
   return (
-    <section className="space-y-7">
-      <div className="print:hidden"><BackToPlan update={update} /></div>
-      <div className="space-y-2">
-        <p className={eyebrow}>Your research report</p>
-        <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">What you found out about {p.displayName || p.formattedAddress}</h1>
-        <p className="text-sm text-slate-500">
-          {[p.county, p.state].filter(Boolean).join(', ')} · {today} · Built {p.yearBuilt} (your answer)
-          {dl !== null && dl >= 0 ? ` · ${dl} day${dl === 1 ? '' : 's'} to your deadline` : ''}
-        </p>
-      </div>
-
+    <div className="space-y-7">
       <div className="space-y-2">
         <h2 className="text-lg font-bold">At a glance</h2>
         <div className={`${card} divide-y divide-home-linen !py-2`}>
@@ -510,7 +536,7 @@ const ReportView: React.FC<{ state: ResearchState; update: Updater }> = ({ state
         </div>
       )}
 
-      {checklist.length > 0 && (
+      {checklist.length > 0 && !compact && (
         <div className="space-y-2">
           <h2 className="text-lg font-bold"><span className={`${eyebrow} block`}>Check</span>Your list for a house built in {p.yearBuilt}</h2>
           <div className="space-y-2.5">
@@ -533,6 +559,7 @@ const ReportView: React.FC<{ state: ResearchState; update: Updater }> = ({ state
         <h2 className="text-lg font-bold"><span className={`${eyebrow} block`}>Ask</span>Questions, ready to send</h2>
         <CopyList title="For the seller" lines={seller} />
         <CopyList title="Your checklist, to share with your agent or inspector" lines={checklist.map((i) => `${i.title}: ${i.howToCheck}`)} />
+        {compact && checklist.length > 0 && <p className="text-xs text-slate-500">Costs and details for each one are in “Inspection priorities” below.</p>}
       </div>
 
       {verify.length > 0 && (
@@ -542,13 +569,44 @@ const ReportView: React.FC<{ state: ResearchState; update: Updater }> = ({ state
         </div>
       )}
 
-      {open.length > 0 && <p className="text-sm text-slate-600">{open.length} question{open.length === 1 ? '' : 's'} still open. Answer {open.length === 1 ? 'it' : 'them'} and {open.length === 1 ? 'it shows' : 'they show'} up here.</p>}
-
       <div className="rounded-2xl bg-white/70 border border-home-linen p-5 text-sm text-slate-600 leading-relaxed">
-        <b className="text-home-ink">What this report is.</b> It records what you found in official records and what you chose to follow up, plus what was
+        <b className="text-home-ink">What this part is.</b> It records what you found in official records and what you chose to follow up, plus what was
         typical for homes of this age and area. It isn’t an inspection and doesn’t judge this particular house. The year built is your answer; check it against the listing
-        or the county’s records.
+        or the county’s records. Your answers are saved only on this device.
       </div>
+    </div>
+  );
+};
+
+const ReportView: React.FC<{ state: ResearchState; update: Updater; onFinish: () => void; error: string | null; hasFinal: boolean }> = ({ state, update, onFinish, error, hasFinal }) => {
+  const p = state.property;
+  const dl = daysLeft(state.deadline);
+  const live = QUESTIONS.filter((q) => q.live);
+  const open = live.filter((q) => !isSolved(state, q.id));
+  const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  return (
+    <section className="space-y-7">
+      <div className="print:hidden"><BackToPlan update={update} /></div>
+      <div className="space-y-2">
+        <p className={eyebrow}>Your research so far</p>
+        <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">What you found out about {p.displayName || p.formattedAddress}</h1>
+        <p className="text-sm text-slate-500">
+          {[p.county, p.state].filter(Boolean).join(', ')} · {today} · Built {p.yearBuilt} (your answer)
+          {dl !== null && dl >= 0 ? ` · ${dl} day${dl === 1 ? '' : 's'} to your deadline` : ''}
+        </p>
+      </div>
+
+      <ResearchFindings state={state} />
+
+      {open.length > 0 && <p className="text-sm text-slate-600">{open.length} question{open.length === 1 ? '' : 's'} still open. You can answer {open.length === 1 ? 'it' : 'them'} first, or finish now.</p>}
+
+      {error && <p role="alert" className="rounded-2xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-900">{error}</p>}
+      {hasFinal ? (
+        // The full report reads these findings live from the device, so it is never rebuilt (each build counts
+        // toward the daily report limit).
+        <button type="button" className={btnPrimary} onClick={() => update({ view: 'final' })}>Open your full report <ArrowRight className="w-4 h-4" /></button>
+      ) : <FinishCard onFinish={onFinish} />}
 
       <button type="button" className={`${btnGhost} print:hidden`} onClick={() => window.print()}>
         <Printer className="w-4 h-4" /> Print or save as PDF
@@ -556,3 +614,13 @@ const ReportView: React.FC<{ state: ResearchState; update: Updater }> = ({ state
     </section>
   );
 };
+
+/** The button that builds the full free report. The assent notice sits directly under it (see ReportAssentNotice). */
+const FinishCard: React.FC<{ onFinish: () => void }> = ({ onFinish }) => (
+  <div className={`${card} space-y-3 print:hidden`}>
+    <h2 className="font-bold text-lg">Ready for your full report?</h2>
+    <p className="text-sm text-slate-600">We’ll add what the free report covers: the neighborhood’s Census profile, inspection priorities and seller questions for a house like this, and the records to pull. Your findings go at the top.</p>
+    <button type="button" className={btnPrimary} onClick={onFinish}>Build my full report <ArrowRight className="w-4 h-4" /></button>
+    <ReportAssentNotice />
+  </div>
+);

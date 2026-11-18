@@ -14,6 +14,11 @@ import { SellerQuestions } from './SellerQuestions';
 interface PropertyReportViewProps {
   report: PropertyReport;
   onNewSearch: () => void;
+  /**
+   * Guided research tool (unpublished): the visitor's own findings, shown first. They live on the visitor's
+   * device and are never part of the saved report, so a shared /insights/ link shows the area report only.
+   */
+  researchSection?: { label: string; title: string; node: React.ReactNode };
 }
 
 // Column span for the last tile of the 2-column (phone) / 4-column (sm and up) metrics grid, so the row it ends is full.
@@ -25,7 +30,7 @@ function lastTileSpan(count: number): string {
   return [phone, sm || (phone ? 'sm:col-span-1' : '')].filter(Boolean).join(' ');
 }
 
-export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, onNewSearch }) => {
+export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, onNewSearch, researchSection }) => {
   const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
@@ -145,6 +150,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
   ].filter(Boolean);
 
   const sections = [
+    researchSection && { id: 'section-your-research', label: researchSection.label },
     resolvedFindings.length > 0 && { id: 'section-findings', label: 'Neighborhood' },
     priorityCount > 0 && { id: 'section-inspection-priorities', label: `Inspection priorities (${priorityCount})` },
     questionCount > 0 && { id: 'section-seller-questions', label: `Seller questions (${questionCount})` },
@@ -288,6 +294,13 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
         {/* Moving Company is the one trade category not tied to any specific finding or inspection
             topic (see PropertyReport.movingCompanyVendors in types.ts), so it gets a fixed slot right
             below the address. Renders nothing when no vendor has bought it. */}
+        {researchSection && (
+          <section id="section-your-research" className="scroll-mt-20 bg-white border border-slate-200 rounded-2xl p-5 sm:p-7">
+            <SectionHeader icon={<FileSearch className="w-5 h-5 text-blue-600 shrink-0" />} title={researchSection.title} />
+            {researchSection.node}
+          </section>
+        )}
+
         <SponsoredVendorCards vendors={report.movingCompanyVendors} />
 
         {/* Neighborhood: the live lookup(s). Hidden when nothing was checked live (2026-10-06): a

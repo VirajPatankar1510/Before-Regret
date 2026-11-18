@@ -15,7 +15,7 @@ export const RESEARCH_PATH = '/tools/house-research/';
 const STORAGE_KEY = 'br-house-research-v1';
 
 export type BuyingStage = 'looking' | 'offer' | 'contract';
-export type ResearchView = 'setup' | 'plan' | 'era' | 'permits' | 'report';
+export type ResearchView = 'setup' | 'plan' | 'era' | 'permits' | 'report' | 'final';
 
 export const WORK = {
   roof: 'Roof',
@@ -60,6 +60,8 @@ export interface ResearchState {
   claims: WorkKey[];
   era: { picked: string[] | null; solved: boolean };
   permits: PermitsState;
+  /** The saved free report built at the end (an /insights/ id). The findings themselves never leave the device. */
+  finalReportId?: string;
 }
 
 function todayIso(): string {

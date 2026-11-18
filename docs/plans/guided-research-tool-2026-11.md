@@ -45,6 +45,11 @@ Owner's flagship idea. Prototype: https://claude.ai/artifact/6ma9YB48uexEnNEnDdk
 
 1. **Entry and plan**: the two-button choice in the address step, the tool route, the three quick questions (stage, deadline, seller's claimed updates), the plan screen with area data, and the era question.
 2. **Permits and the final report**: the permit question with the database, the report (Check / Ask / Verify), print/save.
+   **Built 2026-11-18 (branch):** permit question for every US address (see `permit-coverage-usa-2026-11.md`); final report = the
+   standard free report from `/api/property/generate-report` (same gate, same engine) with the visitor's findings first as
+   "Your research" (`FinalReport.tsx`, `PropertyReportView` `researchSection` prop). Findings stay on the device and are read live,
+   so the report is built once per house and never rebuilt (each build counts toward the daily limit). The assent notice sits
+   under "Build my full report". Tested on a local server with DATABASE_URL empty so no test report reached production.
 3. **Insurance, lead pipe, Decoder**, each browser-verified.
 4. **Launch prep**: funnel tracking (started, details done, first question solved, report finished), phone and desktop checks, accessibility pass, copy pass against the voice guide, owner review of the whole flow.
 
