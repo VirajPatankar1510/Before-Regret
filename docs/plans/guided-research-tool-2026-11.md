@@ -156,6 +156,14 @@ claimed; report built on the no-DB build in 7s), fixed the same day:
 - Not changed: the age question is still one item per screen (owner's call), and the legal notice still shows in the
   pop-up and above "Get my report".
 
+**One count for the whole flow (owner, 2026-11-19: "make it like it's one single flow without any confusion").**
+"Question 1 of 5", "1 of 12 things to check" and "Step 1 of 3" were three different counters. Now every screen from
+"Where are you with this house?" to the last question shows one bar and "Step n of N" (`flowStep` in
+`researchState.ts`, `FlowHeader` in `ui.tsx`); Back always goes one step back, across parts too (`backFrom`).
+"Skip this part for now" sits under the main button. The era intro line was removed, and "Why", "What to do" and
+"What this means" are now bold headings (`BoxLabel`) instead of small grey labels. From the summary, a question opens
+at its first screen with "All questions" in the header and no count. Tampa, under contract, two seller claims: 25 steps.
+
 Homepage (owner approved): one short line under each hero button, "Step by step, with what to do next" and
 "Everything at once, in seconds" (quick report timed at 1.2-4.2s on the no-DB build, 2026-11-18). Labels unchanged.
 

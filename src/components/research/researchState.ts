@@ -246,6 +246,42 @@ export function advance(s: ResearchState, from?: QuestionId): Pick<ResearchState
   const next = order.slice(from ? order.indexOf(from) + 1 : 0).find((id) => !isSolved(s, id));
   return next ? { view: next, reachedEnd: false } : { view: 'plan', reachedEnd: true };
 }
+/** One count for the whole flow (owner, 2026-11-19: "Question 1 of 5" next to "1 of 12 things to check" and "Step 1
+ *  of 3" was confusing). Every screen from "Where are you with this house?" to the last question is one step. */
+export type FlowPart = 'setup' | QuestionId;
+export function partSize(s: ResearchState, part: FlowPart): number {
+  if (part === 'setup') return s.stage === 'looking' ? 2 : 3;
+  if (part === 'era') return eraItems(s.property)?.items.length || 1;
+  if (part === 'permits') return 1 + permitItems(s).length;
+  if ((MISSION_IDS as string[]).includes(part)) return MISSIONS[part as MissionId].screens.length;
+  return 1;
+}
+export function flowStep(s: ResearchState, part: FlowPart, inner: number): { n: number; total: number } | null {
+  const parts: FlowPart[] = ['setup', ...flowOrder(s)];
+  const i = parts.indexOf(part);
+  if (i < 0) return null;
+  const before = parts.slice(0, i).reduce((a, p) => a + partSize(s, p), 0);
+  const total = parts.reduce((a, p) => a + partSize(s, p), 0);
+  return { n: before + Math.min(Math.max(inner, 0), partSize(s, part) - 1) + 1, total };
+}
+/** Opening a part from the summary starts it at its first screen (an answered permit question opens on its answers). */
+export function openPart(s: ResearchState, part: QuestionId): Partial<ResearchState> {
+  if (part === 'era') return { view: 'era', era: { ...s.era, step: 0 } };
+  if (part === 'permits') return { view: 'permits', permits: { ...s.permits, step: 0, stage: isSolved(s, 'permits') ? 'record' : 'how' } };
+  const m = s.missions?.[part as MissionId];
+  return { view: part, ...(m ? { missions: { ...s.missions, [part]: { ...m, step: 0 } } } : {}) };
+}
+/** Back from the first screen of a part lands on the last screen of the part before it, so the count only moves by one. */
+export function backFrom(s: ResearchState, part: QuestionId): Partial<ResearchState> {
+  const parts: FlowPart[] = ['setup', ...flowOrder(s)];
+  const prev = parts[parts.indexOf(part) - 1];
+  if (!prev || prev === 'setup') return { view: 'setup', setupStep: 2 };
+  const last = partSize(s, prev) - 1;
+  if (prev === 'era') return { view: 'era', era: { ...s.era, step: last } };
+  if (prev === 'permits') return { view: 'permits', permits: { ...s.permits, stage: 'record', step: last - 1 } };
+  return { view: prev, missions: { ...s.missions, [prev]: { ...(s.missions?.[prev as MissionId] || { stage: 'how', ans: {} }), step: last } } };
+}
+
 /** Copy written for a visitor with a deadline, reworded when they have none (walk-through 2026-11-18: "Just looking"
  *  visitors were told to act "before your inspection or option period ends"). Order matters: longest phrases first. */
 const NO_DEADLINE: [RegExp, string][] = [

@@ -8,7 +8,7 @@ import {
   GENERAL_PERMITS_GUIDE, OPEN_PERMITS_GUIDE, advance, itemLabel, listOf, permitItems, permitMeaning,
   type OfficeSnapshot, type PermitFinding, type PermitItemKey, type ResearchState,
 } from './researchState';
-import { Choice, FlowHeader, Progress, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
+import { BoxLabel, Choice, FlowHeader, SkipPart, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
 
 // The permit question (Stage 2 of docs/plans/guided-research-tool-2026-11.md; coverage plan
 // docs/plans/permit-coverage-usa-2026-11.md). Every address gets the likely office from Census boundaries;
@@ -89,7 +89,7 @@ export const PermitView: React.FC<{ state: ResearchState; update: Updater; onNav
   if (!answer) {
     return (
       <section className="space-y-5">
-        <FlowHeader state={state} id="permits" update={update} />
+        <FlowHeader state={state} part="permits" inner={0} update={update} />
         <div className="flex items-center gap-3 text-slate-600 py-10 justify-center"><Loader2 className="w-5 h-5 animate-spin" /> Finding who keeps the permits for this address…</div>
       </section>
     );
@@ -139,8 +139,7 @@ const Where: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, s
 
   return (
     <section className="space-y-5">
-      <FlowHeader state={state} id="permits" update={update} />
-      <Progress n={1} total={1 + items.length} label="Where to search" />
+      <FlowHeader state={state} part="permits" inner={0} update={update} />
       <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">Did anyone pull a permit?</h1>
       <p className="text-slate-600">A nice-looking job doesn’t tell you whether it was approved. The records do. Look up {what}.</p>
 
@@ -223,6 +222,7 @@ const Where: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, s
       <button type="button" className={btnPrimary} onClick={() => setPermits({ stage: 'record', step: 0, office: snapshot(answer) })}>
         Next <ArrowRight className="w-4 h-4" />
       </button>
+      <SkipPart state={state} part="permits" update={update} />
     </section>
   );
 };
@@ -256,12 +256,7 @@ const Record: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, 
 
   return (
     <section className="space-y-5">
-      <div className="flex items-center justify-between">
-        <button type="button" onClick={() => setPermits(i > 0 ? { step: i - 1 } : { stage: 'how' })} className="text-sm font-semibold text-slate-600 hover:text-home-ink cursor-pointer">
-          ← {i > 0 ? 'Previous' : 'Where to search'}
-        </button>
-      </div>
-      <Progress n={i + 2} total={1 + items.length} label={items.length > 1 ? `What you found · ${i + 1} of ${items.length}` : 'What you found'} />
+      <FlowHeader state={state} part="permits" inner={1 + i} update={update} onBack={() => setPermits(i > 0 ? { step: i - 1 } : { stage: 'how' })} />
       <h1 id={`pq-${k}`} className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">
         {k === 'any' ? 'Did you find any permits on record?' : `${itemLabel(k)}: did you find a permit?`}
       </h1>
@@ -282,13 +277,13 @@ const Record: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, 
       )}
       {a.found === 'no' && tip && (
         <div className="rounded-2xl border border-home-oak bg-white p-4 text-sm">
-          <span className="block font-bold mb-1">Before you count it as missing</span>
+          <BoxLabel>Before you count it as missing</BoxLabel>
           {tip.replace(/\.?$/, '.')}
         </div>
       )}
       {m && (
         <div className={`rounded-2xl p-4 ${m.tone === 'good' ? 'bg-home-sage/60' : m.tone === 'ask' ? 'bg-amber-50' : 'bg-home-stone'}`}>
-          <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">What this means</span>
+          <BoxLabel>What this means</BoxLabel>
           {m.text}
           {m.openPermitsLink && <> <ContentLink href={OPEN_PERMITS_GUIDE} onNavigate={onNavigate} className="font-semibold underline">How open permits get resolved</ContentLink>.</>}
         </div>
@@ -296,6 +291,7 @@ const Record: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, 
       <button type="button" className={btnPrimary} disabled={!m} onClick={() => (last ? finish() : setPermits({ step: i + 1 }))}>
         {last ? <>Done <Check className="w-4 h-4" /></> : <>Next <ArrowRight className="w-4 h-4" /></>}
       </button>
+      <SkipPart state={state} part="permits" update={update} />
     </section>
   );
 };

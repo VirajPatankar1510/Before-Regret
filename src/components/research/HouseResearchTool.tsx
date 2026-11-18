@@ -6,7 +6,7 @@ import type { PropertySearchResult } from '../../types';
 import { AddressSearchBox } from '../AddressSearchBox';
 import { ContentLink } from '../home/ContentLink';
 import {
-  QUESTIONS, WORK, advance, collectFindings, flowOrder, countedQuestions, forDeadline, waitsForInspection, itemLabel, daysLeft, eraItems, formatShortDate, freshResearch, isSolved,
+  QUESTIONS, WORK, advance, openPart, collectFindings, flowOrder, countedQuestions, forDeadline, waitsForInspection, itemLabel, daysLeft, eraItems, formatShortDate, freshResearch, isSolved,
   loadResearch, saveResearch,
   type BuyingStage, type EraItem, type QuestionId, type ResearchState, type WorkKey,
 } from './researchState';
@@ -17,7 +17,7 @@ import { FinalReportView, buildFullReport } from './FinalReport';
 import { ReportAssentNotice } from '../ReportAssentNotice';
 import type { PropertyReport } from '../../types';
 import { reportCtaClick, type CtaId } from '../../utils/ctaClickBeacon';
-import { BackToPlan, FlowHeader, btnGhost, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
+import { BackToPlan, BoxLabel, FlowHeader, SkipPart, btnGhost, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
 
 // Guided research tool -- UNPUBLISHED (owner, 2026-11-18: "don't publish until our entire tool is ready").
 // Stage 1: setup questions, the plan, and the era question. Plan: docs/plans/guided-research-tool-2026-11.md.
@@ -155,14 +155,6 @@ const StartView: React.FC<{ onStart: (p: PropertySearchResult) => void; onQuickR
 // ---------------------------------------------------------------------------------------------------------------
 
 
-const Dots: React.FC<{ at: number; of: number }> = ({ at, of }) => (
-  <div className="flex gap-1.5" aria-hidden="true">
-    {Array.from({ length: of }, (_, i) => (
-      <span key={i} className={`h-1.5 flex-1 rounded-full transition-colors ${i <= at ? 'bg-home-moss' : 'bg-home-linen'}`} />
-    ))}
-  </div>
-);
-
 const SetupView: React.FC<{ state: ResearchState; update: Updater }> = ({ state, update }) => {
   const n = state.setupStep;
   // "Just looking" has no deadline yet, so that screen is skipped (walk-through 2026-11-18).
@@ -177,15 +169,8 @@ const SetupView: React.FC<{ state: ResearchState; update: Updater }> = ({ state,
 
   return (
     <section className="space-y-6">
-      <div className="flex items-center justify-between">
-        {n > 0 ? (
-          <button type="button" onClick={back} className="inline-flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-home-ink cursor-pointer">
-            <ArrowLeft className="w-4 h-4" /> Back
-          </button>
-        ) : <span className="text-sm text-slate-500 truncate max-w-[70%]">{state.property.displayName}</span>}
-        <span className="text-sm text-slate-500">{at + 1} of {order.length}</span>
-      </div>
-      <Dots at={at} of={order.length} />
+      <FlowHeader state={state} part="setup" inner={at} update={update} onBack={at > 0 ? back : undefined}
+        left={<span className="text-sm text-slate-500 truncate max-w-[60%]">{state.property.displayName}</span>} />
 
       {n === 0 && (
         <div className="space-y-4">
@@ -304,10 +289,10 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
           {state.reachedEnd ? (
             <>
               <GetReport onFinish={onFinish} error={error} update={update} label="Get my report" />
-              <button type="button" className={btnGhost} onClick={() => update({ view: firstOpen!, reachedEnd: false })}>Answer the skipped {live.length - done === 1 ? 'question' : 'questions'}</button>
+              <button type="button" className={btnGhost} onClick={() => update((s) => ({ ...openPart(s, firstOpen!), reachedEnd: false }))}>Answer the skipped {live.length - done === 1 ? 'question' : 'questions'}</button>
             </>
           ) : (
-            <button type="button" className={btnPrimary} onClick={() => update({ view: firstOpen!, reachedEnd: false })}>Continue <ArrowRight className="w-4 h-4" /></button>
+            <button type="button" className={btnPrimary} onClick={() => update((s) => ({ ...openPart(s, firstOpen!), reachedEnd: false }))}>Continue <ArrowRight className="w-4 h-4" /></button>
           )}
         </div>
       )}
@@ -375,7 +360,7 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
               </>
             );
             return q.live ? (
-              <button key={q.id} type="button" onClick={() => update({ view: q.id })}
+              <button key={q.id} type="button" onClick={() => update((s) => openPart(s, q.id))}
                 className="w-full text-left flex gap-3 rounded-2xl border border-home-linen bg-white p-4 hover:border-home-oak transition-colors cursor-pointer">
                 {inner}
               </button>
@@ -447,25 +432,20 @@ const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (pa
 
   return (
     <section className="space-y-5">
-      <FlowHeader state={state} id="era" update={update}
+      <FlowHeader state={state} part="era" inner={step} update={update}
         onBack={step > 0 ? () => update((s) => ({ era: { ...s.era, step: step - 1 } })) : undefined} />
-      <div className="h-1.5 rounded-full bg-home-linen overflow-hidden" role="progressbar" aria-valuemin={1} aria-valuemax={seq.length} aria-valuenow={step + 1} aria-label="Progress">
-        <div className="h-full bg-home-moss transition-all" style={{ width: `${((step + 1) / seq.length) * 100}%` }} />
-      </div>
-      <p className="text-xs text-slate-500 !mt-2">{step + 1} of {seq.length} things to check</p>
-      {step === 0 && <p className="text-slate-600">Things worth checking on a house built in {year}, one at a time. The ones you add go on a checklist in your report, ready to share with your inspector or agent.</p>}
       <p className={eyebrow}>{label}</p>
       <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">{item.title}</h1>
       <div className={`${card} space-y-4`}>
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Why</p>
+          <BoxLabel>Why</BoxLabel>
           <p className="leading-relaxed">{why}</p>
           {rest && (more
             ? <p className="mt-2 text-sm text-slate-600 leading-relaxed">{rest}</p>
             : <button type="button" className={`${linkBtn} mt-2`} onClick={() => setMore(true)}>Tell me more</button>)}
         </div>
         <div className="rounded-2xl bg-home-sage/50 border border-home-sage p-4">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-home-moss mb-1">What to do</p>
+          <BoxLabel className="text-home-moss">What to do</BoxLabel>
           <p className="leading-relaxed">{item.howToCheck}</p>
         </div>
       </div>
@@ -483,6 +463,7 @@ const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (pa
           className="inline-flex items-center justify-center rounded-2xl border border-home-linen bg-white text-home-ink font-bold px-3 py-3.5 hover:border-home-oak transition-colors cursor-pointer">No, leave it off</button>
         </div>
       </div>
+      <SkipPart state={state} part="era" update={update} />
       <p className="text-xs text-slate-500">From Before Regret’s inspection guide, the same one behind our free report. It describes homes of this age and area, not this particular house.</p>
     </section>
   );

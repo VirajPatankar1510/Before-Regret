@@ -2,7 +2,7 @@ import React from 'react';
 import { ArrowRight, Check, ExternalLink } from 'lucide-react';
 import { MISSIONS, type Choice as ChoiceDef, type HowStep, type MissionId, type Source } from './missions';
 import { advance, forDeadline, type MissionState, type ResearchState } from './researchState';
-import { Choice, FlowHeader, Progress, btnPrimary, card, type Updater } from './ui';
+import { BoxLabel, Choice, FlowHeader, SkipPart, btnPrimary, card, type Updater } from './ui';
 
 // One screen for the Stage 3 questions (insurance, water line, inspection report). All text comes from missions.ts.
 // Step by step (owner, 2026-11-18: one thing at a time): each screen shows one action and, where there is one, the
@@ -22,7 +22,7 @@ const SourceLine: React.FC<{ source: Source }> = ({ source }) => (
 
 const MeaningBox: React.FC<{ choice: ChoiceDef; t: (x: string) => string }> = ({ choice, t }) => (
   <div className={`rounded-2xl p-4 ${choice.meaning.tone === 'good' ? 'bg-home-sage/60' : choice.meaning.tone === 'ask' ? 'bg-amber-50' : 'bg-home-stone'}`}>
-    <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">What this means</span>
+    <BoxLabel>What this means</BoxLabel>
     {t(choice.meaning.text)}
   </div>
 );
@@ -74,12 +74,7 @@ export const MissionView: React.FC<{ id: MissionId; state: ResearchState; update
 
   return (
     <section className="space-y-5">
-      {i === 0 ? <FlowHeader state={state} id={id} update={update} /> : (
-        <div className="flex items-center justify-between">
-          <button type="button" onClick={() => set({ step: i - 1 })} className="text-sm font-semibold text-slate-600 hover:text-home-ink cursor-pointer">← Previous</button>
-        </div>
-      )}
-      {screens.length > 1 && <Progress n={i + 1} total={screens.length} label={`Step ${i + 1} of ${screens.length}`} />}
+      <FlowHeader state={state} part={id} inner={i} update={update} onBack={i > 0 ? () => set({ step: i - 1 }) : undefined} />
       <p className="text-sm font-semibold text-slate-500">{def.h1}</p>
       <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance] !mt-1">{t(screen.title)}</h1>
       {i === 0 && <p className="text-slate-600">{t(def.intro)}</p>}
@@ -110,6 +105,7 @@ export const MissionView: React.FC<{ id: MissionId; state: ResearchState; update
       <button type="button" className={btnPrimary} disabled={!!q && picked.length === 0} onClick={() => (last ? finish() : set({ step: i + 1 }))}>
         {last ? <>Done <Check className="w-4 h-4" /></> : <>Next <ArrowRight className="w-4 h-4" /></>}
       </button>
+      <SkipPart state={state} part={id} update={update} />
     </section>
   );
 };
