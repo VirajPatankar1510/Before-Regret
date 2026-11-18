@@ -397,6 +397,43 @@ export async function createApp() {
   // Map geocoding & tile proxy (LocationIQ exclusive)
   // Keeps the API key server-side only. All map search, reverse geocoding, and map tiles
   // are served exclusively via LocationIQ.
+  // LocationIQ allows only a couple of requests per second on our key, shared by every visitor. The
+  // address box asks for suggestions while someone types and then sends the SAME query again when they
+  // submit, often inside that second, and the 429 surfaced as "Address lookup is temporarily
+  // unavailable" (owner report, 2026-11-18; reproduced: 2 of 6 parallel requests got 429). So: answers
+  // are cached briefly per instance (the submit is usually a repeat of the last suggestion query), and
+  // a 429 is retried after a short wait instead of being passed straight to the visitor.
+  const geoCache = new Map<string, { at: number; status: number; body: unknown }>();
+  const GEO_TTL_MS = 15 * 60 * 1000;
+  const GEO_CACHE_MAX = 500;
+  async function locationIq(path: "search" | "reverse", params: URLSearchParams): Promise<{ status: number; body: unknown }> {
+    const cacheKey = `${path}?${params.toString()}`; // built before the key is added: the key never sits in the cache
+    const hit = geoCache.get(cacheKey);
+    if (hit && Date.now() - hit.at < GEO_TTL_MS) return hit;
+    const withKey = new URLSearchParams(params);
+    withKey.set("key", process.env.LOCATIONIQ_API_KEY || "");
+    const waits = [0, 700, 1500];
+    let status = 0;
+    let body: unknown = null;
+    for (const wait of waits) {
+      if (wait) await new Promise((r) => setTimeout(r, wait));
+      const upstream = await fetch(`https://us1.locationiq.com/v1/${path}?${withKey.toString()}`);
+      status = upstream.status;
+      if (upstream.ok) {
+        body = await upstream.json();
+        break;
+      }
+      // LocationIQ answers "no result" with a 404; that is an answer, not a failure to retry.
+      if (status !== 429 && status < 500) break;
+    }
+    const out = { at: Date.now(), status, body };
+    if (status === 200) {
+      if (geoCache.size >= GEO_CACHE_MAX) geoCache.delete(geoCache.keys().next().value as string);
+      geoCache.set(cacheKey, out);
+    }
+    return out;
+  }
+
   app.get("/api/geocode/search", async (req, res) => {
     const { q, limit, addressdetails, countrycodes } = req.query;
     if (!q || typeof q !== "string") {
@@ -412,8 +449,7 @@ export async function createApp() {
 
     try {
       const params = new URLSearchParams({
-        key: apiKey,
-        q,
+        q: q.trim().replace(/\s+/g, " "),
         format: "json",
         addressdetails: (addressdetails as string) || "1",
         limit: (limit as string) || "5",
@@ -421,13 +457,12 @@ export async function createApp() {
       if (countrycodes && typeof countrycodes === "string") {
         params.set("countrycodes", countrycodes);
       }
-      const upstream = await fetch(`https://us1.locationiq.com/v1/search?${params.toString()}`);
-      if (!upstream.ok) {
-        res.status(upstream.status).json({ error: "Map search provider error." });
+      const { status, body } = await locationIq("search", params);
+      if (status !== 200) {
+        res.status(status || 502).json({ error: "Map search provider error." });
         return;
       }
-      const data = await upstream.json();
-      res.json(data);
+      res.json(body);
     } catch (err) {
       console.error("[LocationIQ Search Proxy Error]:", err);
       res.status(502).json({ error: "Map search is temporarily unavailable." });
@@ -449,20 +484,18 @@ export async function createApp() {
 
     try {
       const params = new URLSearchParams({
-        key: apiKey,
         lat: lat as string,
         lon: lon as string,
         format: "json",
         addressdetails: "1",
         zoom: "18",
       });
-      const upstream = await fetch(`https://us1.locationiq.com/v1/reverse?${params.toString()}`);
-      if (!upstream.ok) {
-        res.status(upstream.status).json({ error: "Map search provider error." });
+      const { status, body } = await locationIq("reverse", params);
+      if (status !== 200) {
+        res.status(status || 502).json({ error: "Map search provider error." });
         return;
       }
-      const data = await upstream.json();
-      res.json(data);
+      res.json(body);
     } catch (err) {
       console.error("[LocationIQ Reverse Proxy Error]:", err);
       res.status(502).json({ error: "Map search is temporarily unavailable." });
