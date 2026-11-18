@@ -52,12 +52,15 @@ export interface PermitsState {
   /** Census lookup result, cached on the device; undefined = not looked up yet, null = lookup failed. */
   authority?: PermitAuthority | null;
   office: OfficeSnapshot | null;
-  /** Screen within the stage: in 'how', 0 = who keeps the permits, 1 = where to search; in 'record', the job index. */
+  /** In 'record', which job is on screen. */
   step?: number;
+  /** Answered. Kept apart from the stage, so opening an answered question to change it never un-answers it.
+   *  (Progress saved before 2026-11-18 marks it with stage 'solved' instead.) */
+  done?: boolean;
 }
 
 /** Stage 3 questions (missions.ts): which step, and the visitor's picks per record question. */
-export interface MissionState { stage: 'how' | 'record' | 'solved'; ans: Record<string, string[]> }
+export interface MissionState { stage: 'how' | 'record' | 'solved'; ans: Record<string, string[]>; done?: boolean }
 
 export interface ResearchState {
   v: 1;
@@ -68,8 +71,8 @@ export interface ResearchState {
   stage: BuyingStage | null;
   deadline: string; // yyyy-mm-dd or ''
   claims: WorkKey[];
-  /** step: undefined = intro, 0..n-1 = one item each, n = review. withAny: the "any home" items were added to the walk. */
-  era: { picked: string[] | null; solved: boolean; step?: number; withAny?: boolean };
+  /** step: which item is on screen (one item per screen, "any home" items last). */
+  era: { picked: string[] | null; solved: boolean; step?: number };
   permits: PermitsState;
   missions: Partial<Record<MissionId, MissionState>>;
   /** The saved free report built at the end (an /insights/ id). The findings themselves never leave the device. */
@@ -205,8 +208,9 @@ export const QUESTIONS: QuestionDef[] = [
 
 export function isSolved(s: ResearchState, id: QuestionId): boolean {
   if (id === 'era') return s.era.solved;
-  if (id === 'permits') return s.permits.stage === 'solved';
-  return s.missions?.[id]?.stage === 'solved';
+  if (id === 'permits') return !!s.permits.done || s.permits.stage === 'solved';
+  const m = s.missions?.[id];
+  return !!m && (!!m.done || m.stage === 'solved');
 }
 
 // ---- The permit question: fixed text chosen by the visitor's answers (no AI) ----
@@ -298,7 +302,7 @@ export function collectFindings(s: ResearchState) {
   const era = eraItems(s.property);
   const checklist = s.era.solved && era ? era.items.filter((i) => (s.era.picked ?? era.items.filter((x) => x.group !== 'any').map((x) => x.id)).includes(i.id)) : [];
   const permitRows: { key: PermitItemKey; meaning: PermitMeaning }[] = [];
-  if (s.permits.stage === 'solved') {
+  if (isSolved(s, 'permits')) {
     for (const k of permitItems(s)) {
       const m = permitMeaning(k, s.permits.ans[k], s.permits.office);
       if (m) permitRows.push({ key: k, meaning: m });
@@ -317,7 +321,7 @@ export function missionFindings(s: ResearchState): { id: MissionId; title: strin
   const out: { id: MissionId; title: string; rows: { key: string; meaning: Meaning }[] }[] = [];
   for (const id of MISSION_IDS) {
     const st = s.missions?.[id];
-    if (st?.stage !== 'solved') continue;
+    if (!st || !isSolved(s, id)) continue;
     const def = MISSIONS[id];
     const rows: { key: string; meaning: Meaning }[] = [];
     for (const q of def.record) {

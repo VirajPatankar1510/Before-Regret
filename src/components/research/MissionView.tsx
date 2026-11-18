@@ -1,8 +1,8 @@
 import React from 'react';
-import { ArrowRight, ExternalLink } from 'lucide-react';
+import { ArrowRight, Check, ExternalLink } from 'lucide-react';
 import { MISSIONS, type Choice, type MissionId, type Source } from './missions';
 import type { MissionState, ResearchState } from './researchState';
-import { BackToPlan, SolvedBadge, btnGhost, btnPrimary, card, eyebrow, type Updater } from './ui';
+import { BackToPlan, btnPrimary, card, type Updater } from './ui';
 
 // One screen for the Stage 3 questions (insurance, water line, inspection report). Same three steps as the permit
 // question: where to look, what you found, solved. All text comes from missions.ts.
@@ -38,19 +38,9 @@ export const MissionView: React.FC<{ id: MissionId; state: ResearchState; update
   const ms: MissionState = state.missions?.[id] || { stage: 'how', ans: {} };
   const set = (patch: Partial<MissionState>) => update((s) => ({ missions: { ...s.missions, [id]: { ...(s.missions?.[id] || { stage: 'how', ans: {} }), ...patch } } }));
 
-  if (ms.stage === 'solved') {
-    return (
-      <section className="space-y-6">
-        <BackToPlan update={update} />
-        <SolvedBadge />
-        <p className="text-center text-slate-600">It’s in your report, with the questions to send.</p>
-        <button type="button" className={btnPrimary} onClick={() => update({ view: 'plan' })}>Back to your questions <ArrowRight className="w-4 h-4" /></button>
-        <button type="button" className={btnGhost} onClick={() => set({ stage: 'record' })}>Change my answer</button>
-      </section>
-    );
-  }
-
-  if (ms.stage === 'record') {
+  // An answered question opens on its answers (stage 'solved' is progress saved before 2026-11-18). No "Solved"
+  // screen: Done goes straight back to the questions (owner, 2026-11-18).
+  if (ms.stage === 'record' || ms.stage === 'solved') {
     const complete = def.record.every((q) => (ms.ans[q.id] || []).length > 0);
     const pick = (qid: string, cid: string, multi?: boolean) => {
       const cur = ms.ans[qid] || [];
@@ -81,8 +71,9 @@ export const MissionView: React.FC<{ id: MissionId; state: ResearchState; update
             </div>
           );
         })}
-        <button type="button" className={btnPrimary} disabled={!complete} onClick={() => set({ stage: 'solved' })}>
-          Add to my report <ArrowRight className="w-4 h-4" />
+        <button type="button" className={btnPrimary} disabled={!complete}
+          onClick={() => update((s) => ({ missions: { ...s.missions, [id]: { ...ms, stage: 'record', done: true } }, view: 'plan' }))}>
+          Done <Check className="w-4 h-4" />
         </button>
       </section>
     );
@@ -116,7 +107,7 @@ export const MissionView: React.FC<{ id: MissionId; state: ResearchState; update
         ))}
       </ol>
       <button type="button" className={btnPrimary} onClick={() => set({ stage: 'record' })}>
-        I’ve looked. Here’s what I found <ArrowRight className="w-4 h-4" />
+        Next <ArrowRight className="w-4 h-4" />
       </button>
     </section>
   );

@@ -8,7 +8,7 @@ import {
   GENERAL_PERMITS_GUIDE, OPEN_PERMITS_GUIDE, itemLabel, listOf, permitItems, permitMeaning,
   type OfficeSnapshot, type PermitFinding, type PermitItemKey, type ResearchState,
 } from './researchState';
-import { BackToPlan, SolvedBadge, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
+import { BackToPlan, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
 
 // The permit question (Stage 2 of docs/plans/guided-research-tool-2026-11.md; coverage plan
 // docs/plans/permit-coverage-usa-2026-11.md). Every address gets the likely office from Census boundaries;
@@ -95,85 +95,42 @@ export const PermitView: React.FC<{ state: ResearchState; update: Updater; onNav
     );
   }
 
-  if (p.stage === 'solved') return <Solved state={state} update={update} setPermits={setPermits} onNavigate={onNavigate} />;
-  if (p.stage === 'record') return <Record state={state} update={update} setPermits={setPermits} onNavigate={onNavigate} answer={answer} />;
-  return <How state={state} update={update} setPermits={setPermits} onNavigate={onNavigate} answer={answer} />;
+  // An answered question opens on the answers (stage 'solved' is progress saved before 2026-11-18).
+  if (p.stage === 'record' || p.stage === 'solved') return <Record state={state} update={update} setPermits={setPermits} onNavigate={onNavigate} answer={answer} />;
+  return <Where state={state} update={update} setPermits={setPermits} onNavigate={onNavigate} answer={answer} />;
 };
 
 type SubProps = { state: ResearchState; update: Updater; setPermits: (patch: Partial<ResearchState['permits']>) => void; onNavigate: (path: string) => void };
 
 // ---------------------------------------------------------------------------------------------------------------
-// Step by step (owner, 2026-11-18: the permit question "feels overwhelming, make it step by step"): 1 who keeps the
-// permits, 2 where to search, 3 what you found, one job per screen. permits.step holds the screen within a stage.
+// Step by step (owner, 2026-11-18): one screen for where to search (who keeps the permits sits at its top), then one
+// screen per job. "Next" moves on, "Done" finishes and goes back to the questions. No "Solved" screen.
 
-const Steps: React.FC<{ n: 1 | 2 | 3; label: string }> = ({ n, label }) => (
+const Progress: React.FC<{ n: number; total: number; label: string }> = ({ n, total, label }) => (
   <div className="space-y-2">
-    <div className="flex gap-1.5" role="progressbar" aria-valuemin={1} aria-valuemax={3} aria-valuenow={n} aria-label="Progress">
-      {[1, 2, 3].map((i) => <div key={i} className={`h-1.5 flex-1 rounded-full ${i <= n ? 'bg-home-moss' : 'bg-home-linen'}`} />)}
+    <div className="flex gap-1.5" role="progressbar" aria-valuemin={1} aria-valuemax={total} aria-valuenow={n} aria-label="Progress">
+      {Array.from({ length: total }, (_, i) => <div key={i} className={`h-1.5 flex-1 rounded-full ${i < n ? 'bg-home-moss' : 'bg-home-linen'}`} />)}
     </div>
-    <p className={eyebrow}>Step {n} of 3 · {label}</p>
+    <p className={eyebrow}>{label}</p>
   </div>
 );
 
-const BackRow: React.FC<{ label: string; onClick: () => void; right?: string }> = ({ label, onClick, right }) => (
-  <div className="flex items-center justify-between">
-    <button type="button" onClick={onClick} className="text-sm font-semibold text-slate-600 hover:text-home-ink cursor-pointer">← {label}</button>
-    {right && <span className="text-sm text-slate-500">{right}</span>}
-  </div>
+const Numbered: React.FC<{ steps: React.ReactNode[] }> = ({ steps }) => (
+  <ol className="space-y-3">
+    {steps.map((body, i) => (
+      <li key={i} className="flex gap-3">
+        <span className="w-6 h-6 shrink-0 rounded-full bg-home-stone text-home-brass text-xs font-bold flex items-center justify-center">{i + 1}</span>
+        <div className="min-w-0">{body}</div>
+      </li>
+    ))}
+  </ol>
 );
 
-const How: React.FC<SubProps & { answer: PermitAnswer }> = (props) =>
-  (props.state.permits.step ?? 0) === 0 ? <Who {...props} /> : <Where {...props} />;
-
-const Who: React.FC<SubProps & { answer: PermitAnswer }> = ({ update, setPermits, answer }) => {
-  const [why, setWhy] = useState(false);
+const Where: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, setPermits, onNavigate, answer }) => {
+  const [whyOffice, setWhyOffice] = useState(false);
   const r = answer.record;
   const dept = shown<string>(r, 'buildingDepartment');
   const servedElsewhere = answer.matched && r && answer.matched.id !== r.id;
-  const sn = answer.stateNotes;
-  return (
-    <section className="space-y-5">
-      <BackToPlan update={update} right="About 10 minutes" />
-      <Steps n={1} label="Who keeps the permits" />
-      <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">Did anyone pull a permit?</h1>
-      <p className="text-slate-600">A nice-looking job doesn’t tell you whether it was approved. The records do. First, who keeps them.</p>
-
-      <div className={`${card} space-y-3`}>
-        {answer.officeLabel ? (
-          <>
-            <p className="text-lg">This address is most likely handled by <b>{answer.officeLabel}</b>.</p>
-            {dept && <p className="text-sm">{servedElsewhere ? 'Its permits are kept by ' : 'Department: '}<b>{dept.value}</b>{servedElsewhere ? '.' : ''}<Status status={dept.status} checkedOn={dept.checkedOn} limits={'limits' in dept ? dept.limits : undefined} /></p>}
-            {why ? (
-              <p className="text-xs text-slate-500 flex gap-1.5"><Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                Based on U.S. Census boundaries for this address, not the mailing city. Boundaries can miss recent annexations, and some towns have the county or a private company handle permits. If the office says the address isn’t theirs, ask who handles it.
-              </p>
-            ) : (
-              <button type="button" className={linkBtn} onClick={() => setWhy(true)}>How do we know?</button>
-            )}
-          </>
-        ) : (
-          <p>We couldn’t look up the boundaries for this address just now. Usually it’s the city if the house is inside city limits, and the county if it isn’t. The county’s website can tell you which.</p>
-        )}
-      </div>
-
-      {(sn?.outsideCityLimits || sn?.nearCityLimits) && (
-        <div className="rounded-2xl bg-home-stone/60 border border-home-linen p-4 space-y-2 text-sm">
-          <p className="font-bold">Good to know in {sn.stateName}</p>
-          {sn.outsideCityLimits && <p>{sn.outsideCityLimits.value}<Status status={sn.outsideCityLimits.status} checkedOn={sn.outsideCityLimits.checkedOn} limits={'limits' in sn.outsideCityLimits ? sn.outsideCityLimits.limits : undefined} /></p>}
-          {sn.nearCityLimits && <p>{sn.nearCityLimits.value}<Status status={sn.nearCityLimits.status} checkedOn={sn.nearCityLimits.checkedOn} limits={'limits' in sn.nearCityLimits ? sn.nearCityLimits.limits : undefined} /></p>}
-          {(sn.outsideCityLimits?.note || sn.nearCityLimits?.note) && <p className="text-xs text-slate-500">Source: {[sn.outsideCityLimits?.note, sn.nearCityLimits?.note].filter(Boolean).join(' ')}</p>}
-        </div>
-      )}
-
-      <button type="button" className={btnPrimary} onClick={() => setPermits({ step: 1 })}>
-        Next: where to search <ArrowRight className="w-4 h-4" />
-      </button>
-    </section>
-  );
-};
-
-const Where: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, setPermits, onNavigate, answer }) => {
-  const r = answer.record;
   const portal = shown<{ name: string; platform?: string }>(r, 'currentPortal');
   const url = shown<string>(r, 'portalUrl');
   const searchBy = shown<SearchBy>(r, 'searchBy');
@@ -186,58 +143,69 @@ const Where: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, setPermit
   const items = permitItems(state);
   const what = state.claims.length ? `the ${listOf(items.map((k) => itemLabel(k).toLowerCase()))}` : 'any permits on the house';
   const searchWays = searchBy?.value ? [searchBy.value.address && 'address', searchBy.value.parcel && 'parcel number', searchBy.value.permitNumber && 'permit number'].filter(Boolean) as string[] : [];
-  const toRecord = (ans?: Partial<Record<PermitItemKey, PermitFinding>>) =>
-    setPermits({ stage: 'record', step: 0, office: snapshot(answer), ...(ans ? { ans } : {}) });
 
   return (
     <section className="space-y-5">
-      <BackRow label="Who keeps them" onClick={() => setPermits({ step: 0 })} />
-      <Steps n={2} label="Where to search" />
-      <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">Look up {what}</h1>
+      <BackToPlan update={update} right="About 10 minutes" />
+      <Progress n={1} total={1 + items.length} label="Where to search" />
+      <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">Did anyone pull a permit?</h1>
+      <p className="text-slate-600">A nice-looking job doesn’t tell you whether it was approved. The records do. Look up {what}.</p>
 
-      {url ? (
-        <>
-          <div>
-            <a href={url.value} target="_blank" rel="noopener noreferrer"
-              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-home-ink bg-white text-home-ink font-bold text-base px-5 py-4 hover:bg-home-stone transition-colors">
-              Open {portal?.value.name || 'the permit search'} <ExternalLink className="w-4 h-4" />
-            </a>
-            <Status status={url.status} checkedOn={url.checkedOn} limits={'limits' in url ? url.limits : undefined} />
-          </div>
-          <div className={`${card} space-y-3`}>
-            <p className="font-bold">How to search</p>
-            <ol className="space-y-3">
-              {[
-                searchWays.length > 0 ? <>Search by {searchWays.length > 1 ? `${searchWays.slice(0, -1).join(', ')} or ${searchWays[searchWays.length - 1]}` : searchWays[0]}.{searchBy?.value.quirks?.length ? <ul className="list-disc pl-5 mt-1.5 space-y-1 text-sm text-slate-600">{searchBy.value.quirks.map((q) => <li key={q}>{q}</li>)}</ul> : null}</> : <>Search by the street address. If nothing comes up, try just the street name.</>,
-                <>Look for {what}. Note the permit number, and whether it says finaled, closed or completed.</>,
-              ].map((body, i) => (
-                <li key={i} className="flex gap-3">
-                  <span className="w-6 h-6 shrink-0 rounded-full bg-home-stone text-home-brass text-xs font-bold flex items-center justify-center">{i + 1}</span>
-                  <div className="min-w-0">{body}</div>
-                </li>
-              ))}
-            </ol>
+      <div className={`${card} space-y-3`}>
+        {answer.officeLabel ? (
+          <>
+            <p>The permits for this address are most likely kept by <b>{answer.officeLabel}</b>.</p>
+            {dept && <p className="text-sm">{servedElsewhere ? 'Its permits are kept by ' : 'Department: '}<b>{dept.value}</b>{servedElsewhere ? '.' : ''}<Status status={dept.status} checkedOn={dept.checkedOn} limits={'limits' in dept ? dept.limits : undefined} /></p>}
+            {whyOffice ? (
+              <p className="text-xs text-slate-500 flex gap-1.5"><Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                Based on U.S. Census boundaries for this address, not the mailing city. Boundaries can miss recent annexations, and some towns have the county or a private company handle permits. If the office says the address isn’t theirs, ask who handles it.
+              </p>
+            ) : (
+              <button type="button" className={`${linkBtn} text-xs`} onClick={() => setWhyOffice(true)}>How do we know?</button>
+            )}
+          </>
+        ) : (
+          <p>We couldn’t look up the boundaries for this address just now. Usually it’s the city if the house is inside city limits, and the county if it isn’t. The county’s website can tell you which.</p>
+        )}
+
+        {url ? (
+          <div className="pt-1 space-y-4">
+            <div>
+              <a href={url.value} target="_blank" rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-home-ink bg-white text-home-ink font-bold text-base px-5 py-3.5 hover:bg-home-stone transition-colors">
+                Open {portal?.value.name || 'the permit search'} <ExternalLink className="w-4 h-4" />
+              </a>
+              <Status status={url.status} checkedOn={url.checkedOn} limits={'limits' in url ? url.limits : undefined} />
+            </div>
+            <Numbered steps={[
+              searchWays.length > 0
+                ? <>Search by {searchWays.length > 1 ? `${searchWays.slice(0, -1).join(', ')} or ${searchWays[searchWays.length - 1]}` : searchWays[0]}.{searchBy?.value.quirks?.length ? <ul className="list-disc pl-5 mt-1.5 space-y-1 text-sm text-slate-600">{searchBy.value.quirks.map((q) => <li key={q}>{q}</li>)}</ul> : null}</>
+                : <>Search by the street address. If nothing comes up, try just the street name.</>,
+              <>Look for {what}. Note the permit number, and whether it says finaled, closed or completed.</>,
+            ]} />
             {tested && <p className="text-sm text-slate-600"><b>When we tried it:</b> {tested.value}<Status status={tested.status} checkedOn={tested.checkedOn} limits={'limits' in tested ? tested.limits : undefined} /></p>}
             {online && <p className="text-sm text-slate-600"><b>Online records start:</b> {online.value}<Status status={online.status} checkedOn={online.checkedOn} limits={'limits' in online ? online.limits : undefined} /></p>}
             {!tested && <p className="text-sm text-slate-600">We’ve checked the link but haven’t run an address search here yet.</p>}
           </div>
-        </>
-      ) : (
-        <div className={`${card} space-y-3`}>
-          {answer.level === 'general' && <p className="text-sm text-slate-600">{OWNER_NOT_RESEARCHED}</p>}
-          <ol className="space-y-3">
-            {[
+        ) : (
+          <div className="pt-1 space-y-3">
+            {answer.level === 'general' && <p className="text-sm text-slate-600">{OWNER_NOT_RESEARCHED}</p>}
+            <Numbered steps={[
               <>Search the web for <b>“{answer.officeLabel ? `${answer.officeLabel.replace(/^the /, '')} building permit search` : 'your county building permit search'}”</b> and open the result on the government’s own website.</>,
               <>Search by the street address. If nothing comes up, try just the street name, or the parcel number from the county assessor’s record.</>,
               <>No online search, or nothing found? Call or email the building department and ask for the permit history for the address, including any open or expired permits.</>,
-            ].map((body, i) => (
-              <li key={i} className="flex gap-3">
-                <span className="w-6 h-6 shrink-0 rounded-full bg-home-stone text-home-brass text-xs font-bold flex items-center justify-center">{i + 1}</span>
-                <div className="min-w-0">{body}</div>
-              </li>
-            ))}
-          </ol>
-          <ContentLink href={GENERAL_PERMITS_GUIDE} onNavigate={onNavigate} className={linkBtn}>Our guide to finding building permits by address</ContentLink>
+            ]} />
+            <ContentLink href={GENERAL_PERMITS_GUIDE} onNavigate={onNavigate} className={linkBtn}>Our guide to finding building permits by address</ContentLink>
+          </div>
+        )}
+      </div>
+
+      {(sn?.outsideCityLimits || sn?.nearCityLimits) && (
+        <div className="rounded-2xl bg-home-stone/60 border border-home-linen p-4 space-y-2 text-sm">
+          <p className="font-bold">Good to know in {sn.stateName}</p>
+          {sn.outsideCityLimits && <p>{sn.outsideCityLimits.value}<Status status={sn.outsideCityLimits.status} checkedOn={sn.outsideCityLimits.checkedOn} limits={'limits' in sn.outsideCityLimits ? sn.outsideCityLimits.limits : undefined} /></p>}
+          {sn.nearCityLimits && <p>{sn.nearCityLimits.value}<Status status={sn.nearCityLimits.status} checkedOn={sn.nearCityLimits.checkedOn} limits={'limits' in sn.nearCityLimits ? sn.nearCityLimits.limits : undefined} /></p>}
+          {(sn.outsideCityLimits?.note || sn.nearCityLimits?.note) && <p className="text-xs text-slate-500">Source: {[sn.outsideCityLimits?.note, sn.nearCityLimits?.note].filter(Boolean).join(' ')}</p>}
         </div>
       )}
 
@@ -253,14 +221,9 @@ const Where: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, setPermit
         </details>
       )}
 
-      <button type="button" className={btnPrimary} onClick={() => toRecord()}>
-        I’ve looked. Next: what I found <ArrowRight className="w-4 h-4" />
+      <button type="button" className={btnPrimary} onClick={() => setPermits({ stage: 'record', step: 0, office: snapshot(answer) })}>
+        Next <ArrowRight className="w-4 h-4" />
       </button>
-      <div className="text-center">
-        <button type="button" className={linkBtn} onClick={() => { const ans: Partial<Record<PermitItemKey, PermitFinding>> = {}; for (const k of items) ans[k] = { found: 'cant' }; toRecord(ans); }}>
-          I can’t search right now
-        </button>
-      </div>
     </section>
   );
 };
@@ -277,7 +240,7 @@ const Choice: React.FC<{ on: boolean; onClick: () => void; children: React.React
   </button>
 );
 
-const Record: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, setPermits, onNavigate }) => {
+const Record: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, setPermits, onNavigate }) => {
   const items = permitItems(state);
   const ans = state.permits.ans;
   const i = Math.min(state.permits.step ?? 0, items.length - 1);
@@ -286,12 +249,16 @@ const Record: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, setPermi
   const m = permitMeaning(k, a, state.permits.office);
   const set = (f: PermitFinding) => setPermits({ ans: { ...ans, [k]: f } });
   const last = i === items.length - 1;
+  const finish = () => update((s) => ({ permits: { ...s.permits, stage: 'record', step: 0, done: true }, view: 'plan' }));
 
   return (
     <section className="space-y-5">
-      <BackRow label={i > 0 ? 'Previous' : 'Where to search'} onClick={() => setPermits(i > 0 ? { step: i - 1 } : { stage: 'how', step: 1 })}
-        right={items.length > 1 ? `${i + 1} of ${items.length}` : undefined} />
-      <Steps n={3} label="What you found" />
+      <div className="flex items-center justify-between">
+        <button type="button" onClick={() => setPermits(i > 0 ? { step: i - 1 } : { stage: 'how' })} className="text-sm font-semibold text-slate-600 hover:text-home-ink cursor-pointer">
+          ← {i > 0 ? 'Previous' : 'Where to search'}
+        </button>
+      </div>
+      <Progress n={i + 2} total={1 + items.length} label={items.length > 1 ? `What you found · ${i + 1} of ${items.length}` : 'What you found'} />
       <h1 id={`pq-${k}`} className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">
         {k === 'any' ? 'Did you find any permits on record?' : `${itemLabel(k)}: did you find a permit?`}
       </h1>
@@ -317,38 +284,9 @@ const Record: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, setPermi
           {m.openPermitsLink && <> <ContentLink href={OPEN_PERMITS_GUIDE} onNavigate={onNavigate} className="font-semibold underline">How open permits get resolved</ContentLink>.</>}
         </div>
       )}
-      <button type="button" className={btnPrimary} disabled={!m} onClick={() => setPermits(last ? { stage: 'solved' } : { step: i + 1 })}>
-        {last ? 'Add to my report' : 'Next'} <ArrowRight className="w-4 h-4" />
+      <button type="button" className={btnPrimary} disabled={!m} onClick={() => (last ? finish() : setPermits({ step: i + 1 }))}>
+        {last ? <>Done <Check className="w-4 h-4" /></> : <>Next <ArrowRight className="w-4 h-4" /></>}
       </button>
-    </section>
-  );
-};
-
-// ---------------------------------------------------------------------------------------------------------------
-
-const Solved: React.FC<SubProps> = ({ state, update, setPermits }) => {
-  const items = permitItems(state);
-  const office = state.permits.office;
-  const rows = items.map((k) => ({ k, m: permitMeaning(k, state.permits.ans[k], office) })).filter((r) => r.m);
-  const toAsk = rows.filter((r) => r.m!.seller).length;
-  return (
-    <section className="space-y-6">
-      <SolvedBadge />
-      <p className="text-center text-slate-600 text-lg">You know where this house’s permits are kept and what to ask about them.</p>
-      <div className={`${card} space-y-4`}>
-        {[
-          ['What you checked', rows.map((r) => `${itemLabel(r.k)}: ${r.m!.found.toLowerCase()}`).join('. ') + '.'],
-          ['Where', [office?.label && `Most likely ${office.label}`, office?.portalName].filter(Boolean).join(', ') || 'The local building department'],
-          ['What to do with it', toAsk ? `${toAsk} question${toAsk === 1 ? '' : 's'} for the seller, ready in your report.` : 'Nothing to chase. Keep the permit numbers with your files.'],
-        ].map(([label, text]) => (
-          <div key={label} className="flex gap-3">
-            <Check className="w-5 h-5 text-home-moss shrink-0 mt-0.5" />
-            <div><span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">{label}</span><p>{text}</p></div>
-          </div>
-        ))}
-      </div>
-      <button type="button" className={btnPrimary} onClick={() => update({ view: 'plan' })}>On to the next one <ArrowRight className="w-4 h-4" /></button>
-      <div className="text-center"><button type="button" className={linkBtn} onClick={() => setPermits({ stage: 'record', step: 0 })}>Change my answers</button></div>
     </section>
   );
 };

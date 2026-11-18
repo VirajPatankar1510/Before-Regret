@@ -17,7 +17,7 @@ import { FinalReportView, buildFullReport } from './FinalReport';
 import { ReportAssentNotice } from '../ReportAssentNotice';
 import type { PropertyReport } from '../../types';
 import { reportCtaClick, type CtaId } from '../../utils/ctaClickBeacon';
-import { BackToPlan, SolvedBadge, btnGhost, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
+import { BackToPlan, btnGhost, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
 
 // Guided research tool -- UNPUBLISHED (owner, 2026-11-18: "don't publish until our entire tool is ready").
 // Stage 1: setup questions, the plan, and the era question. Plan: docs/plans/guided-research-tool-2026-11.md.
@@ -232,7 +232,7 @@ const SetupView: React.FC<{ state: ResearchState; update: Updater }> = ({ state,
       )}
 
       <button type="button" className={btnPrimary} onClick={next} disabled={n === 0 && !state.stage}>
-        {n < 2 ? 'Continue' : 'Show me what to check'} <ArrowRight className="w-4 h-4" />
+        {n < 2 ? 'Next' : 'Show me what to check'} <ArrowRight className="w-4 h-4" />
       </button>
     </section>
   );
@@ -364,9 +364,9 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
 
 // ---------------------------------------------------------------------------------------------------------------
 
-// The era question, one item at a time (owner, 2026-11-18: the all-at-once list with checkboxes "feels very
-// overwhelming ... I want it to be step-by-step, one at a time, very easy to understand"). Intro → one screen per
-// item (why in one line, what to do, add or skip) → a short review. "Any home" items are offered after the review.
+// The era question, one item at a time (owner, 2026-11-18: the all-at-once checkbox list "feels very overwhelming").
+// Then (same day): no intro, no review and no "Solved" screen ("remove additional steps ... which do not serve any
+// purpose"), and the same two plain buttons on every item. The last answer goes straight back to the questions.
 
 /** The first sentence of the engine's explanation; the rest sits behind "Tell me more". */
 function splitWhy(text: string): [string, string] {
@@ -375,19 +375,47 @@ function splitWhy(text: string): [string, string] {
   return [first, text.slice(first.length).trim()];
 }
 
-const EraStep: React.FC<{
-  item: EraItem; label: string; n: number; total: number; on: boolean;
-  update: Updater; onAdd: () => void; onSkip: () => void; onPrev: () => void;
-}> = ({ item, label, n, total, on, update, onAdd, onSkip, onPrev }) => {
+const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (path: string) => void }> = ({ state, update }) => {
+  const year = state.property.yearBuilt as number;
+  const era = useMemo(() => eraItems(state.property), [state.property]);
+  const items = era?.items || [];
+  // Age and area first; "worth doing for any home" (radon, chimney) last.
+  const seq = [...items.filter((i) => i.group !== 'any'), ...items.filter((i) => i.group === 'any')];
+  const step = Math.max(0, Math.min(state.era.step ?? 0, seq.length - 1));
   const [more, setMore] = useState(false);
-  useEffect(() => setMore(false), [item.id]);
+  useEffect(() => setMore(false), [step]);
+
+  if (!era || !seq.length) {
+    return (
+      <section className="space-y-5">
+        <BackToPlan update={update} />
+        <p className="text-slate-600">We couldn’t match the year built to our inspection guide. Go back and check the year you entered.</p>
+      </section>
+    );
+  }
+
+  const item = seq[step];
+  const picked = state.era.picked ?? [];
+  const on = picked.includes(item.id);
+  const last = step === seq.length - 1;
+  const decide = (add: boolean) => {
+    const base = picked.filter((x) => x !== item.id);
+    const next = add ? [...base, item.id] : base;
+    if (last) update((s) => ({ era: { ...s.era, picked: next, solved: true, step: 0 }, view: 'plan' }));
+    else update((s) => ({ era: { ...s.era, picked: next, step: step + 1 } }));
+  };
+  // No cost figures in the tool (2026-11-18): the engine's cost ranges aren't traced to sources yet (plan doc).
+  const label = item.group === 'era' ? `Common in homes built around ${year}`
+    : item.group === 'area' ? `Applies in ${state.property.state}` : 'Worth doing for any home';
   const [why, rest] = splitWhy(item.eraBasis);
+
   return (
     <section className="space-y-5">
-      <BackToPlan update={update} right={`${n} of ${total}`} />
-      <div className="h-1.5 rounded-full bg-home-linen overflow-hidden" role="progressbar" aria-valuemin={1} aria-valuemax={total} aria-valuenow={n} aria-label="Progress">
-        <div className="h-full bg-home-moss transition-all" style={{ width: `${(n / total) * 100}%` }} />
+      <BackToPlan update={update} right={`${step + 1} of ${seq.length}`} />
+      <div className="h-1.5 rounded-full bg-home-linen overflow-hidden" role="progressbar" aria-valuemin={1} aria-valuemax={seq.length} aria-valuenow={step + 1} aria-label="Progress">
+        <div className="h-full bg-home-moss transition-all" style={{ width: `${((step + 1) / seq.length) * 100}%` }} />
       </div>
+      {step === 0 && <p className="text-slate-600">Things worth checking on a house built in {year}, one at a time. Add the ones you want to your list.</p>}
       <p className={eyebrow}>{label}</p>
       <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">{item.title}</h1>
       <div className={`${card} space-y-4`}>
@@ -403,133 +431,17 @@ const EraStep: React.FC<{
           <p className="leading-relaxed">{item.howToCheck}</p>
         </div>
       </div>
-      <div className="space-y-2.5">
-        <button type="button" className={btnPrimary} onClick={onAdd}>
-          {on ? <><Check className="w-4 h-4" /> On my list. Next</> : <>Add to my list <ArrowRight className="w-4 h-4" /></>}
+      {/* Pinned to the bottom so the choice is always on a phone's first screen, however long the item. */}
+      <div className="sticky bottom-0 z-10 -mx-4 sm:mx-0 px-4 sm:px-0 py-3 bg-home-stone/95 backdrop-blur grid grid-cols-2 gap-2.5">
+        <button type="button" aria-pressed={on} onClick={() => decide(true)}
+          className={`inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-2xl bg-home-ink text-white font-bold px-3 py-3.5 hover:bg-home-navy transition-colors cursor-pointer ${on ? 'ring-2 ring-home-moss ring-offset-2 ring-offset-home-stone' : ''}`}>
+          {on && <Check className="w-4 h-4" />}Add to my list
         </button>
-        <button type="button" className={btnGhost} onClick={onSkip}>{on ? 'Take it off my list' : 'Skip this one'}</button>
+        <button type="button" onClick={() => decide(false)}
+          className="inline-flex items-center justify-center rounded-2xl border border-home-linen bg-white text-home-ink font-bold px-3 py-3.5 hover:border-home-oak transition-colors cursor-pointer">Skip</button>
       </div>
-      <button type="button" className={linkBtn} onClick={onPrev}>← {n === 1 ? 'Back' : 'Previous'}</button>
-      <p className="text-xs text-slate-500">From Before Regret’s inspection guide. It describes homes of this age and area, not this particular house.</p>
-    </section>
-  );
-};
-
-const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (path: string) => void }> = ({ state, update }) => {
-  const year = state.property.yearBuilt as number;
-  const era = useMemo(() => eraItems(state.property), [state.property]);
-  const items = era?.items || [];
-  const main = items.filter((i) => i.group !== 'any');
-  const any = items.filter((i) => i.group === 'any');
-  const withAny = !!state.era.withAny;
-  const seq = withAny ? [...main, ...any] : main;
-  const picked = state.era.picked ?? [];
-  const step = state.era.step === undefined ? -1 : Math.min(state.era.step, seq.length);
-  const setEra = (patch: Partial<ResearchState['era']>) => update((s) => ({ era: { ...s.era, ...patch } }));
-  const decide = (id: string, add: boolean) => {
-    const base = (state.era.picked ?? []).filter((x) => x !== id);
-    setEra({ picked: add ? [...base, id] : base, step: step + 1 });
-  };
-  // No cost figures in the tool (2026-11-18): the engine's cost ranges aren't traced to sources yet (plan doc).
-  // No "free" or "usually included" claims either: they come from the same unsourced cost field.
-  const label = (i: EraItem) => i.group === 'era' ? `Common in homes built around ${year}`
-    : i.group === 'area' ? `Applies in ${state.property.state}` : 'Worth doing for any home';
-
-  if (!era) {
-    return (
-      <section className="space-y-5">
-        <BackToPlan update={update} />
-        <p className="text-slate-600">We couldn’t match the year built to our inspection guide. Go back and check the year you entered.</p>
-      </section>
-    );
-  }
-
-  if (state.era.solved) {
-    const chosen = items.filter((i) => picked.includes(i.id));
-    return (
-      <section className="space-y-6">
-        <SolvedBadge />
-        <p className="text-center text-slate-600 text-lg">You know what to check on a house from {year}, and what to do next.</p>
-        {chosen.length > 0 && (
-          <div className={`${card} space-y-2`}>
-            <p className={eyebrow}>Added to your report</p>
-            <ul className="space-y-1.5">
-              {chosen.map((i) => <li key={i.id} className="flex gap-2 text-sm"><Check className="w-4 h-4 text-home-moss shrink-0 mt-0.5" />{i.title}</li>)}
-            </ul>
-          </div>
-        )}
-        <button type="button" className={btnPrimary} onClick={() => update({ view: 'plan' })}>On to the next one <ArrowRight className="w-4 h-4" /></button>
-        <div className="text-center">
-          <button type="button" className={linkBtn} onClick={() => setEra({ solved: false, step: seq.length })}>Change my list</button>
-        </div>
-      </section>
-    );
-  }
-
-  // Intro.
-  if (step < 0) {
-    return (
-      <section className="space-y-5">
-        <BackToPlan update={update} right="About 3 minutes" />
-        <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">What should I ask about a house built in {year}?</h1>
-        <p className="text-lg text-slate-700">{main.length} things are worth checking for a house like this. We’ll go through them one at a time.</p>
-        <div className={card}>
-          <p className="font-bold mb-3">For each one, you’ll see:</p>
-          <ol className="space-y-2.5">
-            {['Why it matters, in a line', 'What to do about it', 'A choice: add it to your list, or skip it'].map((t, i) => (
-              <li key={t} className="flex gap-3 items-start">
-                <span className="w-6 h-6 shrink-0 rounded-full bg-home-stone text-home-brass text-xs font-bold flex items-center justify-center">{i + 1}</span>
-                <span>{t}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-        <p className="text-xs text-slate-500">From Before Regret’s inspection guide, the same one behind our free report. It describes homes of this age and area, not this particular house.</p>
-        <button type="button" className={btnPrimary} onClick={() => setEra({ step: 0 })}>Show me the first one <ArrowRight className="w-4 h-4" /></button>
-      </section>
-    );
-  }
-
-  // One item.
-  if (step < seq.length) {
-    const item = seq[step];
-    return (
-      <EraStep item={item} label={label(item)} n={step + 1} total={seq.length} on={picked.includes(item.id)} update={update}
-        onAdd={() => decide(item.id, true)} onSkip={() => decide(item.id, false)}
-        onPrev={() => setEra({ step: step - 1 })} />
-    );
-  }
-
-  // Review.
-  const chosen = seq.filter((i) => picked.includes(i.id));
-  return (
-    <section className="space-y-5">
-      <BackToPlan update={update} />
-      <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight">That’s all {seq.length}.</h1>
-      <p className="text-lg text-slate-700">
-        {chosen.length === 0 ? 'You didn’t add any. That’s fine. You can go back and add one any time.'
-          : `You added ${chosen.length} to your list.`}
-      </p>
-      {chosen.length > 0 && (
-        <div className={card}>
-          <ul className="space-y-2">
-            {chosen.map((i) => <li key={i.id} className="flex gap-2"><Check className="w-5 h-5 text-home-moss shrink-0 mt-0.5" />{i.title}</li>)}
-          </ul>
-        </div>
-      )}
-      {!withAny && any.length > 0 && (
-        <div className="rounded-2xl bg-home-stone p-4 space-y-2">
-          <p>{any.length === 1 ? 'One more is' : `${any.length} more are`} worth doing for any home, whatever its age:</p>
-          <ul className="list-disc pl-5 text-sm space-y-1">{any.map((i) => <li key={i.id}>{i.title}</li>)}</ul>
-          <button type="button" className={linkBtn} onClick={() => setEra({ withAny: true, step: main.length })}>Show me {any.length === 1 ? 'that one' : `those ${any.length}`}</button>
-        </div>
-      )}
-      <button type="button" className={btnPrimary} onClick={() => setEra({ solved: true })}>
-        {chosen.length ? <>Add {chosen.length} to my report <ArrowRight className="w-4 h-4" /></> : <>Done <ArrowRight className="w-4 h-4" /></>}
-      </button>
-      <div className="text-center">
-        <button type="button" className={linkBtn} onClick={() => setEra({ step: 0 })}>Go back through them</button>
-      </div>
+      {step > 0 && <button type="button" className={linkBtn} onClick={() => update((s) => ({ era: { ...s.era, step: step - 1 } }))}>← Previous</button>}
+      <p className="text-xs text-slate-500">From Before Regret’s inspection guide, the same one behind our free report. It describes homes of this age and area, not this particular house.</p>
     </section>
   );
 };
