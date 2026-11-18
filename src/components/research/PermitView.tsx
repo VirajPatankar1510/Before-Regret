@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ArrowRight, Check, ExternalLink, Info, Loader2 } from 'lucide-react';
 import { ContentLink } from '../home/ContentLink';
 import type { PermitAuthority } from '../../data/permitRecords/authority';
+import type { PropertySearchResult } from '../../types';
 import type { HistoricalSystem, SearchBy } from '../../data/permitRecords/schema';
 import { answerFor, loadPermitIndex, shown, type PermitAnswer } from './permitAnswer';
 import {
@@ -53,21 +54,20 @@ function snapshot(ans: PermitAnswer): OfficeSnapshot {
 // Each step is its own screen (the tool remounts <main> per screen for the fade-in), so the answer is kept per house
 // here: later steps render at once instead of flashing the "Finding who keeps the permits" loader.
 const answerCache = new Map<string, PermitAnswer>();
+const pending = new Map<string, Promise<PermitAnswer>>();
+const keyOf = (p: PropertySearchResult) => `${p.lat},${p.lon}`;
 
-export const PermitView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (path: string) => void }> = ({ state, update, onNavigate }) => {
-  const houseKey = `${state.property.lat},${state.property.lon}`;
-  const [answer, setAnswer] = useState<PermitAnswer | null>(() => answerCache.get(houseKey) ?? null);
-  const p = state.permits;
-  const setPermits = (patch: Partial<ResearchState['permits']>) => update((s) => ({ permits: { ...s.permits, ...patch } }));
-
-  // Look up the likely office once per house (cached on the device), then match it against our database.
-  useEffect(() => {
-    if (answerCache.has(houseKey)) return;
-    let cancelled = false;
-    (async () => {
-      let authority: PermitAuthority | null | undefined = p.authority;
+/** Looks up the likely office once per house (the Census result is kept on the device through `onAuthority`), then
+ *  matches it against our database. Started as soon as research begins (HouseResearchTool), so the permit question
+ *  usually opens with its answer ready. */
+export function preparePermitAnswer(property: PropertySearchResult, known: PermitAuthority | null | undefined, onAuthority: (a: PermitAuthority | null) => void): Promise<PermitAnswer> {
+  const key = keyOf(property);
+  let job = pending.get(key);
+  if (!job) {
+    job = (async () => {
+      let authority = known;
       if (authority === undefined) {
-        const { lat, lon } = state.property;
+        const { lat, lon } = property;
         authority = null;
         if (Number.isFinite(lat) && Number.isFinite(lon)) {
           try {
@@ -75,13 +75,28 @@ export const PermitView: React.FC<{ state: ResearchState; update: Updater; onNav
             if (r.ok) authority = (await r.json())?.authority ?? null;
           } catch (e) {}
         }
-        if (!cancelled) setPermits({ authority });
+        onAuthority(authority);
       }
-      const index = await loadPermitIndex();
-      const a = answerFor(index, authority ?? null);
-      answerCache.set(houseKey, a);
-      if (!cancelled) setAnswer(a);
+      const a = answerFor(await loadPermitIndex(), authority ?? null);
+      answerCache.set(key, a);
+      return a;
     })();
+    pending.set(key, job);
+    job.catch(() => pending.delete(key));
+  }
+  return job;
+}
+
+export const PermitView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (path: string) => void }> = ({ state, update, onNavigate }) => {
+  const houseKey = keyOf(state.property);
+  const [answer, setAnswer] = useState<PermitAnswer | null>(() => answerCache.get(houseKey) ?? null);
+  const p = state.permits;
+  const setPermits = (patch: Partial<ResearchState['permits']>) => update((s) => ({ permits: { ...s.permits, ...patch } }));
+
+  useEffect(() => {
+    if (answer) return;
+    let cancelled = false;
+    preparePermitAnswer(state.property, p.authority, (authority) => setPermits({ authority })).then((a) => { if (!cancelled) setAnswer(a); });
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -135,6 +150,9 @@ const Where: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, s
   const sn = answer.stateNotes;
   const items = permitItems(state);
   const what = state.claims.length ? `the ${listOf(items.map((k) => itemLabel(k).toLowerCase()))}` : 'any permits on the house';
+  const searchPhrase = answer.officeLabel
+    ? `${answer.officeLabel.replace(/^the /, '')} building permit search`
+    : `${[state.property.county, state.property.state].filter(Boolean).join(' ') || 'county'} building permit search`;
   const searchWays = searchBy?.value ? [searchBy.value.address && 'address', searchBy.value.parcel && 'parcel number', searchBy.value.permitNumber && 'permit number'].filter(Boolean) as string[] : [];
 
   return (
@@ -184,16 +202,25 @@ const Where: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, s
             {!tested && <p className="text-sm text-slate-600">We’ve checked the link but haven’t run an address search here yet.</p>}
           </div>
         ) : (
+          // Not researched yet (most addresses). Walk-through 2026-11-19: "search the web for…" read as homework, so the
+          // search is one tap, and the "not researched yet" note comes first instead of last.
           <div className="pt-1 space-y-4">
+            {answer.level === 'general' && (
+              <div className="rounded-xl bg-home-stone/60 p-3 space-y-2 text-sm">
+                <p className="text-slate-600">{OWNER_NOT_RESEARCHED}</p>
+                <ContentLink href={GENERAL_PERMITS_GUIDE} onNavigate={onNavigate} className={linkBtn}>Our guide to finding building permits by address</ContentLink>
+              </div>
+            )}
+            <a href={`https://www.google.com/search?q=${encodeURIComponent(searchPhrase)}`} target="_blank" rel="noopener noreferrer"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-home-ink bg-white text-home-ink font-bold text-base px-5 py-3.5 hover:bg-home-stone transition-colors text-center">
+              Find {answer.officeLabel ? `${answer.officeLabel.replace(/^the /, '')}’s` : 'the'} permit search <ExternalLink className="w-4 h-4 shrink-0" />
+            </a>
             <Numbered steps={[
-              <>Search the web for <b>“{answer.officeLabel ? `${answer.officeLabel.replace(/^the /, '')} building permit search` : 'your county building permit search'}”</b> and open the result on the government’s own website.</>,
+              <>Open the result on the government’s own website. Skip sites that charge for records.</>,
               <>Search by the street address. If nothing comes up, try just the street name, or the parcel number from the county assessor’s record.</>,
               <>No online search, or nothing found? Call or email the building department and ask for the permit history for the address, including any open or expired permits.</>,
             ]} />
-            <div className="rounded-xl bg-home-stone/60 p-3 space-y-2 text-sm">
-              {answer.level === 'general' && <p className="text-slate-600">{OWNER_NOT_RESEARCHED}</p>}
-              <ContentLink href={GENERAL_PERMITS_GUIDE} onNavigate={onNavigate} className={linkBtn}>Our guide to finding building permits by address</ContentLink>
-            </div>
+            {answer.level !== 'general' && <ContentLink href={GENERAL_PERMITS_GUIDE} onNavigate={onNavigate} className={`${linkBtn} block`}>Our guide to finding building permits by address</ContentLink>}
           </div>
         )}
       </div>

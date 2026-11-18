@@ -1,7 +1,7 @@
-import React, { Suspense, lazy, useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import type { PropertyReport, PropertySearchResult } from '../../types';
-import type { ResearchState } from './researchState';
+import { forStageDeep, type ResearchState } from './researchState';
 import type { Updater } from './ui';
 
 // The final outcome of the guided flow (owner, 2026-11-18: "the report should be the final outcome after the
@@ -52,6 +52,8 @@ export const FinalReportView: React.FC<{
   findings: React.ReactNode;
 }> = ({ state, update, report, setReport, onReset, findings }) => {
   const [failed, setFailed] = useState(false);
+  // The area report's timing lines fit this visitor's stage, as the research section's do.
+  const shown = useMemo(() => (report ? forStageDeep(report, state) : null), [report, state.stage]);
 
   // After a reload the report is fetched again by its id; the findings come from this device's storage.
   useEffect(() => {
@@ -87,7 +89,7 @@ export const FinalReportView: React.FC<{
     <div className="bg-slate-50">
       {back}
       <Suspense fallback={<div className="flex justify-center py-24"><Loader2 className="w-6 h-6 animate-spin text-slate-400" /></div>}>
-        <PropertyReportView report={report} onNewSearch={onReset} researchSection={{ label: 'Your research', title: 'Your research', node: findings }} />
+        <PropertyReportView report={shown!} onNewSearch={onReset} researchSection={{ label: 'Your research', title: 'Your research', node: findings }} />
       </Suspense>
     </div>
   );

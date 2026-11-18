@@ -170,3 +170,27 @@ Homepage (owner approved): one short line under each hero button, "Step by step,
 ## Publish gate
 
 Only when the owner has tried stages 1 to 3 end to end and says "publish". Then: build, push the branch's commits, verify live, record the baseline and set the read date (28 days, tracked separately from search traffic).
+
+## Fourth walk-through fixes (2026-11-19, owner: "resolve it")
+
+New-visitor walk-through (Columbus City Hall, 1952, "Made an offer") plus an owner report mid-fix.
+
+- **False "commercial" refusal (owner report, site-wide).** 2620 Lost Trail Road, Edmond OK, a listed house, passed
+  the real address gate and was then refused at "Get my report" by `resolvePropertyMetadata` in server.ts, which
+  matched words in the street name ("trail", "butler", "hike", "greenbelt", "commercial", "industrial", "warehouse"…).
+  This hit the quick report too. Street-name matching removed; the message no longer claims assessor records it never
+  read. Checked locally: 4734 Butler St, Pittsburgh (a cemetery, public) now gets a full report.
+- **Address check before research, not after.** "Start research" waits for the address gate to pass ("Checking the
+  address…"), so a refusal can't arrive after the questions.
+- Age checklist: one screen, all items ticked, "Why, and what to do" opens per item. Steps 24 → 9 for the test house.
+- Step count starts at the first question; setup screens show no count (the total no longer moves while answering).
+- "Made an offer" skips the deadline screen; before a contract, "before your inspection deadline" reads "during your
+  inspection period" in the tool, the research section and the area report shown inside it (`forStage`).
+- Permits, unresearched areas: owner's not-researched note first, then a one-tap "Find <office>'s permit search"
+  button. The office lookup now starts when research starts, so the permit screen opens without the 2–4 s wait.
+- End screen: "N things still to check" from the verify list.
+- Pop-up: the assent notice shows only under a button that builds a report (quick report). "Or generate a quick
+  report instead" switches the main button instead of building straight away. Wording unchanged.
+- Address list sits in the page flow and wraps, instead of covering "Start research". City NOT added to suggestions:
+  AddressSearchBox's suggestionLine comment documents why (geocoder city disagrees with Census; Greentown PA report).
+- Not done: a time estimate ("about 5 minutes") — we have no timing data; it would be an invented claim.

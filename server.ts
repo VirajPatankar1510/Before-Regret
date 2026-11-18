@@ -2164,56 +2164,23 @@ function resolvePropertyMetadata(
       addrLower.includes('frost bank tower')
     );
 
-  const isParkTrailOrWaterway =
-    addrLower.includes('trail') ||
-    addrLower.includes('hike') ||
-    addrLower.includes('butler') ||
-    addrLower.includes('lady bird') ||
-    addrLower.includes('greenbelt') ||
-    addrLower.includes('colorado river') ||
-    addrLower.includes('town lake') ||
-    addrLower.includes('water body') ||
-    addrLower.includes('aquatic') ||
-    addrLower.includes('public park') ||
-    (rawPropertyType && (
-      rawPropertyType.toLowerCase().includes('park') ||
-      rawPropertyType.toLowerCase().includes('water') ||
-      rawPropertyType.toLowerCase().includes('trail') ||
-      rawPropertyType.toLowerCase().includes('recreation')
-    ));
-
-  const isVacantLand =
-    addrLower.includes('311 nueces') ||
-    addrLower.includes('vacant') ||
-    addrLower.includes('unimproved lot') ||
-    addrLower.includes('unimproved land') ||
-    addrLower.includes('land only') ||
-    addrLower.includes('zero improvement') ||
-    (rawPropertyType && (
-      rawPropertyType.toLowerCase().includes('vacant') ||
-      rawPropertyType.toLowerCase().includes('unimproved') ||
-      rawPropertyType.toLowerCase().includes('land only')
-    ));
+  // Owner report 2026-11-19: 2620 Lost Trail Road, Edmond OK -- a house listed for sale -- passed the real address gate
+  // (runAddressGate: Census, government facilities, the declared property type) and was then refused here as
+  // "commercial", because this function matched words in the street name: "trail", "butler", "hike", "greenbelt",
+  // "commercial", "industrial", "warehouse" and more. Any house on an "Oak Trail" or a "Butler Street" was refused, after
+  // the visitor had answered every question in the research tool. Street names say nothing about what stands at the
+  // address, so those checks are gone. runAddressGate runs before this in both report routes and decides what is
+  // refused; what stays here is the short list of known downtown Austin office buildings, one known vacant parcel, and
+  // a property type that itself says it isn't a home.
+  const typeLower = (rawPropertyType || '').toLowerCase();
+  const isParkTrailOrWaterway = /\b(park|water|trail|recreation)\b/.test(typeLower);
+  const isVacantLand = addrLower.includes('311 nueces') || /vacant|unimproved|land only/.test(typeLower);
 
   const isNonResidential =
     isDowntownAustinCommercialCore ||
     isParkTrailOrWaterway ||
     isVacantLand ||
-    addrLower.includes('commercial') ||
-    addrLower.includes('office tower') ||
-    addrLower.includes('industrial') ||
-    addrLower.includes('warehouse') ||
-    addrLower.includes('retail plaza') ||
-    addrLower.includes('factory') ||
-    addrLower.includes('business park') ||
-    (rawPropertyType && (
-      rawPropertyType.toLowerCase().includes('commercial') ||
-      rawPropertyType.toLowerCase().includes('office') ||
-      rawPropertyType.toLowerCase().includes('industrial') ||
-      rawPropertyType.toLowerCase().includes('retail') ||
-      rawPropertyType.toLowerCase().includes('park') ||
-      rawPropertyType.toLowerCase().includes('water')
-    ));
+    /commercial|office|industrial|retail/.test(typeLower);
 
   // NOTE: classification below is a text-keyword heuristic on the address string, not a real
   // county assessor API call. No network request is made here. Do not log fabricated
@@ -2352,7 +2319,8 @@ function generateStructuredPropertyReport(
       isNonResidential: true,
       rejectionReason: isVacant
         ? "This address appears to be a vacant parcel with no residential structure. BeforeRegret reports cover addressed residential properties only. If you believe this is an error, contact hello@beforeregret.com."
-        : `BeforeRegret insight reports apply exclusively to residential properties. Public tax assessor and municipal land-use records indicate ${meta.formattedAddress} is classified as a Commercial Building, Office Tower, or Industrial Facility.`,
+        // No assessor or land-use record is read here (see resolvePropertyMetadata), so the message no longer claims one.
+        : `BeforeRegret reports cover homes only, and ${meta.formattedAddress} is on our list of commercial buildings. If this is a home, contact hello@beforeregret.com.`,
       headerInfo: {
         address: meta.formattedAddress,
         propertyType: isVacant ? 'Vacant Land / Unimproved Parcel' : 'Non-Residential Commercial Parcel'

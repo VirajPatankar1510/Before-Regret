@@ -247,17 +247,25 @@ export function advance(s: ResearchState, from?: QuestionId): Pick<ResearchState
   return next ? { view: next, reachedEnd: false } : { view: 'plan', reachedEnd: true };
 }
 /** One count for the whole flow (owner, 2026-11-19: "Question 1 of 5" next to "1 of 12 things to check" and "Step 1
- *  of 3" was confusing). Every screen from "Where are you with this house?" to the last question is one step. */
+ *  of 3" was confusing). It starts at the first question (walk-through 2026-11-19: the total moved while the visitor
+ *  was still answering the setup questions, 24 then 23), so the setup screens carry no count. */
 export type FlowPart = 'setup' | QuestionId;
+/** Only "Under contract" has a deadline to ask about: "Just looking" has none, and "Made an offer" has no inspection
+ *  period yet (walk-through 2026-11-19). */
+export function setupOrder(s: Pick<ResearchState, 'stage'>): (0 | 1 | 2)[] {
+  return s.stage === 'contract' ? [0, 1, 2] : [0, 2];
+}
 export function partSize(s: ResearchState, part: FlowPart): number {
-  if (part === 'setup') return s.stage === 'looking' ? 2 : 3;
-  if (part === 'era') return eraItems(s.property)?.items.length || 1;
+  if (part === 'setup') return setupOrder(s).length;
+  // One screen with every item ticked (walk-through 2026-11-19: twelve yes/no screens asked a first-time buyer to
+  // judge things they can't judge, so everyone tapped yes).
+  if (part === 'era') return 1;
   if (part === 'permits') return 1 + permitItems(s).length;
   if ((MISSION_IDS as string[]).includes(part)) return MISSIONS[part as MissionId].screens.length;
   return 1;
 }
 export function flowStep(s: ResearchState, part: FlowPart, inner: number): { n: number; total: number } | null {
-  const parts: FlowPart[] = ['setup', ...flowOrder(s)];
+  const parts: FlowPart[] = flowOrder(s);
   const i = parts.indexOf(part);
   if (i < 0) return null;
   const before = parts.slice(0, i).reduce((a, p) => a + partSize(s, p), 0);
@@ -305,7 +313,29 @@ export function forDeadline(text: string, s: ResearchState): string {
   }
   if (s.property.state !== 'TX') t = t.replace(/inspection or option period/g, 'inspection period');
   if (s.stage === 'contract') t = t.replace(/at a showing/g, 'at your inspection').replace(/at your showing/g, 'at your inspection');
-  return t;
+  return forStage(t, s);
+}
+/** Before a contract there's no inspection period yet, so the engine's "before your inspection deadline" reads as a
+ *  deadline the visitor doesn't have (walk-through 2026-11-19, "Made an offer"). Same advice, future tense. Also used on
+ *  the area report inside the research report (FinalReport.tsx). */
+export function forStage(text: string, s: Pick<ResearchState, 'stage'>): string {
+  if (s.stage === 'contract') return text;
+  return text
+    .replace(/before your inspection deadline/g, 'during your inspection period')
+    .replace(/before your option period (ends|closes)/g, 'during your option period')
+    .replace(/before your inspection period ends/g, 'during your inspection period');
+}
+/** forStage on every string inside a value (the saved report itself is never changed, only what this visitor sees). */
+export function forStageDeep<T>(value: T, s: Pick<ResearchState, 'stage'>): T {
+  if (s.stage === 'contract') return value;
+  if (typeof value === 'string') return forStage(value, s) as unknown as T;
+  if (Array.isArray(value)) return value.map((v) => forStageDeep(v, s)) as unknown as T;
+  if (value && typeof value === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) out[k] = forStageDeep(v, s);
+    return out as T;
+  }
+  return value;
 }
 
 export function isSolved(s: ResearchState, id: QuestionId): boolean {

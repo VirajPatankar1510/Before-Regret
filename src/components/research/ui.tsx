@@ -22,7 +22,7 @@ export const BackToPlan: React.FC<{ update: Updater; right?: string }> = ({ upda
   </div>
 );
 
-/** Top of every screen in the flow: Back, one progress bar and "Step n of N" counted across the whole flow (owner,
+/** Top of every screen in the flow: Back, one progress bar and "Step n of N" counted across the questions (owner,
  *  2026-11-19). Opened from the summary, it leads back there and shows no count. */
 export const FlowHeader: React.FC<{
   state: ResearchState; part: FlowPart; inner: number; update: Updater; onBack?: () => void; left?: React.ReactNode;
@@ -34,6 +34,8 @@ export const FlowHeader: React.FC<{
       <ArrowLeft className="w-4 h-4" /> Back
     </button>
   ) : left ?? <span />;
+  // The few setup questions come before the count starts (see flowStep).
+  if (part === 'setup') return <div className="flex items-center justify-between gap-3">{backBtn}</div>;
   if (!step) {
     // Opened from the summary: no count, and the summary is always one tap away.
     return onBack ? (
@@ -76,16 +78,6 @@ export const SolvedBadge: React.FC = () => (
       <Check className="w-9 h-9" strokeWidth={2.6} />
     </div>
     <h2 className="font-serif text-3xl font-semibold">Solved</h2>
-  </div>
-);
-
-/** Segmented progress bar with a small label, used by the step-by-step questions. */
-export const Progress: React.FC<{ n: number; total: number; label: string }> = ({ n, total, label }) => (
-  <div className="space-y-2">
-    <div className="flex gap-1.5" role="progressbar" aria-valuemin={1} aria-valuemax={total} aria-valuenow={n} aria-label="Progress">
-      {Array.from({ length: total }, (_, i) => <div key={i} className={`h-1.5 flex-1 rounded-full ${i < n ? 'bg-home-moss' : 'bg-home-linen'}`} />)}
-    </div>
-    {label && <p className={eyebrow}>{label}</p>}
   </div>
 );
 

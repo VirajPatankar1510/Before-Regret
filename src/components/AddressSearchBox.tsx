@@ -274,7 +274,8 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     });
   };
   const startResearch = () => {
-    if (!onStartResearch || !selectedPinResult || !canSubmit || !declaredPropertyType) return;
+    // Waits for the address check (owner 2026-11-19: a refusal that only arrived after every question was answered).
+    if (!onStartResearch || !selectedPinResult || !canSubmit || !declaredPropertyType || gateState?.status !== 'passed') return;
     reportCtaClick('research_start');
     setShowPropertyTypeModal(false);
     setIntent(null);
@@ -787,7 +788,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
 
       {/* Search Bar */}
       <div className="bg-white border border-slate-200 rounded-2xl p-3 sm:p-4 shadow-lg relative z-30">
-        <form onSubmit={handleMapSearch} className="flex items-center gap-2 relative">
+        <form onSubmit={handleMapSearch} className={`flex items-center gap-2 relative ${onStartResearch ? 'flex-wrap' : ''}`}>
           <div className="relative flex-1 flex items-center bg-slate-50 border border-slate-300 focus-within:border-blue-500 rounded-xl px-3 py-2 transition-all">
             <Search className="w-4 h-4 text-slate-500 mr-2 shrink-0" />
             {/* aria-label, not a visible <label>: this is the homepage's primary conversion control
@@ -829,7 +830,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
 
           {/* Search Auto-suggestions Dropdown */}
           {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-2xl z-50 overflow-hidden max-h-64 overflow-y-auto divide-y divide-slate-100">
+            // With the two start buttons below, the list sits in the page flow and pushes them down instead of covering
+            // "Start research" (walk-through 2026-11-19).
+            <div className={`${onStartResearch ? 'basis-full w-full' : 'absolute top-full left-0 right-0 mt-2 shadow-2xl z-50'} bg-white border border-slate-200 rounded-xl overflow-hidden max-h-64 overflow-y-auto divide-y divide-slate-100`}>
               {suggestions.map((item, idx) => (
                 <button
                   key={item.place_id || idx}
@@ -838,7 +841,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                   className="w-full text-left px-3.5 py-2.5 hover:bg-blue-50 transition-colors flex items-start gap-2.5 text-xs text-slate-700 cursor-pointer"
                 >
                   <MapPin className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                  <span className="truncate leading-relaxed font-medium">{suggestionLine(item)}</span>
+                  <span className={`${onStartResearch ? '' : 'truncate '}leading-relaxed font-medium`}>{suggestionLine(item)}</span>
                 </button>
               ))}
             </div>
@@ -1139,26 +1142,33 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                 : formComplete && gateState?.status === 'blocked'
                   ? 'Not available for this address'
                   : null;
-              const mainLabel = blockedLabel || (research ? 'Start research' : onStartResearch ? 'Generate quick report' : 'Get the free report');
+              // Research takes a few minutes, so it starts only once the address check has passed (owner 2026-11-19); the
+              // quick report doesn't wait, as before (the report route re-runs the same check).
+              const checking = research && formComplete && !blockedLabel && gateState?.status !== 'passed';
+              const mainLabel = blockedLabel || (checking ? 'Checking the address…' : research ? 'Start research' : onStartResearch ? 'Generate quick report' : 'Get the free report');
+              const mainDisabled = !canSubmit || checking;
               return (
                 <div className="space-y-2">
                   <button
                     type="button"
-                    disabled={!canSubmit}
+                    disabled={mainDisabled}
                     onClick={research ? startResearch : submitReport}
                     className={`w-full px-4 py-2.5 sm:py-3 font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 tracking-tight ${
-                      !canSubmit
+                      mainDisabled
                         ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-60'
                         : 'bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer'
                     }`}
                   >
+                    {checking && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                     <span>{mainLabel}</span>
-                    {canSubmit && <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />}
+                    {!mainDisabled && <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />}
                   </button>
                   {onStartResearch && canSubmit && (
                     <button
                       type="button"
-                      onClick={research ? submitReport : startResearch}
+                      // Only switches the main button: the quick report's notice then shows under it, and research waits
+                      // for the address check there.
+                      onClick={() => setIntent(research ? 'quick' : 'research')}
                       className="w-full text-center text-xs font-semibold text-slate-600 hover:text-slate-900 underline underline-offset-4 cursor-pointer py-1"
                     >
                       {research ? 'Or generate a quick report instead' : 'Or start research instead'}
@@ -1168,7 +1178,10 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               );
             })()}
 
-            <ReportAssentNotice />
+            {/* The notice sits under a button that builds a report. Start research builds nothing yet: the research
+                tool shows the same notice under "Get my report" (walk-through 2026-11-19: the arbitration text before
+                anything had started, worded "By getting this report", read as signing something blind). */}
+            {!(!!onStartResearch && intent !== 'quick') && <ReportAssentNotice />}
           </div>
         </div>
       )}

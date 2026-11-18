@@ -6,11 +6,11 @@ import type { PropertySearchResult } from '../../types';
 import { AddressSearchBox } from '../AddressSearchBox';
 import { ContentLink } from '../home/ContentLink';
 import {
-  QUESTIONS, WORK, advance, openPart, collectFindings, flowOrder, countedQuestions, forDeadline, waitsForInspection, itemLabel, daysLeft, eraItems, formatShortDate, freshResearch, isSolved,
+  QUESTIONS, WORK, advance, openPart, setupOrder, collectFindings, flowOrder, countedQuestions, forDeadline, waitsForInspection, itemLabel, daysLeft, eraItems, formatShortDate, freshResearch, isSolved,
   loadResearch, saveResearch,
   type BuyingStage, type EraItem, type QuestionId, type ResearchState, type WorkKey,
 } from './researchState';
-import { PermitView } from './PermitView';
+import { PermitView, preparePermitAnswer } from './PermitView';
 import { MissionView } from './MissionView';
 import { MISSION_IDS, type MissionId } from './missions';
 import { FinalReportView, buildFullReport } from './FinalReport';
@@ -67,6 +67,14 @@ export const HouseResearchTool: React.FC<Props> = ({ onNavigate, onQuickReport }
   const reset = () => { setFinalReport(null); setState(null); };
 
   useEffect(() => { saveResearch(state); }, [state]);
+
+  // Look up who keeps the permits as soon as the house is known, so the permit question opens without a wait
+  // (walk-through 2026-11-19: "Finding who keeps the permits…" took 2-4 seconds).
+  useEffect(() => {
+    if (!state || isSolved(state, 'permits')) return;
+    preparePermitAnswer(state.property, state.permits.authority, (authority) => update((s) => ({ permits: { ...s.permits, authority } })));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state?.property.lat, state?.property.lon]);
 
   // Funnel (Stage 4): where visitors stop. Each step is sent once per house; only the event name and page path go.
   useEffect(() => {
@@ -157,11 +165,11 @@ const StartView: React.FC<{ onStart: (p: PropertySearchResult) => void; onQuickR
 
 const SetupView: React.FC<{ state: ResearchState; update: Updater }> = ({ state, update }) => {
   const n = state.setupStep;
-  // "Just looking" has no deadline yet, so that screen is skipped (walk-through 2026-11-18).
-  const order: (0 | 1 | 2)[] = state.stage === 'looking' ? [0, 2] : [0, 1, 2];
+  // Only "Under contract" gets the deadline screen (walk-throughs 2026-11-18 and 11-19).
+  const order = setupOrder(state);
   const at = Math.max(0, order.indexOf(n));
   const next = () => (at < order.length - 1
-    ? update({ setupStep: order[at + 1], ...(state.stage === 'looking' ? { deadline: '' } : {}) })
+    ? update({ setupStep: order[at + 1], ...(state.stage !== 'contract' ? { deadline: '' } : {}) })
     : update((s) => advance(s)));
   const back = () => (at > 0 ? update({ setupStep: order[at - 1] }) : undefined);
   const toggleClaim = (k: WorkKey) =>
@@ -263,6 +271,12 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
   const era = eraItems(p);
   const eraCount = era ? era.items.length : 0;
   const place = [p.city, p.county, p.state].filter(Boolean).join(', ');
+  // What's still open after the questions (walk-through 2026-11-19: "All answered" read as hollow when most answers
+  // were "couldn't check" or "not yet").
+  const toCheck = collectFindings(state).verify.length;
+  const toCheckLine = toCheck > 0
+    ? `${toCheck === 1 ? 'One thing' : `${toCheck} things`} still to check. Your report lists ${toCheck === 1 ? 'it' : 'them'}, with the questions for the seller ready to send.`
+    : null;
 
   return (
     <section className="space-y-6">
@@ -286,6 +300,7 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
           <p className={eyebrow}>{done} of {live.length} answered</p>
           <h2 className="font-serif text-2xl font-semibold leading-tight">{state.reachedEnd ? 'Your report is ready' : done === 0 ? 'Start with the first question' : 'Pick up where you left off'}</h2>
           {state.reachedEnd && <p className="text-sm text-slate-600">You skipped {live.length - done === 1 ? 'one question' : `${live.length - done} questions`}. Your report fills in if you answer {live.length - done === 1 ? 'it' : 'them'} later.</p>}
+          {state.reachedEnd && toCheckLine && <p className="text-sm text-slate-600">{toCheckLine}</p>}
           {state.reachedEnd ? (
             <>
               <GetReport onFinish={onFinish} error={error} update={update} label="Get my report" />
@@ -304,6 +319,7 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
           <div className={`${card} space-y-3 border-home-moss`}>
             <p className={eyebrow}>All {live.length} questions answered</p>
             <h2 className="font-serif text-2xl font-semibold leading-tight">Your report is ready</h2>
+            {toCheckLine && <p className="font-semibold">{toCheckLine}</p>}
             <p className="text-sm text-slate-600">What you found, the questions for the seller and your checklist, plus the free area report for this address. One page you can print or share.</p>
             <GetReport onFinish={onFinish} error={error} update={update} label="Get my report" />
           </div>
@@ -385,28 +401,47 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
 
 // ---------------------------------------------------------------------------------------------------------------
 
-// The era question, one item at a time (owner, 2026-11-18: the all-at-once checkbox list "feels very overwhelming").
-// Then (same day): no intro, no review and no "Solved" screen ("remove additional steps ... which do not serve any
-// purpose"), and the same two plain buttons on every item. The last answer goes straight back to the questions.
+// The era question. History: all at once as a checkbox list ("feels very overwhelming", owner 2026-11-18), then one
+// item per screen with yes/no. Walk-through 2026-11-19: twelve yes/no screens asked a first-time buyer to judge things
+// they can't judge, so everyone tapped yes. Now: one screen, every item ticked, titles only; "Why, and what to do"
+// opens under each item. Unticking is optional.
 
-/** The first sentence of the engine's explanation; the rest sits behind "Tell me more". */
-function splitWhy(text: string): [string, string] {
-  const m = text.match(/^.+?[.!?](?=\s+[A-Z(])/);
-  const first = m ? m[0] : text;
-  return [first, text.slice(first.length).trim()];
-}
+const EraRow: React.FC<{ item: EraItem; on: boolean; toggle: () => void; t: (x: string) => string }> = ({ item, on, toggle, t }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <li className={`rounded-2xl border bg-white transition-colors ${on ? 'border-home-moss' : 'border-home-linen'}`}>
+      <button type="button" aria-pressed={on} onClick={toggle} className="w-full flex items-start gap-3 text-left px-4 pt-3.5 pb-1.5 cursor-pointer">
+        <span className={`mt-0.5 w-5 h-5 shrink-0 rounded-md border-2 flex items-center justify-center ${on ? 'border-home-moss bg-home-moss' : 'border-slate-300'}`}>
+          {on && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
+        </span>
+        <span className="font-bold leading-snug">{item.title}</span>
+      </button>
+      <div className="pl-12 pr-4 pb-3">
+        <button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className={`${linkBtn} text-xs`}>{open ? 'Hide' : 'Why, and what to do'}</button>
+        {open && (
+          <div className="mt-2.5 space-y-3 text-sm">
+            <div>
+              <BoxLabel>Why</BoxLabel>
+              <p className="leading-relaxed">{item.eraBasis}</p>
+            </div>
+            <div className="rounded-xl bg-home-sage/50 border border-home-sage p-3">
+              <BoxLabel className="text-home-moss">What to do</BoxLabel>
+              <p className="leading-relaxed">{t(item.howToCheck)}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </li>
+  );
+};
 
 const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (path: string) => void }> = ({ state, update }) => {
   const year = state.property.yearBuilt as number;
   const era = useMemo(() => eraItems(state.property), [state.property]);
   const items = era?.items || [];
-  // Age and area first; "worth doing for any home" (radon, chimney) last.
-  const seq = [...items.filter((i) => i.group !== 'any'), ...items.filter((i) => i.group === 'any')];
-  const step = Math.max(0, Math.min(state.era.step ?? 0, seq.length - 1));
-  const [more, setMore] = useState(false);
-  useEffect(() => setMore(false), [step]);
+  const t = (x: string) => forDeadline(x, state);
 
-  if (!era || !seq.length) {
+  if (!era || !items.length) {
     return (
       <section className="space-y-5">
         <BackToPlan update={update} />
@@ -415,53 +450,42 @@ const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (pa
     );
   }
 
-  const item = seq[step];
-  const picked = state.era.picked ?? [];
-  const on = picked.includes(item.id);
-  const last = step === seq.length - 1;
-  const decide = (add: boolean) => {
-    const base = picked.filter((x) => x !== item.id);
-    const next = add ? [...base, item.id] : base;
-    if (last) update((s) => { const era = { ...s.era, picked: next, solved: true, step: 0 }; return { era, ...advance({ ...s, era }, 'era') }; });
-    else update((s) => ({ era: { ...s.era, picked: next, step: step + 1 } }));
-  };
-  // No cost figures in the tool (2026-11-18): the engine's cost ranges aren't traced to sources yet (plan doc).
-  const label = item.group === 'era' ? `Common in homes built around ${year}`
-    : item.group === 'area' ? `Applies in ${state.property.state}` : 'Worth doing for any home';
-  const [why, rest] = splitWhy(item.eraBasis);
+  // Everything starts ticked; a saved pick (from an earlier visit) is kept.
+  const picked = state.era.picked ?? items.map((i) => i.id);
+  const toggle = (id: string) => update((s) => {
+    const cur = s.era.picked ?? items.map((i) => i.id);
+    return { era: { ...s.era, picked: cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id] } };
+  });
+  const finish = () => update((s) => {
+    const e = { ...s.era, picked: s.era.picked ?? items.map((i) => i.id), solved: true, step: 0 };
+    return { era: e, ...advance({ ...s, era: e }, 'era') };
+  });
+  // Age and area first; "worth doing for any home" (radon, chimney) last.
+  const groups: [string, EraItem[]][] = ([
+    [`Common in homes built around ${year}`, items.filter((i) => i.group === 'era')],
+    [`Applies in ${state.property.state}`, items.filter((i) => i.group === 'area')],
+    ['Worth doing for any home', items.filter((i) => i.group === 'any')],
+  ] as [string, EraItem[]][]).filter(([, xs]) => xs.length > 0);
+  const n = picked.filter((id) => items.some((i) => i.id === id)).length;
 
   return (
     <section className="space-y-5">
-      <FlowHeader state={state} part="era" inner={step} update={update}
-        onBack={step > 0 ? () => update((s) => ({ era: { ...s.era, step: step - 1 } })) : undefined} />
-      <p className={eyebrow}>{label}</p>
-      <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">{item.title}</h1>
-      <div className={`${card} space-y-4`}>
-        <div>
-          <BoxLabel>Why</BoxLabel>
-          <p className="leading-relaxed">{why}</p>
-          {rest && (more
-            ? <p className="mt-2 text-sm text-slate-600 leading-relaxed">{rest}</p>
-            : <button type="button" className={`${linkBtn} mt-2`} onClick={() => setMore(true)}>Tell me more</button>)}
+      <FlowHeader state={state} part="era" inner={0} update={update} />
+      <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">What to check on a house built in {year}</h1>
+      <p className="text-slate-600 !mt-2">They’re all ticked. Untick any you don’t want on the checklist in your report.</p>
+      {groups.map(([label, xs]) => (
+        <div key={label} className="space-y-2.5">
+          <p className={eyebrow}>{label}</p>
+          <ul className="space-y-2.5">
+            {xs.map((i) => <EraRow key={i.id} item={i} on={picked.includes(i.id)} toggle={() => toggle(i.id)} t={t} />)}
+          </ul>
         </div>
-        <div className="rounded-2xl bg-home-sage/50 border border-home-sage p-4">
-          <BoxLabel className="text-home-moss">What to do</BoxLabel>
-          <p className="leading-relaxed">{item.howToCheck}</p>
-        </div>
-      </div>
-      {/* Pinned to the bottom so the choice is always on a phone's first screen, however long the item. */}
-      {/* Owner, 2026-11-18: "Add to my list" left people asking which list and what it does. So: a plain question
-          that names where the item goes, and yes/no answers. */}
-      <div className="sticky bottom-0 z-10 -mx-4 sm:mx-0 px-4 sm:px-0 pt-2.5 pb-3 bg-home-stone/95 backdrop-blur space-y-2" role="group" aria-labelledby="era-q">
-        <p id="era-q" className="text-sm font-semibold text-center">Add this to the checklist in your report?</p>
-        <div className="grid grid-cols-2 gap-2.5">
-        <button type="button" aria-pressed={on} onClick={() => decide(true)}
-          className={`inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-2xl bg-home-ink text-white font-bold px-3 py-3.5 hover:bg-home-navy transition-colors cursor-pointer ${on ? 'ring-2 ring-home-moss ring-offset-2 ring-offset-home-stone' : ''}`}>
-          {on && <Check className="w-4 h-4" />}Yes, add it
+      ))}
+      {/* Pinned to the bottom so the button is always on a phone's screen, however long the list. */}
+      <div className="sticky bottom-0 z-10 -mx-4 sm:mx-0 px-4 sm:px-0 pt-2.5 pb-3 bg-home-stone/95 backdrop-blur">
+        <button type="button" className={btnPrimary} onClick={finish}>
+          {n > 0 ? <>Add {n === 1 ? 'it' : `these ${n}`} to my checklist <ArrowRight className="w-4 h-4" /></> : <>Next <ArrowRight className="w-4 h-4" /></>}
         </button>
-        <button type="button" onClick={() => decide(false)}
-          className="inline-flex items-center justify-center rounded-2xl border border-home-linen bg-white text-home-ink font-bold px-3 py-3.5 hover:border-home-oak transition-colors cursor-pointer">No, leave it off</button>
-        </div>
       </div>
       <SkipPart state={state} part="era" update={update} />
       <p className="text-xs text-slate-500">From Before Regret’s inspection guide, the same one behind our free report. It describes homes of this age and area, not this particular house.</p>
@@ -556,7 +580,7 @@ export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolea
             {checklist.map((i) => (
               <div key={i.id} className="rounded-2xl border border-home-linen bg-white p-4 space-y-2 break-inside-avoid">
                 <h3 className="font-bold leading-snug">{i.title}</h3>
-                <p className="text-sm"><span className="font-semibold">What to do: </span>{i.howToCheck}</p>
+                <p className="text-sm"><span className="font-semibold">What to do: </span>{forDeadline(i.howToCheck, state)}</p>
               </div>
             ))}
           </div>
@@ -567,7 +591,7 @@ export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolea
       <div className="space-y-3">
         <h2 className="text-xl font-bold">Questions, ready to send</h2>
         <CopyList title="For the seller" lines={seller} />
-        <CopyList title="Your checklist, to share with your agent or inspector" lines={checklist.map((i) => `${i.title}: ${i.howToCheck}`)} />
+        <CopyList title="Your checklist, to share with your agent or inspector" lines={checklist.map((i) => `${i.title}: ${forDeadline(i.howToCheck, state)}`)} />
         {compact && checklist.length > 0 && <p className="text-xs text-slate-500">More on each one is in “Inspection priorities” below.</p>}
       </div>
 
