@@ -85,7 +85,7 @@ export const HouseResearchTool: React.FC<Props> = ({ onNavigate, onQuickReport }
     setState((s) => (s ? { ...s, ...(typeof patch === 'function' ? patch(s) : patch) } : s));
 
   // Each screen starts at the top, like a new page would.
-  const viewKey = state ? `${state.view}-${state.setupStep}-${state.era.solved}-${state.permits.stage}-${MISSION_IDS.map((m) => state.missions?.[m]?.stage || '').join('')}` : 'start';
+  const viewKey = state ? `${state.view}-${state.setupStep}-${state.era.solved}-${state.era.step}-${state.permits.stage}-${MISSION_IDS.map((m) => state.missions?.[m]?.stage || '').join('')}` : 'start';
   useEffect(() => { window.scrollTo(0, 0); }, [viewKey]);
 
   if (state?.view === 'final') {
@@ -364,42 +364,76 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
 
 // ---------------------------------------------------------------------------------------------------------------
 
-const EraCard: React.FC<{ item: EraItem; picked: boolean; onToggle: () => void }> = ({ item, picked, onToggle }) => {
-  const [open, setOpen] = useState(false);
+// The era question, one item at a time (owner, 2026-11-18: the all-at-once list with checkboxes "feels very
+// overwhelming ... I want it to be step-by-step, one at a time, very easy to understand"). Intro → one screen per
+// item (why in one line, what to do, add or skip) → a short review. "Any home" items are offered after the review.
+
+/** The first sentence of the engine's explanation; the rest sits behind "Tell me more". */
+function splitWhy(text: string): [string, string] {
+  const m = text.match(/^.+?[.!?](?=\s+[A-Z(])/);
+  const first = m ? m[0] : text;
+  return [first, text.slice(first.length).trim()];
+}
+
+const EraStep: React.FC<{
+  item: EraItem; label: string; n: number; total: number; on: boolean;
+  update: Updater; onAdd: () => void; onSkip: () => void; onPrev: () => void;
+}> = ({ item, label, n, total, on, update, onAdd, onSkip, onPrev }) => {
+  const [more, setMore] = useState(false);
+  useEffect(() => setMore(false), [item.id]);
+  const [why, rest] = splitWhy(item.eraBasis);
   return (
-    <div className="py-5 first:pt-0 last:pb-0 border-b last:border-b-0 border-home-linen space-y-3">
-      <h3 className="font-bold text-lg leading-snug">{item.title}</h3>
-      <p className={`text-sm text-slate-600 leading-relaxed ${open ? '' : 'line-clamp-3'}`}>{item.eraBasis}</p>
-      <button type="button" className="text-sm font-semibold text-home-brass cursor-pointer" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
-        {open ? 'Show less' : 'Read more'}
-      </button>
-      <div className="rounded-xl border border-home-sage bg-home-sage/40 p-3 text-sm">
-        <span className="block text-[11px] font-bold uppercase tracking-wider text-home-moss">What to do</span>{item.howToCheck}
+    <section className="space-y-5">
+      <BackToPlan update={update} right={`${n} of ${total}`} />
+      <div className="h-1.5 rounded-full bg-home-linen overflow-hidden" role="progressbar" aria-valuemin={1} aria-valuemax={total} aria-valuenow={n} aria-label="Progress">
+        <div className="h-full bg-home-moss transition-all" style={{ width: `${(n / total) * 100}%` }} />
       </div>
-      <button type="button" aria-pressed={picked} onClick={onToggle}
-        className={`inline-flex items-center gap-2 rounded-xl border px-3.5 py-2.5 text-sm font-bold transition-colors cursor-pointer ${picked ? 'border-home-moss bg-home-sage' : 'border-home-linen bg-white hover:border-home-oak'}`}>
-        <span className={`w-5 h-5 rounded-md border flex items-center justify-center ${picked ? 'bg-home-moss border-home-moss text-white' : 'border-slate-300'}`}>
-          {picked && <Check className="w-3.5 h-3.5" />}
-        </span>
-        {picked ? 'On my list' : 'Add to my list'}
-      </button>
-    </div>
+      <p className={eyebrow}>{label}</p>
+      <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">{item.title}</h1>
+      <div className={`${card} space-y-4`}>
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Why</p>
+          <p className="leading-relaxed">{why}</p>
+          {rest && (more
+            ? <p className="mt-2 text-sm text-slate-600 leading-relaxed">{rest}</p>
+            : <button type="button" className={`${linkBtn} mt-2`} onClick={() => setMore(true)}>Tell me more</button>)}
+        </div>
+        <div className="rounded-2xl bg-home-sage/50 border border-home-sage p-4">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-home-moss mb-1">What to do</p>
+          <p className="leading-relaxed">{item.howToCheck}</p>
+        </div>
+      </div>
+      <div className="space-y-2.5">
+        <button type="button" className={btnPrimary} onClick={onAdd}>
+          {on ? <><Check className="w-4 h-4" /> On my list. Next</> : <>Add to my list <ArrowRight className="w-4 h-4" /></>}
+        </button>
+        <button type="button" className={btnGhost} onClick={onSkip}>{on ? 'Take it off my list' : 'Skip this one'}</button>
+      </div>
+      <button type="button" className={linkBtn} onClick={onPrev}>← {n === 1 ? 'Back' : 'Previous'}</button>
+      <p className="text-xs text-slate-500">From Before Regret’s inspection guide. It describes homes of this age and area, not this particular house.</p>
+    </section>
   );
 };
-
-
 
 const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (path: string) => void }> = ({ state, update }) => {
   const year = state.property.yearBuilt as number;
   const era = useMemo(() => eraItems(state.property), [state.property]);
   const items = era?.items || [];
-  const byGroup = (g: EraItem['group']) => items.filter((i) => i.group === g);
-  const eraSpecific = byGroup('era'), area = byGroup('area'), any = byGroup('any');
-  // Default picks: everything tied to this house's age or area. "Any home" items start unticked.
-  const picked = state.era.picked ?? [...eraSpecific, ...area].map((i) => i.id);
-  const setPicked = (ids: string[]) => update((s) => ({ era: { ...s.era, picked: ids } }));
-  const toggle = (id: string) => setPicked(picked.includes(id) ? picked.filter((x) => x !== id) : [...picked, id]);
+  const main = items.filter((i) => i.group !== 'any');
+  const any = items.filter((i) => i.group === 'any');
+  const withAny = !!state.era.withAny;
+  const seq = withAny ? [...main, ...any] : main;
+  const picked = state.era.picked ?? [];
+  const step = state.era.step === undefined ? -1 : Math.min(state.era.step, seq.length);
+  const setEra = (patch: Partial<ResearchState['era']>) => update((s) => ({ era: { ...s.era, ...patch } }));
+  const decide = (id: string, add: boolean) => {
+    const base = (state.era.picked ?? []).filter((x) => x !== id);
+    setEra({ picked: add ? [...base, id] : base, step: step + 1 });
+  };
   // No cost figures in the tool (2026-11-18): the engine's cost ranges aren't traced to sources yet (plan doc).
+  // No "free" or "usually included" claims either: they come from the same unsourced cost field.
+  const label = (i: EraItem) => i.group === 'era' ? `Common in homes built around ${year}`
+    : i.group === 'area' ? `Applies in ${state.property.state}` : 'Worth doing for any home';
 
   if (!era) {
     return (
@@ -416,20 +450,8 @@ const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (pa
       <section className="space-y-6">
         <SolvedBadge />
         <p className="text-center text-slate-600 text-lg">You know what to check on a house from {year}, and what to do next.</p>
-        <div className={`${card} space-y-4`}>
-          {[
-            ['What you checked', `What was common in homes built around ${year} (${era.eraLabel})${area.length ? `, plus what applies in ${state.property.state}` : ''}.`],
-            ['Where it comes from', 'Before Regret’s inspection guide, the same one behind our free report. It describes homes of this age and area, not this particular house.'],
-            ['What to do with it', `Work through your list of ${chosen.length}. Each one says what to do next.`],
-          ].map(([label, text]) => (
-            <div key={label} className="flex gap-3">
-              <Check className="w-5 h-5 text-home-moss shrink-0 mt-0.5" />
-              <div><span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">{label}</span><p>{text}</p></div>
-            </div>
-          ))}
-        </div>
         {chosen.length > 0 && (
-          <div className="space-y-2">
+          <div className={`${card} space-y-2`}>
             <p className={eyebrow}>Added to your report</p>
             <ul className="space-y-1.5">
               {chosen.map((i) => <li key={i.id} className="flex gap-2 text-sm"><Check className="w-4 h-4 text-home-moss shrink-0 mt-0.5" />{i.title}</li>)}
@@ -438,41 +460,75 @@ const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (pa
         )}
         <button type="button" className={btnPrimary} onClick={() => update({ view: 'plan' })}>On to the next one <ArrowRight className="w-4 h-4" /></button>
         <div className="text-center">
-          <button type="button" className={linkBtn} onClick={() => update((s) => ({ era: { ...s.era, solved: false } }))}>Change my picks</button>
+          <button type="button" className={linkBtn} onClick={() => setEra({ solved: false, step: seq.length })}>Change my list</button>
         </div>
       </section>
     );
   }
 
-  const group = (title: string, list: EraItem[]) => list.length > 0 && (
-    <div className={card}>
-      <h3 className="text-[11px] font-bold uppercase tracking-[0.18em] text-home-brass mb-4">{title}</h3>
-      <div>{list.map((i) => <EraCard key={i.id} item={i} picked={picked.includes(i.id)} onToggle={() => toggle(i.id)} />)}</div>
-    </div>
-  );
+  // Intro.
+  if (step < 0) {
+    return (
+      <section className="space-y-5">
+        <BackToPlan update={update} right="About 3 minutes" />
+        <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">What should I ask about a house built in {year}?</h1>
+        <p className="text-lg text-slate-700">{main.length} things are worth checking for a house like this. We’ll go through them one at a time.</p>
+        <div className={card}>
+          <p className="font-bold mb-3">For each one, you’ll see:</p>
+          <ol className="space-y-2.5">
+            {['Why it matters, in a line', 'What to do about it', 'A choice: add it to your list, or skip it'].map((t, i) => (
+              <li key={t} className="flex gap-3 items-start">
+                <span className="w-6 h-6 shrink-0 rounded-full bg-home-stone text-home-brass text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                <span>{t}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <p className="text-xs text-slate-500">From Before Regret’s inspection guide, the same one behind our free report. It describes homes of this age and area, not this particular house.</p>
+        <button type="button" className={btnPrimary} onClick={() => setEra({ step: 0 })}>Show me the first one <ArrowRight className="w-4 h-4" /></button>
+      </section>
+    );
+  }
 
+  // One item.
+  if (step < seq.length) {
+    const item = seq[step];
+    return (
+      <EraStep item={item} label={label(item)} n={step + 1} total={seq.length} on={picked.includes(item.id)} update={update}
+        onAdd={() => decide(item.id, true)} onSkip={() => decide(item.id, false)}
+        onPrev={() => setEra({ step: step - 1 })} />
+    );
+  }
+
+  // Review.
+  const chosen = seq.filter((i) => picked.includes(i.id));
   return (
     <section className="space-y-5">
-      <BackToPlan update={update} right="About 3 minutes" />
-      <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">What should I ask about a house built in {year}?</h1>
-      <div className="rounded-2xl bg-home-sage/60 border border-home-sage p-4 space-y-1.5">
-        <p className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-home-moss"><Lightbulb className="w-3.5 h-3.5" /> Worth knowing</p>
-        <p>{eraSpecific.length + area.length} things are worth raising for a house like this. Each one says what to do next.</p>
-        <p className="text-xs text-slate-500">From Before Regret’s inspection guide. These describe homes of this age and area, not this particular house.</p>
-      </div>
-      {group(`Common in homes built around ${year}`, eraSpecific)}
-      {group(`Applies in ${state.property.state}`, area)}
-      {any.length > 0 && (
-        <details className={card}>
-          <summary className="cursor-pointer font-bold">Worth asking about any home ({any.length})</summary>
-          <div className="mt-4">{any.map((i) => <EraCard key={i.id} item={i} picked={picked.includes(i.id)} onToggle={() => toggle(i.id)} />)}</div>
-        </details>
+      <BackToPlan update={update} />
+      <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight">That’s all {seq.length}.</h1>
+      <p className="text-lg text-slate-700">
+        {chosen.length === 0 ? 'You didn’t add any. That’s fine. You can go back and add one any time.'
+          : `You added ${chosen.length} to your list.`}
+      </p>
+      {chosen.length > 0 && (
+        <div className={card}>
+          <ul className="space-y-2">
+            {chosen.map((i) => <li key={i.id} className="flex gap-2"><Check className="w-5 h-5 text-home-moss shrink-0 mt-0.5" />{i.title}</li>)}
+          </ul>
+        </div>
       )}
-      <div className="sticky bottom-4 pt-2">
-        <button type="button" className={`${btnPrimary} shadow-lg`} disabled={picked.length === 0}
-          onClick={() => update((s) => ({ era: { picked, solved: true } }))}>
-          Add {picked.length} to my report <ArrowRight className="w-4 h-4" />
-        </button>
+      {!withAny && any.length > 0 && (
+        <div className="rounded-2xl bg-home-stone p-4 space-y-2">
+          <p>{any.length === 1 ? 'One more is' : `${any.length} more are`} worth doing for any home, whatever its age:</p>
+          <ul className="list-disc pl-5 text-sm space-y-1">{any.map((i) => <li key={i.id}>{i.title}</li>)}</ul>
+          <button type="button" className={linkBtn} onClick={() => setEra({ withAny: true, step: main.length })}>Show me {any.length === 1 ? 'that one' : `those ${any.length}`}</button>
+        </div>
+      )}
+      <button type="button" className={btnPrimary} onClick={() => setEra({ solved: true })}>
+        {chosen.length ? <>Add {chosen.length} to my report <ArrowRight className="w-4 h-4" /></> : <>Done <ArrowRight className="w-4 h-4" /></>}
+      </button>
+      <div className="text-center">
+        <button type="button" className={linkBtn} onClick={() => setEra({ step: 0 })}>Go back through them</button>
       </div>
     </section>
   );

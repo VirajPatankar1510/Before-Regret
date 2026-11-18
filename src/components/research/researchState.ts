@@ -66,7 +66,8 @@ export interface ResearchState {
   stage: BuyingStage | null;
   deadline: string; // yyyy-mm-dd or ''
   claims: WorkKey[];
-  era: { picked: string[] | null; solved: boolean };
+  /** step: undefined = intro, 0..n-1 = one item each, n = review. withAny: the "any home" items were added to the walk. */
+  era: { picked: string[] | null; solved: boolean; step?: number; withAny?: boolean };
   permits: PermitsState;
   missions: Partial<Record<MissionId, MissionState>>;
   /** The saved free report built at the end (an /insights/ id). The findings themselves never leave the device. */
