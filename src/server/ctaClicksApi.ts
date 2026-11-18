@@ -17,6 +17,8 @@ const CTAS = new Set([
   'nav_for_advertisers',
   // Add-On Finder pitch demo (public/tools/add-on-finder/, 2026-11-12): did inspectors open it, and which view.
   'addon_demo_view_inspector', 'addon_demo_view_client',
+  // Address search box funnel (owner, 2026-11-18, homepage voice change): address picked, then report requested.
+  'report_address_selected', 'report_submit',
 ]);
 
 // Inspection Report Decoder usage (owner, 2026-10-30: "only for us" -- never displayed on the site). Same table, same
@@ -28,6 +30,14 @@ const DECODER_EVENTS = new Set([
 const DECODER_TERM_IDS = new Set(DECODER_TERMS.map((t) => t.id));
 export const isAllowedCta = (cta: string) =>
   CTAS.has(cta) || DECODER_EVENTS.has(cta) || (cta.startsWith('decoder_open:') && DECODER_TERM_IDS.has(cta.slice('decoder_open:'.length)));
+
+// Device class from the user-agent (owner, 2026-11-18). Only 'phone' / 'tablet' / 'desktop' is stored -- never the
+// user-agent string itself.
+export function deviceClass(ua: string): 'phone' | 'tablet' | 'desktop' {
+  if (/iPad|Tablet|PlayBook|Silk|Kindle/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua))) return 'tablet';
+  if (/Mobi|iPhone|iPod|Android.*Mobile|Windows Phone/i.test(ua)) return 'phone';
+  return 'desktop';
+}
 
 export function registerCtaClickRoutes(app: Express) {
   app.post('/api/cta-click', async (req: Request, res: Response) => {
@@ -41,8 +51,8 @@ export function registerCtaClickRoutes(app: Express) {
       if (typeof page !== 'string' || !page.startsWith('/') || page.length > 200) return;
       const path = page.split('?')[0].split('#')[0];
       await withDb((sql) => sql`
-        INSERT INTO cta_clicks (page_path, cta, click_day, visitor_hash)
-        VALUES (${path}, ${cta}, current_date, ${hashVisitor(req)})
+        INSERT INTO cta_clicks (page_path, cta, click_day, visitor_hash, device)
+        VALUES (${path}, ${cta}, current_date, ${hashVisitor(req)}, ${deviceClass(String(req.headers['user-agent'] || ''))})
         ON CONFLICT DO NOTHING
       `);
     } catch (err) {

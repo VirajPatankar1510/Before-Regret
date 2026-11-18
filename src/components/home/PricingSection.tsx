@@ -26,10 +26,10 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onScrollToSearch
           explained how the site is paid for was removed the same day at the owner's direction. */}
       <div className="text-center space-y-3 max-w-2xl mx-auto">
         <h2 className="font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">
-          Free for Home Buyers
+          Good research shouldn&rsquo;t cost you a fortune.
         </h2>
         <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-          No sign-up, no card, no subscription. Check every house you&rsquo;re considering.
+          Every report is free. No sign-up, no credit card, no subscription. Use it for every house you&rsquo;re considering.
         </p>
       </div>
 

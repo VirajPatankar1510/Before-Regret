@@ -6,6 +6,7 @@ import {
 import { PropertySearchResult } from '../types';
 import { isPlausibleYearBuilt } from '../engine/inspectionPriorities';
 import { ReportAssentNotice } from './ReportAssentNotice';
+import { reportCtaClick } from '../utils/ctaClickBeacon';
 
 interface AddressSearchBoxProps {
   onSelectProperty: (property: PropertySearchResult) => void;
@@ -251,6 +252,8 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   // existed for sign-in and payment, both gone. The server re-runs the address gate regardless.
   const submitReport = () => {
     if (!selectedPinResult || !canSubmit || !declaredPropertyType) return;
+    // Owner, 2026-11-18: measure the homepage voice change. Counts report requests by page (and device, server side).
+    reportCtaClick('report_submit');
     setShowPropertyTypeModal(false);
     onSelectProperty({
       ...selectedPinResult,
@@ -506,6 +509,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         });
 
         setCommercialHint(looksCommercial(item.class, item.type));
+        reportCtaClick('report_address_selected');
         setSelectedPinResult({
           placeId: `search_${item.place_id || Math.random().toString(36).substring(7)}`,
           formattedAddress: cleanDisplayName,
@@ -593,6 +597,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         });
 
         setCommercialHint(looksCommercial(item.class, item.type));
+        reportCtaClick('report_address_selected');
         setSelectedPinResult({
           placeId: `search_${item.place_id || Math.random().toString(36).substring(7)}`,
           formattedAddress: cleanDisplayName,
@@ -914,7 +919,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                         ? 'Enter Unit Number'
                         : gateState?.status === 'blocked'
                           ? 'Not Supported Yet'
-                          : 'Get My Free Report'}
+                          : 'Get the free report'}
                 </span>
                 <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
               </button>
@@ -1036,7 +1041,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                   ? 'Enter the unit number'
                   : formComplete && gateState?.status === 'blocked'
                     ? 'Not available for this address'
-                    : 'Get My Free Report'}
+                    : 'Get the free report'}
               </span>
               {canSubmit && <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />}
             </button>

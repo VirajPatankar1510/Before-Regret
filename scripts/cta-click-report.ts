@@ -20,4 +20,16 @@ const days = parseInt(process.argv[2] || '28', 10);
   const total = rows.reduce((n, r) => n + r.clicks, 0);
   for (const r of rows) console.log(`  ${String(r.clicks).padStart(4)}  ${r.cta.padEnd(22)} ${r.page_path}`);
   console.log(`\n  total ${total}`);
+
+  // Device split (column added 2026-11-18; older rows have none) and the search-box funnel.
+  const dev = (await withDb((sql) => sql`
+    SELECT cta, coalesce(device, 'unknown') AS device, count(*)::int AS clicks
+    FROM cta_clicks WHERE click_day > current_date - ${days}::int
+      AND cta IN ('report_address_selected', 'report_submit', 'guide_closing_report')
+    GROUP BY 1, 2 ORDER BY 1, clicks DESC
+  `)) as unknown as Array<{ cta: string; device: string; clicks: number }>;
+  if (dev.length) {
+    console.log(`\n  by device (report actions only)\n`);
+    for (const r of dev) console.log(`  ${String(r.clicks).padStart(4)}  ${r.cta.padEnd(24)} ${r.device}`);
+  }
 })();

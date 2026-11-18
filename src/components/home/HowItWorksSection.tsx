@@ -4,9 +4,9 @@ import { ShieldCheck, Search, ScanLine, FileCheck2 } from 'lucide-react';
 // 2026-10-04 redesign: same three steps and the same independence statement, word for word, set as
 // an illustrated sequence on a warm band instead of three identical white cards.
 const STEPS = [
-    { title: 'Enter any US residential address', body: "Any single-family home, condo, townhouse, or multi-family parcel, across all 50 states." },
-    { title: 'We validate and check what we can', body: "Your address is validated against the US Census geocoder, and we pull the live Census profile of its neighborhood. Everything else is era- and county-specific research, flagged for you to confirm at the source." },
-    { title: 'Get Report', body: "Exactly what to verify in person and what to ask the seller — ready before your inspection deadline." }
+    { title: 'Type in the address', body: "A single-family home, or a condo or multifamily unit with its unit number." },
+    { title: "We check what we can, and tell you what we couldn't", body: "We confirm the address with the U.S. Census geocoder and pull its neighborhood's Census profile. The rest is research based on the home's age and county. We'll flag what you should verify yourself using the original sources." },
+    { title: 'Get your report', body: "What to look at in person and what to ask the seller, ready before your next showing, offer or inspection." }
 ];
 const ICONS = [Search, ScanLine, FileCheck2];
 
@@ -15,7 +15,7 @@ export const HowItWorksSection: React.FC = () => (
     <div className="max-w-6xl mx-auto home-reveal">
       <div className="max-w-2xl">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-home-brass">Three steps</p>
-        <h2 className="mt-3 font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">How Before Regret Works</h2>
+        <h2 className="mt-3 font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">Here&rsquo;s how it works</h2>
       </div>
 
       <ol className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5 relative">
@@ -40,8 +40,8 @@ export const HowItWorksSection: React.FC = () => (
       <div className="mt-8 mx-auto max-w-3xl rounded-2xl bg-white/70 border border-home-linen px-5 py-4 flex gap-3 items-start">
         <ShieldCheck className="w-5 h-5 text-home-moss shrink-0 mt-0.5" />
         <p className="text-sm leading-relaxed text-slate-700">
-          <span className="font-bold text-home-ink">Independence statement. </span>
-          Before Regret isn't here to criticize builders, agents, or sellers — we believe transparency leads to better conversations and more confident decisions.
+          <span className="font-bold text-home-ink">Good information makes everyone better prepared. </span>
+          We&rsquo;re not here to knock builders, agents or sellers. We&rsquo;re here to help you ask better questions and make more informed decisions.
         </p>
       </div>
     </div>

@@ -24,11 +24,12 @@ export const ClosingCtaSection: React.FC<ClosingCtaSectionProps> = ({ onScrollTo
         />
         <div className="p-8 sm:p-14 flex flex-col justify-center text-center md:text-left space-y-8">
         <div className="relative z-10 max-w-3xl space-y-4">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-home-oak">Don&rsquo;t buy a house blind.</p>
           <h2 className="font-serif text-3xl sm:text-5xl font-semibold text-white tracking-tight leading-tight">
-            Researching a home you're about to tour?
+            Touring a house this week?
           </h2>
           <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-            Run the address before your walkthrough — it takes 60 seconds and you'll know exactly what to look for.
+            Run the address before you go. You&rsquo;ll walk in knowing what to look at.
           </p>
         </div>
 

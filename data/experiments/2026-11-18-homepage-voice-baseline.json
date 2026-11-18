@@ -1,0 +1,93 @@
+{
+ "experiment": "homepage voice copy (docs/plans/homepage-voice-draft-2026-11.md, revision 2)",
+ "owner_approved": "2026-11-18",
+ "baseline_window": "2026-10-22..2026-11-18 (28 days)",
+ "reports_generated_total": 12,
+ "reports_generated_by_day": [
+  {
+   "day_utc_start": "2026-10-21T18:30:00.000Z",
+   "n": 2
+  },
+  {
+   "day_utc_start": "2026-10-26T18:30:00.000Z",
+   "n": 1
+  },
+  {
+   "day_utc_start": "2026-10-29T18:30:00.000Z",
+   "n": 1
+  },
+  {
+   "day_utc_start": "2026-11-01T18:30:00.000Z",
+   "n": 1
+  },
+  {
+   "day_utc_start": "2026-11-03T18:30:00.000Z",
+   "n": 1
+  },
+  {
+   "day_utc_start": "2026-11-09T18:30:00.000Z",
+   "n": 2
+  },
+  {
+   "day_utc_start": "2026-11-13T18:30:00.000Z",
+   "n": 1
+  },
+  {
+   "day_utc_start": "2026-11-14T18:30:00.000Z",
+   "n": 2
+  },
+  {
+   "day_utc_start": "2026-11-16T18:30:00.000Z",
+   "n": 1
+  }
+ ],
+ "cta_clicks_by_page": [
+  {
+   "cta": "nav_for_advertisers",
+   "page_path": "/",
+   "n": 4
+  },
+  {
+   "cta": "decoder_view",
+   "page_path": "/tools/inspection-decoder/",
+   "n": 3
+  },
+  {
+   "cta": "guide_closing_report",
+   "page_path": "/guides/check-building-permits-cook-county-il/",
+   "n": 1
+  },
+  {
+   "cta": "guide_closing_report",
+   "page_path": "/guides/lead-service-line-lookup-by-address/",
+   "n": 1
+  },
+  {
+   "cta": "guide_closing_report",
+   "page_path": "/guides/standard-home-inspection-check-eifs-stucco-moisture/",
+   "n": 1
+  },
+  {
+   "cta": "addon_demo_view_client",
+   "page_path": "/tools/add-on-finder/",
+   "n": 1
+  },
+  {
+   "cta": "nav_free_report",
+   "page_path": "/guides/splice-romex-knob-tube-wiring/",
+   "n": 1
+  },
+  {
+   "cta": "addon_demo_view_inspector",
+   "page_path": "/tools/add-on-finder/",
+   "n": 1
+  }
+ ],
+ "notes": [
+  "The homepage search button was NOT tracked before 2026-11-18; report_address_selected and report_submit start with this change, so there is no click baseline for them -- generated_reports is the before/after measure.",
+  "Device class is recorded from 2026-11-18 only.",
+  "Some baseline reports may be our own test runs; not separable.",
+  "Volumes are small (single digits per week): treat the read as directional."
+ ],
+ "read_on": "2026-12-16 (28 days after deploy)"
+}

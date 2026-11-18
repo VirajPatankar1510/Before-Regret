@@ -626,6 +626,8 @@ export async function ensureArticlesSchema(): Promise<void> {
   await sql`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_cta_clicks_unique ON cta_clicks(page_path, cta, click_day, visitor_hash)
   `;
+  // Device class (phone / tablet / desktop) since 2026-11-18; NULL on older rows.
+  await sql`ALTER TABLE cta_clicks ADD COLUMN IF NOT EXISTS device TEXT`;
 
   // pro_listings (Find a Pro) is no longer created here: the feature was removed on 2026-11-15 (owner
   // decision). The table is left in place in the database, untouched; it holds only the owner's own
