@@ -172,7 +172,7 @@ const Where: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, s
               searchWays.length > 0
                 ? <>Search by {searchWays.length > 1 ? `${searchWays.slice(0, -1).join(', ')} or ${searchWays[searchWays.length - 1]}` : searchWays[0]}.{searchBy?.value.quirks?.length ? <ul className="list-disc pl-5 mt-1.5 space-y-1 text-sm text-slate-600">{searchBy.value.quirks.map((q) => <li key={q}>{q}</li>)}</ul> : null}</>
                 : <>Search by the street address. If nothing comes up, try just the street name.</>,
-              <>Look for {what}. Note the permit number, and whether it says finaled, closed or completed.</>,
+              <>Look for {what}. Note the permit number, and whether it’s signed off. It may say final, finaled, closed or completed.</>,
             ]} />
             {tested && <p className="text-sm text-slate-600"><b>When we tried it:</b> {tested.value}<Status status={tested.status} checkedOn={tested.checkedOn} limits={'limits' in tested ? tested.limits : undefined} /></p>}
             {online && <p className="text-sm text-slate-600"><b>Online records start:</b> {online.value}<Status status={online.status} checkedOn={online.checkedOn} limits={'limits' in online ? online.limits : undefined} /></p>}
@@ -252,7 +252,7 @@ const Record: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, 
       </div>
       {a.found === 'yes' && (
         <div className={`${card} space-y-3`}>
-          <p id={`pf-${k}`} className="font-bold">Is it finaled? <span className="block font-normal text-sm text-slate-500">It may say closed, completed or signed off.</span></p>
+          <p id={`pf-${k}`} className="font-bold">Was it signed off? <span className="block font-normal text-sm text-slate-500">It may say final, finaled, closed or completed.</span></p>
           <div className="space-y-2.5" role="group" aria-labelledby={`pf-${k}`}>
             <Choice on={a.fin === 'yes'} onClick={() => set({ found: 'yes', fin: 'yes' })}>Yes</Choice>
             <Choice on={a.fin === 'no'} onClick={() => set({ found: 'yes', fin: 'no' })}>No, it’s still open</Choice>

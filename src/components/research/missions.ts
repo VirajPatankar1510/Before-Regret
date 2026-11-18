@@ -225,7 +225,7 @@ export const MISSIONS: Record<MissionId, MissionDef> = {
           },
           {
             id: 'grr',
-            label: 'Galvanized Requiring Replacement',
+            label: 'Galvanized Requiring Replacement (counted like lead)',
             meaning: {
               tone: 'ask',
               text: 'The utility counts this line as needing replacement, the same as lead. That’s the rule for galvanized pipe that is or ever was downstream of lead, or of a line of unknown material. Ask the same questions you would for lead.',

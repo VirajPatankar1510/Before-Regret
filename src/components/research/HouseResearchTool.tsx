@@ -500,28 +500,20 @@ const CopyList: React.FC<{ title: string; lines: string[] }> = ({ title, lines }
 export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolean }> = ({ state, compact }) => {
   const p = state.property;
   const { checklist, permitRows, missionRows, seller, verify } = collectFindings(state);
+  const open = QUESTIONS.filter((q) => q.live && !isSolved(state, q.id));
   return (
     <div className="space-y-7">
-      <div className="space-y-2">
-        <h2 className="text-lg font-bold">At a glance</h2>
-        <div className={`${card} divide-y divide-home-linen !py-2`}>
-          {QUESTIONS.map((q) => {
-            const solved = isSolved(state, q.id);
-            return (
-              <div key={q.id} className="flex items-center justify-between gap-3 py-3 text-sm">
-                <span>{q.title(state)}</span>
-                <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${solved ? 'bg-home-sage text-home-moss' : 'bg-home-stone text-slate-500'}`}>
-                  {solved ? 'Answered' : q.live ? 'Still open' : 'Coming soon'}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      {open.length > 0 && (
+        <p className="rounded-2xl bg-home-stone/70 border border-home-linen p-4 text-sm">
+          <b>Not answered yet:</b> {open.map((q) => q.title(state)).join(' · ')}
+        </p>
+      )}
+
+      {(permitRows.length > 0 || missionRows.length > 0) && <h2 className="text-xl font-bold !mb-[-0.5rem]">What you found</h2>}
 
       {permitRows.length > 0 && (
         <div className="space-y-2">
-          <h2 className="text-lg font-bold"><span className={`${eyebrow} block`}>Check</span>What the permit records show</h2>
+          <h3 className="font-semibold text-slate-600 pt-2">Permits</h3>
           <div className="space-y-2.5">
             {permitRows.map(({ key, meaning }) => (
               <div key={key} className="rounded-2xl border border-home-linen bg-white p-4 grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-sm break-inside-avoid">
@@ -540,7 +532,7 @@ export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolea
 
       {missionRows.map((m) => (
         <div key={m.id} className="space-y-2">
-          <h2 className="text-lg font-bold"><span className={`${eyebrow} block`}>Check</span>{m.title}</h2>
+          <h3 className="font-semibold text-slate-600 pt-2">{m.title}</h3>
           <div className="space-y-2.5">
             {m.rows.map(({ key, meaning }) => (
               <div key={key} className="rounded-2xl border border-home-linen bg-white p-4 grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-sm break-inside-avoid">
@@ -558,7 +550,7 @@ export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolea
 
       {checklist.length > 0 && !compact && (
         <div className="space-y-2">
-          <h2 className="text-lg font-bold"><span className={`${eyebrow} block`}>Check</span>Your checklist for a house built in {p.yearBuilt}</h2>
+          <h2 className="text-xl font-bold">Your checklist for a house built in {p.yearBuilt}</h2>
           <div className="space-y-2.5">
             {checklist.map((i) => (
               <div key={i.id} className="rounded-2xl border border-home-linen bg-white p-4 space-y-2 break-inside-avoid">
@@ -572,7 +564,7 @@ export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolea
       )}
 
       <div className="space-y-3">
-        <h2 className="text-lg font-bold"><span className={`${eyebrow} block`}>Ask</span>Questions, ready to send</h2>
+        <h2 className="text-xl font-bold">Questions, ready to send</h2>
         <CopyList title="For the seller" lines={seller} />
         <CopyList title="Your checklist, to share with your agent or inspector" lines={checklist.map((i) => `${i.title}: ${i.howToCheck}`)} />
         {compact && checklist.length > 0 && <p className="text-xs text-slate-500">More on each one is in “Inspection priorities” below.</p>}
@@ -580,7 +572,7 @@ export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolea
 
       {verify.length > 0 && (
         <div className="space-y-2">
-          <h2 className="text-lg font-bold"><span className={`${eyebrow} block`}>Verify</span>Before {state.deadline ? formatShortDate(state.deadline) : 'closing'}</h2>
+          <h2 className="text-xl font-bold">To confirm before {state.deadline ? formatShortDate(state.deadline) : 'closing'}</h2>
           <ul className="space-y-1.5">{verify.map((v) => <li key={v} className="flex gap-2 text-sm"><span className="w-4 h-4 mt-0.5 rounded border border-slate-400 shrink-0" />{v}</li>)}</ul>
         </div>
       )}
@@ -597,8 +589,6 @@ export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolea
 const ReportView: React.FC<{ state: ResearchState; update: Updater; onFinish: () => void; error: string | null; hasFinal: boolean }> = ({ state, update, onFinish, error, hasFinal }) => {
   const p = state.property;
   const dl = daysLeft(state.deadline);
-  const live = QUESTIONS.filter((q) => q.live);
-  const open = live.filter((q) => !isSolved(state, q.id));
   const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
   return (
@@ -615,7 +605,6 @@ const ReportView: React.FC<{ state: ResearchState; update: Updater; onFinish: ()
 
       <ResearchFindings state={state} />
 
-      {open.length > 0 && <p className="text-sm text-slate-600">{open.length} question{open.length === 1 ? '' : 's'} still open. You can answer {open.length === 1 ? 'it' : 'them'} first, or finish now.</p>}
 
       {error && <p role="alert" className="rounded-2xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-900">{error}</p>}
       {hasFinal ? (

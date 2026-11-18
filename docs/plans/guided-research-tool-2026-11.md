@@ -106,8 +106,17 @@ Second round (same day, "do next"):
   work may only have a paper permit, and asks when the work was done and by whom.
 - The report no longer says "Checked by you with the inspection report" when the inspection hasn't happened.
 
-Still open: jargon (finaled, scope, WDI, Galvanized Requiring Replacement); the report's "At a glance" and repeated
-CHECK labels; homepage two-button clarity.
+Third round (same day):
+- **Plain words.** "Is it finaled?" became "Was it signed off?" (portal terms listed underneath). Eight checklist titles
+  have plainer wording in the tool only (`PLAIN_TITLE` in `researchState.ts`, e.g. "Have a plumber run a camera through
+  the sewer line", "If the house sits on piers, have the inspector go into the crawlspace"). The engine, quick report
+  and guides keep their wording; the "What to do" lines still name the service to book (sewer scope, WDI report).
+  "Galvanized Requiring Replacement" keeps the utility's label, with "(counted like lead)".
+- **Report:** "At a glance" (five "Answered" tags) and the CHECK/ASK/VERIFY labels removed. Now: "Not answered yet"
+  (only if any), "What you found", the checklist, "Questions, ready to send", "To confirm before [date]".
+
+Still open: homepage two-button clarity. The labels and the hero line are the owner's words (2026-11-18), so this is
+a proposal for the owner, not a change.
 
 ## Publish gate
 

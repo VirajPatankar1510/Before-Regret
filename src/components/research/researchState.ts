@@ -150,6 +150,20 @@ export interface EraItem extends InspectionPriority { group: EraGroup }
  * the report. Grouped so each card says honestly why it's there: the house's age, the state or county, or
  * "worth asking about any home".
  */
+/** Plainer titles for the tool than the engine's (fresh-eyes walk-through 2026-11-18: "scope", "WDI", "Level 2",
+ *  "branch circuit" and "HVAC" mean nothing to a first-time buyer). Same advice, same rule; the engine, the quick report
+ *  and the guides keep their own wording. */
+const PLAIN_TITLE: Record<string, string> = {
+  sewer_cast_iron: 'Have a plumber run a camera through the sewer line',
+  termite_wdi_inspection: 'Get a termite and wood-insect inspection (a WDI report)',
+  chimney_level2: 'If there’s a fireplace or wood stove, have the inside of the chimney inspected',
+  pier_and_beam: 'If the house sits on piers, have the inspector go into the crawlspace',
+  electrical_aluminum_wiring: 'Find out whether the wiring is copper or aluminum',
+  hvac_age: 'Get the age of the heating, air conditioning and water heater in writing',
+  knob_and_tube: 'Check for old knob-and-tube wiring that’s still live',
+  polybutylene_supply: 'Check whether the water pipes are polybutylene',
+};
+
 export function eraItems(property: PropertySearchResult): { eraLabel: string; items: EraItem[] } | null {
   const year = property.yearBuilt;
   const result = getInspectionPriorities(year, property.county, property.state);
@@ -158,7 +172,7 @@ export function eraItems(property: PropertySearchResult): { eraLabel: string; it
     const rule = PRIORITY_RULES.find((r) => r.id === p.id);
     const yearGated = !!rule && (rule.minYear > 1800 || rule.maxYear < CURRENT_YEAR);
     const areaGated = !!rule && (!!rule.states?.length || !!rule.counties?.length);
-    return { ...p, group: yearGated ? 'era' : areaGated ? 'area' : 'any' };
+    return { ...p, title: PLAIN_TITLE[p.id] ?? p.title, group: yearGated ? 'era' : areaGated ? 'area' : 'any' };
   });
   return { eraLabel: getEraLabel(year), items };
 }
@@ -247,14 +261,14 @@ export function permitMeaning(k: PermitItemKey, a: PermitFinding | undefined, of
   if (a.found === 'yes') {
     if (!a.fin) return null;
     if (a.fin === 'yes') {
-      return { tone: 'good', text: 'On record and signed off. Nice. Note the permit number for your files.', seller: null, verify: null, found: 'Permit on record, finaled', next: 'Keep the permit number' };
+      return { tone: 'good', text: 'On record and signed off. Nice. Note the permit number for your files.', seller: null, verify: null, found: 'Permit on record, signed off', next: 'Keep the permit number' };
     }
     if (a.fin === 'no') {
       return {
         tone: 'ask',
         text: 'There’s a permit, but it isn’t closed. That doesn’t automatically mean something’s wrong. Ask the seller to get it inspected and signed off before you close.',
         openPermitsLink: true,
-        seller: any ? 'There’s an open permit on the house. Can it be inspected and closed out before closing?' : `The ${w} permit isn’t shown as finaled. Can it be inspected and closed out before closing?`,
+        seller: any ? 'There’s an open permit on the house. Can it be inspected and closed out before closing?' : `The ${w} permit isn’t shown as signed off. Can it be inspected and closed out before closing?`,
         verify: any ? 'Open permits are closed out' : `The ${w} permit is closed out`,
         found: 'Permit found, still open',
         next: 'Ask the seller to close it out',
@@ -262,9 +276,9 @@ export function permitMeaning(k: PermitItemKey, a: PermitFinding | undefined, of
     }
     return {
       tone: 'ask',
-      text: 'There’s a permit. If you can’t see a final inspection or a finaled date, treat it as open and ask the seller.',
-      seller: any ? 'Were all permits on the house finaled? Can you share the final inspection records?' : `Was the ${w} permit finaled? Can you share the final inspection record?`,
-      verify: any ? 'Every permit on the house was finaled' : `The ${w} permit was finaled`,
+      text: 'There’s a permit. If you can’t see a final inspection or a sign-off date, treat it as open and ask the seller.',
+      seller: any ? 'Were all permits on the house signed off after a final inspection? Can you share the records?' : `Was the ${w} permit signed off after a final inspection? Can you share the record?`,
+      verify: any ? 'Every permit on the house was signed off' : `The ${w} permit was signed off`,
       found: 'Permit found, closure unclear',
       next: 'Ask for the final inspection',
     };
