@@ -7,7 +7,9 @@
 // no personal data.
 export type CtaId = 'guide_closing_report' | 'nav_free_report' | 'nav_for_advertisers'
   // Address search box funnel (owner, 2026-11-18): an address picked, then a report requested.
-  | 'report_address_selected' | 'report_submit';
+  | 'report_address_selected' | 'report_submit'
+  // The two hero buttons (owner, 2026-11-18).
+  | 'choose_research' | 'choose_quick_report' | 'research_start';
 
 /** Inspection Report Decoder usage events -- private, for us only (src/server/ctaClicksApi.ts). */
 export type DecoderEvent =

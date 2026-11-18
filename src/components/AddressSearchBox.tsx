@@ -11,9 +11,10 @@ import { reportCtaClick } from '../utils/ctaClickBeacon';
 interface AddressSearchBoxProps {
   onSelectProperty: (property: PropertySearchResult) => void;
   /**
-   * Guided research tool (owner, 2026-11-18; unpublished). When set, the property-type step offers
-   * "Research it step by step" beside the quick report. Same checks, same property object -- only the
-   * destination differs. The quick report stays the primary button: nobody is forced into the longer flow.
+   * Guided research tool (owner, 2026-11-18; unpublished). When set, two buttons sit under the search bar:
+   * "Start research" and "Generate quick report" (owner's words, 2026-11-18). Either one looks the address up,
+   * then the same property-type step, then that path. Same checks, same property object -- only the
+   * destination differs, and nobody is forced into the longer flow.
    */
   onStartResearch?: (property: PropertySearchResult) => void;
 }
@@ -238,6 +239,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   // address that was just picked, and the dropdown reopens on top of the confirmation card a
   // moment later -- see the effect for the full report this came from.
   const suppressNextSuggestRef = useRef(false);
+  // Which hero button the visitor pressed. Picking a suggestion or pressing Enter only finds the address;
+  // the property-type step opens once a path has been chosen.
+  const [intent, setIntent] = useState<'research' | 'quick' | null>(null);
 
   // True once the reader has picked an address, or while one is being resolved. Gates the whole
   // confirmation block below -- validation gate banner, property panel, submit button. This was
@@ -261,6 +265,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     // Owner, 2026-11-18: measure the homepage voice change. Counts report requests by page (and device, server side).
     reportCtaClick('report_submit');
     setShowPropertyTypeModal(false);
+    setIntent(null);
     onSelectProperty({
       ...selectedPinResult,
       declaredPropertyType,
@@ -270,7 +275,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   };
   const startResearch = () => {
     if (!onStartResearch || !selectedPinResult || !canSubmit || !declaredPropertyType) return;
+    reportCtaClick('research_start');
     setShowPropertyTypeModal(false);
+    setIntent(null);
     onStartResearch({
       ...selectedPinResult,
       declaredPropertyType,
@@ -308,7 +315,8 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     setUnitNumber('');
     setYearBuilt('');
     setCommercialHintDismissed(false);
-    if (selectedPinResult) {
+    // Without the two buttons (no onStartResearch) a found address goes straight to the next step, as before.
+    if (selectedPinResult && (intent || !onStartResearch)) {
       setShowPropertyTypeModal(true);
     }
   }, [selectedPinResult?.placeId]);
@@ -637,6 +645,27 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
 
   const handleMapSearch = async (e: React.FormEvent) => {
     e.preventDefault();
+    await lookup();
+  };
+
+  // The two hero buttons. With the address already found, go to the property-type step; otherwise
+  // look up what's in the box first (the step then opens on its own, see the selection effect).
+  const choose = (path: 'research' | 'quick') => {
+    reportCtaClick(path === 'research' ? 'choose_research' : 'choose_quick_report');
+    setIntent(path);
+    if (selectedPinResult) {
+      setShowPropertyTypeModal(true);
+      return;
+    }
+    if (!mapSearchQuery.trim()) {
+      setMapSearchError('Type the street address first, with the city and state.');
+      document.getElementById('address-search-input')?.focus();
+      return;
+    }
+    void lookup();
+  };
+
+  const lookup = async () => {
     if (!mapSearchQuery.trim()) return;
 
     setShowSuggestions(false);
@@ -751,6 +780,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               onChange={(e) => {
                 setMapSearchQuery(e.target.value);
                 if (mapSearchError) setMapSearchError(null);
+                // A new address replaces the one found before; the buttons then look up what's typed now.
+                if (onStartResearch && selectedPinResult) setSelectedPinResult(null);
+                if (intent) setIntent(null);
               }}
               onFocus={() => {
                 if (suggestions.length > 0) setShowSuggestions(true);
@@ -763,13 +795,13 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               className="w-full text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 bg-transparent focus:outline-none"
             />
           </div>
-          <button
+          {!onStartResearch && <button
             type="submit"
             disabled={isSearchingMap}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl transition-all shadow-md flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-50"
           >
             {isSearchingMap ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>Search</span>}
-          </button>
+          </button>}
 
           {/* Search Auto-suggestions Dropdown */}
           {showSuggestions && suggestions.length > 0 && (
@@ -789,6 +821,31 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           )}
         </form>
       </div>
+
+      {onStartResearch && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <button
+            type="button"
+            onClick={() => choose('research')}
+            disabled={isSearchingMap}
+            className="px-5 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+          >
+            {isSearchingMap && intent === 'research' ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+            <span>Start research</span>
+            <ArrowRight className="w-4 h-4 shrink-0" />
+          </button>
+          <button
+            type="button"
+            onClick={() => choose('quick')}
+            disabled={isSearchingMap}
+            className="px-5 py-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-900 font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+          >
+            {isSearchingMap && intent === 'quick' ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+            <span>Generate quick report</span>
+            <ArrowRight className="w-4 h-4 shrink-0" />
+          </button>
+        </div>
+      )}
 
       {mapSearchError && (
         <div className="bg-red-950/80 border border-red-500/30 rounded-xl p-3 text-xs text-red-300 flex items-center gap-2">
@@ -901,7 +958,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               )
             )}
 
-            {selectedPinResult && (
+            {selectedPinResult && !onStartResearch && (
               <button
                 type="button"
                 disabled={analyzeDisabled}
@@ -941,16 +998,6 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               </button>
             )}
 
-            {selectedPinResult && onStartResearch && canAnalyze && (
-              <button
-                type="button"
-                onClick={startResearch}
-                className="w-full px-4 sm:px-5 py-2.5 font-bold text-xs sm:text-sm rounded-lg sm:rounded-xl border border-slate-300 bg-white text-slate-900 hover:border-slate-500 transition-all flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <span>Or research it step by step</span>
-                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-              </button>
-            )}
         </div>
       )}
       </>
@@ -1053,44 +1100,42 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               </div>
             )}
 
-            <button
-              type="button"
-              disabled={!canSubmit}
-              onClick={submitReport}
-              className={`w-full px-4 py-2.5 sm:py-3 font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 tracking-tight ${
-                !canSubmit
-                  ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-60'
-                  : 'bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer'
-              }`}
-            >
-              <span>
-                {formComplete && gateState?.promptForUnit
-                  ? 'Enter the unit number'
-                  : formComplete && gateState?.status === 'blocked'
-                    ? 'Not available for this address'
-                    : 'Get the free report'}
-              </span>
-              {canSubmit && <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />}
-            </button>
-
-            {onStartResearch && (
-              <div className="space-y-1">
-                <button
-                  type="button"
-                  disabled={!canSubmit}
-                  onClick={startResearch}
-                  className={`w-full px-4 py-2.5 sm:py-3 font-bold text-xs sm:text-sm rounded-lg sm:rounded-xl border transition-all flex items-center justify-center gap-2 tracking-tight ${
-                    !canSubmit
-                      ? 'border-slate-200 text-slate-400 cursor-not-allowed'
-                      : 'border-slate-300 bg-white text-slate-900 hover:border-slate-500 cursor-pointer'
-                  }`}
-                >
-                  <span>Or research it step by step</span>
-                  {canSubmit && <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />}
-                </button>
-                <p className="text-[11px] text-slate-500 text-center">A few questions at a time. You finish with your own report.</p>
-              </div>
-            )}
+            {(() => {
+              // The main button is the path the visitor chose under the search bar; the other path stays one tap away.
+              const research = !!onStartResearch && intent !== 'quick';
+              const blockedLabel = formComplete && gateState?.promptForUnit
+                ? 'Enter the unit number'
+                : formComplete && gateState?.status === 'blocked'
+                  ? 'Not available for this address'
+                  : null;
+              const mainLabel = blockedLabel || (research ? 'Start research' : onStartResearch ? 'Generate quick report' : 'Get the free report');
+              return (
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    disabled={!canSubmit}
+                    onClick={research ? startResearch : submitReport}
+                    className={`w-full px-4 py-2.5 sm:py-3 font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 tracking-tight ${
+                      !canSubmit
+                        ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-60'
+                        : 'bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer'
+                    }`}
+                  >
+                    <span>{mainLabel}</span>
+                    {canSubmit && <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />}
+                  </button>
+                  {onStartResearch && canSubmit && (
+                    <button
+                      type="button"
+                      onClick={research ? submitReport : startResearch}
+                      className="w-full text-center text-xs font-semibold text-slate-600 hover:text-slate-900 underline underline-offset-4 cursor-pointer py-1"
+                    >
+                      {research ? 'Or generate a quick report instead' : 'Or start research instead'}
+                    </button>
+                  )}
+                </div>
+              );
+            })()}
 
             <ReportAssentNotice />
           </div>

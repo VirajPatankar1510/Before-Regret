@@ -19,6 +19,8 @@ const CTAS = new Set([
   'addon_demo_view_inspector', 'addon_demo_view_client',
   // Address search box funnel (owner, 2026-11-18, homepage voice change): address picked, then report requested.
   'report_address_selected', 'report_submit',
+  // The two hero buttons (owner, 2026-11-18): which path a visitor picks, and whether research is started.
+  'choose_research', 'choose_quick_report', 'research_start',
 ]);
 
 // Inspection Report Decoder usage (owner, 2026-10-30: "only for us" -- never displayed on the site). Same table, same

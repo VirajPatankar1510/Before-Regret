@@ -139,13 +139,18 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
             you sign.
           </p>
 
-          <div ref={searchBoxRef} id="address-search-box" className="mt-8 min-h-[76px] text-left text-slate-900">
+          <div ref={searchBoxRef} id="address-search-box" className="mt-8 min-h-[190px] sm:min-h-[140px] text-left text-slate-900">
             {searchBox ?? (
-              <div aria-hidden="true" className="rounded-2xl bg-white border border-slate-200 shadow-lg p-3 flex gap-2">
-                <div className="flex-1 rounded-xl bg-slate-50 border border-slate-300 px-4 py-3 text-slate-400 text-sm">
-                  e.g. 301 Congress Ave, Austin, TX
+              <div aria-hidden="true" className="space-y-4">
+                <div className="rounded-2xl bg-white border border-slate-200 shadow-lg p-3 sm:p-4">
+                  <div className="rounded-xl bg-slate-50 border border-slate-300 px-3 py-2 text-slate-400 text-xs sm:text-sm">
+                    e.g. 301 Congress Ave, Austin, TX
+                  </div>
                 </div>
-                <div className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white">Search</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div className="rounded-xl bg-blue-600 px-5 py-3.5 text-sm font-bold text-white text-center">Start research</div>
+                  <div className="rounded-xl bg-white border border-slate-300 px-5 py-3.5 text-sm font-bold text-slate-900 text-center">Generate quick report</div>
+                </div>
               </div>
             )}
           </div>
