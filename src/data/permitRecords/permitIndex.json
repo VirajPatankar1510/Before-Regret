@@ -1,0 +1,4249 @@
+{
+ "schemaVersion": 1,
+ "counties": [
+  {
+   "state": "AZ",
+   "countyFips": "04013",
+   "county": "Maricopa County",
+   "guideSlug": "check-building-permits-maricopa-county-az",
+   "coverage": {
+    "status": "not_researched"
+   },
+   "jurisdictions": [
+    {
+     "id": "az-maricopa-uninc",
+     "name": "Unincorporated Maricopa County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "az-maricopa-uninc",
+      "sourceUrl": "https://www.maricopa.gov/6003/Maricopa-Countys-Permit-Center",
+      "checkedOn": "2026-09-04",
+      "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "partially_verified",
+      "value": {
+       "name": "Maricopa County Permit Center"
+      },
+      "sourceUrl": "https://www.maricopa.gov/6003/Maricopa-Countys-Permit-Center",
+      "checkedOn": "2026-09-04",
+      "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+     },
+     "portalUrl": {
+      "status": "partially_verified",
+      "value": "https://www.maricopa.gov/6003/Maricopa-Countys-Permit-Center",
+      "sourceUrl": "https://www.maricopa.gov/6003/Maricopa-Countys-Permit-Center",
+      "checkedOn": "2026-09-04",
+      "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "partially_verified",
+      "value": "May 2009",
+      "sourceUrl": "https://www.maricopa.gov/6003/Maricopa-Countys-Permit-Center",
+      "checkedOn": "2026-09-04",
+      "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+     },
+     "historicalSystems": {
+      "status": "partially_verified",
+      "value": [
+       {
+        "name": "Permit Viewer",
+        "covers": "closed permits, planning cases and violations, 1999 to June 2024"
+       }
+      ],
+      "sourceUrl": "https://www.maricopa.gov/6003/Maricopa-Countys-Permit-Center",
+      "checkedOn": "2026-09-04",
+      "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "partially_verified",
+      "value": [
+       "The county replaced its permitting system in June 2024, so a house altered before and after that date can have records in two systems."
+      ],
+      "sourceUrl": "https://www.maricopa.gov/6003/Maricopa-Countys-Permit-Center",
+      "checkedOn": "2026-09-04",
+      "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+     }
+    },
+    {
+     "id": "az-maricopa-phoenix",
+     "name": "City of Phoenix",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "not_researched"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    }
+   ]
+  },
+  {
+   "state": "CA",
+   "countyFips": "06037",
+   "county": "Los Angeles County",
+   "guideSlug": "check-building-permits-los-angeles-county-ca",
+   "coverage": {
+    "status": "partially_verified",
+    "value": "LA County Public Works (Building and Safety) serves unincorporated communities and contract cities. Its page says 8 contract city offices but its office list names 5. Other incorporated cities, including the City of Los Angeles, are not covered by the county.",
+    "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/about",
+    "checkedOn": "2026-11-17",
+    "limits": "The 3 unnamed contract cities and which incorporated cities run their own departments are not confirmed; ladbs.org (City of LA) blocks our region."
+   },
+   "jurisdictions": [
+    {
+     "id": "ca-la-uninc",
+     "name": "Unincorporated Los Angeles County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "ca-la-uninc",
+      "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/about",
+      "checkedOn": "2026-11-17"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Los Angeles County Public Works, Building and Safety Division",
+      "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/about",
+      "checkedOn": "2026-11-17"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "EPIC-LA",
+       "platform": "Tyler EnerGov Self Service"
+      },
+      "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/",
+      "checkedOn": "2026-11-17"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://losangelescountyca-energovweb.tylerhost.net/apps/selfservice#/search",
+      "sourceUrl": "https://losangelescountyca-energovweb.tylerhost.net/apps/selfservice#/search",
+      "checkedOn": "2026-11-17"
+     },
+     "searchBy": {
+      "status": "verified",
+      "value": {
+       "address": true,
+       "parcel": null,
+       "permitNumber": null,
+       "quirks": [
+        "One keyword-or-address box; filter by Permit, Plan, Inspection, License or Project",
+        "No account needed to search"
+       ]
+      },
+      "sourceUrl": "https://losangelescountyca-energovweb.tylerhost.net/apps/selfservice#/search",
+      "checkedOn": "2026-11-17"
+     },
+     "addressSearchTested": {
+      "status": "verified",
+      "value": "Anonymous search for 13650 Mindanao Way (Burton Chace Park, a county park) returned 53 records: road, utility, film and vending permits, issued 2016 to 2026.",
+      "sourceUrl": "https://losangelescountyca-energovweb.tylerhost.net/apps/selfservice#/search",
+      "checkedOn": "2026-11-17"
+     },
+     "onlineRecordsFrom": {
+      "status": "partially_verified",
+      "value": "2015 or earlier (a record applied for in 2015 at the address we searched)",
+      "sourceUrl": "https://losangelescountyca-energovweb.tylerhost.net/apps/selfservice#/search",
+      "checkedOn": "2026-11-17",
+      "limits": "The county does not state where EPIC-LA records begin, and no building permit appeared at our test address, so building-permit coverage is unconfirmed."
+     },
+     "historicalSystems": {
+      "status": "partially_verified",
+      "value": [
+       {
+        "name": "Building Permit Viewer",
+        "url": "https://dpw.lacounty.gov/bsd/bpv/",
+        "covers": "not stated"
+       }
+      ],
+      "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/",
+      "checkedOn": "2026-11-17",
+      "limits": "Linked from the county page; it stayed on its loading screen for us, so what it holds is unknown."
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "EPIC-LA results mix building permits with road, utility, film and vending permits; filter by type.",
+       "Since July 6, 2026, permits for the unincorporated Torrance and Harbor City areas are handled by the Lomita District Office."
+      ],
+      "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/",
+      "checkedOn": "2026-11-17"
+     }
+    },
+    {
+     "id": "ca-la-cerritos",
+     "name": "City of Cerritos",
+     "kind": "city-served-by-county",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "ca-la-uninc",
+      "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/about",
+      "checkedOn": "2026-11-17",
+      "limits": "Listed among the county's Contract City Offices. The page's text says 8 contract city offices, so the list may be incomplete."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "ca-la-industry",
+     "name": "City of Industry",
+     "kind": "city-served-by-county",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "ca-la-uninc",
+      "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/about",
+      "checkedOn": "2026-11-17",
+      "limits": "Listed among the county's Contract City Offices. The page's text says 8 contract city offices, so the list may be incomplete."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "ca-la-la-mirada",
+     "name": "City of La Mirada",
+     "kind": "city-served-by-county",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "ca-la-uninc",
+      "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/about",
+      "checkedOn": "2026-11-17",
+      "limits": "Listed among the county's Contract City Offices. The page's text says 8 contract city offices, so the list may be incomplete."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "ca-la-rolling-hills",
+     "name": "City of Rolling Hills",
+     "kind": "city-served-by-county",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "ca-la-uninc",
+      "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/about",
+      "checkedOn": "2026-11-17",
+      "limits": "Listed among the county's Contract City Offices. The page's text says 8 contract city offices, so the list may be incomplete."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "ca-la-westlake-village",
+     "name": "City of Westlake Village",
+     "kind": "city-served-by-county",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "ca-la-uninc",
+      "sourceUrl": "https://dpw.lacounty.gov/building-and-safety/about",
+      "checkedOn": "2026-11-17",
+      "limits": "Listed among the county's Contract City Offices. The page's text says 8 contract city offices, so the list may be incomplete."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "ca-la-los-angeles",
+     "name": "City of Los Angeles",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "not_researched"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    }
+   ]
+  },
+  {
+   "state": "CA",
+   "countyFips": "06059",
+   "county": "Orange County",
+   "guideSlug": "check-building-permits-orange-county-ca",
+   "coverage": {
+    "status": "partially_verified",
+    "value": "OC Public Works Building and Safety covers the unincorporated areas of Orange County. Properties inside a city go to that city.",
+    "sourceUrl": "https://pwds.oc.gov/service-areas/oc-development-services/building-safety",
+    "checkedOn": "2026-11-17",
+    "limits": "The county page names only its own area; the list of cities and their departments was not checked."
+   },
+   "jurisdictions": [
+    {
+     "id": "ca-orange-uninc",
+     "name": "Unincorporated Orange County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "ca-orange-uninc",
+      "sourceUrl": "https://pwds.oc.gov/service-areas/oc-development-services/building-safety",
+      "checkedOn": "2026-11-17"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "OC Public Works, OC Development Services, Building and Safety",
+      "sourceUrl": "https://pwds.oc.gov/service-areas/oc-development-services/building-safety",
+      "checkedOn": "2026-11-17"
+     },
+     "currentPortal": {
+      "status": "partially_verified",
+      "value": {
+       "name": "myOC eServices (applications, payments, service requests)"
+      },
+      "sourceUrl": "https://myoceservices.ocgov.com/",
+      "checkedOn": "2026-11-17",
+      "limits": "We found no option to search a property's permit history in it."
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_tested"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "verified",
+      "value": "Ask Permitting Services for property records research ((714) 667-8888), or file a public records request on the county's NextRequest portal.",
+      "sourceUrl": "https://pwds.oc.gov/service-areas/oc-development-services/permitting-services",
+      "checkedOn": "2026-11-17"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "We found no public online permit-history search for unincorporated Orange County; records come through Permitting Services or a public records request."
+      ],
+      "sourceUrl": "https://pwds.oc.gov/service-areas/oc-development-services/permitting-services",
+      "checkedOn": "2026-11-17"
+     }
+    }
+   ]
+  },
+  {
+   "state": "CA",
+   "countyFips": "06065",
+   "county": "Riverside County",
+   "guideSlug": "check-building-permits-riverside-county-ca",
+   "coverage": {
+    "status": "not_researched"
+   },
+   "jurisdictions": [
+    {
+     "id": "ca-riverside-uninc",
+     "name": "Unincorporated Riverside County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "ca-riverside-uninc",
+      "sourceUrl": "https://building.rctlma.org/records-request",
+      "checkedOn": "2026-11-17",
+      "limits": "The county runs its own permit records; the pages we read do not say which areas they cover."
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Riverside County Transportation and Land Management Agency (TLMA), Department of Building and Safety",
+      "sourceUrl": "https://building.rctlma.org/records-request",
+      "checkedOn": "2026-11-17"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "PLUS Online and TLMA Permit Lookup",
+       "platform": "Tyler EnerGov Self Service (PLUS Online)"
+      },
+      "sourceUrl": "https://building.rctlma.org/records-request",
+      "checkedOn": "2026-11-17"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://publiclookup.rivco.org/",
+      "sourceUrl": "https://publiclookup.rivco.org/",
+      "checkedOn": "2026-11-17"
+     },
+     "searchBy": {
+      "status": "verified",
+      "value": {
+       "address": true,
+       "parcel": true,
+       "permitNumber": true,
+       "quirks": [
+        "Permit Lookup searches by street name, APN (no dashes), tract, lot, dates and permit type",
+        "Map My County's parcel report lists permits under \"Building and Safety Cases\"",
+        "No login needed"
+       ]
+      },
+      "sourceUrl": "https://publiclookup.rivco.org/",
+      "checkedOn": "2026-11-17"
+     },
+     "addressSearchTested": {
+      "status": "verified",
+      "value": "Anonymous Permit Lookup searches: a street name returned 30 permits; a county park address (37701 Warren Rd, Winchester) returned none.",
+      "sourceUrl": "https://publiclookup.rivco.org/",
+      "checkedOn": "2026-11-17"
+     },
+     "onlineRecordsFrom": {
+      "status": "verified",
+      "value": "1997 (permits issued after 1997 are online; the earliest issued date in Permit Lookup was 1997-06-20)",
+      "sourceUrl": "https://building.rctlma.org/records-request",
+      "checkedOn": "2026-11-17"
+     },
+     "historicalSystems": {
+      "status": "verified",
+      "value": [
+       {
+        "name": "Archived permit records, Records Division",
+        "covers": "about 1963 to 1997 (not online)"
+       },
+       {
+        "name": "Assessor CAP report / Residential Building Record",
+        "url": "https://www.rivcoacr.org/Contact-Us",
+        "covers": "before 1963, building history or details such as year built"
+       }
+      ],
+      "sourceUrl": "https://building.rctlma.org/records-request",
+      "checkedOn": "2026-11-17"
+     },
+     "olderRecordsRequest": {
+      "status": "verified",
+      "value": "Request archived records from the Building and Safety Records Division (Records@rivco.org, 951-955-2017) with the address or APN; a fee applies to copies or research. Before 1963, ask the Assessor for a CAP report.",
+      "sourceUrl": "https://building.rctlma.org/records-request",
+      "checkedOn": "2026-11-17"
+     },
+     "inspectionHistoryVisible": {
+      "status": "partially_verified",
+      "value": "The county says individual inspections can be viewed online by permit number.",
+      "sourceUrl": "https://building.rctlma.org/records-request",
+      "checkedOn": "2026-11-17",
+      "limits": "We did not open an inspection record."
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "Permit records before about 1963 were destroyed.",
+       "Only permits issued after 1997 are online; 1963-1997 permits need a records request.",
+       "Residential building plans are not kept: they are returned to the applicant or destroyed once the project is complete.",
+       "Permit Lookup is updated once a day and can be up to 24 hours behind."
+      ],
+      "sourceUrl": "https://building.rctlma.org/records-request",
+      "checkedOn": "2026-11-17"
+     }
+    }
+   ]
+  },
+  {
+   "state": "CA",
+   "countyFips": "06067",
+   "county": "Sacramento County",
+   "guideSlug": "check-building-permits-sacramento-county-ca",
+   "coverage": {
+    "status": "partially_verified",
+    "value": "The City of Sacramento and the county run separate permit portals.",
+    "sourceUrl": "https://aca-prod.accela.com/SACRAMENTO/Cap/CapHome.aspx?module=Building&TabName=Building",
+    "checkedOn": "2026-10-07",
+    "limits": "The other cities' building departments in Sacramento County were not verified (the 2026-10-07 note says so)."
+   },
+   "jurisdictions": [
+    {
+     "id": "ca-sacramento-city",
+     "name": "City of Sacramento",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "ca-sacramento-city",
+      "sourceUrl": "https://aca-prod.accela.com/SACRAMENTO/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-10-07",
+      "limits": "Inferred from the city running its own permit portal."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "Public Permit Portal",
+       "platform": "Accela"
+      },
+      "sourceUrl": "https://aca-prod.accela.com/SACRAMENTO/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-10-07"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://aca-prod.accela.com/SACRAMENTO/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "sourceUrl": "https://aca-prod.accela.com/SACRAMENTO/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-10-07"
+     },
+     "searchBy": {
+      "status": "verified",
+      "value": {
+       "address": true,
+       "parcel": true,
+       "permitNumber": true,
+       "owner": null,
+       "quirks": [
+        "No account needed",
+        "Site address is street number plus street name",
+        "Contractor licence search too"
+       ]
+      },
+      "sourceUrl": "https://aca-prod.accela.com/SACRAMENTO/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-10-07"
+     },
+     "addressSearchTested": {
+      "status": "partially_verified",
+      "value": "A search on a one-letter street name returned \"100+\" results.",
+      "sourceUrl": "https://aca-prod.accela.com/SACRAMENTO/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-10-07",
+      "limits": "A street-name search, not a full public address."
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "ca-sacramento-uninc",
+     "name": "Unincorporated Sacramento County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "ca-sacramento-uninc",
+      "sourceUrl": "https://actonline.saccounty.gov/CitizenAccess/",
+      "checkedOn": "2026-10-07",
+      "limits": "County portal confirmed; its service area was not quoted."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "Sacramento County Citizen Access (ACA)",
+       "platform": "Accela"
+      },
+      "sourceUrl": "https://actonline.saccounty.gov/CitizenAccess/",
+      "checkedOn": "2026-10-07"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://actonline.saccounty.gov/CitizenAccess/",
+      "sourceUrl": "https://actonline.saccounty.gov/CitizenAccess/",
+      "checkedOn": "2026-10-07"
+     },
+     "searchBy": {
+      "status": "not_tested"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "The county's Building search requires registration and/or login."
+      ],
+      "sourceUrl": "https://actonline.saccounty.gov/CitizenAccess/",
+      "checkedOn": "2026-10-07"
+     }
+    }
+   ]
+  },
+  {
+   "state": "CA",
+   "countyFips": "06071",
+   "county": "San Bernardino County",
+   "guideSlug": "check-building-permits-san-bernardino-county-ca",
+   "coverage": {
+    "status": "not_researched"
+   },
+   "jurisdictions": []
+  },
+  {
+   "state": "CA",
+   "countyFips": "06073",
+   "county": "San Diego County",
+   "guideSlug": "check-building-permits-san-diego-county-ca",
+   "coverage": {
+    "status": "not_researched"
+   },
+   "jurisdictions": [
+    {
+     "id": "ca-san-diego-uninc",
+     "name": "Unincorporated San Diego County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "ca-san-diego-uninc",
+      "sourceUrl": "https://publicservices.sandiegocounty.gov/CitizenAccess",
+      "checkedOn": "2026-09-04",
+      "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "partially_verified",
+      "value": {
+       "name": "Accela Citizen Access",
+       "platform": "Accela"
+      },
+      "sourceUrl": "https://publicservices.sandiegocounty.gov/CitizenAccess",
+      "checkedOn": "2026-09-04",
+      "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+     },
+     "portalUrl": {
+      "status": "partially_verified",
+      "value": "https://publicservices.sandiegocounty.gov/CitizenAccess",
+      "sourceUrl": "https://publicservices.sandiegocounty.gov/CitizenAccess",
+      "checkedOn": "2026-09-04",
+      "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "ca-san-diego-city",
+     "name": "City of San Diego",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "ca-san-diego-city",
+      "sourceUrl": "https://opendsd.sandiego.gov",
+      "checkedOn": "2026-09-04",
+      "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+     },
+     "buildingDepartment": {
+      "status": "partially_verified",
+      "value": "City of San Diego Development Services Department",
+      "sourceUrl": "https://opendsd.sandiego.gov",
+      "checkedOn": "2026-09-04",
+      "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+     },
+     "currentPortal": {
+      "status": "partially_verified",
+      "value": {
+       "name": "OpenDSD"
+      },
+      "sourceUrl": "https://opendsd.sandiego.gov",
+      "checkedOn": "2026-09-04",
+      "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+     },
+     "portalUrl": {
+      "status": "partially_verified",
+      "value": "https://opendsd.sandiego.gov",
+      "sourceUrl": "https://opendsd.sandiego.gov",
+      "checkedOn": "2026-09-04",
+      "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    }
+   ]
+  },
+  {
+   "state": "CA",
+   "countyFips": "06085",
+   "county": "Santa Clara County",
+   "guideSlug": "check-building-permits-santa-clara-county-ca",
+   "coverage": {
+    "status": "not_researched"
+   },
+   "jurisdictions": [
+    {
+     "id": "ca-santa-clara-uninc",
+     "name": "Unincorporated Santa Clara County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "ca-santa-clara-uninc",
+      "sourceUrl": "https://aca-prod.accela.com/sccgov/Default.aspx",
+      "checkedOn": "2026-10-03",
+      "limits": "County portal confirmed; its service area was not quoted."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "Public Permit Portal",
+       "platform": "Accela"
+      },
+      "sourceUrl": "https://aca-prod.accela.com/sccgov/Default.aspx",
+      "checkedOn": "2026-10-03"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://aca-prod.accela.com/sccgov/Default.aspx",
+      "sourceUrl": "https://aca-prod.accela.com/sccgov/Default.aspx",
+      "checkedOn": "2026-10-03"
+     },
+     "searchBy": {
+      "status": "verified",
+      "value": {
+       "address": true,
+       "parcel": true,
+       "permitNumber": true,
+       "quirks": [
+        "Development > Search Records",
+        "No account needed"
+       ]
+      },
+      "sourceUrl": "https://aca-prod.accela.com/sccgov/Default.aspx",
+      "checkedOn": "2026-10-03"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "ca-santa-clara-san-jose",
+     "name": "City of San Jose",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "ca-santa-clara-san-jose",
+      "sourceUrl": "https://www.sanjoseca.gov/business/development-services-permit-center/online-permits-at-sjpermits-org/how-to-check-your-permit-status",
+      "checkedOn": "2026-10-03",
+      "limits": "Inferred from the city running its own SJPermits system."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "SJPermits"
+      },
+      "sourceUrl": "https://www.sanjoseca.gov/business/development-services-permit-center/online-permits-at-sjpermits-org/how-to-check-your-permit-status",
+      "checkedOn": "2026-10-03"
+     },
+     "portalUrl": {
+      "status": "partially_verified",
+      "value": "https://www.sanjoseca.gov/business/development-services-permit-center/online-permits-at-sjpermits-org/how-to-check-your-permit-status",
+      "sourceUrl": "https://www.sanjoseca.gov/business/development-services-permit-center/online-permits-at-sjpermits-org/how-to-check-your-permit-status",
+      "checkedOn": "2026-10-03",
+      "limits": "This is the city's how-to page for SJPermits; the search application's own address was not recorded."
+     },
+     "searchBy": {
+      "status": "not_tested"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    }
+   ]
+  },
+  {
+   "state": "FL",
+   "countyFips": "12011",
+   "county": "Broward County",
+   "guideSlug": "check-building-permits-broward-county-fl",
+   "coverage": {
+    "status": "partially_verified",
+    "value": "The county's own list counts 31 cities plus unincorporated Broward. Which department holds each city's permits is recorded only for Fort Lauderdale (LauderBuild).",
+    "sourceUrl": "https://dpepp.broward.org/BCS/Default.aspx?PossePresentation=ParcelSearchByAddress",
+    "checkedOn": "2026-10-03",
+    "limits": "The city count was read on 2026-10-03; the departments of the other 30 cities were not researched."
+   },
+   "jurisdictions": [
+    {
+     "id": "fl-broward-uninc",
+     "name": "Unincorporated Broward County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "fl-broward-uninc",
+      "sourceUrl": "https://dpepp.broward.org/BCS/Default.aspx?PossePresentation=ParcelSearchByAddress",
+      "checkedOn": "2026-10-03",
+      "limits": "The county search page was read; its exact service area was not quoted."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "BCS Search for Permit by Address"
+      },
+      "sourceUrl": "https://dpepp.broward.org/BCS/Default.aspx?PossePresentation=ParcelSearchByAddress",
+      "checkedOn": "2026-10-03"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://dpepp.broward.org/BCS/Default.aspx?PossePresentation=ParcelSearchByAddress",
+      "sourceUrl": "https://dpepp.broward.org/BCS/Default.aspx?PossePresentation=ParcelSearchByAddress",
+      "checkedOn": "2026-10-03"
+     },
+     "searchBy": {
+      "status": "verified",
+      "value": {
+       "address": true,
+       "parcel": true,
+       "permitNumber": null,
+       "quirks": [
+        "Searches by address, folio or parcel number"
+       ]
+      },
+      "sourceUrl": "https://dpepp.broward.org/BCS/Default.aspx?PossePresentation=ParcelSearchByAddress",
+      "checkedOn": "2026-10-03"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-broward-fort-lauderdale",
+     "name": "City of Fort Lauderdale",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "fl-broward-fort-lauderdale",
+      "sourceUrl": "https://www.fortlauderdale.gov/Government/Departments/Development-Services/LauderBuild",
+      "checkedOn": "2026-10-03",
+      "limits": "Inferred from the city running its own LauderBuild permit system."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "LauderBuild"
+      },
+      "sourceUrl": "https://www.fortlauderdale.gov/Government/Departments/Development-Services/LauderBuild",
+      "checkedOn": "2026-10-03"
+     },
+     "portalUrl": {
+      "status": "partially_verified",
+      "value": "https://www.fortlauderdale.gov/Government/Departments/Development-Services/LauderBuild",
+      "sourceUrl": "https://www.fortlauderdale.gov/Government/Departments/Development-Services/LauderBuild",
+      "checkedOn": "2026-10-03",
+      "limits": "This is the city's LauderBuild page; the search application's own address was not recorded."
+     },
+     "searchBy": {
+      "status": "not_tested"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    }
+   ]
+  },
+  {
+   "state": "FL",
+   "countyFips": "12021",
+   "county": "Collier County",
+   "guideSlug": "check-building-permits-collier-county-fl",
+   "coverage": {
+    "status": "partially_verified",
+    "value": "Collier County's Growth Management Community Development Department issues permits for unincorporated Collier County and runs an office in Everglades City under an interlocal agreement. The City of Naples and the City of Marco Island run their own building departments.",
+    "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction",
+    "checkedOn": "2026-11-17",
+    "limits": "We have not read a county source that lists every municipality, and the Everglades City interlocal agreement is a scanned PDF with no readable text, so its terms are unconfirmed."
+   },
+   "jurisdictions": [
+    {
+     "id": "fl-collier-uninc",
+     "name": "Unincorporated Collier County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-collier-uninc",
+      "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "checkedOn": "2026-11-17"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Collier County Growth Management Community Development Department (GMCD)",
+      "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction",
+      "checkedOn": "2026-11-17"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "GMCD Public Portal",
+       "platform": "CityView"
+      },
+      "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "checkedOn": "2026-11-17"
+     },
+     "portalUrl": {
+      "status": "partially_verified",
+      "value": "https://cvportal.collier.gov/CityViewWeb",
+      "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "checkedOn": "2026-11-17",
+      "limits": "The URL is the one the county's own page links. The portal answered HTTP 403 'not available in your region' to us, so we have not opened it."
+     },
+     "searchBy": {
+      "status": "verified",
+      "value": {
+       "address": true,
+       "parcel": null,
+       "permitNumber": true,
+       "quirks": [
+        "CD-Plus permits carry a CDP prefix in the Public Portal"
+       ]
+      },
+      "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "checkedOn": "2026-11-17"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "verified",
+      "value": "2011",
+      "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "checkedOn": "2026-11-17"
+     },
+     "historicalSystems": {
+      "status": "verified",
+      "value": [
+       {
+        "name": "External CD-Plus Search (CDPlus)",
+        "url": "https://permzone.azurewebsites.net/",
+        "covers": "1989-2011"
+       },
+       {
+        "name": "Collier County Property Appraiser, Detail tab permit list",
+        "url": "https://www.collierappraiser.com/",
+        "covers": "before 1989"
+       }
+      ],
+      "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "checkedOn": "2026-11-17"
+     },
+     "olderRecordsRequest": {
+      "status": "verified",
+      "value": "Request the permit file from the county Records Room by public records request; for an open permit the county also points to a property card and Building Permit Resolution Services.",
+      "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "checkedOn": "2026-11-17"
+     },
+     "inspectionHistoryVisible": {
+      "status": "partially_verified",
+      "value": "In CDPlus, a permit's record lists its inspection codes without an account (seen on one permit, 2011061518, which showed 5 codes and no results).",
+      "sourceUrl": "https://permzone.azurewebsites.net/",
+      "checkedOn": "2026-11-17",
+      "limits": "Seen on one permit at one public address. CityView's inspection view is not tested (region-blocked)."
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "CDPlus returns at most 200 records, so at a busy address the newest permits can fall outside the list.",
+       "In CDPlus, typing a street suffix (TRL, TRAIL) or a direction returned 0 results; the bare street name worked.",
+       "The county says CD-Plus is for reference only and often not current; check whether a permit closed in the Public Portal.",
+       "In CDPlus, SUSPEND means cancelled with proper documents and closed; VOID means the permit needs action (county Bulletin 14).",
+       "The county's $25 code-enforcement lien search does not report open permits."
+      ],
+      "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction/Permitting-Resources/View-Permit-History-Permit-Search",
+      "checkedOn": "2026-11-17"
+     }
+    },
+    {
+     "id": "fl-collier-everglades-city",
+     "name": "City of Everglades City",
+     "kind": "city-served-by-county",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "fl-collier-uninc",
+      "sourceUrl": "https://www.collier.gov/Business-Resources/Building-Permits-Construction",
+      "checkedOn": "2026-11-17",
+      "limits": "The county runs a permit office in Everglades City three days a week and publishes an interlocal agreement with the city, but the agreement is a scanned PDF we could not read, so which records the county holds for the city is unconfirmed."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-collier-naples",
+     "name": "City of Naples",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-collier-naples",
+      "sourceUrl": "https://www.naplesgov.com/building",
+      "checkedOn": "2026-11-17"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "City of Naples Building Department",
+      "sourceUrl": "https://www.naplesgov.com/building",
+      "checkedOn": "2026-11-17"
+     },
+     "currentPortal": {
+      "status": "partially_verified",
+      "value": {
+       "name": "City of Naples public permit portal"
+      },
+      "sourceUrl": "https://www.naplesgov.com/building",
+      "checkedOn": "2026-11-17",
+      "limits": "Linked from the city's Building page. The portal itself is blocked for our region (Cloudflare 1009), so its name and platform are not confirmed on the portal."
+     },
+     "portalUrl": {
+      "status": "partially_verified",
+      "value": "https://cityview2.iharriscomputer.com/cityofnaplesflorida",
+      "sourceUrl": "https://www.naplesgov.com/building",
+      "checkedOn": "2026-11-17",
+      "limits": "The link the city's page uses; it returned Cloudflare error 1009 (country ban) to us, so we have not opened it."
+     },
+     "searchBy": {
+      "status": "not_tested"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-collier-marco-island",
+     "name": "City of Marco Island",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-collier-marco-island",
+      "sourceUrl": "https://www.cityofmarcoisland.com/page/building-services",
+      "checkedOn": "2026-11-17"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "City of Marco Island Building Services Division",
+      "sourceUrl": "https://www.cityofmarcoisland.com/page/building-services",
+      "checkedOn": "2026-11-17"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "Civic Access"
+      },
+      "sourceUrl": "https://www.cityofmarcoisland.com/page/building-services",
+      "checkedOn": "2026-11-17"
+     },
+     "portalUrl": {
+      "status": "partially_verified",
+      "value": "https://marcoislandfl-energovpub.tylerhost.net/apps/civic-access-public/home",
+      "sourceUrl": "https://www.cityofmarcoisland.com/page/building-services",
+      "checkedOn": "2026-11-17",
+      "limits": "Linked from the city's page; it returned HTTP 403 to us, so we have not opened it."
+     },
+     "searchBy": {
+      "status": "not_tested"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    }
+   ]
+  },
+  {
+   "state": "FL",
+   "countyFips": "12057",
+   "county": "Hillsborough County",
+   "guideSlug": "check-building-permits-hillsborough-county-fl",
+   "coverage": {
+    "status": "not_researched"
+   },
+   "jurisdictions": [
+    {
+     "id": "fl-hillsborough-uninc",
+     "name": "Unincorporated Hillsborough County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "fl-hillsborough-uninc",
+      "sourceUrl": "https://hcfl.gov/businesses/hillsgovhub",
+      "checkedOn": "2026-10-02",
+      "limits": "The 2026-10-02 note covers portal facts; that HillsGovHub holds exactly the unincorporated area was not quoted."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "HillsGovHub"
+      },
+      "sourceUrl": "https://hcfl.gov/businesses/hillsgovhub",
+      "checkedOn": "2026-10-02"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://hcfl.gov/businesses/hillsgovhub",
+      "sourceUrl": "https://hcfl.gov/businesses/hillsgovhub",
+      "checkedOn": "2026-10-02"
+     },
+     "searchBy": {
+      "status": "verified",
+      "value": {
+       "address": true,
+       "parcel": true,
+       "permitNumber": null,
+       "quirks": [
+        "Check Permit Status needs no login",
+        "A Permits by Address report is available"
+       ]
+      },
+      "sourceUrl": "https://hcfl.gov/businesses/hillsgovhub",
+      "checkedOn": "2026-10-02"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "verified",
+      "value": [
+       {
+        "name": "PGM Store",
+        "url": "https://hcfl.gov/businesses/permits-and-records/permits/rezoning-plans-and-permit-documents-and-records-pgm-store",
+        "covers": "older permit files (shared login public/public); it does not contain HillsGovHub records"
+       }
+      ],
+      "sourceUrl": "https://hcfl.gov/businesses/permits-and-records/permits/rezoning-plans-and-permit-documents-and-records-pgm-store",
+      "checkedOn": "2026-10-02"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "Older files are in the PGM Store and newer ones in HillsGovHub; neither contains the other, so search both.",
+       "The county removes records exempt under Florida Statutes 119.071 from public view."
+      ],
+      "sourceUrl": "https://hcfl.gov/businesses/hillsgovhub",
+      "checkedOn": "2026-10-02"
+     }
+    },
+    {
+     "id": "fl-hillsborough-tampa",
+     "name": "City of Tampa",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "fl-hillsborough-tampa",
+      "sourceUrl": "https://www.tampa.gov/construction-services",
+      "checkedOn": "2026-10-02",
+      "limits": "Inferred from the city running its own permit portal; the city/county split was not quoted."
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "City of Tampa Construction Services Division",
+      "sourceUrl": "https://www.tampa.gov/construction-services",
+      "checkedOn": "2026-10-02"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "Accela Citizen Access",
+       "platform": "Accela"
+      },
+      "sourceUrl": "https://aca-prod.accela.com/TAMPA/Default.aspx",
+      "checkedOn": "2026-10-04"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://aca-prod.accela.com/TAMPA/Default.aspx",
+      "sourceUrl": "https://aca-prod.accela.com/TAMPA/Default.aspx",
+      "checkedOn": "2026-10-04"
+     },
+     "searchBy": {
+      "status": "verified",
+      "value": {
+       "address": true,
+       "parcel": true,
+       "permitNumber": true,
+       "quirks": [
+        "Many functions work without a log-in",
+        "Search by Address includes a Parcel No. box",
+        "A Comprehensive Permit Summary by Address is offered"
+       ]
+      },
+      "sourceUrl": "https://aca-prod.accela.com/TAMPA/Default.aspx",
+      "checkedOn": "2026-10-04"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "General Search defaults to the last 12 months; move the start date back before concluding a permit is missing."
+      ],
+      "sourceUrl": "https://aca-prod.accela.com/TAMPA/Default.aspx",
+      "checkedOn": "2026-10-04"
+     }
+    },
+    {
+     "id": "fl-hillsborough-temple-terrace",
+     "name": "City of Temple Terrace",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "not_researched"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-hillsborough-plant-city",
+     "name": "City of Plant City",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "not_researched"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    }
+   ]
+  },
+  {
+   "state": "FL",
+   "countyFips": "12086",
+   "county": "Miami-Dade County",
+   "guideSlug": "check-building-permits-miami-dade-county-fl",
+   "coverage": {
+    "status": "verified",
+    "value": "Miami-Dade County holds permits and plans for unincorporated areas, where folio numbers start with 30. For any other folio, the municipality holds the records.",
+    "sourceUrl": "https://www.miamidade.gov/global/economy/building/microfilm-plan-library.page",
+    "checkedOn": "2026-11-17"
+   },
+   "jurisdictions": [
+    {
+     "id": "fl-miami-dade-uninc",
+     "name": "Unincorporated Miami-Dade County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-miami-dade-uninc",
+      "sourceUrl": "https://www.miamidade.gov/global/economy/building/microfilm-plan-library.page",
+      "checkedOn": "2026-11-17"
+     },
+     "buildingDepartment": {
+      "status": "partially_verified",
+      "value": "Miami-Dade County Regulatory and Economic Resources (RER), Building and Construction",
+      "sourceUrl": "https://www.miamidade.gov/global/economy/building/microfilm-plan-library.page",
+      "checkedOn": "2026-11-17",
+      "limits": "Read from the page's breadcrumb, not quoted."
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "e-Permitting Building Permit Selection Menu"
+      },
+      "sourceUrl": "https://www.miamidade.gov/Apps/RER/ePermittingMenu/Home/Permits",
+      "checkedOn": "2026-11-17"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://www.miamidade.gov/Apps/RER/ePermittingMenu/Home/Permits",
+      "sourceUrl": "https://www.miamidade.gov/Apps/RER/ePermittingMenu/Home/Permits",
+      "checkedOn": "2026-11-17"
+     },
+     "searchBy": {
+      "status": "verified",
+      "value": {
+       "address": true,
+       "parcel": true,
+       "permitNumber": true,
+       "quirks": [
+        "By address: a cross-reference to permit numbers, and open master permits",
+        "By folio: open permits only",
+        "Most lookups (history, inspections, fees) need the permit number"
+       ]
+      },
+      "sourceUrl": "https://www.miamidade.gov/Apps/RER/ePermittingMenu/Home/Permits",
+      "checkedOn": "2026-11-17"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "verified",
+      "value": [
+       {
+        "name": "E-Microfilm",
+        "covers": "building plans already digitized"
+       },
+       {
+        "name": "Microfilm Section (by appointment)",
+        "covers": "plans still on film"
+       }
+      ],
+      "sourceUrl": "https://www.miamidade.gov/global/economy/building/microfilm-plan-library.page",
+      "checkedOn": "2026-11-17"
+     },
+     "olderRecordsRequest": {
+      "status": "verified",
+      "value": "Digitized plans download from E-Microfilm; plans still on film need an appointment with the Microfilm Section (786-315-2340). A non-refundable research fee of $18.75 (residential) or $46.34 (commercial) is paid first.",
+      "sourceUrl": "https://www.miamidade.gov/global/economy/building/microfilm-plan-library.page",
+      "checkedOn": "2026-11-17"
+     },
+     "inspectionHistoryVisible": {
+      "status": "partially_verified",
+      "value": "The menu offers Permit Inspection History by permit number.",
+      "sourceUrl": "https://www.miamidade.gov/Apps/RER/ePermittingMenu/Home/Permits",
+      "checkedOn": "2026-11-17",
+      "limits": "Not opened: the form carries a reCAPTCHA."
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "The county says plans are not available for single-family homes built 1961-1972 and parts of 1973-1978, or for anything built before 1938; 1979-1989 may be available.",
+       "Records are filed by permit number; find it from the address or folio first."
+      ],
+      "sourceUrl": "https://www.miamidade.gov/global/economy/building/microfilm-plan-library.page",
+      "checkedOn": "2026-11-17"
+     }
+    },
+    {
+     "id": "fl-miami-dade-miami",
+     "name": "City of Miami",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "not_researched"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-miami-dade-miami-beach",
+     "name": "City of Miami Beach",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "not_researched"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-miami-dade-coral-gables",
+     "name": "City of Coral Gables",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "not_researched"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-miami-dade-hialeah",
+     "name": "City of Hialeah",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "not_researched"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    }
+   ]
+  },
+  {
+   "state": "FL",
+   "countyFips": "12103",
+   "county": "Pinellas County",
+   "guideSlug": "check-building-permits-pinellas-county-fl",
+   "coverage": {
+    "status": "partially_verified",
+    "value": "The county issues permits for unincorporated Pinellas and six cities; Belleair Bluffs contracts SAFEbuilt; sixteen cities run their own departments, one of which (Redington Shores) also serves Redington Beach.",
+    "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+    "checkedOn": "2026-11-16",
+    "limits": "Taken from the county's list of building departments; we have not confirmed it against each city."
+   },
+   "jurisdictions": [
+    {
+     "id": "fl-pinellas-uninc",
+     "name": "Unincorporated Pinellas County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-uninc",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Pinellas County Building and Development Review Services",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "Access Portal",
+       "platform": "Accela Citizen Access"
+      },
+      "sourceUrl": "https://aca-prod.accela.com/PINELLAS/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-11-16"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://aca-prod.accela.com/PINELLAS/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "sourceUrl": "https://aca-prod.accela.com/PINELLAS/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-11-16"
+     },
+     "searchBy": {
+      "status": "verified",
+      "value": {
+       "address": true,
+       "parcel": true,
+       "permitNumber": true,
+       "quirks": [
+        "Search by address, then pick the matching parcel",
+        "Results default to records created in the past two years; change the start date for older records",
+        "% is a wildcard for part of a record number"
+       ]
+      },
+      "sourceUrl": "https://aca-prod.accela.com/PINELLAS/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-11-16"
+     },
+     "addressSearchTested": {
+      "status": "verified",
+      "value": "Anonymous Search by Address at 12520 Ulmerton Rd (county-owned Florida Botanical Gardens) returned 8 address entries holding different records: 22, 18, 19, 15, 0, 5 and 5 permits.",
+      "sourceUrl": "https://aca-prod.accela.com/PINELLAS/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-11-16"
+     },
+     "onlineRecordsFrom": {
+      "status": "partially_verified",
+      "value": "2007 or earlier (PER-H permits from 2007 appeared at the address we searched)",
+      "sourceUrl": "https://aca-prod.accela.com/PINELLAS/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-11-16",
+      "limits": "The county does not state where online records begin; this is the oldest record seen at one public address."
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "verified",
+      "value": "Yes, without an account: open the permit, Record Info, then Inspections. Results show dates and outcomes such as Approved and Red tag. The county also offers results by text message.",
+      "sourceUrl": "https://pinellas.gov/building-inspections/",
+      "checkedOn": "2026-11-16"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "Results default to the past two years; widen the date range before concluding a permit is missing.",
+       "One street address can appear as several address entries, each holding different permits; open every entry.",
+       "The mailing city does not show the jurisdiction: unincorporated properties carry St. Petersburg, Largo or Clearwater addresses. Confirm it with My Neighborhood Services or pcpao.gov.",
+       "Belleair Bluffs moved permitting to SAFEbuilt on August 15, 2025; permits already open then stay with the county through final inspection.",
+       "The code-enforcement lien search is separate from permits and needs an Access Portal account."
+      ],
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     }
+    },
+    {
+     "id": "fl-pinellas-belleair-beach",
+     "name": "Belleair Beach",
+     "kind": "city-served-by-county",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-uninc",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-belleair-shore",
+     "name": "Belleair Shore",
+     "kind": "city-served-by-county",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-uninc",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-indian-rocks-beach",
+     "name": "Indian Rocks Beach",
+     "kind": "city-served-by-county",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-uninc",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-kenneth-city",
+     "name": "Kenneth City",
+     "kind": "city-served-by-county",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-uninc",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-safety-harbor",
+     "name": "Safety Harbor",
+     "kind": "city-served-by-county",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-uninc",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-oldsmar",
+     "name": "Oldsmar",
+     "kind": "city-served-by-county",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-uninc",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-belleair-bluffs",
+     "name": "Belleair Bluffs",
+     "kind": "municipality-contracted",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-belleair-bluffs",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "SAFEbuilt (contracted building services)",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "Permits from before August 15, 2025 are county permits; open ones stay with the county through final inspection."
+      ],
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     }
+    },
+    {
+     "id": "fl-pinellas-belleair",
+     "name": "Belleair",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-belleair",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Belleair building department",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-clearwater",
+     "name": "Clearwater",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-clearwater",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Clearwater building department",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-dunedin",
+     "name": "Dunedin",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-dunedin",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Dunedin building department",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-gulfport",
+     "name": "Gulfport",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-gulfport",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Gulfport building department",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-indian-shores",
+     "name": "Indian Shores",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-indian-shores",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Indian Shores building department",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-largo",
+     "name": "Largo",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-largo",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Largo building department",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-madeira-beach",
+     "name": "Madeira Beach",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-madeira-beach",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Madeira Beach building department",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-north-redington-beach",
+     "name": "North Redington Beach",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-north-redington-beach",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "North Redington Beach building department",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-pinellas-park",
+     "name": "Pinellas Park",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-pinellas-park",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Pinellas Park building department",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-redington-shores",
+     "name": "Redington Shores",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-redington-shores",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Redington Shores building department",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-st-pete-beach",
+     "name": "St. Pete Beach",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-st-pete-beach",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "St. Pete Beach building department",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-st-petersburg",
+     "name": "St. Petersburg",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-st-petersburg",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "St. Petersburg building department",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-seminole",
+     "name": "Seminole",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-seminole",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Seminole building department",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-south-pasadena",
+     "name": "South Pasadena",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-south-pasadena",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "South Pasadena building department",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-tarpon-springs",
+     "name": "Tarpon Springs",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-tarpon-springs",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Tarpon Springs building department",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-treasure-island",
+     "name": "Treasure Island",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-treasure-island",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Treasure Island building department",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "fl-pinellas-redington-beach",
+     "name": "Redington Beach",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "fl-pinellas-redington-shores",
+      "sourceUrl": "https://pinellas.gov/building-departments-in-pinellas-county/",
+      "checkedOn": "2026-11-16"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    }
+   ]
+  },
+  {
+   "state": "IL",
+   "countyFips": "17031",
+   "county": "Cook County",
+   "guideSlug": "check-building-permits-cook-county-il",
+   "coverage": {
+    "status": "verified",
+    "value": "Cook County Building and Zoning handles unincorporated Cook County and the Forest Preserves. The City of Chicago and the suburban cities and villages handle their own permits.",
+    "sourceUrl": "https://www.cookcountyil.gov/agency/building-and-zoning",
+    "checkedOn": "2026-11-17"
+   },
+   "jurisdictions": [
+    {
+     "id": "il-cook-uninc",
+     "name": "Unincorporated Cook County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "il-cook-uninc",
+      "sourceUrl": "https://www.cookcountyil.gov/agency/building-and-zoning",
+      "checkedOn": "2026-11-17"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Cook County Department of Building and Zoning",
+      "sourceUrl": "https://www.cookcountyil.gov/agency/building-and-zoning",
+      "checkedOn": "2026-11-17"
+     },
+     "currentPortal": {
+      "status": "partially_verified",
+      "value": {
+       "name": "Building Permit Status Search"
+      },
+      "sourceUrl": "https://bzpermits.cookcountyil.gov/permit-status/",
+      "checkedOn": "2026-11-17",
+      "limits": "Built for applicants checking their own application; we found no public permit search by address on the county's pages. The ePermit portal only takes applications."
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://bzpermits.cookcountyil.gov/permit-status/",
+      "sourceUrl": "https://bzpermits.cookcountyil.gov/permit-status/",
+      "checkedOn": "2026-11-17"
+     },
+     "searchBy": {
+      "status": "verified",
+      "value": {
+       "address": false,
+       "parcel": false,
+       "permitNumber": true,
+       "quirks": [
+        "Needs the permit application number AND the Property Index Number (PIN) together"
+       ]
+      },
+      "sourceUrl": "https://bzpermits.cookcountyil.gov/permit-status/",
+      "checkedOn": "2026-11-17"
+     },
+     "addressSearchTested": {
+      "status": "verified",
+      "value": "Not possible in the county tool: it asks for the permit number and the PIN, not an address.",
+      "sourceUrl": "https://bzpermits.cookcountyil.gov/permit-status/",
+      "checkedOn": "2026-11-17"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "The county's online status search needs both the permit number and the PIN, so it cannot find permits you don't already know about.",
+       "Check with CookViewer whether a property is unincorporated; the county cannot process permits inside Chicago or the suburban municipalities."
+      ],
+      "sourceUrl": "https://www.cookcountyil.gov/service/e-permits",
+      "checkedOn": "2026-11-17"
+     }
+    },
+    {
+     "id": "il-cook-chicago",
+     "name": "City of Chicago",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "il-cook-chicago",
+      "sourceUrl": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+      "checkedOn": "2026-11-17"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "City of Chicago Department of Buildings",
+      "sourceUrl": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+      "checkedOn": "2026-11-17"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "Building Permits dataset, Chicago Data Portal"
+      },
+      "sourceUrl": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+      "checkedOn": "2026-11-17"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+      "sourceUrl": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+      "checkedOn": "2026-11-17"
+     },
+     "searchBy": {
+      "status": "partially_verified",
+      "value": {
+       "address": true,
+       "parcel": null,
+       "permitNumber": true,
+       "quirks": [
+        "The dataset page links a City search for issued permits by permit number or street address"
+       ]
+      },
+      "sourceUrl": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+      "checkedOn": "2026-11-17",
+      "limits": "The linked City search was not opened."
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "verified",
+      "value": "2006",
+      "sourceUrl": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+      "checkedOn": "2026-11-17"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "The data covers permits issued from 2006; older permits are not in it.",
+       "Permits voided or revoked after issuance are left out of the data."
+      ],
+      "sourceUrl": "https://data.cityofchicago.org/Buildings/Building-Permits/ydr8-5enu/about_data",
+      "checkedOn": "2026-11-17"
+     }
+    }
+   ]
+  },
+  {
+   "state": "MA",
+   "countyFips": "25017",
+   "county": "Middlesex County",
+   "guideSlug": "check-building-permits-middlesex-county-ma",
+   "coverage": {
+    "status": "not_researched"
+   },
+   "jurisdictions": [
+    {
+     "id": "ma-middlesex-cambridge",
+     "name": "City of Cambridge",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "ma-middlesex-cambridge",
+      "sourceUrl": "https://www.cambridgema.gov/inspection",
+      "checkedOn": "2026-11-17",
+      "limits": "Inferred from the city running its own permit department; which department covers which addresses was not quoted."
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "City of Cambridge Inspectional Services Department",
+      "sourceUrl": "https://www.cambridgema.gov/inspection",
+      "checkedOn": "2026-11-17"
+     },
+     "currentPortal": {
+      "status": "partially_verified",
+      "value": {
+       "name": "City of Cambridge Permitting and Licensing System",
+       "platform": "OpenGov"
+      },
+      "sourceUrl": "https://cambridgema.portal.opengov.com/",
+      "checkedOn": "2026-11-17",
+      "limits": "For applying; no public record search on its public page."
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_tested"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "partially_verified",
+      "value": [
+       {
+        "name": "Cambridge Open Data: Building Permits datasets",
+        "url": "https://data.cambridgema.gov/Inspectional-Services/Building-Permits-Addition-Alteration/qu2z-8suj/about_data",
+        "covers": "not stated (Housing Permits dataset: 1996 to present)"
+       }
+      ],
+      "sourceUrl": "https://data.cambridgema.gov/Inspectional-Services/Building-Permits-Addition-Alteration/qu2z-8suj/about_data",
+      "checkedOn": "2026-11-17",
+      "limits": "Start years of the building-permit datasets are not stated, and we did not search them."
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "Cambridge's Building Permits: Addition/Alteration open dataset lists only completed applications."
+      ],
+      "sourceUrl": "https://data.cambridgema.gov/Inspectional-Services/Building-Permits-Addition-Alteration/qu2z-8suj/about_data",
+      "checkedOn": "2026-11-17"
+     }
+    }
+   ]
+  },
+  {
+   "state": "NV",
+   "countyFips": "32003",
+   "county": "Clark County",
+   "guideSlug": "check-building-permits-clark-county-nv",
+   "coverage": {
+    "status": "not_researched"
+   },
+   "jurisdictions": [
+    {
+     "id": "nv-clark-uninc",
+     "name": "Unincorporated Clark County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "nv-clark-uninc",
+      "sourceUrl": "https://www.clarkcountynv.gov/government/departments/public_works_department/development/online-records-research",
+      "checkedOn": "2026-09-04",
+      "limits": "Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "partially_verified",
+      "value": "https://www.clarkcountynv.gov/government/departments/public_works_department/development/online-records-research",
+      "sourceUrl": "https://www.clarkcountynv.gov/government/departments/public_works_department/development/online-records-research",
+      "checkedOn": "2026-09-04",
+      "limits": "This is the county's index of what is searchable and where, not the search portal itself. Recorded as verified on 2026-09-04 in our restore script (the link answered on two separate runs), but no quote of the page was kept. Re-read before relying on it."
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "nv-clark-las-vegas",
+     "name": "City of Las Vegas",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "not_researched"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "nv-clark-north-las-vegas",
+     "name": "City of North Las Vegas",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "not_researched"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    },
+    {
+     "id": "nv-clark-henderson",
+     "name": "City of Henderson",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "not_researched"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    }
+   ]
+  },
+  {
+   "state": "NY",
+   "countyFips": "36005",
+   "county": "Bronx County",
+   "guideSlug": "check-building-permits-bronx-ny",
+   "coverage": {
+    "status": "verified",
+    "value": "The NYC Department of Buildings issues construction and demolition permits across the City of New York, including this borough.",
+    "sourceUrl": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+    "checkedOn": "2026-11-17"
+   },
+   "jurisdictions": [
+    {
+     "id": "ny-bronx",
+     "name": "Bronx (New York City)",
+     "kind": "borough",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "ny-bronx",
+      "sourceUrl": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+      "checkedOn": "2026-11-17"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "NYC Department of Buildings (DOB)",
+      "sourceUrl": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+      "checkedOn": "2026-11-17"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "DOB NOW: Build"
+      },
+      "sourceUrl": "https://www.nyc.gov/site/buildings/property-or-business-owner/obtaining-a-permit.page",
+      "checkedOn": "2026-11-17"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://a810-dobnow.nyc.gov/publish/#!/",
+      "sourceUrl": "https://www.nyc.gov/site/buildings/index.page",
+      "checkedOn": "2026-11-17"
+     },
+     "searchBy": {
+      "status": "not_tested"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "partially_verified",
+      "value": [
+       {
+        "name": "Buildings Information System (BIS)",
+        "url": "http://www.nyc.gov/bis",
+        "covers": "jobs filed in BIS; complaints, violations, actions, applications and inspections"
+       },
+       {
+        "name": "NYC Open Data: DOB Permit Issuance",
+        "url": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+        "covers": "permits issued in BIS only"
+       }
+      ],
+      "sourceUrl": "https://www.nyc.gov/site/buildings/property-or-business-owner/guide-to-bis-dobnow-efiling.page",
+      "checkedOn": "2026-11-17",
+      "limits": "How far back BIS and the dataset reach is not stated on the pages we read."
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "Permits are split between DOB NOW (most current permits) and BIS (older jobs); search both before concluding a permit is missing.",
+       "NYC Open Data publishes BIS permits and DOB NOW permits as separate datasets.",
+       "BIS and DOB NOW accept connections only from inside the United States.",
+       "If the building is a designated landmark or in a historic district, the Landmarks Preservation Commission keeps a separate permit record: its online permit search covers applications from January 1, 2016; older ones need a Records Access Request."
+      ],
+      "sourceUrl": "https://www.nyc.gov/site/buildings/property-or-business-owner/obtaining-a-permit.page",
+      "checkedOn": "2026-11-17"
+     }
+    }
+   ]
+  },
+  {
+   "state": "NY",
+   "countyFips": "36047",
+   "county": "Kings County",
+   "guideSlug": "check-building-permits-brooklyn-ny",
+   "coverage": {
+    "status": "verified",
+    "value": "The NYC Department of Buildings issues construction and demolition permits across the City of New York, including this borough.",
+    "sourceUrl": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+    "checkedOn": "2026-11-17"
+   },
+   "jurisdictions": [
+    {
+     "id": "ny-brooklyn",
+     "name": "Brooklyn (New York City)",
+     "kind": "borough",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "ny-brooklyn",
+      "sourceUrl": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+      "checkedOn": "2026-11-17"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "NYC Department of Buildings (DOB)",
+      "sourceUrl": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+      "checkedOn": "2026-11-17"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "DOB NOW: Build"
+      },
+      "sourceUrl": "https://www.nyc.gov/site/buildings/property-or-business-owner/obtaining-a-permit.page",
+      "checkedOn": "2026-11-17"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://a810-dobnow.nyc.gov/publish/#!/",
+      "sourceUrl": "https://www.nyc.gov/site/buildings/index.page",
+      "checkedOn": "2026-11-17"
+     },
+     "searchBy": {
+      "status": "not_tested"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "partially_verified",
+      "value": [
+       {
+        "name": "Buildings Information System (BIS)",
+        "url": "http://www.nyc.gov/bis",
+        "covers": "jobs filed in BIS; complaints, violations, actions, applications and inspections"
+       },
+       {
+        "name": "NYC Open Data: DOB Permit Issuance",
+        "url": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+        "covers": "permits issued in BIS only"
+       }
+      ],
+      "sourceUrl": "https://www.nyc.gov/site/buildings/property-or-business-owner/guide-to-bis-dobnow-efiling.page",
+      "checkedOn": "2026-11-17",
+      "limits": "How far back BIS and the dataset reach is not stated on the pages we read."
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "Permits are split between DOB NOW (most current permits) and BIS (older jobs); search both before concluding a permit is missing.",
+       "NYC Open Data publishes BIS permits and DOB NOW permits as separate datasets.",
+       "BIS and DOB NOW accept connections only from inside the United States.",
+       "If the building is a designated landmark or in a historic district, the Landmarks Preservation Commission keeps a separate permit record: its online permit search covers applications from January 1, 2016; older ones need a Records Access Request."
+      ],
+      "sourceUrl": "https://www.nyc.gov/site/buildings/property-or-business-owner/obtaining-a-permit.page",
+      "checkedOn": "2026-11-17"
+     }
+    }
+   ]
+  },
+  {
+   "state": "NY",
+   "countyFips": "36061",
+   "county": "New York County",
+   "guideSlug": "check-building-permits-manhattan-ny",
+   "coverage": {
+    "status": "verified",
+    "value": "The NYC Department of Buildings issues construction and demolition permits across the City of New York, including this borough.",
+    "sourceUrl": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+    "checkedOn": "2026-11-17"
+   },
+   "jurisdictions": [
+    {
+     "id": "ny-manhattan",
+     "name": "Manhattan (New York City)",
+     "kind": "borough",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "ny-manhattan",
+      "sourceUrl": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+      "checkedOn": "2026-11-17"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "NYC Department of Buildings (DOB)",
+      "sourceUrl": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+      "checkedOn": "2026-11-17"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "DOB NOW: Build"
+      },
+      "sourceUrl": "https://www.nyc.gov/site/buildings/property-or-business-owner/obtaining-a-permit.page",
+      "checkedOn": "2026-11-17"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://a810-dobnow.nyc.gov/publish/#!/",
+      "sourceUrl": "https://www.nyc.gov/site/buildings/index.page",
+      "checkedOn": "2026-11-17"
+     },
+     "searchBy": {
+      "status": "not_tested"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "partially_verified",
+      "value": [
+       {
+        "name": "Buildings Information System (BIS)",
+        "url": "http://www.nyc.gov/bis",
+        "covers": "jobs filed in BIS; complaints, violations, actions, applications and inspections"
+       },
+       {
+        "name": "NYC Open Data: DOB Permit Issuance",
+        "url": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+        "covers": "permits issued in BIS only"
+       }
+      ],
+      "sourceUrl": "https://www.nyc.gov/site/buildings/property-or-business-owner/guide-to-bis-dobnow-efiling.page",
+      "checkedOn": "2026-11-17",
+      "limits": "How far back BIS and the dataset reach is not stated on the pages we read."
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "Permits are split between DOB NOW (most current permits) and BIS (older jobs); search both before concluding a permit is missing.",
+       "NYC Open Data publishes BIS permits and DOB NOW permits as separate datasets.",
+       "BIS and DOB NOW accept connections only from inside the United States.",
+       "If the building is a designated landmark or in a historic district, the Landmarks Preservation Commission keeps a separate permit record: its online permit search covers applications from January 1, 2016; older ones need a Records Access Request."
+      ],
+      "sourceUrl": "https://www.nyc.gov/site/buildings/property-or-business-owner/obtaining-a-permit.page",
+      "checkedOn": "2026-11-17"
+     }
+    }
+   ]
+  },
+  {
+   "state": "NY",
+   "countyFips": "36081",
+   "county": "Queens County",
+   "guideSlug": "check-building-permits-queens-ny",
+   "coverage": {
+    "status": "verified",
+    "value": "The NYC Department of Buildings issues construction and demolition permits across the City of New York, including this borough.",
+    "sourceUrl": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+    "checkedOn": "2026-11-17"
+   },
+   "jurisdictions": [
+    {
+     "id": "ny-queens",
+     "name": "Queens (New York City)",
+     "kind": "borough",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "ny-queens",
+      "sourceUrl": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+      "checkedOn": "2026-11-17"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "NYC Department of Buildings (DOB)",
+      "sourceUrl": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+      "checkedOn": "2026-11-17"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "DOB NOW: Build"
+      },
+      "sourceUrl": "https://www.nyc.gov/site/buildings/property-or-business-owner/obtaining-a-permit.page",
+      "checkedOn": "2026-11-17"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://a810-dobnow.nyc.gov/publish/#!/",
+      "sourceUrl": "https://www.nyc.gov/site/buildings/index.page",
+      "checkedOn": "2026-11-17"
+     },
+     "searchBy": {
+      "status": "not_tested"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "partially_verified",
+      "value": [
+       {
+        "name": "Buildings Information System (BIS)",
+        "url": "http://www.nyc.gov/bis",
+        "covers": "jobs filed in BIS; complaints, violations, actions, applications and inspections"
+       },
+       {
+        "name": "NYC Open Data: DOB Permit Issuance",
+        "url": "https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a/about_data",
+        "covers": "permits issued in BIS only"
+       }
+      ],
+      "sourceUrl": "https://www.nyc.gov/site/buildings/property-or-business-owner/guide-to-bis-dobnow-efiling.page",
+      "checkedOn": "2026-11-17",
+      "limits": "How far back BIS and the dataset reach is not stated on the pages we read."
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "Permits are split between DOB NOW (most current permits) and BIS (older jobs); search both before concluding a permit is missing.",
+       "NYC Open Data publishes BIS permits and DOB NOW permits as separate datasets.",
+       "BIS and DOB NOW accept connections only from inside the United States.",
+       "If the building is a designated landmark or in a historic district, the Landmarks Preservation Commission keeps a separate permit record: its online permit search covers applications from January 1, 2016; older ones need a Records Access Request."
+      ],
+      "sourceUrl": "https://www.nyc.gov/site/buildings/property-or-business-owner/obtaining-a-permit.page",
+      "checkedOn": "2026-11-17"
+     }
+    }
+   ]
+  },
+  {
+   "state": "PA",
+   "countyFips": "42101",
+   "county": "Philadelphia County",
+   "guideSlug": "check-building-permits-philadelphia-county-pa",
+   "coverage": {
+    "status": "partially_verified",
+    "value": "The City of Philadelphia Department of Licenses & Inspections (L&I) is the source of permit records for Philadelphia addresses in Atlas.",
+    "sourceUrl": "https://atlas.phila.gov/",
+    "checkedOn": "2026-11-17",
+    "limits": "Philadelphia is one consolidated city and county, but no page we read says so; recorded from the L&I source line only."
+   },
+   "jurisdictions": [
+    {
+     "id": "pa-philadelphia",
+     "name": "City of Philadelphia",
+     "kind": "consolidated-city-county",
+     "permitsIssuedBy": {
+      "status": "verified",
+      "value": "pa-philadelphia",
+      "sourceUrl": "https://atlas.phila.gov/",
+      "checkedOn": "2026-11-17"
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "City of Philadelphia Department of Licenses & Inspections (L&I)",
+      "sourceUrl": "https://atlas.phila.gov/",
+      "checkedOn": "2026-11-17"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "Atlas (L&I tab) and L&I Property History"
+      },
+      "sourceUrl": "https://atlas.phila.gov/",
+      "checkedOn": "2026-11-17"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://atlas.phila.gov/",
+      "sourceUrl": "https://atlas.phila.gov/",
+      "checkedOn": "2026-11-17"
+     },
+     "searchBy": {
+      "status": "verified",
+      "value": {
+       "address": true,
+       "parcel": true,
+       "permitNumber": null,
+       "quirks": [
+        "Atlas also takes an intersection or a Department of Records Map Registry number",
+        "\"Parcel\" here is the property assessment (OPA) account number",
+        "No login needed"
+       ]
+      },
+      "sourceUrl": "https://atlas.phila.gov/",
+      "checkedOn": "2026-11-17"
+     },
+     "addressSearchTested": {
+      "status": "verified",
+      "value": "Anonymous searches for 1400 John F Kennedy Blvd (City Hall) and 1901 Vine St (Parkway Central Library) returned 250 and 95 permits, with inspections and violations, in both Atlas and L&I Property History.",
+      "sourceUrl": "https://li.phila.gov/Property-History/",
+      "checkedOn": "2026-11-17"
+     },
+     "onlineRecordsFrom": {
+      "status": "partially_verified",
+      "value": "2007",
+      "sourceUrl": "https://li.phila.gov/Property-History/",
+      "checkedOn": "2026-11-17",
+      "limits": "At both public buildings we searched, the earliest permit was issued in 2007. The city does not state a start year on the pages we read, and no house was searched."
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "verified",
+      "value": "Yes: Atlas lists inspections with their results (for example PASSED or FAILED) at the address.",
+      "sourceUrl": "https://atlas.phila.gov/",
+      "checkedOn": "2026-11-17"
+     },
+     "localCaveats": {
+      "status": "partially_verified",
+      "value": [
+       "Online permit lists started in 2007 at both addresses we searched; a house built or renovated earlier may have permits that are not online.",
+       "Atlas shows a summary; the full permit list is on L&I Property History.",
+       "City Hall showed exactly 250 permits in both tools, which may be a display limit."
+      ],
+      "sourceUrl": "https://li.phila.gov/Property-History/",
+      "checkedOn": "2026-11-17",
+      "limits": "Read at two public buildings; the 2007 start and the 250 figure are observations, not stated by the city."
+     }
+    }
+   ]
+  },
+  {
+   "state": "TX",
+   "countyFips": "48113",
+   "county": "Dallas County",
+   "guideSlug": "check-building-permits-dallas-county-tx",
+   "coverage": {
+    "status": "not_researched"
+   },
+   "jurisdictions": [
+    {
+     "id": "tx-dallas-city",
+     "name": "City of Dallas",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "tx-dallas-city",
+      "sourceUrl": "https://dallascityhall.com/departments/sustainabledevelopment/Pages/DallasNow.aspx",
+      "checkedOn": "2026-11-17",
+      "limits": "Inferred from the city running its own permitting system; which addresses it covers was not quoted."
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "City of Dallas Planning and Development",
+      "sourceUrl": "https://dallascityhall.com/departments/sustainabledevelopment/Pages/default.aspx",
+      "checkedOn": "2026-11-17"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "DallasNow",
+       "platform": "Accela Citizen Access"
+      },
+      "sourceUrl": "https://dallascityhall.com/departments/sustainabledevelopment/Pages/DallasNow.aspx",
+      "checkedOn": "2026-11-17"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "sourceUrl": "https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-11-17"
+     },
+     "searchBy": {
+      "status": "verified",
+      "value": {
+       "address": true,
+       "parcel": true,
+       "permitNumber": true,
+       "quirks": [
+        "Search by Address has an Appraisal Parcel ID box",
+        "No login needed to search"
+       ]
+      },
+      "sourceUrl": "https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-11-17"
+     },
+     "addressSearchTested": {
+      "status": "verified",
+      "value": "Anonymous Search by Address for 1500 Marilla St (Dallas City Hall) listed 100+ records; a General Search limited to 1980-2024 found 54 older records on the street.",
+      "sourceUrl": "https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-11-17"
+     },
+     "onlineRecordsFrom": {
+      "status": "partially_verified",
+      "value": "2009 or earlier (the oldest record we found on the street searched)",
+      "sourceUrl": "https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-11-17",
+      "limits": "The city does not state how far back DallasNow reaches. Older records carry an older number format, so they appear to be migrated, and one street is all we searched."
+     },
+     "historicalSystems": {
+      "status": "partially_verified",
+      "value": [
+       {
+        "name": "Records from earlier city systems, shown inside DallasNow",
+        "covers": "before DallasNow; an older record-number format (e.g. 2411213061_194396666-001)"
+       }
+      ],
+      "sourceUrl": "https://dallascityhall.com/departments/sustainabledevelopment/Pages/DallasNow.aspx",
+      "checkedOn": "2026-11-17",
+      "limits": "DallasNow says it integrates 15 systems including PDOX; that the older-format records came from those systems is our reading, not stated."
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "General Search starts at a default date (12/05/2015 when we checked); set the Start Date earlier before concluding an older permit is missing.",
+       "An address search lists only the newest 100 records; use General Search with a date range to reach older ones.",
+       "The address number filter in General Search is loose, so check each result's address."
+      ],
+      "sourceUrl": "https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-11-17"
+     }
+    },
+    {
+     "id": "tx-dallas-uninc",
+     "name": "Unincorporated Dallas County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "not_researched"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    }
+   ]
+  },
+  {
+   "state": "TX",
+   "countyFips": "48201",
+   "county": "Harris County",
+   "guideSlug": "check-harris-county-permit-history-before-buying",
+   "coverage": {
+    "status": "not_researched"
+   },
+   "jurisdictions": [
+    {
+     "id": "tx-harris-uninc",
+     "name": "Unincorporated Harris County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "tx-harris-uninc",
+      "sourceUrl": "https://oce.harriscountytx.gov/Services/Permits",
+      "checkedOn": "2026-10-02",
+      "limits": "The county permits page was confirmed; that it covers only unincorporated areas was not quoted."
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "Harris County Office of the County Engineer",
+      "sourceUrl": "https://oce.harriscountytx.gov/Services/Permits",
+      "checkedOn": "2026-10-02"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "ePermits (with the OCE Permits Search Tool)"
+      },
+      "sourceUrl": "https://oce.harriscountytx.gov/Services/Permits",
+      "checkedOn": "2026-10-02"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://oce.harriscountytx.gov/Services/Permits",
+      "sourceUrl": "https://oce.harriscountytx.gov/Services/Permits",
+      "checkedOn": "2026-10-02"
+     },
+     "searchBy": {
+      "status": "not_tested"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "The old county link (eng.hctx.net/permits) now redirects to the home page of the renamed Office of the County Engineer, not to permits."
+      ],
+      "sourceUrl": "https://oce.harriscountytx.gov/Services/Permits",
+      "checkedOn": "2026-10-02"
+     }
+    },
+    {
+     "id": "tx-harris-houston",
+     "name": "City of Houston",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "not_researched"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    }
+   ]
+  },
+  {
+   "state": "TX",
+   "countyFips": "48439",
+   "county": "Tarrant County",
+   "guideSlug": "check-building-permits-tarrant-county-tx",
+   "coverage": {
+    "status": "not_researched"
+   },
+   "jurisdictions": [
+    {
+     "id": "tx-tarrant-fort-worth",
+     "name": "City of Fort Worth",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "tx-tarrant-fort-worth",
+      "sourceUrl": "https://aca-prod.accela.com/CFW/",
+      "checkedOn": "2026-10-04",
+      "limits": "Inferred from the city running its own Accela permitting system."
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "Online Permitting System",
+       "platform": "Accela"
+      },
+      "sourceUrl": "https://aca-prod.accela.com/CFW/",
+      "checkedOn": "2026-10-04"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://aca-prod.accela.com/CFW/",
+      "sourceUrl": "https://aca-prod.accela.com/CFW/",
+      "checkedOn": "2026-10-04"
+     },
+     "searchBy": {
+      "status": "verified",
+      "value": {
+       "address": true,
+       "parcel": null,
+       "permitNumber": true,
+       "quirks": [
+        "The same six search types as other Accela portals (General, Address, Licensed Professional, Record Information, Trade Name, Contact)"
+       ]
+      },
+      "sourceUrl": "https://aca-prod.accela.com/CFW/",
+      "checkedOn": "2026-10-04"
+     },
+     "addressSearchTested": {
+      "status": "not_tested"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "General Search defaults to a five-year window; move the start date back for older permits."
+      ],
+      "sourceUrl": "https://aca-prod.accela.com/CFW/",
+      "checkedOn": "2026-10-04"
+     }
+    }
+   ]
+  }
+ ]
+}

@@ -8,12 +8,14 @@
 import type { PropertySearchResult } from '../../types';
 import { CURRENT_YEAR, PRIORITY_RULES, getEraLabel, getInspectionPriorities } from '../../engine/inspectionPriorities';
 import type { InspectionPriority } from '../../engine/inspectionPriorities';
+import type { PermitAuthority } from '../../data/permitRecords/authority';
+import type { PermitLevel } from './permitAnswer';
 
 export const RESEARCH_PATH = '/tools/house-research/';
 const STORAGE_KEY = 'br-house-research-v1';
 
 export type BuyingStage = 'looking' | 'offer' | 'contract';
-export type ResearchView = 'setup' | 'plan' | 'era' | 'report';
+export type ResearchView = 'setup' | 'plan' | 'era' | 'permits' | 'report';
 
 export const WORK = {
   roof: 'Roof',
@@ -27,6 +29,26 @@ export const WORK = {
 } as const;
 export type WorkKey = keyof typeof WORK;
 
+/** 'any' stands in when the seller named no specific work: the visitor checks the permit history as a whole. */
+export type PermitItemKey = WorkKey | 'any';
+export interface PermitFinding { found?: 'yes' | 'no' | 'cant'; fin?: 'yes' | 'no' | 'unsure' }
+/** What the visitor was shown, saved when they finish, so the report says exactly where they looked. */
+export interface OfficeSnapshot {
+  label: string | null;
+  department: string | null;
+  portalName: string | null;
+  portalUrl: string | null;
+  onlineFrom: string | null;
+  level: PermitLevel;
+}
+export interface PermitsState {
+  stage: 'how' | 'record' | 'solved';
+  ans: Partial<Record<PermitItemKey, PermitFinding>>;
+  /** Census lookup result, cached on the device; undefined = not looked up yet, null = lookup failed. */
+  authority?: PermitAuthority | null;
+  office: OfficeSnapshot | null;
+}
+
 export interface ResearchState {
   v: 1;
   property: PropertySearchResult;
@@ -37,6 +59,7 @@ export interface ResearchState {
   deadline: string; // yyyy-mm-dd or ''
   claims: WorkKey[];
   era: { picked: string[] | null; solved: boolean };
+  permits: PermitsState;
 }
 
 function todayIso(): string {
@@ -55,6 +78,7 @@ export function freshResearch(property: PropertySearchResult): ResearchState {
     deadline: '',
     claims: [],
     era: { picked: null, solved: false },
+    permits: { stage: 'how', ans: {}, office: null },
   };
 }
 
@@ -65,7 +89,11 @@ export function loadResearch(): ResearchState | null {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (parsed && parsed.v === 1 && parsed.property && typeof parsed.property.yearBuilt === 'number') return parsed as ResearchState;
+    if (parsed && parsed.v === 1 && parsed.property && typeof parsed.property.yearBuilt === 'number') {
+      // Progress saved before the permit question existed.
+      if (!parsed.permits) parsed.permits = { stage: 'how', ans: {}, office: null };
+      return parsed as ResearchState;
+    }
   } catch (e) {}
   return null;
 }
@@ -137,7 +165,7 @@ export const QUESTIONS: QuestionDef[] = [
   },
   {
     id: 'permits',
-    live: false,
+    live: true,
     title: (s) => (s.claims.length ? `Did anyone pull a permit for the ${listOf(s.claims.map((k) => WORK[k].toLowerCase()))}?` : 'Did anyone pull a permit for the work?'),
     teaser: 'A nice-looking job doesn’t tell you whether it was approved. The records do.',
   },
@@ -163,12 +191,100 @@ export const QUESTIONS: QuestionDef[] = [
 
 export function isSolved(s: ResearchState, id: QuestionId): boolean {
   if (id === 'era') return s.era.solved;
+  if (id === 'permits') return s.permits.stage === 'solved';
   return false;
+}
+
+// ---- The permit question: fixed text chosen by the visitor's answers (no AI) ----
+
+export function permitItems(s: ResearchState): PermitItemKey[] {
+  return s.claims.length ? s.claims : ['any'];
+}
+export function itemLabel(k: PermitItemKey): string {
+  return k === 'any' ? 'Permit history' : WORK[k];
+}
+function workNoun(k: PermitItemKey): string {
+  return k === 'any' ? 'past work on the house' : WORK[k].toLowerCase();
+}
+
+export const OPEN_PERMITS_GUIDE = '/guides/resolve-open-building-permits-before-closing/';
+export const GENERAL_PERMITS_GUIDE = '/guides/look-up-building-permits-by-address/';
+
+export interface PermitMeaning {
+  tone: 'good' | 'ask' | 'neutral';
+  text: string;
+  /** Shown after the text as a link to our open-permits guide. */
+  openPermitsLink?: boolean;
+  seller: string | null;
+  verify: string | null;
+  /** Report table: what the visitor found, and the next step. */
+  found: string;
+  next: string;
+}
+
+export function permitMeaning(k: PermitItemKey, a: PermitFinding | undefined, office: OfficeSnapshot | null): PermitMeaning | null {
+  if (!a?.found) return null;
+  const w = workNoun(k);
+  const any = k === 'any';
+  if (a.found === 'yes') {
+    if (!a.fin) return null;
+    if (a.fin === 'yes') {
+      return { tone: 'good', text: 'On record and signed off. Nice. Note the permit number for your files.', seller: null, verify: null, found: 'Permit on record, finaled', next: 'Keep the permit number' };
+    }
+    if (a.fin === 'no') {
+      return {
+        tone: 'ask',
+        text: 'There’s a permit, but it isn’t closed. That doesn’t automatically mean something’s wrong. Ask the seller to get it inspected and signed off before you close.',
+        openPermitsLink: true,
+        seller: any ? 'There’s an open permit on the house. Can it be inspected and closed out before closing?' : `The ${w} permit isn’t shown as finaled. Can it be inspected and closed out before closing?`,
+        verify: any ? 'Open permits are closed out' : `The ${w} permit is closed out`,
+        found: 'Permit found, still open',
+        next: 'Ask the seller to close it out',
+      };
+    }
+    return {
+      tone: 'ask',
+      text: 'There’s a permit. If you can’t see a final inspection or a finaled date, treat it as open and ask the seller.',
+      seller: any ? 'Were all permits on the house finaled? Can you share the final inspection records?' : `Was the ${w} permit finaled? Can you share the final inspection record?`,
+      verify: any ? 'Every permit on the house was finaled' : `The ${w} permit was finaled`,
+      found: 'Permit found, closure unclear',
+      next: 'Ask for the final inspection',
+    };
+  }
+  if (a.found === 'no') {
+    const online = office?.onlineFrom ? ` Online records for this office start: ${office.onlineFrom}.` : ' Older records are often not online.';
+    return {
+      tone: 'ask',
+      text: `No permit online? That doesn’t mean they skipped it.${online} Ask the seller for the paperwork.`,
+      seller: any ? 'Has any work on the house been done with a permit? If so, can you share the permit numbers?' : `Was the ${w} done with a permit? If so, can you share the permit number or the contractor’s invoice?`,
+      verify: any ? 'Permit paperwork for past work' : `Permit or paperwork for the ${w}`,
+      found: 'No permit found online',
+      next: 'Ask the seller for paperwork',
+    };
+  }
+  const who = office?.department || (office?.label ? `${office.label}’s building department` : 'the building department');
+  return {
+    tone: 'neutral',
+    text: `That happens. Call or email ${who} and ask for the permit history for this address, or ask the seller for the permit number.`,
+    seller: any ? 'Has any work on the house been done with a permit? If so, can you share the permit numbers?' : `Was the ${w} done with a permit? If so, can you share the permit number?`,
+    verify: any ? 'Permit history for the house' : `Permit status of the ${w}`,
+    found: 'Couldn’t search yet',
+    next: 'Ask the office or the seller',
+  };
 }
 
 /** Everything the visitor has decided to take away so far, assembled for the report. */
 export function collectFindings(s: ResearchState) {
   const era = eraItems(s.property);
   const checklist = s.era.solved && era ? era.items.filter((i) => (s.era.picked || []).includes(i.id)) : [];
-  return { checklist };
+  const permitRows: { key: PermitItemKey; meaning: PermitMeaning }[] = [];
+  if (s.permits.stage === 'solved') {
+    for (const k of permitItems(s)) {
+      const m = permitMeaning(k, s.permits.ans[k], s.permits.office);
+      if (m) permitRows.push({ key: k, meaning: m });
+    }
+  }
+  const seller = permitRows.map((r) => r.meaning.seller).filter((x): x is string => !!x);
+  const verify = permitRows.map((r) => r.meaning.verify).filter((x): x is string => !!x);
+  return { checklist, permitRows, seller, verify };
 }

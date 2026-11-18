@@ -54,6 +54,7 @@ import {
   getGeneratedReportBody
 } from "./src/server/db.js";
 import { isLegacyGonePath } from './src/data/legacyUrls.js';
+import { authorityFromCensus } from './src/data/permitRecords/authority.js';
 import { mergedGuideTarget } from './src/data/prunedGuides.js';
 import { isClerkBackendConfigured } from "./src/server/clerkAuth.js";
 import { logAiCrawlerVisit } from "./src/server/aiCrawlerLog.js";
@@ -600,6 +601,39 @@ export async function createApp() {
           layer1: { passed: false, code: 'L1_GATE_EXCEPTION', message: 'Unexpected error during validation.' },
         },
       });
+    }
+  });
+
+  // Guided research tool (unpublished): which local government most likely handles permits for a point.
+  // Layer 0 of docs/plans/permit-coverage-usa-2026-11.md. Takes coordinates only (no address is sent on to
+  // anyone but the Census Bureau, which the report already uses), stores nothing, and returns the Census
+  // place / county subdivision / county the point falls in. The mailing city is never used.
+  app.post("/api/research/permit-office", async (req, res) => {
+    const lat = Number(req.body?.lat);
+    const lon = Number(req.body?.lon);
+    // Rough bounding box for the US incl. Alaska, Hawaii and territories; anything else is a bad request.
+    if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < 13 || lat > 72 || lon < -180 || lon > -64) {
+      res.status(400).json({ error: 'lat and lon are required.' });
+      return;
+    }
+    const url = 'https://geocoding.geo.census.gov/geocoder/geographies/coordinates?' + new URLSearchParams({
+      x: String(lon), y: String(lat), benchmark: 'Public_AR_Current', vintage: 'Current_Current',
+      layers: 'Incorporated Places,County Subdivisions,Counties', format: 'json',
+    }).toString();
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12_000);
+    try {
+      const r = await fetch(url, { signal: controller.signal });
+      if (!r.ok) throw new Error(`Census geocoder ${r.status}`);
+      const data = await r.json();
+      const authority = authorityFromCensus(data?.result?.geographies);
+      res.json({ authority, checkedOn: new Date().toISOString().slice(0, 10) });
+    } catch (err) {
+      console.warn('[permit-office] Census lookup failed:', err);
+      // Not an error for the visitor: the tool falls back to the general route.
+      res.json({ authority: null });
+    } finally {
+      clearTimeout(timer);
     }
   });
 

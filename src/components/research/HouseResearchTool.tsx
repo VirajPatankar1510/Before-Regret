@@ -6,10 +6,12 @@ import type { PropertySearchResult } from '../../types';
 import { AddressSearchBox } from '../AddressSearchBox';
 import { ContentLink } from '../home/ContentLink';
 import {
-  QUESTIONS, WORK, collectFindings, costsNothingExtra, daysLeft, eraItems, formatShortDate, freshResearch, isSolved,
+  QUESTIONS, WORK, collectFindings, itemLabel, costsNothingExtra, daysLeft, eraItems, formatShortDate, freshResearch, isSolved,
   loadResearch, saveResearch,
   type BuyingStage, type EraItem, type QuestionId, type ResearchState, type WorkKey,
 } from './researchState';
+import { PermitView } from './PermitView';
+import { BackToPlan, SolvedBadge, btnGhost, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
 
 // Guided research tool -- UNPUBLISHED (owner, 2026-11-18: "don't publish until our entire tool is ready").
 // Stage 1: setup questions, the plan, and the era question. Plan: docs/plans/guided-research-tool-2026-11.md.
@@ -36,12 +38,6 @@ const STAGES: [BuyingStage, string, string][] = [
 ];
 const STAGE_LABEL: Record<BuyingStage, string> = { looking: 'Just looking', offer: 'Offer made', contract: 'Under contract' };
 
-const btnPrimary = 'w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-home-ink text-white font-bold text-base px-5 py-4 hover:bg-home-navy transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
-const btnGhost = 'w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-home-linen bg-white text-home-ink font-bold text-base px-5 py-3.5 hover:border-home-oak transition-colors cursor-pointer';
-const linkBtn = 'text-sm font-semibold text-home-brass underline underline-offset-4 hover:text-home-ink cursor-pointer';
-const card = 'rounded-3xl bg-white border border-home-linen shadow-sm p-5 sm:p-6';
-const eyebrow = 'text-[11px] font-bold uppercase tracking-[0.18em] text-home-brass';
-
 export const HouseResearchTool: React.FC<Props> = ({ onNavigate, onQuickReport }) => {
   const [state, setState] = useState<ResearchState | null>(() => loadResearch());
   const topRef = useRef<HTMLDivElement>(null);
@@ -52,7 +48,7 @@ export const HouseResearchTool: React.FC<Props> = ({ onNavigate, onQuickReport }
     setState((s) => (s ? { ...s, ...(typeof patch === 'function' ? patch(s) : patch) } : s));
 
   // Each screen starts at the top, like a new page would.
-  const viewKey = state ? `${state.view}-${state.setupStep}-${state.era.solved}` : 'start';
+  const viewKey = state ? `${state.view}-${state.setupStep}-${state.era.solved}-${state.permits.stage}` : 'start';
   useEffect(() => { window.scrollTo(0, 0); }, [viewKey]);
 
   return (
@@ -71,6 +67,8 @@ export const HouseResearchTool: React.FC<Props> = ({ onNavigate, onQuickReport }
           <SetupView state={state} update={update} />
         ) : state.view === 'era' ? (
           <EraView state={state} update={update} onNavigate={onNavigate} />
+        ) : state.view === 'permits' ? (
+          <PermitView state={state} update={update} onNavigate={onNavigate} />
         ) : state.view === 'report' ? (
           <ReportView state={state} update={update} />
         ) : (
@@ -101,7 +99,6 @@ const StartView: React.FC<{ onStart: (p: PropertySearchResult) => void; onQuickR
 
 // ---------------------------------------------------------------------------------------------------------------
 
-type Updater = (patch: Partial<ResearchState> | ((s: ResearchState) => Partial<ResearchState>)) => void;
 
 const Dots: React.FC<{ at: number; of: number }> = ({ at, of }) => (
   <div className="flex gap-1.5" aria-hidden="true">
@@ -202,6 +199,11 @@ const Ring: React.FC<{ done: number; total: number }> = ({ done, total }) => {
 
 function solvedLine(state: ResearchState, id: QuestionId): string {
   if (id === 'era') return `${(state.era.picked || []).length} things on your list`;
+  if (id === 'permits') {
+    const { permitRows } = collectFindings(state);
+    const ask = permitRows.filter((r) => r.meaning.seller).length;
+    return `${permitRows.length} checked · ${ask ? `${ask} to ask the seller about` : 'nothing to chase'}`;
+  }
   return '';
 }
 
@@ -278,7 +280,7 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
               </>
             );
             return q.live ? (
-              <button key={q.id} type="button" onClick={() => update({ view: q.id as 'era' })}
+              <button key={q.id} type="button" onClick={() => update({ view: q.id as 'era' | 'permits' })}
                 className="w-full text-left flex gap-3 rounded-2xl border border-home-linen bg-white p-4 hover:border-home-oak transition-colors cursor-pointer">
                 {inner}
               </button>
@@ -330,23 +332,7 @@ const EraCard: React.FC<{ item: EraItem; picked: boolean; onToggle: () => void }
   );
 };
 
-const BackToPlan: React.FC<{ update: Updater; right?: string }> = ({ update, right }) => (
-  <div className="flex items-center justify-between">
-    <button type="button" onClick={() => update({ view: 'plan' })} className="inline-flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-home-ink cursor-pointer">
-      <ArrowLeft className="w-4 h-4" /> Your questions
-    </button>
-    {right && <span className="text-sm text-slate-500">{right}</span>}
-  </div>
-);
 
-const SolvedBadge: React.FC = () => (
-  <div className="flex flex-col items-center text-center gap-3 pt-2">
-    <div className="w-16 h-16 rounded-full bg-home-moss text-white flex items-center justify-center shadow-sm">
-      <Check className="w-9 h-9" strokeWidth={2.6} />
-    </div>
-    <h2 className="font-serif text-3xl font-semibold">Solved</h2>
-  </div>
-);
 
 const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (path: string) => void }> = ({ state, update }) => {
   const year = state.property.yearBuilt as number;
@@ -470,7 +456,7 @@ const CopyList: React.FC<{ title: string; lines: string[] }> = ({ title, lines }
 
 const ReportView: React.FC<{ state: ResearchState; update: Updater }> = ({ state, update }) => {
   const p = state.property;
-  const { checklist } = collectFindings(state);
+  const { checklist, permitRows, seller, verify } = collectFindings(state);
   const dl = daysLeft(state.deadline);
   const live = QUESTIONS.filter((q) => q.live);
   const open = live.filter((q) => !isSolved(state, q.id));
@@ -505,6 +491,25 @@ const ReportView: React.FC<{ state: ResearchState; update: Updater }> = ({ state
         </div>
       </div>
 
+      {permitRows.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="text-lg font-bold"><span className={`${eyebrow} block`}>Check</span>What the permit records show</h2>
+          <div className="space-y-2.5">
+            {permitRows.map(({ key, meaning }) => (
+              <div key={key} className="rounded-2xl border border-home-linen bg-white p-4 grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-sm break-inside-avoid">
+                <b>{itemLabel(key)}</b>
+                <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold self-start ${meaning.tone === 'good' ? 'bg-home-sage text-home-moss' : 'bg-amber-50 text-amber-800'}`}>{meaning.next}</span>
+                <span className="text-slate-600 col-span-2">You found: {meaning.found.toLowerCase()}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-slate-500">
+            Searched by you{state.permits.office?.portalName ? ` in ${state.permits.office.portalName}` : ''}{state.permits.office?.label ? `, most likely ${state.permits.office.label} (from U.S. Census boundaries)` : ''}.
+            {state.permits.office?.onlineFrom ? ` Online records start: ${state.permits.office.onlineFrom}.` : ''} A missing permit online isn’t proof the work was unpermitted.
+          </p>
+        </div>
+      )}
+
       {checklist.length > 0 && (
         <div className="space-y-2">
           <h2 className="text-lg font-bold"><span className={`${eyebrow} block`}>Check</span>Your list for a house built in {p.yearBuilt}</h2>
@@ -526,14 +531,22 @@ const ReportView: React.FC<{ state: ResearchState; update: Updater }> = ({ state
 
       <div className="space-y-3">
         <h2 className="text-lg font-bold"><span className={`${eyebrow} block`}>Ask</span>Questions, ready to send</h2>
+        <CopyList title="For the seller" lines={seller} />
         <CopyList title="Your checklist, to share with your agent or inspector" lines={checklist.map((i) => `${i.title}: ${i.howToCheck}`)} />
       </div>
+
+      {verify.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="text-lg font-bold"><span className={`${eyebrow} block`}>Verify</span>Before {state.deadline ? formatShortDate(state.deadline) : 'closing'}</h2>
+          <ul className="space-y-1.5">{verify.map((v) => <li key={v} className="flex gap-2 text-sm"><span className="w-4 h-4 mt-0.5 rounded border border-slate-400 shrink-0" />{v}</li>)}</ul>
+        </div>
+      )}
 
       {open.length > 0 && <p className="text-sm text-slate-600">{open.length} question{open.length === 1 ? '' : 's'} still open. Answer {open.length === 1 ? 'it' : 'them'} and {open.length === 1 ? 'it shows' : 'they show'} up here.</p>}
 
       <div className="rounded-2xl bg-white/70 border border-home-linen p-5 text-sm text-slate-600 leading-relaxed">
-        <b className="text-home-ink">What this report is.</b> It records what you chose to follow up, plus what was typical for homes of this
-        age and area. It isn’t an inspection and doesn’t judge this particular house. The year built is your answer; check it against the listing
+        <b className="text-home-ink">What this report is.</b> It records what you found in official records and what you chose to follow up, plus what was
+        typical for homes of this age and area. It isn’t an inspection and doesn’t judge this particular house. The year built is your answer; check it against the listing
         or the county’s records.
       </div>
 
