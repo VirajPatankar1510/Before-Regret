@@ -64,7 +64,9 @@
           "parcel": true,
           "permitNumber": true,
           "quirks": [
-            "Search by Address has an Appraisal Parcel ID box",
+            "For an address, use General Search (street number and street name). Search by Address lists only the newest 100 records",
+            "In General Search, change the Start Date to 01/01/1980 or earlier. It starts at 12/05/2015 otherwise",
+            "The street number filter is loose, so check the address on each result",
             "No login needed to search"
           ]
         },

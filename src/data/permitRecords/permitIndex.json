@@ -1560,7 +1560,7 @@
        "permitNumber": true,
        "quirks": [
         "Many functions work without a log-in",
-        "Search by Address includes a Parcel No. box",
+        "General Search covers only the last 12 months unless you move the start date back",
         "A Comprehensive Permit Summary by Address is offered"
        ]
       },
@@ -3972,7 +3972,9 @@
        "parcel": true,
        "permitNumber": true,
        "quirks": [
-        "Search by Address has an Appraisal Parcel ID box",
+        "For an address, use General Search (street number and street name). Search by Address lists only the newest 100 records",
+        "In General Search, change the Start Date to 01/01/1980 or earlier. It starts at 12/05/2015 otherwise",
+        "The street number filter is loose, so check the address on each result",
         "No login needed to search"
        ]
       },
@@ -4213,7 +4215,7 @@
        "parcel": null,
        "permitNumber": true,
        "quirks": [
-        "The same six search types as other Accela portals (General, Address, Licensed Professional, Record Information, Trade Name, Contact)"
+        "Use General Search and move the start date back. It covers a five-year window otherwise"
        ]
       },
       "sourceUrl": "https://aca-prod.accela.com/CFW/",

@@ -470,6 +470,11 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
       setShowSuggestions(false);
       return;
     }
+    // The list for the previous text stays hidden while the new one loads: the walk-through on 2026-11-18 saw the
+    // last address's suggestions sit under a new address for about four seconds.
+    setSuggestions([]);
+    setShowSuggestions(false);
+    let stale = false;
 
     const timer = setTimeout(async () => {
       try {
@@ -481,7 +486,12 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         if (res.ok) {
           const data = await res.json();
           lastSuggestRef.current = { q: mapSearchQuery.trim(), data };
-          const specific = Array.isArray(data) ? data.filter(isSpecificAddress).slice(0, 5) : [];
+          if (stale) return; // the visitor typed more while this was loading
+          // One row per visible line: the geocoder can return the same street address twice (e.g. a building and its parcel).
+          const seen = new Set<string>();
+          const specific = Array.isArray(data)
+            ? data.filter(isSpecificAddress).filter((d: any) => { const k = suggestionLine(d).toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 5)
+            : [];
           if (specific.length > 0) {
             setSuggestions(specific);
             setShowSuggestions(true);
@@ -496,7 +506,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     // shared by all visitors (2026-11-18).
     }, 600);
 
-    return () => clearTimeout(timer);
+    return () => { stale = true; clearTimeout(timer); };
   }, [mapSearchQuery]);
 
 
@@ -1040,7 +1050,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 space-y-1">
                 <div className="text-[10px] font-mono font-bold text-blue-600 uppercase tracking-wider">
-                  Step 2 of 2
+                  One more step
                 </div>
                 <h3 className="text-base sm:text-lg font-bold text-slate-900">What type of property is this?</h3>
                 <p className="text-xs text-slate-500 truncate">{selectedPinResult.displayName}</p>
@@ -1075,7 +1085,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                   className={`px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold border transition-all cursor-pointer ${
                     declaredPropertyType === value
                       ? 'bg-blue-600 text-white border-blue-400'
-                      : 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white hover:border-slate-600'
+                      : 'bg-white text-slate-700 border-slate-300 hover:border-slate-500 hover:text-slate-900'
                   }`}
                 >
                   {label}

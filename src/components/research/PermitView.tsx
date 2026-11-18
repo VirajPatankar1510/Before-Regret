@@ -127,6 +127,8 @@ const Where: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, s
   const searchBy = shown<SearchBy>(r, 'searchBy');
   const tested = shown<string>(r, 'addressSearchTested');
   const online = shown<string>(r, 'onlineRecordsFrom');
+  const onlineYear = online ? Number(online.value.match(/\b(1[89]\d\d|20\d\d)\b/)?.[1]) || null : null;
+  const built = Number(state.property.yearBuilt) || null;
   const history = shown<HistoricalSystem[]>(r, 'historicalSystems');
   const older = shown<string>(r, 'olderRecordsRequest');
   const caveats = shown<string[]>(r, 'localCaveats');
@@ -176,6 +178,10 @@ const Where: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, s
             ]} />
             {tested && <p className="text-sm text-slate-600"><b>When we tried it:</b> {tested.value}<Status status={tested.status} checkedOn={tested.checkedOn} limits={'limits' in tested ? tested.limits : undefined} /></p>}
             {online && <p className="text-sm text-slate-600"><b>Online records start:</b> {online.value}<Status status={online.status} checkedOn={online.checkedOn} limits={'limits' in online ? online.limits : undefined} /></p>}
+            {onlineYear && built && onlineYear > built && (
+              // Walk-through 2026-11-18: a 1978 house next to "records go back to 2009" needed saying out loud.
+              <p className="text-sm rounded-xl bg-home-stone px-3 py-2">This house was built in {built}. The oldest record we found online is from {onlineYear}, so older permits may only be on paper or in an older system. Ask the department if you need them.</p>
+            )}
             {!tested && <p className="text-sm text-slate-600">We’ve checked the link but haven’t run an address search here yet.</p>}
           </div>
         ) : (

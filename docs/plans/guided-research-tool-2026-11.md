@@ -115,6 +115,25 @@ Third round (same day):
 - **Report:** "At a glance" (five "Answered" tags) and the CHECK/ASK/VERIFY labels removed. Now: "Not answered yet"
   (only if any), "What you found", the checklist, "Questions, ready to send", "To confirm before [date]".
 
+Second walk-through (same day: Dallas City Hall, 1978, "Just looking", no deadline, no claims), all fixed:
+- **"Where are you with this house?" now changes the flow.** "Just looking" skips the deadline screen (setup is
+  1 of 2 / 2 of 2). Before a contract ("Just looking", "Made an offer") the inspection-report question is tagged "For
+  after your inspection" and doesn't count toward the total (`countedQuestions`, `waitsForInspection`). With no
+  deadline, "before your deadline" wording is replaced (`forDeadline` in `researchState.ts`), e.g. "Get an insurance
+  quote" / "quote this address now, so the cost is part of your decision".
+- **Dallas's key tip was hidden** under "Nothing came up?". The search steps now say to use General Search with a
+  Start Date of 01/01/1980 or earlier (Search by Address lists only the newest 100 records; General Search starts at
+  12/05/2015). Same evidence as before (ledger walk 2026-11-17). Tampa and Fort Worth got the same date tip from
+  their existing caveats.
+- **Year built vs online records:** when the oldest record we found online is newer than the house, the Where screen
+  says so ("This house was built in 1978. The oldest record we found online is from 2009, so older permits may only be
+  on paper or in an older system.").
+- Smaller: the address list for the previous text no longer lingers while new suggestions load, and duplicate lines
+  are dropped; the plan says "9 things worth checking on a house of that age" (matching the question); the permit
+  answer line lists each item ("Permit on record, signed off"); with no seller claims the permit question reads "Any
+  permits on record for this house?"; the property-type pop-up says "One more step" and its buttons are white until
+  picked.
+
 Homepage (owner approved): one short line under each hero button, "Step by step, with what to do next" and
 "Everything at once, in seconds" (quick report timed at 1.2-4.2s on the no-DB build, 2026-11-18). Labels unchanged.
 

@@ -57,7 +57,7 @@
           "parcel": null,
           "permitNumber": true,
           "quirks": [
-            "The same six search types as other Accela portals (General, Address, Licensed Professional, Record Information, Trade Name, Contact)"
+            "Use General Search and move the start date back. It covers a five-year window otherwise"
           ]
         },
         "sourceUrl": "https://aca-prod.accela.com/CFW/",

@@ -6,7 +6,7 @@ import type { PropertySearchResult } from '../../types';
 import { AddressSearchBox } from '../AddressSearchBox';
 import { ContentLink } from '../home/ContentLink';
 import {
-  QUESTIONS, WORK, collectFindings, itemLabel, daysLeft, eraItems, formatShortDate, freshResearch, isSolved,
+  QUESTIONS, WORK, collectFindings, countedQuestions, forDeadline, waitsForInspection, itemLabel, daysLeft, eraItems, formatShortDate, freshResearch, isSolved,
   loadResearch, saveResearch,
   type BuyingStage, type EraItem, type QuestionId, type ResearchState, type WorkKey,
 } from './researchState';
@@ -165,8 +165,13 @@ const Dots: React.FC<{ at: number; of: number }> = ({ at, of }) => (
 
 const SetupView: React.FC<{ state: ResearchState; update: Updater }> = ({ state, update }) => {
   const n = state.setupStep;
-  const next = () => (n < 2 ? update({ setupStep: (n + 1) as 0 | 1 | 2 }) : update({ view: 'plan' }));
-  const back = () => (n > 0 ? update({ setupStep: (n - 1) as 0 | 1 | 2 }) : undefined);
+  // "Just looking" has no deadline yet, so that screen is skipped (walk-through 2026-11-18).
+  const order: (0 | 1 | 2)[] = state.stage === 'looking' ? [0, 2] : [0, 1, 2];
+  const at = Math.max(0, order.indexOf(n));
+  const next = () => (at < order.length - 1
+    ? update({ setupStep: order[at + 1], ...(state.stage === 'looking' ? { deadline: '' } : {}) })
+    : update({ view: 'plan' }));
+  const back = () => (at > 0 ? update({ setupStep: order[at - 1] }) : undefined);
   const toggleClaim = (k: WorkKey) =>
     update((s) => ({ claims: s.claims.includes(k) ? s.claims.filter((c) => c !== k) : [...s.claims, k] }));
 
@@ -178,14 +183,14 @@ const SetupView: React.FC<{ state: ResearchState; update: Updater }> = ({ state,
             <ArrowLeft className="w-4 h-4" /> Back
           </button>
         ) : <span className="text-sm text-slate-500 truncate max-w-[70%]">{state.property.displayName}</span>}
-        <span className="text-sm text-slate-500">{n + 1} of 3</span>
+        <span className="text-sm text-slate-500">{at + 1} of {order.length}</span>
       </div>
-      <Dots at={n} of={3} />
+      <Dots at={at} of={order.length} />
 
       {n === 0 && (
         <div className="space-y-4">
           <h2 className="font-serif text-3xl font-semibold">Where are you with this house?</h2>
-          <p className="text-slate-600">So we know what to show you first.</p>
+          <p className="text-slate-600">So we only show what applies to you right now.</p>
           <div className="space-y-2.5" role="radiogroup" aria-label="Where are you with this house?">
             {STAGES.map(([v, label, sub]) => (
               <button key={v} type="button" role="radio" aria-checked={state.stage === v}
@@ -232,7 +237,7 @@ const SetupView: React.FC<{ state: ResearchState; update: Updater }> = ({ state,
       )}
 
       <button type="button" className={btnPrimary} onClick={next} disabled={n === 0 && !state.stage}>
-        {n < 2 ? 'Next' : 'Show me what to check'} <ArrowRight className="w-4 h-4" />
+        {at < order.length - 1 ? 'Next' : 'Show me what to check'} <ArrowRight className="w-4 h-4" />
       </button>
     </section>
   );
@@ -256,8 +261,8 @@ function solvedLine(state: ResearchState, id: QuestionId): string {
   if (id === 'era') return `${(state.era.picked || []).length} on your checklist`;
   if (id === 'permits') {
     const { permitRows } = collectFindings(state);
-    const ask = permitRows.filter((r) => r.meaning.seller).length;
-    return `${permitRows.length} checked · ${ask ? `${ask} to ask the seller about` : 'nothing to chase'}`;
+    // Each item with what was found, e.g. "Roof: permit on record, signed off" (walk-through 2026-11-18).
+    return permitRows.map((r) => (r.key === 'any' ? r.meaning.found : `${itemLabel(r.key)}: ${r.meaning.found.charAt(0).toLowerCase()}${r.meaning.found.slice(1)}`)).join(' · ');
   }
   const m = collectFindings(state).missionRows.find((r) => r.id === id);
   return m ? m.rows.map((r) => r.meaning.found).join(' · ') : '';
@@ -266,11 +271,11 @@ function solvedLine(state: ResearchState, id: QuestionId): string {
 const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () => void; onFinish: () => void; error: string | null }> = ({ state, update, onReset, onFinish, error }) => {
   const p = state.property;
   const dl = daysLeft(state.deadline);
-  const live = QUESTIONS.filter((q) => q.live);
+  const live = countedQuestions(state);
   const done = live.filter((q) => isSolved(state, q.id)).length;
   const allDone = done === live.length;
   const era = eraItems(p);
-  const eraCount = era ? era.items.filter((i) => i.group === 'era').length : 0;
+  const eraCount = era ? era.items.length : 0;
   const place = [p.city, p.county, p.state].filter(Boolean).join(', ');
 
   return (
@@ -311,7 +316,7 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
           <div>
             <dt className="text-slate-500">Built <span className="text-slate-400">(your answer)</span></dt>
             <dd className="font-semibold">{p.yearBuilt}{era ? ` · ${era.eraLabel}` : ''}</dd>
-            {eraCount > 0 && <dd className="text-slate-600 mt-0.5">{eraCount} things were common in homes of that age. That’s your first question below.</dd>}
+            {eraCount > 0 && <dd className="text-slate-600 mt-0.5">{eraCount} things worth checking on a house of that age. That’s your first question below.</dd>}
           </div>
           {state.claims.length > 0 && (
             <div>
@@ -344,6 +349,7 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
                   {solved
                     ? <span className="block text-sm text-home-moss font-semibold">Answered: {solvedLine(state, q.id)}</span>
                     : <span className="block text-sm text-slate-600">{q.teaser}</span>}
+                  {waitsForInspection(state, q.id) && <span className="inline-block rounded-full bg-home-stone px-2.5 py-0.5 text-[11px] font-bold text-slate-500">For after your inspection</span>}
                   {!q.live && <span className="inline-block rounded-full bg-home-stone px-2.5 py-0.5 text-[11px] font-bold text-slate-500">Coming soon</span>}
                 </span>
                 {q.live && <ChevronRight className="w-5 h-5 text-slate-400 shrink-0 self-center" />}
@@ -500,7 +506,7 @@ const CopyList: React.FC<{ title: string; lines: string[] }> = ({ title, lines }
 export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolean }> = ({ state, compact }) => {
   const p = state.property;
   const { checklist, permitRows, missionRows, seller, verify } = collectFindings(state);
-  const open = QUESTIONS.filter((q) => q.live && !isSolved(state, q.id));
+  const open = countedQuestions(state).filter((q) => !isSolved(state, q.id));
   return (
     <div className="space-y-7">
       {open.length > 0 && (
@@ -538,7 +544,7 @@ export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolea
               <div key={key} className="rounded-2xl border border-home-linen bg-white p-4 grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-sm break-inside-avoid">
                 <b>{meaning.found}</b>
                 <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold self-start ${meaning.tone === 'good' ? 'bg-home-sage text-home-moss' : meaning.tone === 'ask' ? 'bg-amber-50 text-amber-800' : 'bg-home-stone text-slate-600'}`}>{meaning.next}</span>
-                <span className="text-slate-600 col-span-2">{meaning.text}</span>
+                <span className="text-slate-600 col-span-2">{forDeadline(meaning.text, state)}</span>
               </div>
             ))}
           </div>

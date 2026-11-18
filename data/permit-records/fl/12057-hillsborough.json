@@ -165,7 +165,7 @@
           "permitNumber": true,
           "quirks": [
             "Many functions work without a log-in",
-            "Search by Address includes a Parcel No. box",
+            "General Search covers only the last 12 months unless you move the start date back",
             "A Comprehensive Permit Summary by Address is offered"
           ]
         },

@@ -197,7 +197,7 @@ export const QUESTIONS: QuestionDef[] = [
   {
     id: 'permits',
     live: true,
-    title: (s) => (s.claims.length ? `Did anyone pull a permit for the ${listOf(s.claims.map((k) => WORK[k].toLowerCase()))}?` : 'Did anyone pull a permit for the work?'),
+    title: (s) => (s.claims.length ? `Did anyone pull a permit for the ${listOf(s.claims.map((k) => WORK[k].toLowerCase()))}?` : 'Any permits on record for this house?'),
     teaser: 'A nice-looking job doesn’t tell you whether it was approved. The records do.',
   },
   {
@@ -219,6 +219,30 @@ export const QUESTIONS: QuestionDef[] = [
     teaser: 'After the inspection, we’ll help you work out what it means.',
   },
 ];
+
+/** Before a contract there's no inspection report yet, so that question waits and doesn't count toward "all
+ *  answered" (fresh-eyes walk-through 2026-11-18: a "Just looking" visitor could only answer "not yet"). */
+export function waitsForInspection(s: ResearchState, id: QuestionId): boolean {
+  return id === 'decode' && (s.stage === 'looking' || s.stage === 'offer') && !isSolved(s, id);
+}
+
+/** The questions that count toward "N of M answered" for this visitor. */
+export function countedQuestions(s: ResearchState): QuestionDef[] {
+  return QUESTIONS.filter((q) => q.live && !waitsForInspection(s, q.id));
+}
+
+/** Copy written for a visitor with a deadline, reworded when they have none (walk-through 2026-11-18: "Just looking"
+ *  visitors were told to act "before your inspection or option period ends"). Order matters: longest phrases first. */
+const NO_DEADLINE: [RegExp, string][] = [
+  [/Then get a quote before your deadline\./g, 'Then get a quote, so the cost is part of your decision.'],
+  [/Get a quote before your deadline/g, 'Get an insurance quote'],
+  [/before your inspection or option period ends/g, 'now, so the cost is part of your decision'],
+  [/before your deadline/g, 'before you commit'],
+];
+export function forDeadline(text: string, s: ResearchState): string {
+  if (s.deadline) return text;
+  return NO_DEADLINE.reduce((t, [re, to]) => t.replace(re, to), text);
+}
 
 export function isSolved(s: ResearchState, id: QuestionId): boolean {
   if (id === 'era') return s.era.solved;

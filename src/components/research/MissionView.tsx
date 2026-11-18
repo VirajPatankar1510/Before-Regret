@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowRight, Check, ExternalLink } from 'lucide-react';
 import { MISSIONS, type Choice as ChoiceDef, type HowStep, type MissionId, type Source } from './missions';
-import type { MissionState, ResearchState } from './researchState';
+import { forDeadline, type MissionState, type ResearchState } from './researchState';
 import { BackToPlan, Choice, Progress, btnPrimary, card, type Updater } from './ui';
 
 // One screen for the Stage 3 questions (insurance, water line, inspection report). All text comes from missions.ts.
@@ -20,17 +20,17 @@ const SourceLine: React.FC<{ source: Source }> = ({ source }) => (
   </span>
 );
 
-const MeaningBox: React.FC<{ choice: ChoiceDef }> = ({ choice }) => (
+const MeaningBox: React.FC<{ choice: ChoiceDef; t: (x: string) => string }> = ({ choice, t }) => (
   <div className={`rounded-2xl p-4 ${choice.meaning.tone === 'good' ? 'bg-home-sage/60' : choice.meaning.tone === 'ask' ? 'bg-amber-50' : 'bg-home-stone'}`}>
     <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">What this means</span>
-    {choice.meaning.text}
+    {t(choice.meaning.text)}
   </div>
 );
 
-const StepBody: React.FC<{ step: HowStep; showTitle: boolean }> = ({ step, showTitle }) => (
+const StepBody: React.FC<{ step: HowStep; showTitle: boolean; t: (x: string) => string }> = ({ step, showTitle, t }) => (
   <div className="min-w-0 space-y-2">
-    {showTitle && <p className="font-bold leading-snug">{step.title}</p>}
-    <p className="leading-relaxed">{step.body}</p>
+    {showTitle && <p className="font-bold leading-snug">{t(step.title)}</p>}
+    <p className="leading-relaxed">{t(step.body)}</p>
     {step.link && (
       // Opens in a new tab so the visitor's place in the tool stays put (it's saved on the device anyway).
       <a href={step.link.href} target="_blank" rel={step.link.internal ? 'noopener' : 'noopener noreferrer'}
@@ -44,6 +44,7 @@ const StepBody: React.FC<{ step: HowStep; showTitle: boolean }> = ({ step, showT
 
 export const MissionView: React.FC<{ id: MissionId; state: ResearchState; update: Updater }> = ({ id, state, update }) => {
   const def = MISSIONS[id];
+  const t = (x: string) => forDeadline(x, state);
   const ms: MissionState = state.missions?.[id] || { stage: 'how', ans: {} };
   const set = (patch: Partial<MissionState>) => update((s) => ({ missions: { ...s.missions, [id]: { ...(s.missions?.[id] || { stage: 'how', ans: {} }), ...patch } } }));
 
@@ -77,16 +78,16 @@ export const MissionView: React.FC<{ id: MissionId; state: ResearchState; update
       )}
       {screens.length > 1 && <Progress n={i + 1} total={screens.length} label={`Step ${i + 1} of ${screens.length}`} />}
       <p className="text-sm font-semibold text-slate-500">{def.h1}</p>
-      <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance] !mt-1">{screen.title}</h1>
-      {i === 0 && <p className="text-slate-600">{def.intro}</p>}
+      <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance] !mt-1">{t(screen.title)}</h1>
+      {i === 0 && <p className="text-slate-600">{t(def.intro)}</p>}
 
       <div className={`${card} space-y-4`}>
-        {single ? <StepBody step={steps[0]} showTitle={false} /> : (
+        {single ? <StepBody step={steps[0]} showTitle={false} t={t} /> : (
           <ol className="space-y-4">
             {steps.map((s, n) => (
               <li key={s.title} className="flex gap-3">
                 <span className="w-6 h-6 shrink-0 rounded-full bg-home-stone text-home-brass text-xs font-bold flex items-center justify-center mt-0.5">{n + 1}</span>
-                <StepBody step={s} showTitle />
+                <StepBody step={s} showTitle t={t} />
               </li>
             ))}
           </ol>
@@ -99,7 +100,7 @@ export const MissionView: React.FC<{ id: MissionId; state: ResearchState; update
           <div className="space-y-2.5" role="group" aria-labelledby={`mq-${id}-${q.id}`}>
             {q.choices.map((c) => <Choice key={c.id} multi={q.multi} on={picked.includes(c.id)} onClick={() => pick(c.id)}>{c.label}</Choice>)}
           </div>
-          {q.choices.filter((c) => picked.includes(c.id)).map((c) => <MeaningBox key={c.id} choice={c} />)}
+          {q.choices.filter((c) => picked.includes(c.id)).map((c) => <MeaningBox key={c.id} choice={c} t={t} />)}
         </div>
       )}
 
