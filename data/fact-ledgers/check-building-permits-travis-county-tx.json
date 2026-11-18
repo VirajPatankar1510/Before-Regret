@@ -1,0 +1,42 @@
+{
+  "slug": "check-building-permits-travis-county-tx",
+  "question": "Where are building permits for a City of Austin address kept, and can a buyer search them by address without an account?",
+  "verdictConfirmed": "Yes for the City of Austin: Austin Build + Connect's Public Search needs no login and searches by street address, with records back to at least 1980 at the address we tried. Unincorporated Travis County and the other cities in the county were not researched.",
+  "officialLookupUrl": "https://abc.austintexas.gov/citizenportal/app/public-search",
+  "note": "Evidence for data/permit-records/tx/48453-travis.json (the research tool's permit question). No guide page uses this ledger yet.",
+  "portalWalk": {
+    "date": "2026-11-18",
+    "system": "Austin Build + Connect (AB+C), Public Search, https://abc.austintexas.gov/citizenportal/app/public-search. No login used; no CAPTCHA.",
+    "address": "301 W 2nd St, Austin TX 78701 (Austin City Hall, a public building).",
+    "observations": [
+      "Public Search has two tabs: 'Permit Number, FolderRSN / RowID, or Case Number' and 'Property / Project Name / Types / Date Range'. The address search is on the second tab, split into Number, Direction, Street Name, Street Type, Dir, Unit Type, Unit and Zip.",
+      "The page note reads: 'By default, the database search is limited to the past 365 days.' It also says a range longer than a year needs another criterion such as Street, Zip Code, Project Name, or Permit/Case Type.",
+      "Number 301, Direction W, Street Name 2ND, Street Type STREET, Start Date 01-01-1980, End Date 11-18-2026 returned '661 Results' of every type (building, water and wastewater taps, right-of-way, special events). The search took about 30 seconds to load.",
+      "Adding Permit/Case Type 'Building Permit' and End Date 12-31-1999 returned '56 Results'. The oldest was 1980-001141 BP, 'Remove & Replace Roof Of 3 Stry Comm Bldg', status Final, issued 1980-01-02 (1980 was the start of the range we searched; earlier years were not tried).",
+      "Older records store the address differently: '301 2 Street West A 00000' instead of '301 W 2ND STREET'. They still matched the structured address search.",
+      "Closed permits show the status 'Final'; abandoned ones show 'VOID'. The record detail page (no login) shows the permit number, type, status, application, issued and expiration dates, and the description.",
+      "Inspection results were not found on the detail page we opened (1980-001141 BP); the 'Processes and Notes' tab showed no inspection list for it."
+    ],
+    "limits": "One public building on one street, City of Austin only. Unincorporated Travis County and other cities in the county (Pflugerville, Lakeway, Manor and others) were not checked."
+  },
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "AB+C is the City of Austin's online permitting portal, and its Public Search needs no login.",
+      "quote": "Welcome to Austin Build + Connect (AB+C), an online portal for the City of Austin permitting services. ... Anyone can use the Public Search feature on AB+C, no log-in required.",
+      "url": "https://abc.austintexas.gov/citizenportal/app/login",
+      "readOn": "2026-11-18",
+      "method": "browser (page text)"
+    },
+    {
+      "id": "f2",
+      "claim": "The address search defaults to the past 365 days.",
+      "quote": "By default, the database search is limited to the past 365 days. Due to the size of the database, the date range should be no longer than one year unless at least one additional search criterion is set: Street, Zip Code, Project Name, or Permit/Case Type.",
+      "url": "https://abc.austintexas.gov/citizenportal/app/public-search",
+      "readOn": "2026-11-18",
+      "method": "browser (page text)"
+    }
+  ],
+  "cut": [],
+  "blockedSources": []
+}

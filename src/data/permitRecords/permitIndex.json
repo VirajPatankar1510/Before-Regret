@@ -4244,6 +4244,136 @@
      }
     }
    ]
+  },
+  {
+   "state": "TX",
+   "countyFips": "48453",
+   "county": "Travis County",
+   "guideSlug": null,
+   "coverage": {
+    "status": "not_researched"
+   },
+   "jurisdictions": [
+    {
+     "id": "tx-travis-austin",
+     "name": "City of Austin",
+     "kind": "city",
+     "permitsIssuedBy": {
+      "status": "partially_verified",
+      "value": "tx-travis-austin",
+      "sourceUrl": "https://abc.austintexas.gov/citizenportal/app/login",
+      "checkedOn": "2026-11-18",
+      "limits": "The portal says it serves City of Austin permitting; which addresses it covers was not quoted."
+     },
+     "buildingDepartment": {
+      "status": "verified",
+      "value": "City of Austin Development Services",
+      "sourceUrl": "https://abc.austintexas.gov/citizenportal/app/login",
+      "checkedOn": "2026-11-18"
+     },
+     "currentPortal": {
+      "status": "verified",
+      "value": {
+       "name": "Austin Build + Connect (AB+C)"
+      },
+      "sourceUrl": "https://abc.austintexas.gov/citizenportal/app/login",
+      "checkedOn": "2026-11-18"
+     },
+     "portalUrl": {
+      "status": "verified",
+      "value": "https://abc.austintexas.gov/citizenportal/app/public-search",
+      "sourceUrl": "https://abc.austintexas.gov/citizenportal/app/public-search",
+      "checkedOn": "2026-11-18"
+     },
+     "searchBy": {
+      "status": "verified",
+      "value": {
+       "address": true,
+       "parcel": false,
+       "permitNumber": true,
+       "quirks": [
+        "Open the “Property / Project Name / Types / Date Range” tab",
+        "Enter the address in parts: number, direction (N, S, E, W), street name and street type",
+        "Change the Start Date to 01-01-1980 or earlier. Without it, the search only covers the past year",
+        "No login needed. Results can take half a minute to appear"
+       ]
+      },
+      "sourceUrl": "https://abc.austintexas.gov/citizenportal/app/public-search",
+      "checkedOn": "2026-11-18"
+     },
+     "addressSearchTested": {
+      "status": "verified",
+      "value": "Anonymous search for 301 W 2nd St (Austin City Hall) from 1980 to 2026 listed 661 records of all types; limited to Building Permit before 2000 it listed 56, the oldest from 1980.",
+      "sourceUrl": "https://abc.austintexas.gov/citizenportal/app/public-search",
+      "checkedOn": "2026-11-18"
+     },
+     "onlineRecordsFrom": {
+      "status": "partially_verified",
+      "value": "1980 or earlier (the oldest building permit at the address we searched)",
+      "sourceUrl": "https://abc.austintexas.gov/citizenportal/app/public-search",
+      "checkedOn": "2026-11-18",
+      "limits": "The city does not state where online records begin; 1980 was the start of the range we searched, at one public address."
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_tested"
+     },
+     "localCaveats": {
+      "status": "verified",
+      "value": [
+       "The search covers only the past 365 days unless you change the Start Date. Set it back to 1980 or earlier before deciding a permit is missing.",
+       "Results can take half a minute to appear.",
+       "Results mix every record type (water taps, events, right-of-way). Pick 'Building Permit', 'Electrical Permit', 'Plumbing Permit' or 'Mechanical Permit' under Permit/Case Type to narrow them.",
+       "A finished permit shows the status 'Final'. 'VOID' means it was cancelled, not completed."
+      ],
+      "sourceUrl": "https://abc.austintexas.gov/citizenportal/app/public-search",
+      "checkedOn": "2026-11-18"
+     }
+    },
+    {
+     "id": "tx-travis-uninc",
+     "name": "Unincorporated Travis County",
+     "kind": "county-unincorporated",
+     "permitsIssuedBy": {
+      "status": "not_researched"
+     },
+     "buildingDepartment": {
+      "status": "not_researched"
+     },
+     "currentPortal": {
+      "status": "not_researched"
+     },
+     "portalUrl": {
+      "status": "not_researched"
+     },
+     "searchBy": {
+      "status": "not_researched"
+     },
+     "addressSearchTested": {
+      "status": "not_researched"
+     },
+     "onlineRecordsFrom": {
+      "status": "not_researched"
+     },
+     "historicalSystems": {
+      "status": "not_researched"
+     },
+     "olderRecordsRequest": {
+      "status": "not_researched"
+     },
+     "inspectionHistoryVisible": {
+      "status": "not_researched"
+     },
+     "localCaveats": {
+      "status": "not_researched"
+     }
+    }
+   ]
   }
  ],
  "states": {

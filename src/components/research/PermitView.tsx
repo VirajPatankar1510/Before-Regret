@@ -188,14 +188,16 @@ const Where: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, s
             {!tested && <p className="text-sm text-slate-600">We’ve checked the link but haven’t run an address search here yet.</p>}
           </div>
         ) : (
-          <div className="pt-1 space-y-3">
-            {answer.level === 'general' && <p className="text-sm text-slate-600">{OWNER_NOT_RESEARCHED}</p>}
+          <div className="pt-1 space-y-4">
             <Numbered steps={[
               <>Search the web for <b>“{answer.officeLabel ? `${answer.officeLabel.replace(/^the /, '')} building permit search` : 'your county building permit search'}”</b> and open the result on the government’s own website.</>,
               <>Search by the street address. If nothing comes up, try just the street name, or the parcel number from the county assessor’s record.</>,
               <>No online search, or nothing found? Call or email the building department and ask for the permit history for the address, including any open or expired permits.</>,
             ]} />
-            <ContentLink href={GENERAL_PERMITS_GUIDE} onNavigate={onNavigate} className={linkBtn}>Our guide to finding building permits by address</ContentLink>
+            <div className="rounded-xl bg-home-stone/60 p-3 space-y-2 text-sm">
+              {answer.level === 'general' && <p className="text-slate-600">{OWNER_NOT_RESEARCHED}</p>}
+              <ContentLink href={GENERAL_PERMITS_GUIDE} onNavigate={onNavigate} className={linkBtn}>Our guide to finding building permits by address</ContentLink>
+            </div>
           </div>
         )}
       </div>

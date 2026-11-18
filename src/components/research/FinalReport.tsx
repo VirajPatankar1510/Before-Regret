@@ -31,7 +31,7 @@ export async function buildFullReport(p: PropertySearchResult): Promise<BuildRes
         yearBuilt: p.yearBuilt,
         usefulSourcesCount: 18,
         price: 0,
-        // The assent notice sits directly under the "Build my full report" button (FinishCard).
+        // The assent notice sits directly under the "Get my report" button (GetReport, FinishCard).
         attestedAccurate: true,
         isPaid: false,
       }),
@@ -40,7 +40,7 @@ export async function buildFullReport(p: PropertySearchResult): Promise<BuildRes
     if (res.status === 429) return { error: json?.error || 'You’ve reached today’s report limit. You can get more reports tomorrow. Your answers are saved on this device.' };
     if (res.ok && json?.report) return { report: json.report as PropertyReport };
   } catch (e) {}
-  return { error: 'We couldn’t build the full report just now. Your answers are saved on this device, so try again in a minute.' };
+  return { error: 'We couldn’t build your report just now. Your answers are saved on this device, so try again in a minute.' };
 }
 
 export const FinalReportView: React.FC<{
@@ -77,7 +77,7 @@ export const FinalReportView: React.FC<{
       <div className="min-h-[60vh] bg-home-stone">
         {back}
         <div className="flex items-center justify-center gap-3 py-24 text-slate-600">
-          {failed ? <p className="max-w-md text-center px-4">We couldn’t load your full report. Go back to your questions and build it again.</p> : <><Loader2 className="w-5 h-5 animate-spin" /> Loading your report…</>}
+          {failed ? <p className="max-w-md text-center px-4">We couldn’t load your report. Go back to your questions and get it again.</p> : <><Loader2 className="w-5 h-5 animate-spin" /> Loading your report…</>}
         </div>
       </div>
     );

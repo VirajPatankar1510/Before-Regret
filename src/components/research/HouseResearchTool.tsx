@@ -127,7 +127,7 @@ export const HouseResearchTool: React.FC<Props> = ({ onNavigate, onQuickReport }
         ) : state.view === 'report' ? (
           <ReportView state={state} update={update} onFinish={finish} error={buildError} hasFinal={!!state.finalReportId} />
         ) : (
-          <PlanView state={state} update={update} onReset={reset} />
+          <PlanView state={state} update={update} onReset={reset} onFinish={finish} error={buildError} />
         )}
       </main>
     </div>
@@ -263,11 +263,12 @@ function solvedLine(state: ResearchState, id: QuestionId): string {
   return m ? m.rows.map((r) => r.meaning.found).join(' · ') : '';
 }
 
-const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () => void }> = ({ state, update, onReset }) => {
+const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () => void; onFinish: () => void; error: string | null }> = ({ state, update, onReset, onFinish, error }) => {
   const p = state.property;
   const dl = daysLeft(state.deadline);
   const live = QUESTIONS.filter((q) => q.live);
   const done = live.filter((q) => isSolved(state, q.id)).length;
+  const allDone = done === live.length;
   const era = eraItems(p);
   const eraCount = era ? era.items.filter((i) => i.group === 'era').length : 0;
   const place = [p.city, p.county, p.state].filter(Boolean).join(', ');
@@ -286,6 +287,19 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
           )}
         </div>
       </div>
+
+      {allDone && (
+        state.finalReportId ? (
+          <button type="button" className={btnPrimary} onClick={() => update({ view: 'final' })}>Open your report <ArrowRight className="w-4 h-4" /></button>
+        ) : (
+          <div className={`${card} space-y-3 border-home-moss`}>
+            <p className={eyebrow}>All {live.length} questions answered</p>
+            <h2 className="font-serif text-2xl font-semibold leading-tight">Your report is ready</h2>
+            <p className="text-sm text-slate-600">What you found, the questions for the seller and your checklist, plus the free area report for this address. One page you can print or share.</p>
+            <GetReport onFinish={onFinish} error={error} update={update} label="Get my report" />
+          </div>
+        )
+      )}
 
       <div className={`${card} space-y-4`}>
         <p className={eyebrow}>Here’s what we already know</p>
@@ -313,7 +327,7 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
           <Ring done={done} total={live.length} />
           <div>
             <h2 className="text-lg font-bold">Questions about this house</h2>
-            <p className="text-sm text-slate-600">{done} of {live.length} answered. Start anywhere.</p>
+            <p className="text-sm text-slate-600">{allDone ? 'All answered. You can change any answer.' : `${done} of ${live.length} answered. Start anywhere.`}</p>
           </div>
         </div>
         <div className="space-y-2.5">
@@ -347,11 +361,14 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
         </div>
       </div>
 
-      {state.finalReportId && (
-        <button type="button" className={btnPrimary} onClick={() => update({ view: 'final' })}>Open your full report <ArrowRight className="w-4 h-4" /></button>
+      {!allDone && state.finalReportId && (
+        <button type="button" className={btnPrimary} onClick={() => update({ view: 'final' })}>Open your report <ArrowRight className="w-4 h-4" /></button>
       )}
-      {done > 0 && (
-        <button type="button" className={btnGhost} onClick={() => update({ view: 'report' })}>See your report so far</button>
+      {!allDone && !state.finalReportId && done > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm text-slate-600 text-center">Want it now? Your report fills in as you answer the other {live.length - done === 1 ? 'question' : `${live.length - done} questions`}.</p>
+          <GetReport onFinish={onFinish} error={error} update={update} label="Get my report now" ghost />
+        </div>
       )}
       <div className="text-center">
         <button type="button" className={linkBtn} onClick={() => { if (window.confirm('Start over with a different house? Your answers for this one will be cleared.')) onReset(); }}>
@@ -479,7 +496,7 @@ const CopyList: React.FC<{ title: string; lines: string[] }> = ({ title, lines }
   );
 };
 
-/** The visitor's own findings. Used on "your report so far" and, compact, at the top of the full report. */
+/** The visitor's own findings. Used on the "Your answers" fallback page and, compact, at the top of the full report. */
 export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolean }> = ({ state, compact }) => {
   const p = state.property;
   const { checklist, permitRows, missionRows, seller, verify } = collectFindings(state);
@@ -586,7 +603,7 @@ const ReportView: React.FC<{ state: ResearchState; update: Updater; onFinish: ()
     <section className="space-y-7">
       <div className="print:hidden"><BackToPlan update={update} /></div>
       <div className="space-y-2">
-        <p className={eyebrow}>Your research so far</p>
+        <p className={eyebrow}>Your answers</p>
         <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">What you found out about {p.displayName || p.formattedAddress}</h1>
         <p className="text-sm text-slate-500">
           {[p.county, p.state].filter(Boolean).join(', ')} · {today} · Built {p.yearBuilt} (your answer)
@@ -602,7 +619,7 @@ const ReportView: React.FC<{ state: ResearchState; update: Updater; onFinish: ()
       {hasFinal ? (
         // The full report reads these findings live from the device, so it is never rebuilt (each build counts
         // toward the daily report limit).
-        <button type="button" className={btnPrimary} onClick={() => update({ view: 'final' })}>Open your full report <ArrowRight className="w-4 h-4" /></button>
+        <button type="button" className={btnPrimary} onClick={() => update({ view: 'final' })}>Open your report <ArrowRight className="w-4 h-4" /></button>
       ) : <FinishCard onFinish={onFinish} />}
 
       <button type="button" className={`${btnGhost} print:hidden`} onClick={() => window.print()}>
@@ -612,12 +629,28 @@ const ReportView: React.FC<{ state: ResearchState; update: Updater; onFinish: ()
   );
 };
 
+/** "Get my report" on the questions screen: builds the full report straight away (owner walk-through 2026-11-18: a
+ *  "so far" page followed by a second "full report" read as two different reports). The assent notice sits directly
+ *  under the button. If the build fails, the visitor can still see and print their answers. */
+const GetReport: React.FC<{ onFinish: () => void; error: string | null; update: Updater; label: string; ghost?: boolean }> = ({ onFinish, error, update, label, ghost }) => (
+  <div className="space-y-2">
+    {error && (
+      <div role="alert" className="rounded-2xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-900 space-y-2">
+        <p>{error}</p>
+        <button type="button" className="font-semibold underline cursor-pointer" onClick={() => update({ view: 'report' })}>See and print your answers</button>
+      </div>
+    )}
+    <button type="button" className={ghost ? btnGhost : btnPrimary} onClick={onFinish}>{label} <ArrowRight className="w-4 h-4" /></button>
+    <ReportAssentNotice />
+  </div>
+);
+
 /** The button that builds the full free report. The assent notice sits directly under it (see ReportAssentNotice). */
 const FinishCard: React.FC<{ onFinish: () => void }> = ({ onFinish }) => (
   <div className={`${card} space-y-3 print:hidden`}>
-    <h2 className="font-bold text-lg">Ready for your full report?</h2>
-    <p className="text-sm text-slate-600">We’ll add what the free report covers: the neighborhood’s Census profile, inspection priorities and seller questions for a house like this, and the records to pull. Your findings go at the top.</p>
-    <button type="button" className={btnPrimary} onClick={onFinish}>Build my full report <ArrowRight className="w-4 h-4" /></button>
+    <h2 className="font-bold text-lg">Get your report</h2>
+    <p className="text-sm text-slate-600">Your answers, plus the free area report for this address: the neighborhood’s Census profile, inspection priorities and the records to pull.</p>
+    <button type="button" className={btnPrimary} onClick={onFinish}>Get my report <ArrowRight className="w-4 h-4" /></button>
     <ReportAssentNotice />
   </div>
 );

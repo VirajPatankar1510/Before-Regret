@@ -81,6 +81,26 @@ no console errors, address lookup 200 in under 1s (one 25s timeout on the first 
 again in 7 tries). Baseline: zero research-funnel rows before launch. **READ 2026-12-16** with
 `npx tsx scripts/cta-click-report.ts 28`: where do visitors stop between choose_research and research_report_done?
 
+## Fresh-eyes walk-through (2026-11-18)
+
+Live site, phone size, Austin City Hall, 1960, under contract. Fixed the same day (owner's picks 1-2 and 5-6):
+- **Austin had no permit record**, so the permit question sent our biggest city to a web search. Added
+  `data/permit-records/tx/48453-travis.json` (City of Austin only) from a browser walk of Austin Build + Connect
+  (ledger `check-building-permits-travis-county-tx`): public search with no login, records back to 1980 at City Hall,
+  and the search covers only the past 365 days unless the Start Date is changed (now step 1's first tip).
+- **"How do we know?" sat right above "We haven't researched this jurisdiction yet"**, which read as its answer. The
+  owner's not-researched note now sits below the search steps, with the guide link.
+- **No ending at 5 of 5.** The plan now opens with "Your report is ready" and "Get my report" when every question is
+  answered; before that, "Get my report now" sits at the bottom ("your report fills in as you answer").
+- **Two reports.** "See your report so far" then "Build my full report" read as two different things. "Get my
+  report" now builds the one report directly (findings first, as before). The answers-only page is reached only if
+  the build fails ("See and print your answers").
+
+Still open from the walk-through: insurance and lead-pipe screens one step at a time; the electrical "nothing came up"
+meaning for recent seller-claimed work; jargon (finaled, scope, WDI, Galvanized Requiring Replacement); the report's
+"At a glance" and repeated CHECK labels; "Checked by you with the inspection report" when the inspection hasn't
+happened; homepage two-button clarity.
+
 ## Publish gate
 
 Only when the owner has tried stages 1 to 3 end to end and says "publish". Then: build, push the branch's commits, verify live, record the baseline and set the read date (28 days, tracked separately from search traffic).
