@@ -433,6 +433,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   // From the reader's side the selection had silently failed and the list would not go away. The
   // reporter tried fifteen times. The click was working every time; this effect was undoing the
   // visible result of it.
+  // The last suggestion answer, reused when the visitor submits the same text: a second identical
+  // request a moment later was what tripped the geocoder's per-second limit (2026-11-18).
+  const lastSuggestRef = useRef<{ q: string; data: unknown } | null>(null);
   useEffect(() => {
     if (suppressNextSuggestRef.current) {
       suppressNextSuggestRef.current = false;
@@ -453,6 +456,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
         );
         if (res.ok) {
           const data = await res.json();
+          lastSuggestRef.current = { q: mapSearchQuery.trim(), data };
           const specific = Array.isArray(data) ? data.filter(isSpecificAddress).slice(0, 5) : [];
           if (specific.length > 0) {
             setSuggestions(specific);
@@ -628,9 +632,11 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     setMapSearchError(null);
 
     try {
-      const res = await fetch(
-        `/api/geocode/search?q=${encodeURIComponent(mapSearchQuery.trim())}&addressdetails=1&limit=8`
-      );
+      const q = mapSearchQuery.trim();
+      const cached = lastSuggestRef.current?.q === q ? lastSuggestRef.current.data : null;
+      const res = cached
+        ? new Response(JSON.stringify(cached), { status: 200, headers: { 'Content-Type': 'application/json' } })
+        : await fetch(`/api/geocode/search?q=${encodeURIComponent(q)}&addressdetails=1&limit=8`);
       // A non-OK response previously fell through this whole block silently: no result, no error,
       // the spinner just stopped and the user was left staring at an unchanged form with no idea
       // anything had failed. A geocoder 5xx or rate-limit is exactly when a person most needs to
