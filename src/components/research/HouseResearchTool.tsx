@@ -6,7 +6,7 @@ import type { PropertySearchResult } from '../../types';
 import { AddressSearchBox } from '../AddressSearchBox';
 import { ContentLink } from '../home/ContentLink';
 import {
-  QUESTIONS, WORK, collectFindings, itemLabel, costsNothingExtra, daysLeft, eraItems, formatShortDate, freshResearch, isSolved,
+  QUESTIONS, WORK, collectFindings, itemLabel, daysLeft, eraItems, formatShortDate, freshResearch, isSolved,
   loadResearch, saveResearch,
   type BuyingStage, type EraItem, type QuestionId, type ResearchState, type WorkKey,
 } from './researchState';
@@ -376,10 +376,6 @@ const EraCard: React.FC<{ item: EraItem; picked: boolean; onToggle: () => void }
       <div className="rounded-xl border border-home-sage bg-home-sage/40 p-3 text-sm">
         <span className="block text-[11px] font-bold uppercase tracking-wider text-home-moss">What to do</span>{item.howToCheck}
       </div>
-      <div className="grid sm:grid-cols-2 gap-2 text-sm">
-        <div className="rounded-xl bg-home-stone p-3"><span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">To check</span>{item.costToCheck}</div>
-        <div className="rounded-xl bg-home-stone p-3"><span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">If it needs work</span>{item.typicalRepairCost || 'Not applicable'}</div>
-      </div>
       <button type="button" aria-pressed={picked} onClick={onToggle}
         className={`inline-flex items-center gap-2 rounded-xl border px-3.5 py-2.5 text-sm font-bold transition-colors cursor-pointer ${picked ? 'border-home-moss bg-home-sage' : 'border-home-linen bg-white hover:border-home-oak'}`}>
         <span className={`w-5 h-5 rounded-md border flex items-center justify-center ${picked ? 'bg-home-moss border-home-moss text-white' : 'border-slate-300'}`}>
@@ -403,7 +399,7 @@ const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (pa
   const picked = state.era.picked ?? [...eraSpecific, ...area].map((i) => i.id);
   const setPicked = (ids: string[]) => update((s) => ({ era: { ...s.era, picked: ids } }));
   const toggle = (id: string) => setPicked(picked.includes(id) ? picked.filter((x) => x !== id) : [...picked, id]);
-  const nothingExtra = [...eraSpecific, ...area].filter(costsNothingExtra).length;
+  // No cost figures in the tool (2026-11-18): the engine's cost ranges aren't traced to sources yet (plan doc).
 
   if (!era) {
     return (
@@ -419,7 +415,7 @@ const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (pa
     return (
       <section className="space-y-6">
         <SolvedBadge />
-        <p className="text-center text-slate-600 text-lg">You know what to check on a house from {year}, what to do next, and roughly what each answer could cost.</p>
+        <p className="text-center text-slate-600 text-lg">You know what to check on a house from {year}, and what to do next.</p>
         <div className={`${card} space-y-4`}>
           {[
             ['What you checked', `What was common in homes built around ${year} (${era.eraLabel})${area.length ? `, plus what applies in ${state.property.state}` : ''}.`],
@@ -461,10 +457,7 @@ const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (pa
       <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">What should I ask about a house built in {year}?</h1>
       <div className="rounded-2xl bg-home-sage/60 border border-home-sage p-4 space-y-1.5">
         <p className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-home-moss"><Lightbulb className="w-3.5 h-3.5" /> Worth knowing</p>
-        <p>
-          {eraSpecific.length + area.length} things are worth raising for a house like this.{' '}
-          {nothingExtra > 0 && <>{nothingExtra} of them are free or usually part of a standard inspection, so all it costs is remembering to ask.</>}
-        </p>
+        <p>{eraSpecific.length + area.length} things are worth raising for a house like this. Each one says what to do next.</p>
         <p className="text-xs text-slate-500">From Before Regret’s inspection guide. These describe homes of this age and area, not this particular house.</p>
       </div>
       {group(`Common in homes built around ${year}`, eraSpecific)}
@@ -579,10 +572,6 @@ export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolea
               <div key={i.id} className="rounded-2xl border border-home-linen bg-white p-4 space-y-2 break-inside-avoid">
                 <h3 className="font-bold leading-snug">{i.title}</h3>
                 <p className="text-sm"><span className="font-semibold">What to do: </span>{i.howToCheck}</p>
-                <div className="grid sm:grid-cols-2 gap-2 text-sm">
-                  <div className="rounded-xl bg-home-stone p-2.5"><span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">To check</span>{i.costToCheck}</div>
-                  <div className="rounded-xl bg-home-stone p-2.5"><span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">If it needs work</span>{i.typicalRepairCost || 'Not applicable'}</div>
-                </div>
               </div>
             ))}
           </div>
@@ -594,7 +583,7 @@ export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolea
         <h2 className="text-lg font-bold"><span className={`${eyebrow} block`}>Ask</span>Questions, ready to send</h2>
         <CopyList title="For the seller" lines={seller} />
         <CopyList title="Your checklist, to share with your agent or inspector" lines={checklist.map((i) => `${i.title}: ${i.howToCheck}`)} />
-        {compact && checklist.length > 0 && <p className="text-xs text-slate-500">Costs and details for each one are in “Inspection priorities” below.</p>}
+        {compact && checklist.length > 0 && <p className="text-xs text-slate-500">More on each one is in “Inspection priorities” below.</p>}
       </div>
 
       {verify.length > 0 && (

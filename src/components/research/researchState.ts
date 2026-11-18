@@ -157,10 +157,6 @@ export function eraItems(property: PropertySearchResult): { eraLabel: string; it
   return { eraLabel: getEraLabel(year), items };
 }
 
-/** "Free" or "usually part of a standard inspection" -- i.e. it costs the buyer nothing extra to ask. */
-export function costsNothingExtra(item: InspectionPriority): boolean {
-  return /^(free|usually included|included)/i.test(item.costToCheck.trim());
-}
 
 // ---- Questions on the plan screen ----
 
@@ -176,7 +172,7 @@ export const QUESTIONS: QuestionDef[] = [
     id: 'era',
     live: true,
     title: (s) => `What should I ask about a house built in ${s.property.yearBuilt}?`,
-    teaser: 'What was common in homes of that age, and roughly what it costs to find out.',
+    teaser: 'What was common in homes of that age, and how to check each one.',
   },
   {
     id: 'permits',
@@ -297,7 +293,7 @@ export function permitMeaning(k: PermitItemKey, a: PermitFinding | undefined, of
 /** Everything the visitor has decided to take away so far, assembled for the report. */
 export function collectFindings(s: ResearchState) {
   const era = eraItems(s.property);
-  const checklist = s.era.solved && era ? era.items.filter((i) => (s.era.picked || []).includes(i.id)) : [];
+  const checklist = s.era.solved && era ? era.items.filter((i) => (s.era.picked ?? era.items.filter((x) => x.group !== 'any').map((x) => x.id)).includes(i.id)) : [];
   const permitRows: { key: PermitItemKey; meaning: PermitMeaning }[] = [];
   if (s.permits.stage === 'solved') {
     for (const k of permitItems(s)) {

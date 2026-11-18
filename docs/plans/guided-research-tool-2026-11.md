@@ -34,7 +34,7 @@ Owner's flagship idea. Prototype: https://claude.ai/artifact/6ma9YB48uexEnNEnDdk
 
 | Question | Coverage | Stage | Before it ships |
 |---|---|---|---|
-| What should I ask about a house built in [year]? | Every address | 1 | Engine cost-range sources audit (known gap) |
+| What should I ask about a house built in [year]? | Every address | 1 | Done 2026-11-18: the tool shows no cost figures (the engine's 42 cost fields aren't traced to sources yet). The full report below the visitor's research still carries them, as the quick report does today |
 | Did anyone pull a permit for the [work]? | Full walkthrough for verified jurisdictions in the permit database; everywhere else the general route (guide #286) and the owner's "not researched yet" message | 2 | Verified fields only; status label + date on each |
 | Will this house be hard to insure? | Every address: FEMA flood map, CLUE (seller requests it) | 3 | Browser-verify FEMA Map Service Center steps; facts from the #13 ledger |
 | Is the pipe from the street lead? | Every address: the utility's service line inventory | 3 | Facts from the lead-service-line guide's ledger; browser-check the steps |
@@ -67,7 +67,11 @@ Owner's flagship idea. Prototype: https://claude.ai/artifact/6ma9YB48uexEnNEnDdk
    rows reached the table; `research_report_done` was not fired live (building a report from dev could write to production).
    Phone (375px) and desktop (1280px): no sideways scroll on any screen. Accessibility: one h1 per screen, every control named,
    choice groups now labelled by their question (`role="group"` + `aria-labelledby`), sitewide focus ring shows on Tab.
-   Copy: no AI tells, US spelling, no fear words. **Left: owner review of the whole flow, and the engine cost-range audit.**
+   Copy: no AI tells, US spelling, no fear words.
+   **Full run 2026-11-18** on the production build with `DATABASE_URL` empty (parent launch.json `beforeregret-nodb`, port
+   3002): all five questions answered → "Build my full report" → report built, "Your research" shows Check / Ask / Verify
+   for every question, `research_report_done` sent once, no sideways scroll at 375px. Fix from it: the report's checklist
+   now falls back to the era screen's default picks. **Left: the owner's own walk-through, then "publish".**
 
 ## Publish gate
 
