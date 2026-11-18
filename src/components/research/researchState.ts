@@ -10,12 +10,13 @@ import { CURRENT_YEAR, PRIORITY_RULES, getEraLabel, getInspectionPriorities } fr
 import type { InspectionPriority } from '../../engine/inspectionPriorities';
 import type { PermitAuthority } from '../../data/permitRecords/authority';
 import type { PermitLevel } from './permitAnswer';
+import { MISSIONS, MISSION_IDS, type Meaning, type MissionId } from './missions';
 
 export const RESEARCH_PATH = '/tools/house-research/';
 const STORAGE_KEY = 'br-house-research-v1';
 
 export type BuyingStage = 'looking' | 'offer' | 'contract';
-export type ResearchView = 'setup' | 'plan' | 'era' | 'permits' | 'report' | 'final';
+export type ResearchView = 'setup' | 'plan' | 'era' | 'permits' | MissionId | 'report' | 'final';
 
 export const WORK = {
   roof: 'Roof',
@@ -53,6 +54,9 @@ export interface PermitsState {
   office: OfficeSnapshot | null;
 }
 
+/** Stage 3 questions (missions.ts): which step, and the visitor's picks per record question. */
+export interface MissionState { stage: 'how' | 'record' | 'solved'; ans: Record<string, string[]> }
+
 export interface ResearchState {
   v: 1;
   property: PropertySearchResult;
@@ -64,6 +68,7 @@ export interface ResearchState {
   claims: WorkKey[];
   era: { picked: string[] | null; solved: boolean };
   permits: PermitsState;
+  missions: Partial<Record<MissionId, MissionState>>;
   /** The saved free report built at the end (an /insights/ id). The findings themselves never leave the device. */
   finalReportId?: string;
 }
@@ -85,6 +90,7 @@ export function freshResearch(property: PropertySearchResult): ResearchState {
     claims: [],
     era: { picked: null, solved: false },
     permits: { stage: 'how', ans: {}, office: null },
+    missions: {},
   };
 }
 
@@ -98,6 +104,7 @@ export function loadResearch(): ResearchState | null {
     if (parsed && parsed.v === 1 && parsed.property && typeof parsed.property.yearBuilt === 'number') {
       // Progress saved before the permit question existed.
       if (!parsed.permits) parsed.permits = { stage: 'how', ans: {}, office: null };
+      if (!parsed.missions) parsed.missions = {};
       return parsed as ResearchState;
     }
   } catch (e) {}
@@ -177,19 +184,19 @@ export const QUESTIONS: QuestionDef[] = [
   },
   {
     id: 'insure',
-    live: false,
+    live: true,
     title: () => 'Will this house be hard to insure?',
     teaser: 'The flood map, the claims history (CLUE) report, and what to ask an insurer.',
   },
   {
     id: 'water',
-    live: false,
+    live: true,
     title: () => 'Is the pipe from the street lead?',
     teaser: 'Your water utility keeps a public record. Here’s how to read it.',
   },
   {
     id: 'decode',
-    live: false,
+    live: true,
     title: () => 'Found something odd in the inspection report?',
     teaser: 'After the inspection, we’ll help you work out what it means.',
   },
@@ -198,7 +205,7 @@ export const QUESTIONS: QuestionDef[] = [
 export function isSolved(s: ResearchState, id: QuestionId): boolean {
   if (id === 'era') return s.era.solved;
   if (id === 'permits') return s.permits.stage === 'solved';
-  return false;
+  return s.missions?.[id]?.stage === 'solved';
 }
 
 // ---- The permit question: fixed text chosen by the visitor's answers (no AI) ----
@@ -296,7 +303,29 @@ export function collectFindings(s: ResearchState) {
       if (m) permitRows.push({ key: k, meaning: m });
     }
   }
-  const seller = permitRows.map((r) => r.meaning.seller).filter((x): x is string => !!x);
-  const verify = permitRows.map((r) => r.meaning.verify).filter((x): x is string => !!x);
-  return { checklist, permitRows, seller, verify };
+  const missionRows = missionFindings(s);
+  const meanings = [...permitRows.map((r) => r.meaning), ...missionRows.flatMap((m) => m.rows.map((r) => r.meaning))];
+  const uniq = (xs: (string | null | undefined)[]) => [...new Set(xs.filter((x): x is string => !!x))];
+  const seller = uniq(meanings.map((m) => m.seller));
+  const verify = uniq(meanings.map((m) => m.verify));
+  return { checklist, permitRows, missionRows, seller, verify };
+}
+
+/** Answered Stage 3 questions, in plan order: one row per picked choice. */
+export function missionFindings(s: ResearchState): { id: MissionId; title: string; rows: { key: string; meaning: Meaning }[] }[] {
+  const out: { id: MissionId; title: string; rows: { key: string; meaning: Meaning }[] }[] = [];
+  for (const id of MISSION_IDS) {
+    const st = s.missions?.[id];
+    if (st?.stage !== 'solved') continue;
+    const def = MISSIONS[id];
+    const rows: { key: string; meaning: Meaning }[] = [];
+    for (const q of def.record) {
+      for (const pick of st.ans[q.id] || []) {
+        const c = q.choices.find((x) => x.id === pick);
+        if (c) rows.push({ key: `${q.id}-${c.id}`, meaning: c.meaning });
+      }
+    }
+    if (rows.length) out.push({ id, title: def.reportTitle, rows });
+  }
+  return out;
 }

@@ -1,0 +1,119 @@
+{
+  "_about": "Facts behind the guided research tool's Stage 3 questions (insurance, lead pipe, inspection report), src/components/research/missions.ts. Every number those screens state must appear in a quote here or in a ledger they cite (scripts/assert-research-missions.ts). All read in the in-app browser on 2026-11-18. The claims-history facts come from data/fact-ledgers/get-clue-report-before-buying-house.json (read 2026-10-19).",
+  "slug": "research-tool-missions",
+  "question": "What can a buyer check about insurance, the water service line and the inspection report, and where?",
+  "verdictConfirmed": "Flood zone: FEMA's map by address; A or V zones are the high-risk areas where government-backed mortgages require flood insurance. Lead line: every water system keeps a public inventory by street address with four categories. Inspection terms: our own decoder.",
+  "facts": [
+    {
+      "id": "w1",
+      "claim": "Every water system must keep an inventory of the material and location of each service line, including the customer-owned part.",
+      "quote": "All water systems must develop a service line inventory that identifies the material and location of each service line connected to the public water distribution system. The inventory must include all service lines connected to the public water distribution system regardless of ownership status (e.g., where service line ownership is shared, the inventory includes both the portion of the service line owned by the water system and the portion of the service line owned by the customer).",
+      "url": "https://www.ecfr.gov/current/title-40/chapter-I/subchapter-D/part-141/subpart-I/section-141.84",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "w2",
+      "claim": "The inventory lists each line by street address, must be public, and must be online for systems serving more than 50,000 people.",
+      "quote": "street address associated with each service line and connector ... (5) The inventory must be publicly accessible. ... (ii) Water systems serving greater than 50,000 persons must make the publicly accessible inventory available online.",
+      "url": "https://www.ecfr.gov/current/title-40/chapter-I/subchapter-D/part-141/subpart-I/section-141.84",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "w3",
+      "claim": "The four categories: Lead, Galvanized Requiring Replacement, Non-Lead (or the material, e.g. plastic or copper), Lead Status Unknown.",
+      "quote": "(i) “Lead” ... (ii) “Galvanized Requiring Replacement” ... (iii) “Non-Lead” where the service line is determined through an evidence-based record, method, or technique not to be a lead or galvanized requiring replacement service line. Water systems are not required to identify the specific material of a non-lead service line; however, they may use the material (e.g., plastic or copper) as an alternative to categorizing it as “Non-Lead”. (iv) “Lead Status Unknown” or “Unknown” where the service line material is not known to be lead, galvanized requiring replacement, or non-lead, such as where there is no documented evidence or evidence reliably supporting material categorization.",
+      "url": "https://www.ecfr.gov/current/title-40/chapter-I/subchapter-D/part-141/subpart-I/section-141.84",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "w4",
+      "claim": "Galvanized Requiring Replacement: galvanized line that is or ever was downstream of a lead line, or is downstream of a line of unknown material.",
+      "quote": "Galvanized requiring replacement service line ... means a galvanized service line that currently is or ever was downstream of a lead service line; or is currently downstream of a lead status unknown service line.",
+      "url": "https://www.ecfr.gov/current/title-40/chapter-I/subchapter-D/part-141/subpart-A/section-141.2",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "w5",
+      "claim": "Where to find the line: near the water meter, or along the exterior wall facing the street, coming in through the wall or floor.",
+      "quote": "If your meter was outside, then the line should enter the home closest to that spot. If your meter was inside, then the line should be near it on the same wall. If you couldn’t find your meter, look for the service line by checking your basement or first floor, looking first along the exterior walls particularly on the side of the building facing the street. The incoming pipe will come into your home through an external wall or the floor and then connects to the water meter.",
+      "url": "https://www.epa.gov/ground-water-and-drinking-water/protect-your-tap-quick-check-lead-0",
+      "readOn": "2026-11-18",
+      "method": "browser (EPA Protect Your Tap, municipal-water path walked step by step)"
+    },
+    {
+      "id": "w6",
+      "claim": "Scratch test with a key or coin plus a magnet: orange is copper; hard to scratch and magnetic suggests galvanized steel; soft and not magnetic suggests lead.",
+      "quote": "gently scratch the pipe you found close to where it comes in through the wall or floor and look at what color it is. If it is orange, or pale orange, it is copper. If it is some shade of gray, scratch that section of pipe. If it is hard to scratch and a magnet sticks to the pipe, you may have galvanized steel pipes. If it is soft and a magnet does not stick, you may have lead pipes.",
+      "url": "https://www.epa.gov/ground-water-and-drinking-water/protect-your-tap-quick-check-lead-0",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "w7",
+      "claim": "Lead can also come from other plumbing and faucets; a water test is how to know for certain; some states or utilities pay for testing or replacement.",
+      "quote": "Have your water tested to find out for certain if you have lead in your drinking water. Some states or utilities offer programs to pay for water testing and/or lead service line replacement for residents. ... Lead can also be found in other plumbing materials and faucets.",
+      "url": "https://www.epa.gov/ground-water-and-drinking-water/protect-your-tap-quick-check-lead-0",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "i1",
+      "claim": "How to find the flood zone: the Map Service Center, type the address, open the dynamic map.",
+      "quote": "Visit the Map Service Center / Type in your address / Click on the dynamic map button to view your FIRMette",
+      "url": "https://www.fema.gov/flood-maps/know-your-risk/homeowners",
+      "readOn": "2026-11-18",
+      "method": "browser (the page links https://msc.fema.gov/portal/home)"
+    },
+    {
+      "id": "i2",
+      "claim": "FEMA's high-risk areas (Special Flood Hazard Areas) are the zones starting with A or V; mandatory flood insurance purchase applies there.",
+      "quote": "Zone A, AO, A1-A30, AE, A99, AH, AR, AR/A, AR/AE, AR/AH, AR/AO, AR/A1-A30, V1-V30, VE or V. The SFHA is the area where the National Flood Insurance Program's (NFIP's) floodplain management regulations must be enforced and the area where the mandatory purchase of flood insurance applies.",
+      "url": "https://www.fema.gov/about/glossary/special-flood-hazard-area-sfha",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "i3",
+      "claim": "Most homeowners insurance doesn't cover flood; homes in high-risk areas with government-backed mortgages must have flood insurance.",
+      "quote": "Most homeowners insurance does not cover flood damage. ... Homes and businesses in high-risk flood areas with mortgages from government-backed lenders are required to have flood insurance.",
+      "url": "https://www.fema.gov/flood-insurance",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "i4",
+      "claim": "A flood policy typically has a 30-day wait, unless it's required by a government-backed lender.",
+      "quote": "Plan ahead as there is typically a 30-day waiting period for an NFIP policy to go into effect, unless the coverage is mandated it is purchased as required by a government backed lender or is related to a community flood map change.",
+      "url": "https://www.fema.gov/flood-insurance",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "i5",
+      "claim": "Zone A: a 1% annual chance of flooding, 26% over a 30-year mortgage.",
+      "quote": "Areas with a 1% annual chance of flooding and a 26% chance of flooding over the life of a 30‐year mortgage.",
+      "url": "https://www.fema.gov/flood-maps/know-your-risk/homeowners",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "d1",
+      "claim": "Our Inspection Report Decoder: search a term or paste report text; it runs in the browser and nothing pasted is sent anywhere; fixed text, no AI.",
+      "quote": "Paste a paragraph or two. It’s scanned here in your browser and never sent anywhere. ... The explanations are fixed text drawn from our published guides: the tool doesn’t use AI to produce answers, and nothing you paste leaves your browser.",
+      "url": "https://www.beforeregret.com/tools/inspection-decoder/",
+      "readOn": "2026-11-18",
+      "method": "our own tool (src/components/InspectionDecoder.tsx); live, noindex"
+    }
+  ],
+  "cut": [
+    { "claim": "Lenders check the flood zone for every loan, so ask the lender.", "why": "Not read in a primary source today." },
+    { "claim": "Lead service lines are common in older neighborhoods.", "why": "No primary source read for it." },
+    { "claim": "Who pays to replace the customer-owned part of a lead line.", "why": "Varies by utility; not read. The tool tells the buyer to ask." },
+    { "claim": "Ask for an elevation certificate.", "why": "Not read today." }
+  ],
+  "blockedSources": ["msc.fema.gov refused the connection from our region on 2026-11-18 (curl status 000; in-app browser navigation failed). Not worked around. The steps come from FEMA's own instructions on fema.gov, and the address search itself is untested by us."]
+}

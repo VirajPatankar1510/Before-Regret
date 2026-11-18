@@ -11,6 +11,8 @@ import {
   type BuyingStage, type EraItem, type QuestionId, type ResearchState, type WorkKey,
 } from './researchState';
 import { PermitView } from './PermitView';
+import { MissionView } from './MissionView';
+import { MISSION_IDS, type MissionId } from './missions';
 import { FinalReportView, buildFullReport } from './FinalReport';
 import { ReportAssentNotice } from '../ReportAssentNotice';
 import type { PropertyReport } from '../../types';
@@ -69,7 +71,7 @@ export const HouseResearchTool: React.FC<Props> = ({ onNavigate, onQuickReport }
     setState((s) => (s ? { ...s, ...(typeof patch === 'function' ? patch(s) : patch) } : s));
 
   // Each screen starts at the top, like a new page would.
-  const viewKey = state ? `${state.view}-${state.setupStep}-${state.era.solved}-${state.permits.stage}` : 'start';
+  const viewKey = state ? `${state.view}-${state.setupStep}-${state.era.solved}-${state.permits.stage}-${MISSION_IDS.map((m) => state.missions?.[m]?.stage || '').join('')}` : 'start';
   useEffect(() => { window.scrollTo(0, 0); }, [viewKey]);
 
   if (state?.view === 'final') {
@@ -106,6 +108,8 @@ export const HouseResearchTool: React.FC<Props> = ({ onNavigate, onQuickReport }
           <EraView state={state} update={update} onNavigate={onNavigate} />
         ) : state.view === 'permits' ? (
           <PermitView state={state} update={update} onNavigate={onNavigate} />
+        ) : (MISSION_IDS as string[]).includes(state.view) ? (
+          <MissionView id={state.view as MissionId} state={state} update={update} />
         ) : state.view === 'report' ? (
           <ReportView state={state} update={update} onFinish={finish} error={buildError} hasFinal={!!state.finalReportId} />
         ) : (
@@ -241,7 +245,8 @@ function solvedLine(state: ResearchState, id: QuestionId): string {
     const ask = permitRows.filter((r) => r.meaning.seller).length;
     return `${permitRows.length} checked · ${ask ? `${ask} to ask the seller about` : 'nothing to chase'}`;
   }
-  return '';
+  const m = collectFindings(state).missionRows.find((r) => r.id === id);
+  return m ? m.rows.map((r) => r.meaning.found).join(' · ') : '';
 }
 
 const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () => void }> = ({ state, update, onReset }) => {
@@ -317,7 +322,7 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
               </>
             );
             return q.live ? (
-              <button key={q.id} type="button" onClick={() => update({ view: q.id as 'era' | 'permits' })}
+              <button key={q.id} type="button" onClick={() => update({ view: q.id })}
                 className="w-full text-left flex gap-3 rounded-2xl border border-home-linen bg-white p-4 hover:border-home-oak transition-colors cursor-pointer">
                 {inner}
               </button>
@@ -497,7 +502,7 @@ const CopyList: React.FC<{ title: string; lines: string[] }> = ({ title, lines }
 /** The visitor's own findings. Used on "your report so far" and, compact, at the top of the full report. */
 export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolean }> = ({ state, compact }) => {
   const p = state.property;
-  const { checklist, permitRows, seller, verify } = collectFindings(state);
+  const { checklist, permitRows, missionRows, seller, verify } = collectFindings(state);
   return (
     <div className="space-y-7">
       <div className="space-y-2">
@@ -535,6 +540,22 @@ export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolea
           </p>
         </div>
       )}
+
+      {missionRows.map((m) => (
+        <div key={m.id} className="space-y-2">
+          <h2 className="text-lg font-bold"><span className={`${eyebrow} block`}>Check</span>{m.title}</h2>
+          <div className="space-y-2.5">
+            {m.rows.map(({ key, meaning }) => (
+              <div key={key} className="rounded-2xl border border-home-linen bg-white p-4 grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-sm break-inside-avoid">
+                <b>{meaning.found}</b>
+                <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold self-start ${meaning.tone === 'good' ? 'bg-home-sage text-home-moss' : meaning.tone === 'ask' ? 'bg-amber-50 text-amber-800' : 'bg-home-stone text-slate-600'}`}>{meaning.next}</span>
+                <span className="text-slate-600 col-span-2">{meaning.text}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-slate-500">Checked by you{m.id === 'water' ? ' in the water utility’s records or at the house' : m.id === 'insure' ? ' on FEMA’s flood map and with the seller' : ' with the inspection report'}.</p>
+        </div>
+      ))}
 
       {checklist.length > 0 && !compact && (
         <div className="space-y-2">
