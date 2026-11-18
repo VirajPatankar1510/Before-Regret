@@ -61,7 +61,7 @@ export const GuideCardsSection: React.FC<GuideCardsSectionProps> = ({
 
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">
-            Explore the guide library
+            Free guides for home buyers
           </h2>
         </div>
 

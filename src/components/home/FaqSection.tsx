@@ -40,26 +40,25 @@ export const HomepageDefinitions: React.FC = () => (
   </div>
 );
 
+// 2026-11-18 (owner: simplify the homepage, new voice): four plain answers. "How does Before Regret compare to
+// real estate listing sites?" was dropped -- the cutaway section above makes the same point. The two
+// definitions above stay word for word.
 export const HOMEPAGE_FAQS: { q: string; a: string }[] = [
   {
     q: 'Is Before Regret a substitute for a licensed home inspection?',
-    a: 'No. A physical home inspection evaluates the current physical and mechanical condition of a property — testing outlets, inspecting shingles, running plumbing. Before Regret combines live-checked data (like the Census profile of the neighborhood), cited public research on what matters for a home\'s era and region, and a plain-language summary. The two complement each other: Before Regret tells you exactly what to point your inspector at.'
-  },
-  {
-    q: 'How does Before Regret compare to real estate listing sites?',
-    a: 'Listing portals are built to help you find and fall in love with a home — seller photos, agent copy, MLS data. Before Regret is built the other way around: it starts from what a careful buyer or their inspector would actually want confirmed before signing, and is explicit about which parts come from a live source versus still on you to check.'
+    a: 'No. A home inspector physically checks the house: outlets, shingles, plumbing. We don\'t. Before Regret gives you live public data about the neighborhood, research on what\'s common for a home of that age and region, and a plain-language list of what to point your inspector at. Use both.'
   },
   {
     q: 'Does a Before Regret report constitute legal, financial, or engineering advice?',
-    a: 'No. Before Regret is a research assistant tool. Reports do not constitute formal legal title searches, legal opinions, structural engineering evaluations, or licensed financial appraisals. Every recommendation routes to a licensed professional as the next step — the report itself is never a substitute for one.'
+    a: 'No. Before Regret is a research tool. A report isn\'t a title search, a legal opinion, a structural engineering evaluation or an appraisal. When something needs a licensed professional, the report says so.'
   },
   {
     q: 'How quickly is the report generated?',
-    a: 'Usually within a minute of confirming the address. Your report opens at its own link, so you can come back to it, share it, or save it as a PDF.'
+    a: 'Usually within a minute of confirming the address. The report opens at its own link, so you can come back to it, share it or save it as a PDF.'
   },
   {
     q: 'Does a report cost anything?',
-    a: 'No. Every report is free. You don\'t need an account or a credit card, and there is nothing to subscribe to.'
+    a: 'No. Every report is free. No account, no credit card, nothing to subscribe to.'
   }
 ];
 
@@ -74,10 +73,10 @@ export const FaqSection: React.FC = () => {
         {/* Header */}
         <div className="text-center space-y-3 max-w-2xl mx-auto">
           <h2 className="font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">
-            Frequently Asked Questions
+            Questions people ask
           </h2>
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-            How this differs from a home inspection, and how we stay independent.
+            The short answers.
           </p>
         </div>
 

@@ -3,9 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Check } from 'lucide-react';
-import { ListingOmissionsSection } from '../src/components/home/ListingOmissionsSection';
 import { HowItWorksSection } from '../src/components/home/HowItWorksSection';
-import { PricingSection } from '../src/components/home/PricingSection';
 import { ClosingCtaSection } from '../src/components/home/ClosingCtaSection';
 import { HOMEPAGE_FAQS, HOMEPAGE_DEFINITIONS, HomepageDefinitions } from '../src/components/home/FaqSection';
 import { GuideCardsSection } from '../src/components/home/GuideCardsSection';
@@ -13,10 +11,6 @@ import { WalkthroughToolSection } from '../src/components/home/WalkthroughToolSe
 import { HeroPanel } from '../src/components/home/HeroPanel';
 import { TrustStrip } from '../src/components/home/TrustStrip';
 import { HouseXraySection } from '../src/components/home/HouseXraySection';
-import { HomeAgeTimeline } from '../src/components/home/HomeAgeTimeline';
-import { CountyMapSection } from '../src/components/home/CountyMapSection';
-import { ResearchStatsSection } from '../src/components/home/ResearchStatsSection';
-import { BookPromoCard } from '../src/components/BookPromo';
 import { StaticFooterLinks, FooterGuideSummary } from '../src/components/StaticFooterLinks';
 import { pickFooterGuides } from '../src/data/footerGuides.js';
 import { isDbConfigured } from '../src/server/db.js';
@@ -61,16 +55,11 @@ function HomeStaticBody({ data }: { data: HomeData }) {
           substitutes a non-interactive replica of identical height. */}
       <HeroPanel />
 
-      {/* 2026-10-04 redesign order -- identical to src/components/Hero.tsx. */}
+      {/* 2026-11-18 simplified order (owner) -- identical to src/components/Hero.tsx. */}
       <TrustStrip />
       <HouseXraySection />
       <HowItWorksSection />
-      <ListingOmissionsSection />
-      <HomeAgeTimeline />
       <WalkthroughToolSection />
-      <CountyMapSection articles={data.articles} />
-      <ResearchStatsSection />
-      <PricingSection onScrollToSearch={noop} />
 
       {/* Same order and position as src/components/Hero.tsx. No onNavigate is passed, so
           ContentLink renders plain crawlable <a href> markup here -- the point of prerendering
@@ -86,23 +75,16 @@ function HomeStaticBody({ data }: { data: HomeData }) {
           county pages get a direct inbound link from the domain's strongest page instead of only a
           third-hop path through the footer's /counties/ hub link. See CountyLinksSection.tsx. */}
 
-      {/* Same position as src/components/Hero.tsx: after the guide library, before the FAQ.
-          Below the hero search and the pricing section on purpose -- the homepage's job is turning
-          an address lookup into a report, and the book must not compete with that. */}
-      <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <BookPromoCard />
-        </div>
-      </section>
+      {/* 2026-11-18 (owner): book promo removed from the homepage -- it weakened the product's focus. */}
 
       <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-home-stone border-t border-home-linen">
         <div className="max-w-4xl mx-auto space-y-12">
           <div className="text-center space-y-3 max-w-2xl mx-auto">
             <h2 className="font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">
-              Frequently Asked Questions
+              Questions people ask
             </h2>
             <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-              How this differs from a home inspection, and how we stay independent.
+              The short answers.
             </p>
           </div>
           <HomepageDefinitions />

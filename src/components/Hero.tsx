@@ -2,9 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Check } from 'lucide-react';
 import { AddressSearchBox } from './AddressSearchBox';
 import { PropertySearchResult } from '../types';
-import { ListingOmissionsSection } from './home/ListingOmissionsSection';
 import { HowItWorksSection } from './home/HowItWorksSection';
-import { PricingSection } from './home/PricingSection';
 import { FaqSection } from './home/FaqSection';
 import { ClosingCtaSection } from './home/ClosingCtaSection';
 import { GuideCardsSection } from './home/GuideCardsSection';
@@ -12,10 +10,6 @@ import { WalkthroughToolSection } from './home/WalkthroughToolSection';
 import { HeroPanel } from './home/HeroPanel';
 import { TrustStrip } from './home/TrustStrip';
 import { HouseXraySection } from './home/HouseXraySection';
-import { HomeAgeTimeline } from './home/HomeAgeTimeline';
-import { CountyMapSection } from './home/CountyMapSection';
-import { ResearchStatsSection } from './home/ResearchStatsSection';
-import { BookPromoCard } from './BookPromo';
 import { HomeData, buildGuideClusters, pickResearchPages } from '../utils/homeContent';
 
 interface HeroProps {
@@ -89,23 +83,16 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
         searchBox={<AddressSearchBox onSelectProperty={onSelectProperty} />}
       />
 
-      {/* 2026-10-04 REDESIGN ORDER -- identical in scripts/prerender-homepage.tsx, so the static and
-          mounted pages always match. Sources strip, the cutaway house (what a listing won't tell
-          you), how it works, what's in the report, the home-age timeline, the free tools, the county
-          map, research numbers, then pricing and the library as before. */}
+      {/* 2026-11-18 SIMPLIFIED ORDER (owner: "remove sections that make the website feel complex") --
+          identical in scripts/prerender-homepage.tsx. Sources strip, the cutaway house, how it works
+          (now also what's in the report and that it's free), then tools + research in one band.
+          Removed: the separate report-contents and pricing sections (merged into how it works), the
+          home-age slider, the county map and the research numbers band (one figure moved into the tools band). */}
       <TrustStrip />
       <HouseXraySection onNavigate={onNavigate} />
       <HowItWorksSection />
-      <ListingOmissionsSection />
-      <HomeAgeTimeline onNavigate={onNavigate} />
       <WalkthroughToolSection onNavigate={onNavigate} />
-      <CountyMapSection articles={homeData.articles} onNavigate={onNavigate} />
-      <ResearchStatsSection onNavigate={onNavigate} />
 
-      {/* 4. PLAIN, TRANSPARENT PRICING -- directly after the product explanation, before the
-          content library. A landing page makes its offer early; the library below is there for
-          whoever isn't ready yet, not a detour before the price. */}
-      <PricingSection onScrollToSearch={handleScrollToSearch} />
 
       {/* 5. GUIDE LIBRARY -- a diverse sample of real guide cards, explicitly framed as free
           content separate from the report (see GuideCardsSection.tsx for why the framing matters
@@ -122,14 +109,7 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
           CountyLinksSection.tsx). Sits right after the guide library, before the FAQ, mirroring the
           exact position in scripts/prerender-homepage.tsx so the static and client renders match. */}
 
-      {/* 5c. OUR BOOK -- same position as scripts/prerender-homepage.tsx so the static and
-          client renders match. Below the hero search and pricing on purpose: the homepage's job
-          is turning an address lookup into a report. */}
-      <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <BookPromoCard />
-        </div>
-      </section>
+      {/* 2026-11-18 (owner): book promo removed from the homepage -- it weakened the product's focus. */}
 
       {/* 6. FREQUENTLY ASKED QUESTIONS */}
       <FaqSection />

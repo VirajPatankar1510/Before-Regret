@@ -1,14 +1,26 @@
 import React from 'react';
-import { ShieldCheck, Search, ScanLine, FileCheck2 } from 'lucide-react';
+import { ShieldCheck, Search, ScanLine, FileCheck2, Check } from 'lucide-react';
 
-// 2026-10-04 redesign: same three steps and the same independence statement, word for word, set as
-// an illustrated sequence on a warm band instead of three identical white cards.
+// 2026-10-04 redesign: three steps and the independence statement as an illustrated sequence.
+// 2026-11-18 (owner: simplify the homepage): this section now also carries what's in the report and that
+// it's free -- the separate "What's in your report" and pricing sections were merged in here, so a visitor
+// reads how it works, what they get and what it costs in one place. Copy follows docs/brand/voice-guide.md.
 const STEPS = [
     { title: 'Type in the address', body: "A single-family home, or a condo or multifamily unit with its unit number." },
     { title: "We check what we can, and tell you what we couldn't", body: "We confirm the address with the U.S. Census geocoder and pull its neighborhood's Census profile. The rest is research based on the home's age and county. We'll flag what you should verify yourself using the original sources." },
     { title: 'Get your report', body: "What to look at in person and what to ask the seller, ready before your next showing, offer or inspection." }
 ];
 const ICONS = [Search, ScanLine, FileCheck2];
+
+// What a report contains. Area-level, never findings about the house (voice guide rule 7). The records line
+// says "or how to find the right office" because some report links fall back to a general office finder.
+const IN_THE_REPORT = [
+  { title: 'What to ask the seller', body: 'The questions worth asking, and what a reassuring answer sounds like.' },
+  { title: 'What to inspect first', body: 'Which inspections are worth paying for on a home of that age and county, and roughly what each costs to check versus fix.' },
+  { title: 'A checklist for the visit', body: 'What to look at while you’re there, ready to tick off on your phone.' },
+  { title: 'The neighborhood in numbers', body: 'Typical home age, owner costs and home values for the census tract, from the U.S. Census Bureau.' },
+  { title: 'Where to look up records', body: 'Flood zone, permit history and code enforcement, with links to where each is kept or how to find the right office.' },
+];
 
 export const HowItWorksSection: React.FC = () => (
   <section className="bg-home-stone border-y border-home-linen py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
@@ -36,6 +48,25 @@ export const HowItWorksSection: React.FC = () => (
           );
         })}
       </ol>
+
+      <div className="mt-10 rounded-3xl bg-white border border-home-linen p-6 sm:p-8 shadow-sm">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+          <h3 className="font-serif text-2xl sm:text-3xl font-semibold text-home-ink">What&rsquo;s in your report</h3>
+          <p className="text-sm font-semibold text-home-moss">$0. No sign-up required.</p>
+        </div>
+        <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
+          {IN_THE_REPORT.map((item) => (
+            <li key={item.title} className="flex gap-3">
+              <Check className="w-5 h-5 text-home-moss shrink-0 mt-0.5" aria-hidden="true" />
+              <div>
+                <p className="font-semibold text-home-ink">{item.title}</p>
+                <p className="mt-1 text-sm text-slate-600 leading-relaxed">{item.body}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-6 text-sm text-slate-600">Use it for every house you&rsquo;re considering.</p>
+      </div>
 
       <div className="mt-8 mx-auto max-w-3xl rounded-2xl bg-white/70 border border-home-linen px-5 py-4 flex gap-3 items-start">
         <ShieldCheck className="w-5 h-5 text-home-moss shrink-0 mt-0.5" />

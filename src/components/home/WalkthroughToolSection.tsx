@@ -1,6 +1,7 @@
 import React from 'react';
-import { ClipboardCheck, Sunrise, ArrowRight } from 'lucide-react';
+import { ClipboardCheck, Sunrise, ArrowRight, BarChart3 } from 'lucide-react';
 import { ContentLink } from './ContentLink';
+import stats from '../../data/homeStats.json';
 
 /**
  * Homepage entry point for the free tools. Deliberately a small band, not a pitch.
@@ -33,6 +34,10 @@ import { ContentLink } from './ContentLink';
  * it through ContentLink would preventDefault, call onNavigate with a path it cannot render, and
  * blank the page. Same reasoning as the research links in Footer.tsx.
  *
+ * 2026-11-18 (owner: simplify the homepage): the separate "numbers behind the house" research section was folded in
+ * here as the third card, as foreseen above. Its figure still comes from src/data/homeStats.json (built from the
+ * study files), never typed here.
+ *
  * A DELIBERATE TWIN: rendered by both src/components/Hero.tsx and scripts/prerender-homepage.tsx,
  * at the same position in both, or the static and client renders disagree.
  */
@@ -48,16 +53,16 @@ const CTA =
 
 export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ onNavigate }) => (
   <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white">
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-6xl mx-auto">
 
       <div className="inline-flex items-center gap-2 rounded-full bg-home-sage text-home-moss px-3 py-1 mb-4">
-        <span className="text-[11px] font-bold uppercase tracking-wider">Free tools · No sign-up</span>
+        <span className="text-[11px] font-bold uppercase tracking-wider">Free · No sign-up required</span>
       </div>
       <h2 className="font-serif text-3xl sm:text-4xl font-semibold text-home-ink tracking-tight mb-6">
-        Two things you can use before you buy
+        More ways to check before you buy
       </h2>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 
         <div className={CARD}>
           <div className="flex items-center gap-2 mb-2">
@@ -65,8 +70,8 @@ export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ 
             <h3 className="font-serif text-xl font-semibold text-home-ink">Viewing checklist</h3>
           </div>
           <p className="text-sm text-slate-700 leading-relaxed flex-1">
-            Tell us roughly when the house was built and what it sits on, and get a short list of
-            things worth checking while you are standing there.
+            Tell us roughly when the house was built and what it sits on. You&rsquo;ll get a short list
+            of things to check while you&rsquo;re standing there.
           </p>
           <ContentLink href="/walkthrough/" onNavigate={onNavigate} className={CTA}>
             Open the checklist
@@ -80,13 +85,31 @@ export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ 
             <h3 className="font-serif text-xl font-semibold text-home-ink">Sunlight by room</h3>
           </div>
           <p className="text-sm text-slate-700 leading-relaxed flex-1">
-            Pick a county and the way a window faces, and see when direct sun actually reaches that
-            room &mdash; including the mornings you will never see at a midday viewing.
+            Pick a county and the way a window faces. See when direct sun actually reaches that room,
+            including the mornings you&rsquo;ll never see at a midday viewing.
           </p>
           <a href="/sunlight/" className={CTA}>
             Check a room
             <ArrowRight className="w-4 h-4" aria-hidden="true" />
           </a>
+        </div>
+        <div className={CARD}>
+          <div className="flex items-center gap-2 mb-2">
+            <BarChart3 className="w-4 h-4 text-blue-600 shrink-0" aria-hidden="true" />
+            <h3 className="font-serif text-xl font-semibold text-home-ink">Our own research</h3>
+          </div>
+          <p className="text-sm text-slate-700 leading-relaxed flex-1">
+            We dig through public federal data and publish every figure for free. One finding:{' '}
+            {stats.outsideZone.sharePct}% of federal flood insurance claims were paid on homes outside
+            the high-risk flood zone.{' '}
+            <ContentLink href={stats.outsideZone.href} onNavigate={onNavigate} className="font-semibold text-blue-700 hover:text-blue-900 underline underline-offset-2">
+              See the study
+            </ContentLink>
+          </p>
+          <ContentLink href="/research/" onNavigate={onNavigate} className={CTA}>
+            All research
+            <ArrowRight className="w-4 h-4" aria-hidden="true" />
+          </ContentLink>
         </div>
 
       </div>

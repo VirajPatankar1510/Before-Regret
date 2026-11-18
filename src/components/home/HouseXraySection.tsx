@@ -89,7 +89,7 @@ export const HouseXraySection: React.FC<{ onNavigate?: (path: string) => void }>
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-home-brass">Look behind the listing photos</p>
           <h2 className="mt-3 font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">What a Listing Won&rsquo;t Tell You</h2>
           <p className="mt-4 text-base sm:text-lg text-slate-700 leading-relaxed">
-            Listings are written to sell the home. This report is written to tell you what to check, what to ask, and what nobody has verified yet.
+            Listings are written to sell the house. Here&rsquo;s what the photos don&rsquo;t show, and how to check each one.
           </p>
         </div>
 

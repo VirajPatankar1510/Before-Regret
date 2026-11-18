@@ -121,10 +121,14 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
 
       <div className={`relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-16 sm:pt-24 sm:pb-28 ${HERO_PHOTO ? '-mt-6 pt-0 sm:mt-0' : 'pt-16'}`}>
         <div className={centred ? 'max-w-2xl mx-auto text-center' : 'max-w-xl text-center sm:text-left'}>
+          {/* 2026-11-18 (owner): the small brand line reads "Don't buy a house blind." The H1 text itself is
+              unchanged -- "Before Regret:" stays inside it for screen readers and crawlers, so the page's main
+              heading still names the site; only the visible eyebrow changed. */}
+          <p className="mb-4 font-sans text-xs sm:text-sm font-bold uppercase tracking-[0.24em] text-home-oak leading-none">
+            Don&rsquo;t buy a house blind.
+          </p>
           <h1 className="font-serif text-[2.4rem] leading-[1.05] sm:text-6xl lg:text-[4.1rem] font-semibold tracking-[-0.01em] text-white [text-wrap:balance]">
-            <span className="block mb-4 font-sans text-xs sm:text-sm font-bold uppercase tracking-[0.24em] text-home-oak leading-none">
-              Before Regret<span className="sr-only">:</span>
-            </span>
+            <span className="sr-only">Before Regret: </span>
             Know what to check, ask and verify before you <span className="italic text-[#f2c98f]">buy a home</span>.
           </h1>
 
