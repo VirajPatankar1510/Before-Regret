@@ -1,8 +1,8 @@
 import React from 'react';
 import { ArrowRight, Check, ExternalLink } from 'lucide-react';
 import { MISSIONS, type Choice as ChoiceDef, type HowStep, type MissionId, type Source } from './missions';
-import { forDeadline, type MissionState, type ResearchState } from './researchState';
-import { BackToPlan, Choice, Progress, btnPrimary, card, type Updater } from './ui';
+import { advance, forDeadline, type MissionState, type ResearchState } from './researchState';
+import { Choice, FlowHeader, Progress, btnPrimary, card, type Updater } from './ui';
 
 // One screen for the Stage 3 questions (insurance, water line, inspection report). All text comes from missions.ts.
 // Step by step (owner, 2026-11-18: one thing at a time): each screen shows one action and, where there is one, the
@@ -67,11 +67,14 @@ export const MissionView: React.FC<{ id: MissionId; state: ResearchState; update
         : exclusive.has(cid) ? [cid] : [...picked.filter((x) => !exclusive.has(x)), cid];
     set({ ans: { ...ms.ans, [q.id]: next } });
   };
-  const finish = () => update((s) => ({ missions: { ...s.missions, [id]: { ...(s.missions?.[id] || ms), stage: 'record', step: 0, done: true } }, view: 'plan' }));
+  const finish = () => update((s) => {
+    const ns = { ...s, missions: { ...s.missions, [id]: { ...(s.missions?.[id] || ms), stage: 'record' as const, step: 0, done: true } } };
+    return { missions: ns.missions, ...advance(ns, id) };
+  });
 
   return (
     <section className="space-y-5">
-      {i === 0 ? <BackToPlan update={update} right={def.minutes} /> : (
+      {i === 0 ? <FlowHeader state={state} id={id} update={update} /> : (
         <div className="flex items-center justify-between">
           <button type="button" onClick={() => set({ step: i - 1 })} className="text-sm font-semibold text-slate-600 hover:text-home-ink cursor-pointer">← Previous</button>
         </div>

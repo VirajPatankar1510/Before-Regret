@@ -6,7 +6,7 @@ import type { PropertySearchResult } from '../../types';
 import { AddressSearchBox } from '../AddressSearchBox';
 import { ContentLink } from '../home/ContentLink';
 import {
-  QUESTIONS, WORK, collectFindings, countedQuestions, forDeadline, waitsForInspection, itemLabel, daysLeft, eraItems, formatShortDate, freshResearch, isSolved,
+  QUESTIONS, WORK, advance, collectFindings, flowOrder, countedQuestions, forDeadline, waitsForInspection, itemLabel, daysLeft, eraItems, formatShortDate, freshResearch, isSolved,
   loadResearch, saveResearch,
   type BuyingStage, type EraItem, type QuestionId, type ResearchState, type WorkKey,
 } from './researchState';
@@ -17,7 +17,7 @@ import { FinalReportView, buildFullReport } from './FinalReport';
 import { ReportAssentNotice } from '../ReportAssentNotice';
 import type { PropertyReport } from '../../types';
 import { reportCtaClick, type CtaId } from '../../utils/ctaClickBeacon';
-import { BackToPlan, btnGhost, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
+import { BackToPlan, FlowHeader, btnGhost, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
 
 // Guided research tool -- UNPUBLISHED (owner, 2026-11-18: "don't publish until our entire tool is ready").
 // Stage 1: setup questions, the plan, and the era question. Plan: docs/plans/guided-research-tool-2026-11.md.
@@ -170,7 +170,7 @@ const SetupView: React.FC<{ state: ResearchState; update: Updater }> = ({ state,
   const at = Math.max(0, order.indexOf(n));
   const next = () => (at < order.length - 1
     ? update({ setupStep: order[at + 1], ...(state.stage === 'looking' ? { deadline: '' } : {}) })
-    : update({ view: 'plan' }));
+    : update((s) => advance(s)));
   const back = () => (at > 0 ? update({ setupStep: order[at - 1] }) : undefined);
   const toggleClaim = (k: WorkKey) =>
     update((s) => ({ claims: s.claims.includes(k) ? s.claims.filter((c) => c !== k) : [...s.claims, k] }));
@@ -232,7 +232,7 @@ const SetupView: React.FC<{ state: ResearchState; update: Updater }> = ({ state,
               );
             })}
           </div>
-          <button type="button" className={linkBtn} onClick={() => update({ claims: [], view: 'plan' })}>Nothing mentioned</button>
+          <button type="button" className={linkBtn} onClick={() => update((s) => ({ claims: [], ...advance({ ...s, claims: [] }) }))}>Nothing mentioned</button>
         </div>
       )}
 
@@ -258,7 +258,7 @@ const Ring: React.FC<{ done: number; total: number }> = ({ done, total }) => {
 };
 
 function solvedLine(state: ResearchState, id: QuestionId): string {
-  if (id === 'era') return `${(state.era.picked || []).length} on your checklist`;
+  if (id === 'era') { const n = (state.era.picked || []).length; return n ? `${n} on your checklist` : 'nothing added to your checklist'; }
   if (id === 'permits') {
     const { permitRows } = collectFindings(state);
     // Each item with what was found, e.g. "Roof: permit on record, signed off" (walk-through 2026-11-18).
@@ -274,6 +274,7 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
   const live = countedQuestions(state);
   const done = live.filter((q) => isSolved(state, q.id)).length;
   const allDone = done === live.length;
+  const firstOpen = flowOrder(state).find((id) => !isSolved(state, id));
   const era = eraItems(p);
   const eraCount = era ? era.items.length : 0;
   const place = [p.city, p.county, p.state].filter(Boolean).join(', ');
@@ -292,6 +293,24 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
           )}
         </div>
       </div>
+
+      {!allDone && !state.finalReportId && (
+        // The summary is the end of the flow (owner, 2026-11-19). Questions left over were skipped, or the visitor
+        // came back later: one button carries on from the first unanswered one.
+        <div className={`${card} space-y-3`}>
+          <p className={eyebrow}>{done} of {live.length} answered</p>
+          <h2 className="font-serif text-2xl font-semibold leading-tight">{state.reachedEnd ? 'Your report is ready' : done === 0 ? 'Start with the first question' : 'Pick up where you left off'}</h2>
+          {state.reachedEnd && <p className="text-sm text-slate-600">You skipped {live.length - done === 1 ? 'one question' : `${live.length - done} questions`}. Your report fills in if you answer {live.length - done === 1 ? 'it' : 'them'} later.</p>}
+          {state.reachedEnd ? (
+            <>
+              <GetReport onFinish={onFinish} error={error} update={update} label="Get my report" />
+              <button type="button" className={btnGhost} onClick={() => update({ view: firstOpen!, reachedEnd: false })}>Answer the skipped {live.length - done === 1 ? 'question' : 'questions'}</button>
+            </>
+          ) : (
+            <button type="button" className={btnPrimary} onClick={() => update({ view: firstOpen!, reachedEnd: false })}>Continue <ArrowRight className="w-4 h-4" /></button>
+          )}
+        </div>
+      )}
 
       {allDone && (
         state.finalReportId ? (
@@ -316,7 +335,7 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
           <div>
             <dt className="text-slate-500">Built <span className="text-slate-400">(your answer)</span></dt>
             <dd className="font-semibold">{p.yearBuilt}{era ? ` · ${era.eraLabel}` : ''}</dd>
-            {eraCount > 0 && <dd className="text-slate-600 mt-0.5">{eraCount} things worth checking on a house of that age. That’s your first question below.</dd>}
+            {eraCount > 0 && <dd className="text-slate-600 mt-0.5">{eraCount} things worth checking on a house of that age.</dd>}
           </div>
           {state.claims.length > 0 && (
             <div>
@@ -332,7 +351,7 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
           <Ring done={done} total={live.length} />
           <div>
             <h2 className="text-lg font-bold">Questions about this house</h2>
-            <p className="text-sm text-slate-600">{allDone ? 'All answered. You can change any answer.' : `${done} of ${live.length} answered. Start anywhere.`}</p>
+            <p className="text-sm text-slate-600">{done > 0 ? 'Tap one to change your answer.' : 'We’ll go through them one at a time.'}</p>
           </div>
         </div>
         <div className="space-y-2.5">
@@ -369,12 +388,6 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
 
       {!allDone && state.finalReportId && (
         <button type="button" className={btnPrimary} onClick={() => update({ view: 'final' })}>Open your report <ArrowRight className="w-4 h-4" /></button>
-      )}
-      {!allDone && !state.finalReportId && done > 0 && (
-        <div className="space-y-2">
-          <p className="text-sm text-slate-600 text-center">Want it now? Your report fills in as you answer the other {live.length - done === 1 ? 'question' : `${live.length - done} questions`}.</p>
-          <GetReport onFinish={onFinish} error={error} update={update} label="Get my report now" ghost />
-        </div>
       )}
       <div className="text-center">
         <button type="button" className={linkBtn} onClick={() => { if (window.confirm('Start over with a different house? Your answers for this one will be cleared.')) onReset(); }}>
@@ -424,7 +437,7 @@ const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (pa
   const decide = (add: boolean) => {
     const base = picked.filter((x) => x !== item.id);
     const next = add ? [...base, item.id] : base;
-    if (last) update((s) => ({ era: { ...s.era, picked: next, solved: true, step: 0 }, view: 'plan' }));
+    if (last) update((s) => { const era = { ...s.era, picked: next, solved: true, step: 0 }; return { era, ...advance({ ...s, era }, 'era') }; });
     else update((s) => ({ era: { ...s.era, picked: next, step: step + 1 } }));
   };
   // No cost figures in the tool (2026-11-18): the engine's cost ranges aren't traced to sources yet (plan doc).
@@ -434,10 +447,12 @@ const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (pa
 
   return (
     <section className="space-y-5">
-      <BackToPlan update={update} right={`${step + 1} of ${seq.length}`} />
+      <FlowHeader state={state} id="era" update={update}
+        onBack={step > 0 ? () => update((s) => ({ era: { ...s.era, step: step - 1 } })) : undefined} />
       <div className="h-1.5 rounded-full bg-home-linen overflow-hidden" role="progressbar" aria-valuemin={1} aria-valuemax={seq.length} aria-valuenow={step + 1} aria-label="Progress">
         <div className="h-full bg-home-moss transition-all" style={{ width: `${((step + 1) / seq.length) * 100}%` }} />
       </div>
+      <p className="text-xs text-slate-500 !mt-2">{step + 1} of {seq.length} things to check</p>
       {step === 0 && <p className="text-slate-600">Things worth checking on a house built in {year}, one at a time. The ones you add go on a checklist in your report, ready to share with your inspector or agent.</p>}
       <p className={eyebrow}>{label}</p>
       <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">{item.title}</h1>
@@ -468,7 +483,6 @@ const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (pa
           className="inline-flex items-center justify-center rounded-2xl border border-home-linen bg-white text-home-ink font-bold px-3 py-3.5 hover:border-home-oak transition-colors cursor-pointer">No, skip it</button>
         </div>
       </div>
-      {step > 0 && <button type="button" className={linkBtn} onClick={() => update((s) => ({ era: { ...s.era, step: step - 1 } }))}>← Previous</button>}
       <p className="text-xs text-slate-500">From Before Regret’s inspection guide, the same one behind our free report. It describes homes of this age and area, not this particular house.</p>
     </section>
   );

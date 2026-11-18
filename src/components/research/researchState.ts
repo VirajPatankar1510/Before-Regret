@@ -79,6 +79,8 @@ export interface ResearchState {
   finalReportId?: string;
   /** Funnel events already sent for this house, so a reload or a changed answer never counts twice. */
   funnel?: string[];
+  /** Set once the visitor reaches the end of the flow; after that, finishing a question returns to the summary. */
+  reachedEnd?: boolean;
 }
 
 function todayIso(): string {
@@ -233,6 +235,19 @@ export function countedQuestions(s: ResearchState): QuestionDef[] {
 
 /** Copy written for a visitor with a deadline, reworded when they have none (walk-through 2026-11-18: "Just looking"
  *  visitors were told to act "before your inspection or option period ends"). Order matters: longest phrases first. */
+/** The questions in the order the flow walks them (owner, 2026-11-19: one path to the report instead of going back
+ *  and forth between the questions and a list). */
+export function flowOrder(s: ResearchState): QuestionId[] {
+  return countedQuestions(s).map((q) => q.id);
+}
+/** Where to go after finishing or skipping `from` (or after setup): the next unanswered question in the flow, else the
+ *  summary with the report button. Once the visitor has seen the summary, a changed answer goes back there. */
+export function advance(s: ResearchState, from?: QuestionId): Pick<ResearchState, 'view' | 'reachedEnd'> {
+  if (s.reachedEnd) return { view: 'plan', reachedEnd: true };
+  const order = flowOrder(s);
+  const next = order.slice(from ? order.indexOf(from) + 1 : 0).find((id) => !isSolved(s, id));
+  return next ? { view: next, reachedEnd: false } : { view: 'plan', reachedEnd: true };
+}
 const NO_DEADLINE: [RegExp, string][] = [
   [/Then get a quote before your deadline\./g, 'Then get a quote, so the cost is part of your decision.'],
   [/Get a quote before your deadline/g, 'Get an insurance quote'],

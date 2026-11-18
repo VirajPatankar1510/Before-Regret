@@ -134,6 +134,13 @@ Second walk-through (same day: Dallas City Hall, 1978, "Just looking", no deadli
   permits on record for this house?"; the property-type pop-up says "One more step" and its buttons are white until
   picked.
 
+**One path to the report (owner, 2026-11-19: "instead of going back and forth on these questions, a simple flow in
+easy steps that leads to the report").** Setup now leads straight into question 1; finishing a question opens the next
+unanswered one (`advance()` in `researchState.ts`), and every question screen has Back, "Question n of N" and Skip
+(`FlowHeader` in `ui.tsx`). After the last question comes the summary: "Your report is ready" with "Get my report"
+(and "Answer the skipped questions" if any were skipped), then the answers, where tapping one changes it and returns
+to the summary (`reachedEnd`). The inspection-report question still waits for anyone not under contract.
+
 Homepage (owner approved): one short line under each hero button, "Step by step, with what to do next" and
 "Everything at once, in seconds" (quick report timed at 1.2-4.2s on the no-DB build, 2026-11-18). Labels unchanged.
 

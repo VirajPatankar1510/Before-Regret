@@ -5,10 +5,10 @@ import type { PermitAuthority } from '../../data/permitRecords/authority';
 import type { HistoricalSystem, SearchBy } from '../../data/permitRecords/schema';
 import { answerFor, loadPermitIndex, shown, type PermitAnswer } from './permitAnswer';
 import {
-  GENERAL_PERMITS_GUIDE, OPEN_PERMITS_GUIDE, itemLabel, listOf, permitItems, permitMeaning,
+  GENERAL_PERMITS_GUIDE, OPEN_PERMITS_GUIDE, advance, itemLabel, listOf, permitItems, permitMeaning,
   type OfficeSnapshot, type PermitFinding, type PermitItemKey, type ResearchState,
 } from './researchState';
-import { BackToPlan, Choice, Progress, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
+import { Choice, FlowHeader, Progress, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
 
 // The permit question (Stage 2 of docs/plans/guided-research-tool-2026-11.md; coverage plan
 // docs/plans/permit-coverage-usa-2026-11.md). Every address gets the likely office from Census boundaries;
@@ -89,7 +89,7 @@ export const PermitView: React.FC<{ state: ResearchState; update: Updater; onNav
   if (!answer) {
     return (
       <section className="space-y-5">
-        <BackToPlan update={update} />
+        <FlowHeader state={state} id="permits" update={update} />
         <div className="flex items-center gap-3 text-slate-600 py-10 justify-center"><Loader2 className="w-5 h-5 animate-spin" /> Finding who keeps the permits for this address…</div>
       </section>
     );
@@ -139,7 +139,7 @@ const Where: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, s
 
   return (
     <section className="space-y-5">
-      <BackToPlan update={update} right="About 10 minutes" />
+      <FlowHeader state={state} id="permits" update={update} />
       <Progress n={1} total={1 + items.length} label="Where to search" />
       <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">Did anyone pull a permit?</h1>
       <p className="text-slate-600">A nice-looking job doesn’t tell you whether it was approved. The records do. Look up {what}.</p>
@@ -238,7 +238,10 @@ const Record: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, 
   const m = permitMeaning(k, a, state.permits.office);
   const set = (f: PermitFinding) => setPermits({ ans: { ...ans, [k]: f } });
   const last = i === items.length - 1;
-  const finish = () => update((s) => ({ permits: { ...s.permits, stage: 'record', step: 0, done: true }, view: 'plan' }));
+  const finish = () => update((s) => {
+    const permits = { ...s.permits, stage: 'record' as const, step: 0, done: true };
+    return { permits, ...advance({ ...s, permits }, 'permits') };
+  });
 
   return (
     <section className="space-y-5">
