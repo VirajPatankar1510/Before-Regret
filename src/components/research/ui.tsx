@@ -30,3 +30,24 @@ export const SolvedBadge: React.FC = () => (
     <h2 className="font-serif text-3xl font-semibold">Solved</h2>
   </div>
 );
+
+/** Segmented progress bar with a small label, used by the step-by-step questions. */
+export const Progress: React.FC<{ n: number; total: number; label: string }> = ({ n, total, label }) => (
+  <div className="space-y-2">
+    <div className="flex gap-1.5" role="progressbar" aria-valuemin={1} aria-valuemax={total} aria-valuenow={n} aria-label="Progress">
+      {Array.from({ length: total }, (_, i) => <div key={i} className={`h-1.5 flex-1 rounded-full ${i < n ? 'bg-home-moss' : 'bg-home-linen'}`} />)}
+    </div>
+    {label && <p className={eyebrow}>{label}</p>}
+  </div>
+);
+
+/** A large answer button: a round mark for one-answer questions, a square one where several can be picked. */
+export const Choice: React.FC<{ on: boolean; onClick: () => void; multi?: boolean; children: React.ReactNode }> = ({ on, onClick, multi, children }) => (
+  <button type="button" aria-pressed={on} onClick={onClick}
+    className={`w-full flex items-center gap-3 text-left rounded-2xl border px-4 py-3.5 font-semibold transition-colors cursor-pointer ${on ? 'border-home-moss bg-home-sage' : 'border-home-linen bg-white hover:border-home-oak'}`}>
+    <span className={`w-5 h-5 shrink-0 border-2 flex items-center justify-center ${multi ? 'rounded-md' : 'rounded-full'} ${on ? 'border-home-moss bg-home-moss' : 'border-slate-300'}`}>
+      {on && (multi ? <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} /> : <span className="w-2 h-2 rounded-full bg-white" />)}
+    </span>
+    {children}
+  </button>
+);

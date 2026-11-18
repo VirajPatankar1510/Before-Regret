@@ -60,7 +60,7 @@ export interface PermitsState {
 }
 
 /** Stage 3 questions (missions.ts): which step, and the visitor's picks per record question. */
-export interface MissionState { stage: 'how' | 'record' | 'solved'; ans: Record<string, string[]>; done?: boolean }
+export interface MissionState { stage: 'how' | 'record' | 'solved'; ans: Record<string, string[]>; done?: boolean; /** Which screen of the flow is open (missions.ts `screens`). */ step?: number }
 
 export interface ResearchState {
   v: 1;
@@ -278,9 +278,13 @@ export function permitMeaning(k: PermitItemKey, a: PermitFinding | undefined, of
         const whole = any || k === 'addition';
         if (whole && office?.outsideCityNote) return `No permit online? That doesn’t mean they skipped it. ${office.outsideCityNote}`;
         if (!whole && office?.outsideCityJobNote) return `No permit online? That doesn’t mean they skipped it. ${office.outsideCityJobNote.replace('{work}', w)}`;
-        return `No permit online? That doesn’t mean they skipped it.${online} Ask the seller for the paperwork.`;
+        if (any) return `No permit online? That doesn’t mean they skipped it.${online} Ask the seller for the paperwork.`;
+        // Work the seller says they did: it may be recent, so don't assume it predates the online records
+        // (fresh-eyes walk-through 2026-11-18). When it was done is the question that decides what's missing.
+        const start = office?.onlineFrom ? ` Online records here start: ${office.onlineFrom}.` : '';
+        return `Nothing online for the ${w}. Work done before the online records start may only have a paper permit.${start} Ask the seller when the work was done and who did it, and for the permit number or the invoice.`;
       })(),
-      seller: any ? 'Has any work on the house been done with a permit? If so, can you share the permit numbers?' : `Was the ${w} done with a permit? If so, can you share the permit number or the contractor’s invoice?`,
+      seller: any ? 'Has any work on the house been done with a permit? If so, can you share the permit numbers?' : `When was the ${w} done, and by whom? Was it done with a permit? If so, can you share the permit number or the contractor’s invoice?`,
       verify: any ? 'Permit paperwork for past work' : `Permit or paperwork for the ${w}`,
       found: 'No permit found online',
       next: 'Ask the seller for paperwork',

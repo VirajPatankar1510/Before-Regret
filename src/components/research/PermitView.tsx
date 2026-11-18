@@ -8,7 +8,7 @@ import {
   GENERAL_PERMITS_GUIDE, OPEN_PERMITS_GUIDE, itemLabel, listOf, permitItems, permitMeaning,
   type OfficeSnapshot, type PermitFinding, type PermitItemKey, type ResearchState,
 } from './researchState';
-import { BackToPlan, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
+import { BackToPlan, Choice, Progress, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
 
 // The permit question (Stage 2 of docs/plans/guided-research-tool-2026-11.md; coverage plan
 // docs/plans/permit-coverage-usa-2026-11.md). Every address gets the likely office from Census boundaries;
@@ -105,15 +105,6 @@ type SubProps = { state: ResearchState; update: Updater; setPermits: (patch: Par
 // ---------------------------------------------------------------------------------------------------------------
 // Step by step (owner, 2026-11-18): one screen for where to search (who keeps the permits sits at its top), then one
 // screen per job. "Next" moves on, "Done" finishes and goes back to the questions. No "Solved" screen.
-
-const Progress: React.FC<{ n: number; total: number; label: string }> = ({ n, total, label }) => (
-  <div className="space-y-2">
-    <div className="flex gap-1.5" role="progressbar" aria-valuemin={1} aria-valuemax={total} aria-valuenow={n} aria-label="Progress">
-      {Array.from({ length: total }, (_, i) => <div key={i} className={`h-1.5 flex-1 rounded-full ${i < n ? 'bg-home-moss' : 'bg-home-linen'}`} />)}
-    </div>
-    <p className={eyebrow}>{label}</p>
-  </div>
-);
 
 const Numbered: React.FC<{ steps: React.ReactNode[] }> = ({ steps }) => (
   <ol className="space-y-3">
@@ -231,16 +222,6 @@ const Where: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, s
 };
 
 // ---------------------------------------------------------------------------------------------------------------
-
-const Choice: React.FC<{ on: boolean; onClick: () => void; children: React.ReactNode }> = ({ on, onClick, children }) => (
-  <button type="button" aria-pressed={on} onClick={onClick}
-    className={`w-full flex items-center gap-3 text-left rounded-2xl border px-4 py-3.5 font-semibold transition-colors cursor-pointer ${on ? 'border-home-moss bg-home-sage' : 'border-home-linen bg-white hover:border-home-oak'}`}>
-    <span className={`w-5 h-5 shrink-0 rounded-full border-2 flex items-center justify-center ${on ? 'border-home-moss bg-home-moss' : 'border-slate-300'}`}>
-      {on && <span className="w-2 h-2 rounded-full bg-white" />}
-    </span>
-    {children}
-  </button>
-);
 
 const Record: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, setPermits, onNavigate }) => {
   const items = permitItems(state);

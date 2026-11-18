@@ -1,11 +1,12 @@
 import React from 'react';
 import { ArrowRight, Check, ExternalLink } from 'lucide-react';
-import { MISSIONS, type Choice, type MissionId, type Source } from './missions';
+import { MISSIONS, type Choice as ChoiceDef, type HowStep, type MissionId, type Source } from './missions';
 import type { MissionState, ResearchState } from './researchState';
-import { BackToPlan, btnPrimary, card, type Updater } from './ui';
+import { BackToPlan, Choice, Progress, btnPrimary, card, type Updater } from './ui';
 
-// One screen for the Stage 3 questions (insurance, water line, inspection report). Same three steps as the permit
-// question: where to look, what you found, solved. All text comes from missions.ts.
+// One screen for the Stage 3 questions (insurance, water line, inspection report). All text comes from missions.ts.
+// Step by step (owner, 2026-11-18: one thing at a time): each screen shows one action and, where there is one, the
+// answer that goes with it, the way the permit question works. Done goes straight back to the questions.
 
 function fmt(iso: string): string {
   return new Date(`${iso}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -19,17 +20,25 @@ const SourceLine: React.FC<{ source: Source }> = ({ source }) => (
   </span>
 );
 
-const ChoiceButton: React.FC<{ on: boolean; onClick: () => void; children: React.ReactNode }> = ({ on, onClick, children }) => (
-  <button type="button" aria-pressed={on} onClick={onClick}
-    className={`text-left rounded-xl border px-3.5 py-2.5 text-sm font-semibold transition-colors cursor-pointer ${on ? 'border-home-moss bg-home-sage' : 'border-home-linen bg-white hover:border-home-oak'}`}>
-    {children}
-  </button>
+const MeaningBox: React.FC<{ choice: ChoiceDef }> = ({ choice }) => (
+  <div className={`rounded-2xl p-4 ${choice.meaning.tone === 'good' ? 'bg-home-sage/60' : choice.meaning.tone === 'ask' ? 'bg-amber-50' : 'bg-home-stone'}`}>
+    <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">What this means</span>
+    {choice.meaning.text}
+  </div>
 );
 
-const MeaningBox: React.FC<{ choice: Choice }> = ({ choice }) => (
-  <div className={`rounded-2xl p-3.5 text-sm ${choice.meaning.tone === 'good' ? 'bg-home-sage' : choice.meaning.tone === 'ask' ? 'bg-amber-50' : 'bg-home-stone'}`}>
-    <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">What this means</p>
-    <p>{choice.meaning.text}</p>
+const StepBody: React.FC<{ step: HowStep; showTitle: boolean }> = ({ step, showTitle }) => (
+  <div className="min-w-0 space-y-2">
+    {showTitle && <p className="font-bold leading-snug">{step.title}</p>}
+    <p className="leading-relaxed">{step.body}</p>
+    {step.link && (
+      // Opens in a new tab so the visitor's place in the tool stays put (it's saved on the device anyway).
+      <a href={step.link.href} target="_blank" rel={step.link.internal ? 'noopener' : 'noopener noreferrer'}
+        className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-home-ink bg-white text-home-ink font-bold text-base px-5 py-3.5 hover:bg-home-stone transition-colors">
+        Open {step.link.label} <ExternalLink className="w-4 h-4" />
+      </a>
+    )}
+    {step.source && <SourceLine source={step.source} />}
   </div>
 );
 
@@ -38,76 +47,64 @@ export const MissionView: React.FC<{ id: MissionId; state: ResearchState; update
   const ms: MissionState = state.missions?.[id] || { stage: 'how', ans: {} };
   const set = (patch: Partial<MissionState>) => update((s) => ({ missions: { ...s.missions, [id]: { ...(s.missions?.[id] || { stage: 'how', ans: {} }), ...patch } } }));
 
-  // An answered question opens on its answers (stage 'solved' is progress saved before 2026-11-18). No "Solved"
-  // screen: Done goes straight back to the questions (owner, 2026-11-18).
-  if (ms.stage === 'record' || ms.stage === 'solved') {
-    const complete = def.record.every((q) => (ms.ans[q.id] || []).length > 0);
-    const pick = (qid: string, cid: string, multi?: boolean) => {
-      const cur = ms.ans[qid] || [];
-      const q = def.record.find((x) => x.id === qid);
-      const exclusive = new Set(q?.choices.filter((c) => c.exclusive).map((c) => c.id));
-      const next = !multi
-        ? [cid]
-        : cur.includes(cid)
-          ? cur.filter((x) => x !== cid)
-          : exclusive.has(cid) ? [cid] : [...cur.filter((x) => !exclusive.has(x)), cid];
-      set({ ans: { ...ms.ans, [qid]: next } });
-    };
-    return (
-      <section className="space-y-5">
-        <div className="flex items-center justify-between">
-          <button type="button" onClick={() => set({ stage: 'how' })} className="text-sm font-semibold text-slate-600 hover:text-home-ink cursor-pointer">← Where to look</button>
-        </div>
-        <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight">What did you find?</h1>
-        {def.record.map((q) => {
-          const picked = ms.ans[q.id] || [];
-          return (
-            <div key={q.id} className={`${card} space-y-3`}>
-              <p id={`mq-${id}-${q.id}`} className="font-bold">{q.label}</p>
-              <div className="flex flex-wrap gap-2" role="group" aria-labelledby={`mq-${id}-${q.id}`}>
-                {q.choices.map((c) => <ChoiceButton key={c.id} on={picked.includes(c.id)} onClick={() => pick(q.id, c.id, q.multi)}>{c.label}</ChoiceButton>)}
-              </div>
-              {q.choices.filter((c) => picked.includes(c.id)).map((c) => <MeaningBox key={c.id} choice={c} />)}
-            </div>
-          );
-        })}
-        <button type="button" className={btnPrimary} disabled={!complete}
-          onClick={() => update((s) => ({ missions: { ...s.missions, [id]: { ...ms, stage: 'record', done: true } }, view: 'plan' }))}>
-          Done <Check className="w-4 h-4" />
-        </button>
-      </section>
-    );
-  }
+  const screens = def.screens;
+  const i = Math.max(0, Math.min(ms.step ?? 0, screens.length - 1));
+  const screen = screens[i];
+  const last = i === screens.length - 1;
+  const q = screen.ask ? def.record.find((r) => r.id === screen.ask) : undefined;
+  const picked = q ? ms.ans[q.id] || [] : [];
+  const steps = screen.steps.map((n) => def.steps[n]);
+  const single = steps.length === 1;
+
+  const pick = (cid: string) => {
+    if (!q) return;
+    const exclusive = new Set(q.choices.filter((c) => c.exclusive).map((c) => c.id));
+    const next = !q.multi
+      ? [cid]
+      : picked.includes(cid)
+        ? picked.filter((x) => x !== cid)
+        : exclusive.has(cid) ? [cid] : [...picked.filter((x) => !exclusive.has(x)), cid];
+    set({ ans: { ...ms.ans, [q.id]: next } });
+  };
+  const finish = () => update((s) => ({ missions: { ...s.missions, [id]: { ...(s.missions?.[id] || ms), stage: 'record', step: 0, done: true } }, view: 'plan' }));
 
   return (
     <section className="space-y-5">
-      <BackToPlan update={update} right={def.minutes} />
-      <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">{def.h1}</h1>
-      <p className="text-slate-600">{def.intro}</p>
-      <ol className="space-y-3">
-        {def.steps.map((step, i) => (
-          <li key={step.title} className={`${card} flex gap-3.5`}>
-            <span className="w-7 h-7 shrink-0 rounded-full bg-home-stone text-home-brass text-sm font-bold flex items-center justify-center">{i + 1}</span>
-            <div className="min-w-0 space-y-2">
-              <p className="font-bold leading-snug">{step.title}</p>
-              <p className="text-sm text-slate-700 leading-relaxed">{step.body}</p>
-              {step.link && (step.link.internal ? (
-                // Opens in a new tab so the visitor's place in the tool stays put (it's saved on the device anyway).
-                <a href={step.link.href} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 text-sm font-bold text-home-ink underline underline-offset-4 decoration-home-oak">
-                  {step.link.label} <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              ) : (
-                <a href={step.link.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-bold text-home-ink underline underline-offset-4 decoration-home-oak">
-                  {step.link.label} <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              ))}
-              {step.source && <SourceLine source={step.source} />}
-            </div>
-          </li>
-        ))}
-      </ol>
-      <button type="button" className={btnPrimary} onClick={() => set({ stage: 'record' })}>
-        Next <ArrowRight className="w-4 h-4" />
+      {i === 0 ? <BackToPlan update={update} right={def.minutes} /> : (
+        <div className="flex items-center justify-between">
+          <button type="button" onClick={() => set({ step: i - 1 })} className="text-sm font-semibold text-slate-600 hover:text-home-ink cursor-pointer">← Previous</button>
+        </div>
+      )}
+      {screens.length > 1 && <Progress n={i + 1} total={screens.length} label={`Step ${i + 1} of ${screens.length}`} />}
+      <p className="text-sm font-semibold text-slate-500">{def.h1}</p>
+      <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance] !mt-1">{screen.title}</h1>
+      {i === 0 && <p className="text-slate-600">{def.intro}</p>}
+
+      <div className={`${card} space-y-4`}>
+        {single ? <StepBody step={steps[0]} showTitle={false} /> : (
+          <ol className="space-y-4">
+            {steps.map((s, n) => (
+              <li key={s.title} className="flex gap-3">
+                <span className="w-6 h-6 shrink-0 rounded-full bg-home-stone text-home-brass text-xs font-bold flex items-center justify-center mt-0.5">{n + 1}</span>
+                <StepBody step={s} showTitle />
+              </li>
+            ))}
+          </ol>
+        )}
+      </div>
+
+      {q && (
+        <div className="space-y-2.5">
+          <p id={`mq-${id}-${q.id}`} className="font-bold text-lg">{q.label}</p>
+          <div className="space-y-2.5" role="group" aria-labelledby={`mq-${id}-${q.id}`}>
+            {q.choices.map((c) => <Choice key={c.id} multi={q.multi} on={picked.includes(c.id)} onClick={() => pick(c.id)}>{c.label}</Choice>)}
+          </div>
+          {q.choices.filter((c) => picked.includes(c.id)).map((c) => <MeaningBox key={c.id} choice={c} />)}
+        </div>
+      )}
+
+      <button type="button" className={btnPrimary} disabled={!!q && picked.length === 0} onClick={() => (last ? finish() : set({ step: i + 1 }))}>
+        {last ? <>Done <Check className="w-4 h-4" /></> : <>Next <ArrowRight className="w-4 h-4" /></>}
       </button>
     </section>
   );

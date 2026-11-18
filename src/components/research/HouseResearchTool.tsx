@@ -85,7 +85,7 @@ export const HouseResearchTool: React.FC<Props> = ({ onNavigate, onQuickReport }
     setState((s) => (s ? { ...s, ...(typeof patch === 'function' ? patch(s) : patch) } : s));
 
   // Each screen starts at the top, like a new page would.
-  const viewKey = state ? `${state.view}-${state.setupStep}-${state.era.solved}-${state.era.step}-${state.permits.stage}-${state.permits.step}-${MISSION_IDS.map((m) => state.missions?.[m]?.stage || '').join('')}` : 'start';
+  const viewKey = state ? `${state.view}-${state.setupStep}-${state.era.solved}-${state.era.step}-${state.permits.stage}-${state.permits.step}-${MISSION_IDS.map((m) => `${state.missions?.[m]?.stage || ''}${state.missions?.[m]?.step ?? ''}`).join('')}` : 'start';
   useEffect(() => { window.scrollTo(0, 0); }, [viewKey]);
 
   if (state?.view === 'final') {
@@ -550,7 +550,9 @@ export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolea
               </div>
             ))}
           </div>
-          <p className="text-xs text-slate-500">Checked by you{m.id === 'water' ? ' in the water utility’s records or at the house' : m.id === 'insure' ? ' on FEMA’s flood map and with the seller' : ' with the inspection report'}.</p>
+          <p className="text-xs text-slate-500">{m.id === 'decode' && m.rows.every((r) => r.key === 'items-notyet')
+            ? 'Your inspection hasn’t happened yet.'
+            : `Checked by you${m.id === 'water' ? ' in the water utility’s records or at the house' : m.id === 'insure' ? ' on FEMA’s flood map and with the seller' : ' with the inspection report'}.`}</p>
         </div>
       ))}
 

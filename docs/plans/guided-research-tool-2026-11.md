@@ -96,10 +96,18 @@ Live site, phone size, Austin City Hall, 1960, under contract. Fixed the same da
   report" now builds the one report directly (findings first, as before). The answers-only page is reached only if
   the build fails ("See and print your answers").
 
-Still open from the walk-through: insurance and lead-pipe screens one step at a time; the electrical "nothing came up"
-meaning for recent seller-claimed work; jargon (finaled, scope, WDI, Galvanized Requiring Replacement); the report's
-"At a glance" and repeated CHECK labels; "Checked by you with the inspection report" when the inspection hasn't
-happened; homepage two-button clarity.
+Second round (same day, "do next"):
+- **Insurance, water line and inspection report are step by step**, like the permit question: each screen pairs one
+  action with the answer that goes with it (`screens` in `missions.ts`), with a progress bar and large answer buttons
+  (shared `Choice` and `Progress` in `ui.tsx`). Insurance is 3 screens (flood zone + answer, claims + answer, quote);
+  the "Know what the zone changes" step was cut because the zone answers' "What this means" says the same thing.
+  Water is 3 screens, the decoder 1.
+- **Seller-claimed work with nothing online** no longer says "older records are often not online". It says early
+  work may only have a paper permit, and asks when the work was done and by whom.
+- The report no longer says "Checked by you with the inspection report" when the inspection hasn't happened.
+
+Still open: jargon (finaled, scope, WDI, Galvanized Requiring Replacement); the report's "At a glance" and repeated
+CHECK labels; homepage two-button clarity.
 
 ## Publish gate
 

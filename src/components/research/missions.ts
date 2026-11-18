@@ -34,6 +34,8 @@ export interface Choice {
   exclusive?: boolean;
 }
 export interface RecordQuestion { id: string; label: string; multi?: boolean; choices: Choice[] }
+/** One screen of the step-by-step flow: one or two steps, and the answer that goes with them, if any. */
+export interface Screen { title: string; steps: number[]; ask?: string }
 export interface MissionDef {
   id: MissionId;
   h1: string;
@@ -41,6 +43,8 @@ export interface MissionDef {
   minutes: string;
   steps: HowStep[];
   record: RecordQuestion[];
+  /** The order the visitor sees: each step next to the question it answers (owner, 2026-11-18: one thing at a time). */
+  screens: Screen[];
   /** Report section heading. */
   reportTitle: string;
   /** Ledger references (ledger:<slug>#<id>) behind this mission's text. */
@@ -72,11 +76,6 @@ export const MISSIONS: Record<MissionId, MissionDef> = {
         source: FEMA_HOME,
       },
       {
-        title: 'Know what the zone changes',
-        body: 'In an A or V zone, a mortgage from a government-backed lender comes with a flood insurance requirement. Outside those zones it’s your choice, but most homeowners insurance doesn’t cover flood damage anywhere.',
-        source: FEMA_INS,
-      },
-      {
         title: 'Ask the seller for the claims history',
         body: 'Insurance claims on a house stay on file for up to seven years. A buyer can’t order the LexisNexis C.L.U.E. report; the owner (or an insurer or lender) can, free once every 12 months. So ask the seller for it, and for the Verisk A-PLUS report too.',
         source: CFPB,
@@ -86,6 +85,11 @@ export const MISSIONS: Record<MissionId, MissionDef> = {
         body: 'Ask an insurance agent to quote this address before your inspection or option period ends. If you’ll want flood insurance, start early: a flood policy typically has a 30-day wait unless your lender is the one requiring it.',
         source: FEMA_INS,
       },
+    ],
+    screens: [
+      { title: 'Look up the flood zone', steps: [0], ask: 'zone' },
+      { title: 'Ask the seller for the claims history', steps: [1], ask: 'claims' },
+      { title: 'Get a quote before your deadline', steps: [2] },
     ],
     record: [
       {
@@ -179,7 +183,7 @@ export const MISSIONS: Record<MissionId, MissionDef> = {
     steps: [
       {
         title: 'Find the water utility',
-        body: 'The seller’s water bill names it, so ask the seller who supplies the water. If the house is on a private well, there’s no utility record; skip to the last step.',
+        body: 'The seller’s water bill names it, so ask the seller who supplies the water. If the house is on a private well, there’s no utility record: press Next and choose “private well”.',
       },
       {
         title: 'Look up the address in its service line inventory',
@@ -197,10 +201,15 @@ export const MISSIONS: Record<MissionId, MissionDef> = {
         source: EPA_TAP,
       },
     ],
+    screens: [
+      { title: 'Find the address in the water utility’s records', steps: [0, 1] },
+      { title: 'Read the label', steps: [2], ask: 'line' },
+      { title: 'Look at the pipe at a showing', steps: [3] },
+    ],
     record: [
       {
         id: 'line',
-        label: 'What did you find?',
+        label: 'What does the record say for this address?',
         choices: [
           {
             id: 'lead',
@@ -287,6 +296,9 @@ export const MISSIONS: Record<MissionId, MissionDef> = {
         title: 'Sort what you find',
         body: 'For each item, decide: is it a question for the seller, or something a specialist should look at before your deadline?',
       },
+    ],
+    screens: [
+      { title: 'Look up the terms you don’t recognize', steps: [0, 1], ask: 'items' },
     ],
     record: [
       {
