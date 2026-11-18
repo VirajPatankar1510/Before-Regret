@@ -1540,17 +1540,17 @@
      "currentPortal": {
       "status": "verified",
       "value": {
-       "name": "Accela Citizen Access",
+       "name": "City of Tampa Citizen Access Portal",
        "platform": "Accela"
       },
       "sourceUrl": "https://aca-prod.accela.com/TAMPA/Default.aspx",
-      "checkedOn": "2026-10-04"
+      "checkedOn": "2026-11-18"
      },
      "portalUrl": {
       "status": "verified",
       "value": "https://aca-prod.accela.com/TAMPA/Default.aspx",
       "sourceUrl": "https://aca-prod.accela.com/TAMPA/Default.aspx",
-      "checkedOn": "2026-10-04"
+      "checkedOn": "2026-11-18"
      },
      "searchBy": {
       "status": "verified",
@@ -1559,19 +1559,27 @@
        "parcel": true,
        "permitNumber": true,
        "quirks": [
-        "Many functions work without a log-in",
-        "General Search covers only the last 12 months unless you move the start date back",
-        "A Comprehensive Permit Summary by Address is offered"
+        "Open Building, then Search Applications, and pick “Search by Address” in the drop-down",
+        "Type the street number in both number boxes, pick the direction (N, S, E, W) and type the street name",
+        "Click the address in the results to list its permits. That list isn’t limited by date",
+        "No login needed to search"
        ]
       },
-      "sourceUrl": "https://aca-prod.accela.com/TAMPA/Default.aspx",
-      "checkedOn": "2026-10-04"
+      "sourceUrl": "https://aca-prod.accela.com/TAMPA/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-11-18"
      },
      "addressSearchTested": {
-      "status": "not_tested"
+      "status": "verified",
+      "value": "Anonymous Search by Address for 315 E Kennedy Blvd (Tampa City Hall) listed 10 address variants; the main one listed 15 records, the oldest from 2015.",
+      "sourceUrl": "https://aca-prod.accela.com/TAMPA/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-11-18"
      },
      "onlineRecordsFrom": {
-      "status": "not_researched"
+      "status": "partially_verified",
+      "value": "2015 or earlier (the oldest record at the address we searched)",
+      "sourceUrl": "https://aca-prod.accela.com/TAMPA/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-11-18",
+      "limits": "The city does not say where its online records begin. 2015 was the oldest record at Tampa City Hall, the one address we searched."
      },
      "historicalSystems": {
       "status": "not_researched"
@@ -1585,10 +1593,12 @@
      "localCaveats": {
       "status": "verified",
       "value": [
-       "General Search defaults to the last 12 months; move the start date back before concluding a permit is missing."
+       "If you used General Search: it covers only the past 12 months unless you move the Start Date back, and it didn’t filter by street number when we tried it. Search by Address doesn’t have either problem.",
+       "The address list can include records filed under a related address or suite, so check the address on each one.",
+       "A finished permit shows 'Complete'. Treat 'Issued', 'Expired' or 'In Process' as not signed off, and ask about it."
       ],
-      "sourceUrl": "https://aca-prod.accela.com/TAMPA/Default.aspx",
-      "checkedOn": "2026-10-04"
+      "sourceUrl": "https://aca-prod.accela.com/TAMPA/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "checkedOn": "2026-11-18"
      }
     },
     {

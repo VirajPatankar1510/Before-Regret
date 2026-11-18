@@ -141,6 +141,21 @@ unanswered one (`advance()` in `researchState.ts`), and every question screen ha
 (and "Answer the skipped questions" if any were skipped), then the answers, where tapping one changes it and returns
 to the summary (`reachedEnd`). The inspection-report question still waits for anyone not under contract.
 
+Third walk-through (2026-11-18, the one-path flow; Tampa City Hall, 1965, under contract, deadline, roof + electrical
+claimed; report built on the no-DB build in 7s), fixed the same day:
+- Two "skips" on one screen: the header now says "Skip question" and the checklist answer "No, leave it off".
+- Copy fitted to the visitor (`forDeadline` in `researchState.ts`): "option period" only in Texas; a deadline ahead is
+  named ("Get a quote before Nov 28"); "at a showing" becomes "at your inspection" once under contract.
+- "Nothing came up" now first shows the jurisdiction's own date or search tip ("Before you count it as missing"), where
+  the record has one (Austin, Dallas, Tampa, Fort Worth, Pinellas).
+- "Not yet, or still waiting" on the claims reports reads "Claims reports not seen yet" (was "requested").
+- **Tampa walked** (ledger `check-building-permits-tampa-fl`): no login; Search by Address matches the street number
+  and isn't date-limited (15 records at City Hall, oldest 2015); General Search defaults to 12 months and ignored the
+  street number. The steps now lead with Search by Address, and the year-built line shows for older houses.
+- Leftover wording: the deadline screen no longer mentions "your plan"; the end screen's card is "About this house".
+- Not changed: the age question is still one item per screen (owner's call), and the legal notice still shows in the
+  pop-up and above "Get my report".
+
 Homepage (owner approved): one short line under each hero button, "Step by step, with what to do next" and
 "Everything at once, in seconds" (quick report timed at 1.2-4.2s on the no-DB build, 2026-11-18). Labels unchanged.
 

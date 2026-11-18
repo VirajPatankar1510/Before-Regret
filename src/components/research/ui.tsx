@@ -42,7 +42,7 @@ export const FlowHeader: React.FC<{ state: ResearchState; id: QuestionId; update
       </button>
       <div className="flex items-center gap-3">
         <span className="text-sm text-slate-500">Question {n + 1} of {order.length}</span>
-        <button type="button" onClick={() => update((s) => advance(s, id))} className={linkBtn}>Skip</button>
+        <button type="button" onClick={() => update((s) => advance(s, id))} className={linkBtn}>Skip question</button>
       </div>
     </div>
   );

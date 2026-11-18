@@ -233,8 +233,6 @@ export function countedQuestions(s: ResearchState): QuestionDef[] {
   return QUESTIONS.filter((q) => q.live && !waitsForInspection(s, q.id));
 }
 
-/** Copy written for a visitor with a deadline, reworded when they have none (walk-through 2026-11-18: "Just looking"
- *  visitors were told to act "before your inspection or option period ends"). Order matters: longest phrases first. */
 /** The questions in the order the flow walks them (owner, 2026-11-19: one path to the report instead of going back
  *  and forth between the questions and a list). */
 export function flowOrder(s: ResearchState): QuestionId[] {
@@ -248,15 +246,30 @@ export function advance(s: ResearchState, from?: QuestionId): Pick<ResearchState
   const next = order.slice(from ? order.indexOf(from) + 1 : 0).find((id) => !isSolved(s, id));
   return next ? { view: next, reachedEnd: false } : { view: 'plan', reachedEnd: true };
 }
+/** Copy written for a visitor with a deadline, reworded when they have none (walk-through 2026-11-18: "Just looking"
+ *  visitors were told to act "before your inspection or option period ends"). Order matters: longest phrases first. */
 const NO_DEADLINE: [RegExp, string][] = [
   [/Then get a quote before your deadline\./g, 'Then get a quote, so the cost is part of your decision.'],
   [/Get a quote before your deadline/g, 'Get an insurance quote'],
   [/before your inspection or option period ends/g, 'now, so the cost is part of your decision'],
   [/before your deadline/g, 'before you commit'],
 ];
+/** Fits the fixed copy to this visitor (walk-through 2026-11-19):
+ *  - no deadline: the NO_DEADLINE wording;
+ *  - a deadline still ahead: its date ("before Nov 28"), as the report's "To confirm before Nov 28" already does;
+ *  - outside Texas: "option period" is a Texas contract term, so it's dropped (the engine does the same,
+ *    inspectionPriorities.ts);
+ *  - under contract: there are no more showings, so "at a showing" becomes "at your inspection". */
 export function forDeadline(text: string, s: ResearchState): string {
-  if (s.deadline) return text;
-  return NO_DEADLINE.reduce((t, [re, to]) => t.replace(re, to), text);
+  let t = text;
+  if (!s.deadline) t = NO_DEADLINE.reduce((x, [re, to]) => x.replace(re, to), t);
+  else if ((daysLeft(s.deadline) ?? -1) >= 0) {
+    const d = formatShortDate(s.deadline);
+    t = t.replace(/before your inspection or option period ends/g, `before ${d}`).replace(/before your deadline/g, `before ${d}`);
+  }
+  if (s.property.state !== 'TX') t = t.replace(/inspection or option period/g, 'inspection period');
+  if (s.stage === 'contract') t = t.replace(/at a showing/g, 'at your inspection').replace(/at your showing/g, 'at your inspection');
+  return t;
 }
 
 export function isSolved(s: ResearchState, id: QuestionId): boolean {

@@ -160,7 +160,7 @@ export const MISSIONS: Record<MissionId, MissionDef> = {
               text: 'Worth asking for before your deadline. The seller can order both reports for free once a year.',
               seller: 'Could you order your free C.L.U.E. and A-PLUS reports for the house and share them?',
               verify: 'Claims history reports (C.L.U.E. and A-PLUS)',
-              found: 'Claims reports requested',
+              found: 'Claims reports not seen yet',
               next: 'Ask the seller',
             },
           },

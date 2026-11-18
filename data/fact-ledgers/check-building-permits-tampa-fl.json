@@ -1,0 +1,42 @@
+{
+  "slug": "check-building-permits-tampa-fl",
+  "question": "Can a buyer search City of Tampa building permits by address without an account, and how far back do the online records go?",
+  "verdictConfirmed": "Yes: the City of Tampa's Accela Citizen Access Building search needs no login. Search by Address matched the street number and listed every record at the address with no date limit; the oldest at Tampa City Hall was from 2015. General Search defaults to the past 12 months and did not filter by street number.",
+  "officialLookupUrl": "https://aca-prod.accela.com/TAMPA/Cap/CapHome.aspx?module=Building&TabName=Building",
+  "note": "Evidence for the City of Tampa entry in data/permit-records/fl/12057-hillsborough.json (the research tool's permit question). Replaces the untested steps from scripts/publish-accela-citizen-access-permit-search.ts for the search fields.",
+  "portalWalk": {
+    "date": "2026-11-18",
+    "system": "City of Tampa Accela Citizen Access, Building > Search Applications, https://aca-prod.accela.com/TAMPA/Cap/CapHome.aspx?module=Building&TabName=Building. No login used; no CAPTCHA.",
+    "address": "315 E Kennedy Blvd, Tampa FL 33602 (Tampa City Hall, a public building).",
+    "observations": [
+      "The Search for Records page offers a drop-down: General Search, Search by Address, Search by Licensed Professional Information, Search by Record Information, Search for Trade Name, Search by Contact.",
+      "General Search's date fields defaulted to Start Date 11/18/2025 and End Date 11/18/2026, one year back.",
+      "General Search with Start Date 01/01/1980, street number 315 to 315 and Street Name Kennedy returned '100+ Record results', the newest first, at many other Kennedy Blvd numbers (4103 W, 2517 W, 1105 E and others): the street number did not narrow the results.",
+      "Search by Address with Street No. 315 to 315 (typed into both boxes), Direction E and Street Name Kennedy returned '10 search results returned matching your address': address variants such as '315 E Kennedy Blvd T 33602', '315 E Kennedy Blvd A-B T 33602' and '315 E KENNEDY Blvd 5TH FL TAMPA FL 33602'.",
+      "Clicking '315 E Kennedy Blvd T 33602' listed 'Showing 1-10 of 15' records with no date range set. The oldest, on page 2, was UTL-15-0000114 dated 02/10/2015. Building permits ran from 2015 (BTR-15-0446210, Commercial Electrical Trade Permit, 09/11/2015, Complete) to 2024 (BLD-24-0510551, Expired).",
+      "The list also includes records filed under related addresses (306 E Jackson St, suite A) and one at 4030 N Lois Ave.",
+      "Statuses seen in the list: Complete, Issued, Expired, Withdrawn, In Process, Administrative Close, Awaiting Client Reply."
+    ],
+    "limits": "One public building, City of Tampa only. The city does not say where its online records begin, so 2015 is only the oldest record at this address. No record detail or inspection page was opened. Unincorporated Hillsborough County and the county's other cities were not part of this walk."
+  },
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "The portal is the City of Tampa's, and searching does not require a login.",
+      "quote": "Welcome to the City of Tampa Citizen Access Portal ... Please note that many functions can be used without a log-in, just type the address you are looking for above.",
+      "url": "https://aca-prod.accela.com/TAMPA/Default.aspx",
+      "readOn": "2026-11-18",
+      "method": "browser (page text)"
+    },
+    {
+      "id": "f2",
+      "claim": "The search page's own instructions for an address search.",
+      "quote": "To search for an address, enter only the Street No. and Street Name.",
+      "url": "https://aca-prod.accela.com/TAMPA/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "readOn": "2026-11-18",
+      "method": "browser (page text)"
+    }
+  ],
+  "cut": [],
+  "blockedSources": []
+}

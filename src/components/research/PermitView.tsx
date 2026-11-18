@@ -229,7 +229,18 @@ const Where: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, s
 
 // ---------------------------------------------------------------------------------------------------------------
 
-const Record: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, setPermits, onNavigate }) => {
+// A search that only looks back a year or two is the likeliest reason for "Nothing came up" (walk-through 2026-11-19,
+// Tampa). The tip is the record's own verified wording, so it only shows where we have one.
+const DATE_TIP = /start date|date range|past (two years|365 days|year)|last 12 months|five-year|newest \d+ records/i;
+function dateTip(answer: PermitAnswer): string | null {
+  const r = answer.record;
+  const quirks = shown<{ quirks?: string[] }>(r, 'searchBy')?.value?.quirks || [];
+  const caveats = shown<string[]>(r, 'localCaveats')?.value || [];
+  return [...caveats, ...quirks].find((x) => DATE_TIP.test(x)) || null;
+}
+
+const Record: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, setPermits, onNavigate, answer }) => {
+  const tip = dateTip(answer);
   const items = permitItems(state);
   const ans = state.permits.ans;
   const i = Math.min(state.permits.step ?? 0, items.length - 1);
@@ -267,6 +278,12 @@ const Record: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, 
             <Choice on={a.fin === 'no'} onClick={() => set({ found: 'yes', fin: 'no' })}>No, it’s still open</Choice>
             <Choice on={a.fin === 'unsure'} onClick={() => set({ found: 'yes', fin: 'unsure' })}>Not sure</Choice>
           </div>
+        </div>
+      )}
+      {a.found === 'no' && tip && (
+        <div className="rounded-2xl border border-home-oak bg-white p-4 text-sm">
+          <span className="block font-bold mb-1">Before you count it as missing</span>
+          {tip.replace(/\.?$/, '.')}
         </div>
       )}
       {m && (

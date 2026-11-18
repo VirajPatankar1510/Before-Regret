@@ -207,7 +207,7 @@ const SetupView: React.FC<{ state: ResearchState; update: Updater }> = ({ state,
       {n === 1 && (
         <div className="space-y-4">
           <h2 className="font-serif text-3xl font-semibold">Got a deadline?</h2>
-          <p className="text-slate-600">Like the end of your inspection or option period. We’ll keep the countdown on your plan and your report.</p>
+          <p className="text-slate-600">{forDeadline('Like the end of your inspection or option period.', state)} We’ll show what to get done before then, and put the date on your report.</p>
           <label className="block">
             <span className="block text-sm font-bold mb-1.5">Deadline</span>
             <input type="date" value={state.deadline} onChange={(e) => update({ deadline: e.target.value })}
@@ -326,7 +326,7 @@ const PlanView: React.FC<{ state: ResearchState; update: Updater; onReset: () =>
       )}
 
       <div className={`${card} space-y-4`}>
-        <p className={eyebrow}>Here’s what we already know</p>
+        <p className={eyebrow}>About this house</p>
         <dl className="space-y-3 text-sm">
           <div>
             <dt className="text-slate-500">Address</dt>
@@ -480,7 +480,7 @@ const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (pa
           {on && <Check className="w-4 h-4" />}Yes, add it
         </button>
         <button type="button" onClick={() => decide(false)}
-          className="inline-flex items-center justify-center rounded-2xl border border-home-linen bg-white text-home-ink font-bold px-3 py-3.5 hover:border-home-oak transition-colors cursor-pointer">No, skip it</button>
+          className="inline-flex items-center justify-center rounded-2xl border border-home-linen bg-white text-home-ink font-bold px-3 py-3.5 hover:border-home-oak transition-colors cursor-pointer">No, leave it off</button>
         </div>
       </div>
       <p className="text-xs text-slate-500">From Before Regret’s inspection guide, the same one behind our free report. It describes homes of this age and area, not this particular house.</p>
