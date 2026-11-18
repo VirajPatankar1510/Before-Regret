@@ -14,6 +14,8 @@ import { HomeData, buildGuideClusters, pickResearchPages } from '../utils/homeCo
 
 interface HeroProps {
   onSelectProperty: (property: PropertySearchResult) => void;
+  /** Guided research tool (unpublished). */
+  onStartResearch?: (property: PropertySearchResult) => void;
   onNavigate?: (path: string) => void;
 }
 
@@ -57,7 +59,7 @@ function useHomeData(): HomeData {
   return data;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
+export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onStartResearch, onNavigate }) => {
   const searchBoxRef = useRef<HTMLDivElement>(null);
   const homeData = useHomeData();
 
@@ -80,7 +82,7 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onNavigate }) => {
           the static paint instead of resetting when React mounts. */}
       <HeroPanel
         searchBoxRef={searchBoxRef}
-        searchBox={<AddressSearchBox onSelectProperty={onSelectProperty} />}
+        searchBox={<AddressSearchBox onSelectProperty={onSelectProperty} onStartResearch={onStartResearch} />}
       />
 
       {/* 2026-11-18 SIMPLIFIED ORDER (owner: "remove sections that make the website feel complex") --

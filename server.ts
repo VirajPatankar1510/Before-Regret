@@ -76,6 +76,7 @@ const KNOWN_STATIC_ROUTE_PREFIXES = [
   '/admin/seo',
   // Exact tool paths, not a bare '/tools/' prefix: there is no /tools/ index page, so it must stay a 404.
   '/tools/inspection-decoder',
+  '/tools/house-research', // guided research tool (unpublished until the owner says the whole tool is ready)
   '/guides/', '/counties/',
   '/insights/', '/report/', '/reports/',
 ];

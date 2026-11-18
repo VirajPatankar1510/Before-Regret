@@ -10,6 +10,12 @@ import { reportCtaClick } from '../utils/ctaClickBeacon';
 
 interface AddressSearchBoxProps {
   onSelectProperty: (property: PropertySearchResult) => void;
+  /**
+   * Guided research tool (owner, 2026-11-18; unpublished). When set, the property-type step offers
+   * "Research it step by step" beside the quick report. Same checks, same property object -- only the
+   * destination differs. The quick report stays the primary button: nobody is forced into the longer flow.
+   */
+  onStartResearch?: (property: PropertySearchResult) => void;
 }
 
 // Real residential-only validation gate: calls the backend, which runs Census geocoder
@@ -181,7 +187,7 @@ function composeDisplayAddress(a: {
   return a.zip ? `${head} ${a.zip}` : head;
 }
 
-export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProperty }) => {
+export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProperty, onStartResearch }) => {
   const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
 
   const [selectedPinResult, setSelectedPinResult] = useState<PropertySearchResult | null>(() => {
@@ -256,6 +262,16 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
     reportCtaClick('report_submit');
     setShowPropertyTypeModal(false);
     onSelectProperty({
+      ...selectedPinResult,
+      declaredPropertyType,
+      unitNumber,
+      yearBuilt: parseInt(yearBuilt, 10),
+    });
+  };
+  const startResearch = () => {
+    if (!onStartResearch || !selectedPinResult || !canSubmit || !declaredPropertyType) return;
+    setShowPropertyTypeModal(false);
+    onStartResearch({
       ...selectedPinResult,
       declaredPropertyType,
       unitNumber,
@@ -924,6 +940,17 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                 <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
               </button>
             )}
+
+            {selectedPinResult && onStartResearch && canAnalyze && (
+              <button
+                type="button"
+                onClick={startResearch}
+                className="w-full px-4 sm:px-5 py-2.5 font-bold text-xs sm:text-sm rounded-lg sm:rounded-xl border border-slate-300 bg-white text-slate-900 hover:border-slate-500 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>Or research it step by step</span>
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              </button>
+            )}
         </div>
       )}
       </>
@@ -1045,6 +1072,25 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               </span>
               {canSubmit && <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />}
             </button>
+
+            {onStartResearch && (
+              <div className="space-y-1">
+                <button
+                  type="button"
+                  disabled={!canSubmit}
+                  onClick={startResearch}
+                  className={`w-full px-4 py-2.5 sm:py-3 font-bold text-xs sm:text-sm rounded-lg sm:rounded-xl border transition-all flex items-center justify-center gap-2 tracking-tight ${
+                    !canSubmit
+                      ? 'border-slate-200 text-slate-400 cursor-not-allowed'
+                      : 'border-slate-300 bg-white text-slate-900 hover:border-slate-500 cursor-pointer'
+                  }`}
+                >
+                  <span>Or research it step by step</span>
+                  {canSubmit && <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />}
+                </button>
+                <p className="text-[11px] text-slate-500 text-center">A few questions at a time. You finish with your own report.</p>
+              </div>
+            )}
 
             <ReportAssentNotice />
           </div>

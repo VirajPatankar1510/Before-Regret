@@ -111,6 +111,13 @@ const ROUTES: NoindexRoute[] = [
     description: 'Pick or paste a term from your home inspection report to see what it means, how serious it usually is, and what to ask.',
     canonical: 'https://www.beforeregret.com/tools/inspection-decoder/',
   },
+  // Guided research tool (owner, 2026-11-18): per-visitor, state on the device. Keep in sync with App.tsx.
+  {
+    dir: 'tools/house-research',
+    title: 'Research a House Step by Step | Before Regret',
+    description: 'Check a house one question at a time: what to look at, where the records are and what to ask. Free, no sign-up required.',
+    canonical: 'https://www.beforeregret.com/tools/house-research/',
+  },
 ];
 
 function escapeHtmlAttr(value: string): string {
