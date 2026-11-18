@@ -587,7 +587,7 @@ export function App() {
         title: 'Before Regret Support & Property Research FAQ',
         description: 'Frequently asked questions regarding Before Regret public property record research, data sources, municipal permit checks, and report coverage.',
         canonicalUrl: 'https://www.beforeregret.com/support/',
-        robotsDirective: 'noindex, nofollow',
+        robotsDirective: 'noindex, follow',
         jsonLdSchema: [
           {
             '@context': 'https://schema.org',
@@ -626,7 +626,7 @@ export function App() {
         title: 'Terms of Service | Before Regret Property Intelligence',
         description: 'Terms of service and user agreement for Before Regret public record property research and automated synthesis tools.',
         canonicalUrl: 'https://www.beforeregret.com/terms/',
-        robotsDirective: 'noindex, nofollow',
+        robotsDirective: 'noindex, follow',
         jsonLdSchema: [
           {
             '@context': 'https://schema.org',
@@ -643,7 +643,7 @@ export function App() {
         title: 'Privacy Policy | Before Regret Property Intelligence',
         description: 'Privacy policy detailing data handling, user anonymity, and secure public record lookup protocols at Before Regret.',
         canonicalUrl: 'https://www.beforeregret.com/privacy/',
-        robotsDirective: 'noindex, nofollow',
+        robotsDirective: 'noindex, follow',
         jsonLdSchema: [
           {
             '@context': 'https://schema.org',
@@ -660,7 +660,7 @@ export function App() {
         title: 'Refund Policy & Satisfaction Guarantee | Before Regret',
         description: 'Before Regret refund policy and customer support commitments for property research report orders.',
         canonicalUrl: 'https://www.beforeregret.com/refunds/',
-        robotsDirective: 'noindex, nofollow',
+        robotsDirective: 'noindex, follow',
         jsonLdSchema: [
           {
             '@context': 'https://schema.org',
@@ -677,7 +677,7 @@ export function App() {
         title: 'Disclaimer | Before Regret',
         description: 'Site-wide disclaimer covering professional advice, third-party government data, AI-generated content, and sponsored placements on Before Regret.',
         canonicalUrl: 'https://www.beforeregret.com/disclaimer/',
-        robotsDirective: 'noindex, nofollow',
+        robotsDirective: 'noindex, follow',
         jsonLdSchema: [
           {
             '@context': 'https://schema.org',
