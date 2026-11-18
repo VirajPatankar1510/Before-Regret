@@ -121,11 +121,11 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
 
       <div className={`relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-16 sm:pt-24 sm:pb-28 ${HERO_PHOTO ? '-mt-6 pt-0 sm:mt-0' : 'pt-16'}`}>
         <div className={centred ? 'max-w-2xl mx-auto text-center' : 'max-w-xl text-center sm:text-left'}>
-          {/* 2026-11-18 (owner): the small brand line reads "Don't buy a house blind." The H1 text itself is
-              unchanged -- "Before Regret:" stays inside it for screen readers and crawlers, so the page's main
-              heading still names the site; only the visible eyebrow changed. */}
-          <p className="mb-4 font-sans text-xs sm:text-sm font-bold uppercase tracking-[0.24em] text-home-oak leading-none">
-            Don&rsquo;t buy a house blind.
+          {/* 2026-11-18 (owner): the small brand line reads "Figuring out how to buy a house?" (owner's words;
+              was "Don't buy a house blind."). The H1 text itself is unchanged -- "Before Regret:" stays inside it
+              for screen readers and crawlers, so the page's main heading still names the site. */}
+          <p className="mb-4 font-sans text-xs sm:text-sm font-bold uppercase tracking-[0.24em] text-home-oak leading-snug">
+            Figuring out how to buy a house?
           </p>
           <h1 className="font-serif text-[2.4rem] leading-[1.05] sm:text-6xl lg:text-[4.1rem] font-semibold tracking-[-0.01em] text-white [text-wrap:balance]">
             <span className="sr-only">Before Regret: </span>
@@ -133,10 +133,10 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
           </h1>
 
           <p className="mt-6 max-w-xl text-base sm:text-lg text-slate-200 leading-relaxed">
-            Before Regret is a free property research tool for US home buyers. Search any US
-            residential address and get the checks that actually matter for a home of its age and
-            county, the exact questions to ask the seller, and a clear list of what to verify before
-            you sign.
+            {/* 2026-11-18 (owner): shortened so it doesn't feel overwhelming. The first sentence stays as written:
+                it is the definition AI answers quote. The second matches the two buttons below. */}
+            Before Regret is a free property research tool for US home buyers. Enter an address, and
+            we&rsquo;ll walk you through it step by step or give you a quick report right away.
           </p>
 
           <div ref={searchBoxRef} id="address-search-box" className="mt-8 min-h-[190px] sm:min-h-[140px] text-left text-slate-900">
