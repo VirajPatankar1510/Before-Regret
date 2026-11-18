@@ -16,6 +16,7 @@ import { MISSION_IDS, type MissionId } from './missions';
 import { FinalReportView, buildFullReport } from './FinalReport';
 import { ReportAssentNotice } from '../ReportAssentNotice';
 import type { PropertyReport } from '../../types';
+import { reportCtaClick, type CtaId } from '../../utils/ctaClickBeacon';
 import { BackToPlan, SolvedBadge, btnGhost, btnPrimary, card, eyebrow, linkBtn, type Updater } from './ui';
 
 // Guided research tool -- UNPUBLISHED (owner, 2026-11-18: "don't publish until our entire tool is ready").
@@ -66,6 +67,19 @@ export const HouseResearchTool: React.FC<Props> = ({ onNavigate, onQuickReport }
   const reset = () => { setFinalReport(null); setState(null); };
 
   useEffect(() => { saveResearch(state); }, [state]);
+
+  // Funnel (Stage 4): where visitors stop. Each step is sent once per house; only the event name and page path go.
+  useEffect(() => {
+    if (!state) return;
+    const sent = state.funnel || [];
+    const due: CtaId[] = [];
+    if (state.view !== 'setup' && !sent.includes('research_details_done')) due.push('research_details_done');
+    if (QUESTIONS.some((q) => isSolved(state, q.id)) && !sent.includes('research_first_solved')) due.push('research_first_solved');
+    if (state.finalReportId && !sent.includes('research_report_done')) due.push('research_report_done');
+    if (!due.length) return;
+    due.forEach(reportCtaClick);
+    update((s) => ({ funnel: [...(s.funnel || []), ...due] }));
+  }, [state]);
 
   const update = (patch: Partial<ResearchState> | ((s: ResearchState) => Partial<ResearchState>)) =>
     setState((s) => (s ? { ...s, ...(typeof patch === 'function' ? patch(s) : patch) } : s));
@@ -200,9 +214,9 @@ const SetupView: React.FC<{ state: ResearchState; update: Updater }> = ({ state,
 
       {n === 2 && (
         <div className="space-y-4">
-          <h2 className="font-serif text-3xl font-semibold">What does the seller say they updated?</h2>
+          <h2 id="claims-q" className="font-serif text-3xl font-semibold">What does the seller say they updated?</h2>
           <p className="text-slate-600">Check the listing or the disclosure. Pick any that apply. We’ll help you check them against the records.</p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2" role="group" aria-labelledby="claims-q">
             {(Object.keys(WORK) as WorkKey[]).map((k) => {
               const on = state.claims.includes(k);
               return (

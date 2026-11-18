@@ -9,7 +9,9 @@ export type CtaId = 'guide_closing_report' | 'nav_free_report' | 'nav_for_advert
   // Address search box funnel (owner, 2026-11-18): an address picked, then a report requested.
   | 'report_address_selected' | 'report_submit'
   // The two hero buttons (owner, 2026-11-18).
-  | 'choose_research' | 'choose_quick_report' | 'research_start';
+  | 'choose_research' | 'choose_quick_report' | 'research_start'
+  // The guided research tool's funnel, once per house: setup answered, first question solved, full report built.
+  | 'research_details_done' | 'research_first_solved' | 'research_report_done';
 
 /** Inspection Report Decoder usage events -- private, for us only (src/server/ctaClicksApi.ts). */
 export type DecoderEvent =

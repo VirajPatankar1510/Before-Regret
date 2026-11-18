@@ -21,6 +21,9 @@ const CTAS = new Set([
   'report_address_selected', 'report_submit',
   // The two hero buttons (owner, 2026-11-18): which path a visitor picks, and whether research is started.
   'choose_research', 'choose_quick_report', 'research_start',
+  // The guided research tool's funnel, once per house (HouseResearchTool.tsx): setup answered, first question solved,
+  // full report built. Read with research_start to see where visitors stop.
+  'research_details_done', 'research_first_solved', 'research_report_done',
 ]);
 
 // Inspection Report Decoder usage (owner, 2026-10-30: "only for us" -- never displayed on the site). Same table, same

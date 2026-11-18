@@ -32,4 +32,16 @@ const days = parseInt(process.argv[2] || '28', 10);
     console.log(`\n  by device (report actions only)\n`);
     for (const r of dev) console.log(`  ${String(r.clicks).padStart(4)}  ${r.cta.padEnd(24)} ${r.device}`);
   }
+
+  // The guided research tool, step by step (each step counted once per house on the visitor's device).
+  const steps = ['choose_research', 'research_start', 'research_details_done', 'research_first_solved', 'research_report_done'];
+  const fun = (await withDb((sql) => sql`
+    SELECT cta, count(*)::int AS clicks
+    FROM cta_clicks WHERE click_day > current_date - ${days}::int AND cta = ANY(${steps})
+    GROUP BY 1
+  `)) as unknown as Array<{ cta: string; clicks: number }>;
+  if (fun.length) {
+    console.log(`\n  research tool funnel\n`);
+    for (const step of steps) console.log(`  ${String(fun.find((r) => r.cta === step)?.clicks || 0).padStart(4)}  ${step}`);
+  }
 })();

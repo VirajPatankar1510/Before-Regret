@@ -71,6 +71,8 @@ export interface ResearchState {
   missions: Partial<Record<MissionId, MissionState>>;
   /** The saved free report built at the end (an /insights/ id). The findings themselves never leave the device. */
   finalReportId?: string;
+  /** Funnel events already sent for this house, so a reload or a changed answer never counts twice. */
+  funnel?: string[];
 }
 
 function todayIso(): string {

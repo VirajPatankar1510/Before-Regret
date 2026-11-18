@@ -226,16 +226,16 @@ const Record: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, 
         const m = permitMeaning(k, a, state.permits.office);
         return (
           <div key={k} className={`${card} space-y-3`}>
-            <h2 className="font-bold text-lg">{k === 'any' ? 'Any permits on record?' : `${itemLabel(k)}: did you find a permit?`}</h2>
-            <div className="flex flex-wrap gap-2">
+            <h2 id={`pq-${k}`} className="font-bold text-lg">{k === 'any' ? 'Any permits on record?' : `${itemLabel(k)}: did you find a permit?`}</h2>
+            <div className="flex flex-wrap gap-2" role="group" aria-labelledby={`pq-${k}`}>
               <Choice on={a.found === 'yes'} onClick={() => set(k, { found: 'yes' })}>Yes, found one</Choice>
               <Choice on={a.found === 'no'} onClick={() => set(k, { found: 'no' })}>Nothing came up</Choice>
               <Choice on={a.found === 'cant'} onClick={() => set(k, { found: 'cant' })}>Couldn’t search</Choice>
             </div>
             {a.found === 'yes' && (
               <div className="space-y-2">
-                <p className="text-sm font-semibold">Is it finaled? <span className="font-normal text-slate-500">(Also shown as closed, completed or signed off.)</span></p>
-                <div className="flex flex-wrap gap-2">
+                <p id={`pf-${k}`} className="text-sm font-semibold">Is it finaled? <span className="font-normal text-slate-500">(Also shown as closed, completed or signed off.)</span></p>
+                <div className="flex flex-wrap gap-2" role="group" aria-labelledby={`pf-${k}`}>
                   <Choice on={a.fin === 'yes'} onClick={() => set(k, { found: 'yes', fin: 'yes' })}>Yes</Choice>
                   <Choice on={a.fin === 'no'} onClick={() => set(k, { found: 'yes', fin: 'no' })}>No, still open</Choice>
                   <Choice on={a.fin === 'unsure'} onClick={() => set(k, { found: 'yes', fin: 'unsure' })}>Not sure</Choice>

@@ -73,8 +73,8 @@ export const MissionView: React.FC<{ id: MissionId; state: ResearchState; update
           const picked = ms.ans[q.id] || [];
           return (
             <div key={q.id} className={`${card} space-y-3`}>
-              <p className="font-bold">{q.label}</p>
-              <div className="flex flex-wrap gap-2">
+              <p id={`mq-${id}-${q.id}`} className="font-bold">{q.label}</p>
+              <div className="flex flex-wrap gap-2" role="group" aria-labelledby={`mq-${id}-${q.id}`}>
                 {q.choices.map((c) => <ChoiceButton key={c.id} on={picked.includes(c.id)} onClick={() => pick(q.id, c.id, q.multi)}>{c.label}</ChoiceButton>)}
               </div>
               {q.choices.filter((c) => picked.includes(c.id)).map((c) => <MeaningBox key={c.id} choice={c} />)}

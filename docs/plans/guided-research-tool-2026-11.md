@@ -51,7 +51,23 @@ Owner's flagship idea. Prototype: https://claude.ai/artifact/6ma9YB48uexEnNEnDdk
    so the report is built once per house and never rebuilt (each build counts toward the daily limit). The assent notice sits
    under "Build my full report". Tested on a local server with DATABASE_URL empty so no test report reached production.
 3. **Insurance, lead pipe, Decoder**, each browser-verified.
+   **Built 2026-11-18 (branch, bba017b):** one data-driven screen (`MissionView.tsx`) runs all three from `missions.ts`:
+   where to look → what you found → solved. Each answer has a fixed meaning that adds seller questions and verify items to
+   "Your research" (deduplicated). Facts: `data/fact-ledgers/research-tool-missions.json` (eCFR 141.84 + 141.2, EPA Protect
+   Your Tap, fema.gov homeowners/SFHA/flood-insurance pages, the #13 CLUE ledger, our Decoder). Gate:
+   `scripts/assert-research-missions.ts` (every number must sit in a cited quote). **msc.fema.gov refused our connection**
+   (region block, not worked around): the flood-map steps follow FEMA's own instructions, and the address search itself is
+   untested by us; the owner should try it once from the US view. The Decoder link is internal and noindex (live).
+   Tested on mobile with a public building (Austin City Hall): all three solve, the report shows the three sections, and
+   "Nothing that worries me" clears the other inspection picks (and the reverse).
 4. **Launch prep**: funnel tracking (started, details done, first question solved, report finished), phone and desktop checks, accessibility pass, copy pass against the voice guide, owner review of the whole flow.
+   **Done 2026-11-18 (branch):** funnel events `research_details_done`, `research_first_solved`, `research_report_done`, sent once
+   per house (stored in the visitor's saved progress, so reloads never double-count); read with `scripts/cta-click-report.ts`
+   (new "research tool funnel" block, from `choose_research` on). Browser-tested with beacons captured in the page, so no test
+   rows reached the table; `research_report_done` was not fired live (building a report from dev could write to production).
+   Phone (375px) and desktop (1280px): no sideways scroll on any screen. Accessibility: one h1 per screen, every control named,
+   choice groups now labelled by their question (`role="group"` + `aria-labelledby`), sitewide focus ring shows on Tab.
+   Copy: no AI tells, US spelling, no fear words. **Left: owner review of the whole flow, and the engine cost-range audit.**
 
 ## Publish gate
 
