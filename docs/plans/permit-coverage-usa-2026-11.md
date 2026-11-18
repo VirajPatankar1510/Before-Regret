@@ -54,6 +54,16 @@ The coordinates endpoint (what the tool uses) returned the same for the East LA 
    matcher `src/components/research/permitAnswer.ts`; screens `src/components/research/PermitView.tsx`.
    Matching tested on 10 public buildings (East LA, Kendall, Philadelphia, Clearwater, Dallas, Brooklyn, Naples, Houston, Lexington, Austin): all correct; unmatched names fall back to the general route, never a guessed office.
    Rule kept: only a fully verified "online records start" is repeated in answers and the report.
-2. Layer 1, state by state.
+2. Layer 1, state by state. **Texas pilot built 2026-11-18 on the branch:**
+   sheet `data/permit-states/tx.json` (schema `StateSheet` in `src/data/permitRecords/schema.ts`, same Field status rules),
+   ledger `data/fact-ledgers/permit-state-tx.json` (Local Government Code ch. 233 subchapter F; Government Code ch. 552, quoted),
+   checked by `validate-permit-records.ts` and carried into `permitIndex.json` (`states`).
+   Fields: `outsideCityLimits` + `outsideCityJobs` + `nearCityLimits` (addresses Census puts outside any city or town),
+   `olderRecordsLaw` (every address in the state). Shown on the "where to look" screen; the verified outside-city lines
+   also replace the generic "no permit found" answer (full note for an addition or "any work", one line for a single job).
+   Tested on the Barbara Bush Branch Library (unincorporated Harris County) and Austin City Hall (city: law note only).
+   Cut for lack of a source: "Texas counties don't issue building permits" (Harris does, under other law), which counties
+   opted in, and how far city codes reach into the ETJ (ch. 212 and the 2023 ETJ changes not read yet).
+   Next states, by the same method: the other states in the database (CA, FL, AZ, NV, IL, NY, PA, MA), then the rest.
 3. Layer 3 batches; Layer 2 once two or more jurisdictions share a platform walkthrough.
 4. Layer 4 only on the owner's OK.

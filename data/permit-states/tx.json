@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "state": "TX",
+  "stateName": "Texas",
+  "outsideCityLimits": {
+    "status": "verified",
+    "value": "Outside city limits, the Texas law that lets counties set building standards for houses is narrow. It applies only where a county has opted in, and only to a new house or a big addition started after September 1, 2009. That law doesn’t require county approval before building starts, and the builder hires the inspectors (a licensed engineer, architect or state-licensed inspector, among others). So the paperwork for a house here may be the builder’s inspection reports, not a county permit. Ask the seller for them, and ask the county what it has on file for the address.",
+    "sourceUrl": "https://statutes.capitol.texas.gov/Docs/LG/htm/LG.233.htm",
+    "evidence": [
+      "ledger:permit-state-tx#f1",
+      "ledger:permit-state-tx#f2",
+      "ledger:permit-state-tx#f3",
+      "ledger:permit-state-tx#f4",
+      "ledger:permit-state-tx#f5",
+      "ledger:permit-state-tx#f6"
+    ],
+    "checkedOn": "2026-11-18",
+    "note": "Texas Local Government Code ch. 233, subchapter F."
+  },
+  "outsideCityJobs": {
+    "status": "verified",
+    "value": "Outside city limits, the Texas law on county building standards covers only new houses and additions that grow a house by more than half. So ask the county whether the {work} needed a permit here, and ask the seller for the contractor’s invoice.",
+    "sourceUrl": "https://statutes.capitol.texas.gov/Docs/LG/htm/LG.233.htm",
+    "evidence": [
+      "ledger:permit-state-tx#f1",
+      "ledger:permit-state-tx#f2"
+    ],
+    "checkedOn": "2026-11-18",
+    "note": "Texas Local Government Code §§ 233.151, 233.152."
+  },
+  "nearCityLimits": {
+    "status": "verified",
+    "value": "Near a city? Where a city has adopted a building code for the area just outside its limits (its extraterritorial jurisdiction), the city’s code applies there instead. If the house is close to a city, ask that city too.",
+    "sourceUrl": "https://statutes.capitol.texas.gov/Docs/LG/htm/LG.233.htm",
+    "evidence": [
+      "ledger:permit-state-tx#f7"
+    ],
+    "checkedOn": "2026-11-18",
+    "note": "Texas Local Government Code § 233.153(c)."
+  },
+  "olderRecordsLaw": {
+    "status": "verified",
+    "value": "Under the Texas Public Information Act (Government Code chapter 552), anyone can ask a Texas city or county for its records, unless a law makes them confidential. The office has to produce them promptly. If it can’t within 10 business days, it has to tell you in writing when they’ll be ready.",
+    "sourceUrl": "https://statutes.capitol.texas.gov/Docs/GV/htm/GV.552.htm",
+    "evidence": [
+      "ledger:permit-state-tx#f8",
+      "ledger:permit-state-tx#f9"
+    ],
+    "checkedOn": "2026-11-18",
+    "note": "Texas Government Code §§ 552.001, 552.221."
+  }
+}

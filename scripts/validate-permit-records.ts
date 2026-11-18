@@ -20,6 +20,8 @@ import {
   type FieldStatus,
   FIELD_STATUSES,
   JURISDICTION_FIELDS,
+  STATE_FIELDS,
+  type StateSheet,
   STATUS_LABEL,
   checkField,
   effectiveStatus,
@@ -136,6 +138,28 @@ for (const file of files.sort()) {
   perCounty.push({ file: where, jur: a.jurisdictions.length, verified: v, total: tot });
 }
 
+// Layer 1 state sheets: same field rules and evidence resolution.
+const STATE_ROOT = 'data/permit-states';
+const stateFiles = fs.existsSync(STATE_ROOT) ? fs.readdirSync(STATE_ROOT).filter((n) => n.endsWith('.json')).sort() : [];
+const stateTally: string[] = [];
+for (const n of stateFiles) {
+  const s = JSON.parse(fs.readFileSync(path.join(STATE_ROOT, n), 'utf8')) as StateSheet;
+  const where = `states/${n}`;
+  if (s.schemaVersion !== 1) problems.push(`${where}: schemaVersion must be 1`);
+  if (n !== `${s.state?.toLowerCase()}.json`) problems.push(`${where}: file name must be the state code`);
+  const noTests = { tests: [] } as unknown as CountyArea;
+  const shownFields: string[] = [];
+  for (const name of STATE_FIELDS) {
+    const f = s[name] as Field<unknown>;
+    problems.push(...checkField(where, name, f, today));
+    if (!f) continue;
+    checkEvidence(`${where}.${name}`, f, noTests);
+    const st = effectiveStatus(f, today);
+    if (st === 'verified' || st === 'partially_verified') shownFields.push(name);
+  }
+  stateTally.push(`${s.state}: ${shownFields.length}/${STATE_FIELDS.length} shown (${shownFields.join(', ') || 'none'})`);
+}
+
 console.log(`${files.length} county files, ${ids.size} jurisdictions\n`);
 const cols = FIELD_STATUSES.map((s) => STATUS_LABEL[s].padStart(19)).join('');
 console.log('field'.padEnd(26) + cols);
@@ -145,6 +169,9 @@ for (const name of JURISDICTION_FIELDS) {
 }
 console.log('\ncounty file'.padEnd(36) + 'jurisdictions  verified fields');
 for (const c of perCounty) console.log(c.file.padEnd(35) + String(c.jur).padStart(13) + `  ${c.verified}/${c.total}`);
+
+console.log(`\nstate sheets: ${stateFiles.length}/51`);
+for (const l of stateTally) console.log('  ' + l);
 
 if (process.argv.includes('--queue')) {
   console.log('\nRE-VERIFICATION QUEUE (internal; never shown to readers)');

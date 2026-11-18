@@ -44,6 +44,9 @@ function snapshot(ans: PermitAnswer): OfficeSnapshot {
     // "where to look" screen beside its stated limits.
     onlineFrom: (() => { const f = shown<string>(r, 'onlineRecordsFrom'); return f?.status === 'verified' ? f.value : null; })(),
     level: ans.level,
+    // Only a fully verified state note travels into the answers and the report.
+    outsideCityNote: ans.stateNotes?.outsideCityLimits?.status === 'verified' ? ans.stateNotes.outsideCityLimits.value : null,
+    outsideCityJobNote: ans.stateNotes?.outsideCityJobs?.status === 'verified' ? ans.stateNotes.outsideCityJobs.value : null,
   };
 }
 
@@ -105,6 +108,7 @@ const How: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, set
   const older = shown<string>(r, 'olderRecordsRequest');
   const caveats = shown<string[]>(r, 'localCaveats');
   const servedElsewhere = answer.matched && r && answer.matched.id !== r.id;
+  const sn = answer.stateNotes;
   const items = permitItems(state);
   const what = state.claims.length ? `the ${listOf(items.map((k) => itemLabel(k).toLowerCase()))}` : 'any permits on the house';
   const searchWays = searchBy?.value ? [searchBy.value.address && 'address', searchBy.value.parcel && 'parcel number', searchBy.value.permitNumber && 'permit number'].filter(Boolean) as string[] : [];
@@ -125,6 +129,14 @@ const How: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, set
             <p className="text-xs text-slate-500 flex gap-1.5"><Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
               Based on U.S. Census boundaries for this address, not the mailing city. Boundaries can miss recent annexations, and some towns have the county or a private company handle permits. If the office says the address isn’t theirs, ask who handles it.
             </p>
+            {(sn?.outsideCityLimits || sn?.nearCityLimits) && (
+              <div className="rounded-xl bg-home-stone/60 border border-home-linen p-3.5 space-y-2 text-sm">
+                <p className="font-bold">How it works outside city limits in {sn.stateName}</p>
+                {sn.outsideCityLimits && <p>{sn.outsideCityLimits.value}<Status status={sn.outsideCityLimits.status} checkedOn={sn.outsideCityLimits.checkedOn} limits={'limits' in sn.outsideCityLimits ? sn.outsideCityLimits.limits : undefined} /></p>}
+                {sn.nearCityLimits && <p>{sn.nearCityLimits.value}<Status status={sn.nearCityLimits.status} checkedOn={sn.nearCityLimits.checkedOn} limits={'limits' in sn.nearCityLimits ? sn.nearCityLimits.limits : undefined} /></p>}
+                {(sn.outsideCityLimits?.note || sn.nearCityLimits?.note) && <p className="text-xs text-slate-500">Source: {[sn.outsideCityLimits?.note, sn.nearCityLimits?.note].filter(Boolean).join(' ')}</p>}
+              </div>
+            )}
           </>
         ) : (
           <p>We couldn’t look up the boundaries for this address just now. Usually it’s the city if the house is inside city limits, and the county if it isn’t. The county’s website can tell you which.</p>
@@ -163,13 +175,14 @@ const How: React.FC<SubProps & { answer: PermitAnswer }> = ({ state, update, set
         </div>
       )}
 
-      {(caveats || history || older) && (
+      {(caveats || history || older || sn?.olderRecordsLaw) && (
         <details className={card}>
           <summary className="cursor-pointer font-bold">Before you decide a permit is missing</summary>
           <div className="mt-3 space-y-3 text-sm">
             {caveats && <div><ul className="list-disc pl-5 space-y-1">{caveats.value.map((c) => <li key={c}>{c}</li>)}</ul><Status status={caveats.status} checkedOn={caveats.checkedOn} limits={'limits' in caveats ? caveats.limits : undefined} /></div>}
             {history && <div><b>Older records:</b><ul className="list-disc pl-5 mt-1 space-y-1">{history.value.map((h) => <li key={h.name}>{h.name} ({h.covers})</li>)}</ul><Status status={history.status} checkedOn={history.checkedOn} limits={'limits' in history ? history.limits : undefined} /></div>}
             {older && <p><b>How to get them:</b> {older.value}<Status status={older.status} checkedOn={older.checkedOn} limits={'limits' in older ? older.limits : undefined} /></p>}
+            {sn?.olderRecordsLaw && <p><b>Your right to ask in {sn.stateName}:</b> {sn.olderRecordsLaw.value}<Status status={sn.olderRecordsLaw.status} checkedOn={sn.olderRecordsLaw.checkedOn} limits={'limits' in sn.olderRecordsLaw ? sn.olderRecordsLaw.limits : undefined} /></p>}
           </div>
         </details>
       )}

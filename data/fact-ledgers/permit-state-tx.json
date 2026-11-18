@@ -1,0 +1,86 @@
+{
+  "_about": "Layer 1 state fact sheet, Texas (docs/plans/permit-coverage-usa-2026-11.md). Every sentence in data/permit-states/tx.json traces to a quote here. Read in the in-app browser at statutes.capitol.texas.gov, which says the statutes are current through the 89th Legislature, 2nd Called Session, 2025.",
+  "slug": "permit-state-tx",
+  "question": "Who keeps building permit records for a Texas house, and how does a buyer get older ones?",
+  "verdictConfirmed": "Inside city limits the city does. Outside them, county residential building rules exist only where a county opted in (Local Government Code ch. 233, subchapter F); even then the county cannot require approval before building and the builder hires the inspectors, so the paper trail may be the builder's inspection reports. Older records can be requested under the Public Information Act (Government Code ch. 552).",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "The county residential building rules apply only in counties that adopted them by resolution or order.",
+      "quote": "This subchapter applies only to a county that has adopted a resolution or order requiring the application of the provisions of this subchapter",
+      "url": "https://statutes.capitol.texas.gov/Docs/LG/htm/LG.233.htm",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "They cover a new single-family house or duplex on a vacant lot, and an addition that grows the house by more than 50 percent.",
+      "quote": "residential construction of a single-family house or duplex on a vacant lot; and (2) construction of an addition to an existing single-family house or duplex, if the addition will increase the square footage or value of the existing residential building by more than 50 percent.",
+      "url": "https://statutes.capitol.texas.gov/Docs/LG/htm/LG.233.htm",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "Only construction that began after September 1, 2009.",
+      "quote": "Standards required under this subchapter apply only to new residential construction that begins after September 1, 2009.",
+      "url": "https://statutes.capitol.texas.gov/Docs/LG/htm/LG.233.htm",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "The subchapter does not require county approval before building starts.",
+      "quote": "This subchapter may not be construed to: (1) require prior approval by the county before the beginning of new residential construction",
+      "url": "https://statutes.capitol.texas.gov/Docs/LG/htm/LG.233.htm",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "claim": "The builder contracts the inspections (foundation, framing and mechanical, completion) with a licensed engineer, registered architect, TREC-licensed inspector or others listed.",
+      "quote": "the builder: (A) is responsible for contracting to perform the inspections required by this subsection with: (i) a licensed engineer; (ii) a registered architect; (iii) a professional inspector licensed by the Texas Real Estate Commission;",
+      "url": "https://statutes.capitol.texas.gov/Docs/LG/htm/LG.233.htm",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "claim": "If the county requires it, the builder sends a notice of the final inspection result to the county and to the person the house was built for.",
+      "quote": "If required by the county, not later than the 10th day after the date of the final inspection under this section, the builder shall submit notice of the inspection stating whether or not the inspection showed compliance ... to: (1) the county employee, department, or agency designated by the commissioners court of the county to receive the information; and (2) the person for whom the new residential construction is being built, if different from the builder.",
+      "url": "https://statutes.capitol.texas.gov/Docs/LG/htm/LG.233.htm",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "f7",
+      "claim": "Where a city has adopted a building code for its extraterritorial jurisdiction, the city's code controls there and the county standards have no effect.",
+      "quote": "If a municipality located within a county to which this subchapter applies has adopted a building code in the municipality's extraterritorial jurisdiction, the building code adopted by the municipality controls and building code standards under this subchapter have no effect in the municipality's extraterritorial jurisdiction.",
+      "url": "https://statutes.capitol.texas.gov/Docs/LG/htm/LG.233.htm",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "f8",
+      "claim": "Texas policy: each person is entitled to complete information about the affairs of government, unless the law expressly says otherwise.",
+      "quote": "each person is entitled, unless otherwise expressly provided by law, at all times to complete information about the affairs of government and the official acts of public officials and employees.",
+      "url": "https://statutes.capitol.texas.gov/Docs/GV/htm/GV.552.htm",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    },
+    {
+      "id": "f9",
+      "claim": "The office must produce the records promptly; if it cannot within 10 business days, it must say so in writing and set a date.",
+      "quote": "An officer for public information of a governmental body shall promptly produce public information for inspection, duplication, or both on application by any person to the officer. ... If an officer for public information cannot produce public information for inspection or duplication within 10 business days after the date the information is requested under Subsection (a), the officer shall certify that fact in writing to the requestor and set a date and hour within a reasonable time when the information will be available",
+      "url": "https://statutes.capitol.texas.gov/Docs/GV/htm/GV.552.htm",
+      "readOn": "2026-11-18",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    { "claim": "Texas counties generally do not issue building permits for houses.", "why": "Too broad. The statute read limits only what subchapter F requires; other county permits (for example Harris County's, verified separately in data/permit-records/tx/48201-harris.json) exist under other law we have not read." },
+    { "claim": "Which Texas counties have adopted subchapter F.", "why": "No official statewide list found; would need each county's commissioners court order." },
+    { "claim": "Texas cities can or cannot enforce building codes in their ETJ.", "why": "Only the conditional 233.153(c) was read; the city-side statutes (Local Government Code ch. 212, 2023 ETJ release changes) not yet read." }
+  ],
+  "blockedSources": []
+}

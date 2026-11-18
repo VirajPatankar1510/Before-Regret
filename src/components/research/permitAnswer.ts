@@ -4,7 +4,7 @@
 //
 // Safe failure: any name that doesn't match falls back to the general route, never to a guessed office.
 
-import { authorityLabel, nameKeys, type PermitAuthority } from '../../data/permitRecords/authority';
+import { authorityLabel, nameKeys, stateOf, type PermitAuthority } from '../../data/permitRecords/authority';
 import { effectiveStatus, type Field, type FieldStatus } from '../../data/permitRecords/schema';
 
 export interface IndexJurisdiction {
@@ -21,7 +21,19 @@ interface IndexCounty {
   coverage: Field<unknown>;
   jurisdictions: IndexJurisdiction[];
 }
-export interface PermitIndex { schemaVersion: 1; counties: IndexCounty[] }
+interface IndexState { state: string; stateName: string; [field: string]: unknown }
+export interface PermitIndex { schemaVersion: 1; counties: IndexCounty[]; states?: Record<string, IndexState> }
+
+/** Layer 1 notes for this address's state, verified or partly verified only. */
+export interface StateNotes {
+  stateName: string;
+  /** Only for addresses outside any city or town (Census: county). */
+  outsideCityLimits: ShownField<string> | null;
+  outsideCityJobs: ShownField<string> | null;
+  nearCityLimits: ShownField<string> | null;
+  olderRecordsLaw: ShownField<string> | null;
+}
+export type ShownField<T> = Field<T> & { status: 'verified' | 'partially_verified' };
 
 let indexPromise: Promise<PermitIndex> | null = null;
 /** The index is ~130 KB of JSON, so it loads only when the permit question opens. */
@@ -42,6 +54,7 @@ export interface PermitAnswer {
   /** The record matched for this address before following the pointer (differs when a city is served by the county). */
   matched: IndexJurisdiction | null;
   guideSlug: string | null;
+  stateNotes: StateNotes | null;
 }
 
 /** A field the tool may show: verified or partly verified, and not past its re-check date. */
@@ -50,6 +63,22 @@ export function shown<T>(j: IndexJurisdiction | null, name: string): (Field<T> &
   if (!f) return null;
   const s: FieldStatus = effectiveStatus(f as Field<unknown>);
   return s === 'verified' || s === 'partially_verified' ? (f as Field<T> & { status: 'verified' | 'partially_verified' }) : null;
+}
+
+function stateNotesFor(index: PermitIndex, a: PermitAuthority): StateNotes | null {
+  const code = stateOf(a);
+  const sheet = code ? index.states?.[code] : undefined;
+  if (!sheet) return null;
+  const j = sheet as unknown as IndexJurisdiction;
+  const county = a.kind === 'county';
+  const notes: StateNotes = {
+    stateName: sheet.stateName,
+    outsideCityLimits: county ? shown<string>(j, 'outsideCityLimits') : null,
+    outsideCityJobs: county ? shown<string>(j, 'outsideCityJobs') : null,
+    nearCityLimits: county ? shown<string>(j, 'nearCityLimits') : null,
+    olderRecordsLaw: shown<string>(j, 'olderRecordsLaw'),
+  };
+  return notes.outsideCityLimits || notes.nearCityLimits || notes.olderRecordsLaw ? notes : null;
 }
 
 const WHOLE_COUNTY_KINDS = ['consolidated-city-county', 'borough'];
@@ -80,7 +109,10 @@ function levelOf(j: IndexJurisdiction | null): PermitLevel {
 }
 
 export function answerFor(index: PermitIndex, authority: PermitAuthority | null): PermitAnswer {
-  const base: PermitAnswer = { level: 'general', authority, officeLabel: authority ? authorityLabel(authority) : null, record: null, matched: null, guideSlug: null };
+  const base: PermitAnswer = {
+    level: 'general', authority, officeLabel: authority ? authorityLabel(authority) : null, record: null, matched: null, guideSlug: null,
+    stateNotes: authority ? stateNotesFor(index, authority) : null,
+  };
   if (!authority) return base;
   const county = index.counties.find((c) => c.countyFips === authority.countyFips);
   if (!county) return base;

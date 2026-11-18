@@ -211,3 +211,25 @@ export function checkField(path: string, name: string, f: Field<unknown> | undef
   if (f.status === 'outdated' && !f.reason?.trim()) p.push(`${path}.${name}: outdated must say why`);
   return p;
 }
+
+/**
+ * Layer 1: one fact sheet per state (data/permit-states/<st>.json), plan docs/plans/permit-coverage-usa-2026-11.md.
+ * Each value is the plain-English sentence the tool shows, traced to quoted facts in a ledger
+ * (data/fact-ledgers/permit-state-<st>.json). Same Field rules as a jurisdiction: only verified or
+ * partially verified values are ever shown.
+ */
+export interface StateSheet {
+  schemaVersion: 1;
+  state: string; // USPS code
+  stateName: string;
+  /** Shown when the address is outside any city or town (Census: county). Who, if anyone, permits houses there. */
+  outsideCityLimits: Field<string>;
+  /** The one-line version for an answer about a single job (roof, kitchen...). "{work}" is replaced with the job. */
+  outsideCityJobs: Field<string>;
+  /** Shown with outsideCityLimits: when a nearby city's rules reach past its limits. */
+  nearCityLimits: Field<string>;
+  /** Shown to every address in the state: the public-records law for older or missing permits. */
+  olderRecordsLaw: Field<string>;
+}
+
+export const STATE_FIELDS = ['outsideCityLimits', 'outsideCityJobs', 'nearCityLimits', 'olderRecordsLaw'] as const satisfies ReadonlyArray<keyof StateSheet>;

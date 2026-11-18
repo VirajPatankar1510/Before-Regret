@@ -40,6 +40,10 @@ export interface OfficeSnapshot {
   portalUrl: string | null;
   onlineFrom: string | null;
   level: PermitLevel;
+  /** Verified state note for addresses outside city limits (Layer 1 sheet), e.g. Texas builder inspections. */
+  outsideCityNote?: string | null;
+  /** The one-line version for a single job; "{work}" is replaced with the job's name. */
+  outsideCityJobNote?: string | null;
 }
 export interface PermitsState {
   stage: 'how' | 'record' | 'solved';
@@ -257,7 +261,13 @@ export function permitMeaning(k: PermitItemKey, a: PermitFinding | undefined, of
     const online = office?.onlineFrom ? ` Online records for this office start: ${office.onlineFrom}.` : ' Older records are often not online.';
     return {
       tone: 'ask',
-      text: `No permit online? That doesn’t mean they skipped it.${online} Ask the seller for the paperwork.`,
+      text: (() => {
+        // A new house or an addition is what the state notes describe in full; a single job gets the one-line version.
+        const whole = any || k === 'addition';
+        if (whole && office?.outsideCityNote) return `No permit online? That doesn’t mean they skipped it. ${office.outsideCityNote}`;
+        if (!whole && office?.outsideCityJobNote) return `No permit online? That doesn’t mean they skipped it. ${office.outsideCityJobNote.replace('{work}', w)}`;
+        return `No permit online? That doesn’t mean they skipped it.${online} Ask the seller for the paperwork.`;
+      })(),
       seller: any ? 'Has any work on the house been done with a permit? If so, can you share the permit numbers?' : `Was the ${w} done with a permit? If so, can you share the permit number or the contractor’s invoice?`,
       verify: any ? 'Permit paperwork for past work' : `Permit or paperwork for the ${w}`,
       found: 'No permit found online',
