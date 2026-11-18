@@ -157,7 +157,7 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
 
           <div className={`mt-5 flex flex-col gap-1 ${centred ? 'items-center' : 'items-center sm:items-start'}`}>
             {/* 2026-11-18 (owner): one line, owner's words; "No email. No account..." removed. */}
-            <p className="text-sm font-semibold text-white">100% Free. No Sign-Up Required.</p>
+            <p className="text-sm font-semibold italic text-white">100% Free. No Sign-Up Required.</p>
           </div>
         </div>
       </div>
