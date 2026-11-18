@@ -253,7 +253,7 @@ const Ring: React.FC<{ done: number; total: number }> = ({ done, total }) => {
 };
 
 function solvedLine(state: ResearchState, id: QuestionId): string {
-  if (id === 'era') return `${(state.era.picked || []).length} things on your list`;
+  if (id === 'era') return `${(state.era.picked || []).length} on your checklist`;
   if (id === 'permits') {
     const { permitRows } = collectFindings(state);
     const ask = permitRows.filter((r) => r.meaning.seller).length;
@@ -415,7 +415,7 @@ const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (pa
       <div className="h-1.5 rounded-full bg-home-linen overflow-hidden" role="progressbar" aria-valuemin={1} aria-valuemax={seq.length} aria-valuenow={step + 1} aria-label="Progress">
         <div className="h-full bg-home-moss transition-all" style={{ width: `${((step + 1) / seq.length) * 100}%` }} />
       </div>
-      {step === 0 && <p className="text-slate-600">Things worth checking on a house built in {year}, one at a time. Add the ones you want to your list.</p>}
+      {step === 0 && <p className="text-slate-600">Things worth checking on a house built in {year}, one at a time. The ones you add go on a checklist in your report, ready to share with your inspector or agent.</p>}
       <p className={eyebrow}>{label}</p>
       <h1 className="font-serif text-3xl sm:text-4xl font-semibold leading-tight [text-wrap:balance]">{item.title}</h1>
       <div className={`${card} space-y-4`}>
@@ -432,13 +432,18 @@ const EraView: React.FC<{ state: ResearchState; update: Updater; onNavigate: (pa
         </div>
       </div>
       {/* Pinned to the bottom so the choice is always on a phone's first screen, however long the item. */}
-      <div className="sticky bottom-0 z-10 -mx-4 sm:mx-0 px-4 sm:px-0 py-3 bg-home-stone/95 backdrop-blur grid grid-cols-2 gap-2.5">
+      {/* Owner, 2026-11-18: "Add to my list" left people asking which list and what it does. So: a plain question
+          that names where the item goes, and yes/no answers. */}
+      <div className="sticky bottom-0 z-10 -mx-4 sm:mx-0 px-4 sm:px-0 pt-2.5 pb-3 bg-home-stone/95 backdrop-blur space-y-2" role="group" aria-labelledby="era-q">
+        <p id="era-q" className="text-sm font-semibold text-center">Add this to the checklist in your report?</p>
+        <div className="grid grid-cols-2 gap-2.5">
         <button type="button" aria-pressed={on} onClick={() => decide(true)}
           className={`inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-2xl bg-home-ink text-white font-bold px-3 py-3.5 hover:bg-home-navy transition-colors cursor-pointer ${on ? 'ring-2 ring-home-moss ring-offset-2 ring-offset-home-stone' : ''}`}>
-          {on && <Check className="w-4 h-4" />}Add to my list
+          {on && <Check className="w-4 h-4" />}Yes, add it
         </button>
         <button type="button" onClick={() => decide(false)}
-          className="inline-flex items-center justify-center rounded-2xl border border-home-linen bg-white text-home-ink font-bold px-3 py-3.5 hover:border-home-oak transition-colors cursor-pointer">Skip</button>
+          className="inline-flex items-center justify-center rounded-2xl border border-home-linen bg-white text-home-ink font-bold px-3 py-3.5 hover:border-home-oak transition-colors cursor-pointer">No, skip it</button>
+        </div>
       </div>
       {step > 0 && <button type="button" className={linkBtn} onClick={() => update((s) => ({ era: { ...s.era, step: step - 1 } }))}>← Previous</button>}
       <p className="text-xs text-slate-500">From Before Regret’s inspection guide, the same one behind our free report. It describes homes of this age and area, not this particular house.</p>
@@ -534,7 +539,7 @@ export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolea
 
       {checklist.length > 0 && !compact && (
         <div className="space-y-2">
-          <h2 className="text-lg font-bold"><span className={`${eyebrow} block`}>Check</span>Your list for a house built in {p.yearBuilt}</h2>
+          <h2 className="text-lg font-bold"><span className={`${eyebrow} block`}>Check</span>Your checklist for a house built in {p.yearBuilt}</h2>
           <div className="space-y-2.5">
             {checklist.map((i) => (
               <div key={i.id} className="rounded-2xl border border-home-linen bg-white p-4 space-y-2 break-inside-avoid">
