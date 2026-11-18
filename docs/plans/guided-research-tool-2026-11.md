@@ -115,8 +115,8 @@ Third round (same day):
 - **Report:** "At a glance" (five "Answered" tags) and the CHECK/ASK/VERIFY labels removed. Now: "Not answered yet"
   (only if any), "What you found", the checklist, "Questions, ready to send", "To confirm before [date]".
 
-Still open: homepage two-button clarity. The labels and the hero line are the owner's words (2026-11-18), so this is
-a proposal for the owner, not a change.
+Homepage (owner approved): one short line under each hero button, "Step by step, with what to do next" and
+"Everything at once, in seconds" (quick report timed at 1.2-4.2s on the no-DB build, 2026-11-18). Labels unchanged.
 
 ## Publish gate
 

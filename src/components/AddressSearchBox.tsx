@@ -845,7 +845,11 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
             className="px-5 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
           >
             {isSearchingMap && intent === 'research' ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-            <span>Start research</span>
+            {/* Owner 2026-11-18: keep both labels, one short line under each so a first-timer can tell them apart. */}
+            <span className="flex flex-col items-center text-center leading-tight">
+              <span>Start research</span>
+              <span className="mt-0.5 text-xs font-medium text-blue-100">Step by step, with what to do next</span>
+            </span>
             <ArrowRight className="w-4 h-4 shrink-0" />
           </button>
           <button
@@ -855,7 +859,10 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
             className="px-5 py-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-900 font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
           >
             {isSearchingMap && intent === 'quick' ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-            <span>Generate quick report</span>
+            <span className="flex flex-col items-center text-center leading-tight">
+              <span>Generate quick report</span>
+              <span className="mt-0.5 text-xs font-medium text-slate-500">Everything at once, in seconds</span>
+            </span>
             <ArrowRight className="w-4 h-4 shrink-0" />
           </button>
         </div>

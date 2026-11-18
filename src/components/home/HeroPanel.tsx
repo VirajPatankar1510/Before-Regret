@@ -148,8 +148,8 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  <div className="rounded-xl bg-blue-600 px-5 py-3.5 text-sm font-bold text-white text-center">Start research</div>
-                  <div className="rounded-xl bg-white border border-slate-300 px-5 py-3.5 text-sm font-bold text-slate-900 text-center">Generate quick report</div>
+                  <div className="rounded-xl bg-blue-600 px-5 py-3.5 text-sm font-bold text-white text-center leading-tight">Start research<span className="block mt-0.5 text-xs font-medium text-blue-100">Step by step, with what to do next</span></div>
+                  <div className="rounded-xl bg-white border border-slate-300 px-5 py-3.5 text-sm font-bold text-slate-900 text-center leading-tight">Generate quick report<span className="block mt-0.5 text-xs font-medium text-slate-500">Everything at once, in seconds</span></div>
                 </div>
               </div>
             )}
