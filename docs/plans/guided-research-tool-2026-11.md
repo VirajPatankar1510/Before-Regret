@@ -73,6 +73,14 @@ Owner's flagship idea. Prototype: https://claude.ai/artifact/6ma9YB48uexEnNEnDdk
    for every question, `research_report_done` sent once, no sideways scroll at 375px. Fix from it: the report's checklist
    now falls back to the era screen's default picks. **Left: the owner's own walk-through, then "publish".**
 
+## Published
+
+**Live 2026-11-18** (owner: "publish it"), commit c5ff773: the tool, the two hero buttons and the simplified homepage.
+Checked live: /api/health ok, hero lines and both buttons in the homepage HTML, /tools/house-research/ 200 and noindex,
+no console errors, address lookup 200 in under 1s (one 25s timeout on the first request after the switch-over, not seen
+again in 7 tries). Baseline: zero research-funnel rows before launch. **READ 2026-12-16** with
+`npx tsx scripts/cta-click-report.ts 28`: where do visitors stop between choose_research and research_report_done?
+
 ## Publish gate
 
 Only when the owner has tried stages 1 to 3 end to end and says "publish". Then: build, push the branch's commits, verify live, record the baseline and set the read date (28 days, tracked separately from search traffic).
