@@ -64,7 +64,7 @@
           "quirks": [
             "No account needed",
             "Site address is street number plus street name",
-            "Contractor licence search too"
+            "Contractor license search too"
           ]
         },
         "sourceUrl": "https://aca-prod.accela.com/SACRAMENTO/Cap/CapHome.aspx?module=Building&TabName=Building",

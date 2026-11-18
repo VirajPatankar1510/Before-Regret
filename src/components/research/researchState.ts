@@ -52,6 +52,8 @@ export interface PermitsState {
   /** Census lookup result, cached on the device; undefined = not looked up yet, null = lookup failed. */
   authority?: PermitAuthority | null;
   office: OfficeSnapshot | null;
+  /** Screen within the stage: in 'how', 0 = who keeps the permits, 1 = where to search; in 'record', the job index. */
+  step?: number;
 }
 
 /** Stage 3 questions (missions.ts): which step, and the visitor's picks per record question. */

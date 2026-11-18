@@ -85,7 +85,7 @@ export const HouseResearchTool: React.FC<Props> = ({ onNavigate, onQuickReport }
     setState((s) => (s ? { ...s, ...(typeof patch === 'function' ? patch(s) : patch) } : s));
 
   // Each screen starts at the top, like a new page would.
-  const viewKey = state ? `${state.view}-${state.setupStep}-${state.era.solved}-${state.era.step}-${state.permits.stage}-${MISSION_IDS.map((m) => state.missions?.[m]?.stage || '').join('')}` : 'start';
+  const viewKey = state ? `${state.view}-${state.setupStep}-${state.era.solved}-${state.era.step}-${state.permits.stage}-${state.permits.step}-${MISSION_IDS.map((m) => state.missions?.[m]?.stage || '').join('')}` : 'start';
   useEffect(() => { window.scrollTo(0, 0); }, [viewKey]);
 
   if (state?.view === 'final') {
