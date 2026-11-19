@@ -46,6 +46,17 @@ interface Block { slug: string; fips: string; heading: string; prose: (c: any, f
 const n = (x: number) => x.toLocaleString('en-US');
 /** "down 35.3%" / "up 9.4%" — direction in words, so the sentence reads as prose not a readout. */
 const dir = (p: number) => (p < 0 ? `down ${Math.abs(p)}%` : `up ${p}%`);
+const ORDINAL = ['', '', 'second', 'third', 'fourth', 'fifth', 'sixth'];
+/**
+ * The counties that have a block on this site, read from the run's own data. Refresh 2026-11-19: four blocks
+ * carried comparatives written against the July data -- "more housing than anywhere else in this comparison"
+ * (Harris), "the steepest decline ... in this set" (Maricopa), "the weakest reporting county in this group"
+ * (Riverside) -- and two carried directions ("runs against the national pattern", Dallas; "more than doubled",
+ * Los Angeles). By September, three of the five were false. Each is now computed or gated, as Broward's already was.
+ */
+const blockSet = (f: any) => BLOCKS.map((b) => f.counties.find((x: any) => x.fips === b.fips)).filter(Boolean);
+const rankIn = (f: any, c: any, key: string, asc = false) =>
+  1 + blockSet(f).filter((x: any) => (asc ? x[key] < c[key] : x[key] > c[key])).length;
 
 /**
  * Peer counts, computed from the run's own data rather than asserted.
@@ -65,7 +76,7 @@ const BLOCKS: Block[] = [
   {
     slug: 'check-building-permits-miami-dade-county-fl', fips: '12086',
     heading: 'What Miami-Dade Is Permitting Right Now',
-    prose: (c) => `Miami-Dade's residential permitting has fallen sharply, but almost none of that is houses. Total permitted units are ${dir(c.unitsChangePct)} year over year, from ${n(c.unitsPrior)} to ${n(c.unitsCurrent)} — and the apartment side accounts for essentially all of it, ${dir(c.mfChangePct)} to ${n(c.mfCurrent)} units. Single-family permits went from ${n(c.sfPrior)} to ${n(c.sfCurrent)}, a difference of ${n(Math.abs(c.sfPrior - c.sfCurrent))} homes. If you are searching records on a single-family property here, the county's headline slowdown is not really about your market.`,
+    prose: (c) => `Miami-Dade's residential permitting has fallen sharply, but almost none of that is houses. Total permitted units are ${dir(c.unitsChangePct)} year over year, from ${n(c.unitsPrior)} to ${n(c.unitsCurrent)} — and the apartment side accounts for essentially all of it, ${dir(c.mfChangePct)} to ${n(c.mfCurrent)} units. ${c.sfPrior === c.sfCurrent ? `Single-family permits are unchanged, at ${n(c.sfCurrent)}.` : `Single-family permits went from ${n(c.sfPrior)} to ${n(c.sfCurrent)}, a difference of ${n(Math.abs(c.sfPrior - c.sfCurrent))} homes.`} If you are searching records on a single-family property here, the county's headline slowdown is not really about your market.`,
   },
   {
     slug: 'check-building-permits-cook-county-il', fips: '17031',
@@ -88,12 +99,22 @@ const BLOCKS: Block[] = [
   {
     slug: 'check-building-permits-dallas-county-tx', fips: '48113',
     heading: 'What Dallas County Is Permitting Right Now',
-    prose: (c) => `Dallas County runs against the national pattern. Nationally, house permits are falling while apartments rise; here it is the reverse — single-family permits are ${dir(c.sfChangePct)}, from ${n(c.sfPrior)} to ${n(c.sfCurrent)}, while multifamily is ${dir(c.mfChangePct)} to ${n(c.mfCurrent)}. The county total is ${dir(c.unitsChangePct)}, which makes Dallas look flat from the outside while the house market underneath it grew.`,
+    prose: (c, f) => {
+      const nat = f.national;
+      const nationalPattern = nat.singleFamily.changePct < 0 && nat.multifamily.changePct > 0;
+      const reverse = nationalPattern && c.sfChangePct > 0 && c.mfChangePct < 0;
+      const same = nationalPattern && c.sfChangePct < 0 && c.mfChangePct > 0;
+      if (reverse) return `Dallas County runs against the national pattern. Nationally, house permits are falling while apartments rise; here it is the reverse — single-family permits are ${dir(c.sfChangePct)}, from ${n(c.sfPrior)} to ${n(c.sfCurrent)}, while multifamily is ${dir(c.mfChangePct)} to ${n(c.mfCurrent)}. The county total is ${dir(c.unitsChangePct)}, which makes Dallas look flat from the outside while the house market underneath it grew.`;
+      const lead = same
+        ? `Dallas County is following the national pattern this year: house permits ${dir(c.sfChangePct)}, from ${n(c.sfPrior)} to ${n(c.sfCurrent)}, and apartments ${dir(c.mfChangePct)}, to ${n(c.mfCurrent)} units.`
+        : `In Dallas County, single-family permits are ${dir(c.sfChangePct)}, from ${n(c.sfPrior)} to ${n(c.sfCurrent)}, and multifamily is ${dir(c.mfChangePct)} to ${n(c.mfCurrent)} units.`;
+      return `${lead} The county total is ${dir(c.unitsChangePct)}, at ${n(c.unitsCurrent)}. Apartments are now ${Math.round((100 * c.mfCurrent) / c.unitsCurrent)}% of what Dallas County permits, so the total says more about apartment projects than about the houses a buyer here is comparing.`;
+    },
   },
   {
     slug: 'check-harris-county-permit-history-before-buying', fips: '48201',
     heading: 'What Harris County Is Permitting Right Now',
-    prose: (c) => `Harris County permits more housing than anywhere else in this comparison — ${n(c.unitsCurrent)} units so far this year — so the direction matters. The total is ${dir(c.unitsChangePct)}, and the split explains it: multifamily is ${dir(c.mfChangePct)}, to ${n(c.mfCurrent)} units, while single-family held far steadier at ${n(c.sfCurrent)}, ${dir(c.sfChangePct)} from ${n(c.sfPrior)}. Houses are still roughly ${Math.round((100 * c.sfCurrent) / c.unitsCurrent)}% of everything permitted in the county.`,
+    prose: (c, f) => `Harris County ${rankIn(f, c, 'unitsCurrent') === 1 ? 'permits more housing than anywhere else in this comparison' : `permits the ${ORDINAL[rankIn(f, c, 'unitsCurrent')] || 'most'} most housing in this comparison`} — ${n(c.unitsCurrent)} units so far this year — so the direction matters. The total is ${dir(c.unitsChangePct)}, and the split explains it: multifamily is ${dir(c.mfChangePct)}, to ${n(c.mfCurrent)} units, while single-family held far steadier at ${n(c.sfCurrent)}, ${dir(c.sfChangePct)} from ${n(c.sfPrior)}. Houses are still roughly ${Math.round((100 * c.sfCurrent) / c.unitsCurrent)}% of everything permitted in the county.`,
   },
   {
     slug: 'check-building-permits-tarrant-county-tx', fips: '48439',
@@ -108,7 +129,7 @@ const BLOCKS: Block[] = [
   {
     slug: 'check-building-permits-los-angeles-county-ca', fips: '06037',
     heading: 'What Los Angeles County Is Permitting Right Now',
-    prose: (c) => `Los Angeles County's permit total is ${dir(c.unitsChangePct)} this year, to ${n(c.unitsCurrent)} units, and almost none of that is houses. Multifamily permits more than doubled, ${dir(c.mfChangePct)} to ${n(c.mfCurrent)} units, while single-family moved from ${n(c.sfPrior)} to ${n(c.sfCurrent)} — ${dir(c.sfChangePct)}, which at this scale is flat. Anyone quoting the county's ${c.unitsChangePct}% rise as evidence of a housing rebound is describing apartment construction.`,
+    prose: (c) => `Los Angeles County's permit total is ${dir(c.unitsChangePct)} this year, to ${n(c.unitsCurrent)} units, and almost none of that is houses. Multifamily permits ${c.mfChangePct >= 100 ? 'more than doubled' : 'rose'}, ${dir(c.mfChangePct)} to ${n(c.mfCurrent)} units, while single-family moved from ${n(c.sfPrior)} to ${n(c.sfCurrent)} — ${Math.abs(c.sfChangePct) < 1 ? 'essentially unchanged' : `${dir(c.sfChangePct)}, which at this scale is flat`}. Anyone quoting the county's ${c.unitsChangePct}% rise as evidence of a housing rebound is describing apartment construction.`,
   },
   {
     slug: 'check-building-permits-san-diego-county-ca', fips: '06073',
@@ -118,7 +139,7 @@ const BLOCKS: Block[] = [
   {
     slug: 'check-building-permits-maricopa-county-az', fips: '04013',
     heading: 'What Maricopa County Is Permitting Right Now',
-    prose: (c) => `Maricopa County has the steepest decline in single-family permitting of any county in this set: ${dir(c.sfChangePct)}, from ${n(c.sfPrior)} to ${n(c.sfCurrent)} homes, a drop of ${n(c.sfPrior - c.sfCurrent)}. Multifamily fell further in percentage terms, ${dir(c.mfChangePct)} to ${n(c.mfCurrent)}, taking the county total ${dir(c.unitsChangePct)}. Maricopa has been one of the largest new-build markets in the country, which is exactly why a fall of this size in house permits is worth noting before you read a permit history here.`,
+    prose: (c, f) => `${rankIn(f, c, 'sfChangePct', true) === 1 && c.sfChangePct < 0 ? 'Maricopa County has the steepest decline in single-family permitting of any county in this set' : 'Maricopa County\'s single-family permitting has moved'}: ${dir(c.sfChangePct)}, from ${n(c.sfPrior)} to ${n(c.sfCurrent)} homes, ${c.sfPrior >= c.sfCurrent ? `a drop of ${n(c.sfPrior - c.sfCurrent)}` : `a rise of ${n(c.sfCurrent - c.sfPrior)}`}. ${c.mfChangePct < c.sfChangePct ? 'Multifamily fell further in percentage terms' : c.mfChangePct < 0 ? 'Multifamily fell less' : 'Multifamily went the other way'}, ${dir(c.mfChangePct)} to ${n(c.mfCurrent)}, taking the county total ${dir(c.unitsChangePct)}. Maricopa has been one of the largest new-build markets in the country, which is exactly why a fall of this size in house permits is worth noting before you read a permit history here.`,
   },
   {
     // Added 2026-10-02 with the guide. Its distinctive fact is the split: houses and apartments in
@@ -129,7 +150,7 @@ const BLOCKS: Block[] = [
     prose: (c) => {
       const even = Math.abs(c.sfCurrent - c.mfCurrent) / c.unitsCurrent < 0.05;
       const lead = even
-        ? `Hillsborough County is permitting houses and apartments in almost exactly equal numbers this year: ${n(c.sfCurrent)} single-family units against ${n(c.mfCurrent)} multifamily.`
+        ? `Hillsborough County is permitting houses and apartments in close to equal numbers this year: ${n(c.sfCurrent)} single-family units against ${n(c.mfCurrent)} multifamily.`
         : `Single-family homes are ${Math.round((100 * c.sfCurrent) / c.unitsCurrent)}% of everything Hillsborough County has permitted this year: ${n(c.sfCurrent)} units, against ${n(c.mfCurrent)} multifamily.`;
       return `${lead} Compared with the same months last year, houses are ${dir(c.sfChangePct)} from ${n(c.sfPrior)} and apartments ${dir(c.mfChangePct)} from ${n(c.mfPrior)}, for a county total ${dir(c.unitsChangePct)}, ${n(c.unitsPrior)} to ${n(c.unitsCurrent)} units. Neither side of the market is moving the county figure on its own, so a countywide number here says about as much about one as the other.`;
     },
@@ -137,7 +158,7 @@ const BLOCKS: Block[] = [
   {
     slug: 'check-building-permits-riverside-county-ca', fips: '06065',
     heading: 'What Riverside County Is Permitting Right Now',
-    prose: (c) => `Riverside County's apartment pipeline has largely emptied out — multifamily permits are ${dir(c.mfChangePct)}, from ${n(c.mfPrior)} units to ${n(c.mfCurrent)}. Single-family has been far more stable, ${dir(c.sfChangePct)} at ${n(c.sfCurrent)} units, and now accounts for about ${Math.round((100 * c.sfCurrent) / c.unitsCurrent)}% of everything permitted in the county. The total is ${dir(c.unitsChangePct)}. Riverside is also the weakest reporting county in this group, so treat the figures as close rather than exact.`,
+    prose: (c, f) => `Riverside County's apartment pipeline has largely emptied out — multifamily permits are ${dir(c.mfChangePct)}, from ${n(c.mfPrior)} units to ${n(c.mfCurrent)}. Single-family has been far more stable, ${dir(c.sfChangePct)} at ${n(c.sfCurrent)} units, and now accounts for about ${Math.round((100 * c.sfCurrent) / c.unitsCurrent)}% of everything permitted in the county. The total is ${dir(c.unitsChangePct)}. Riverside is also the ${rankIn(f, c, 'reportedShare', true) === 1 ? 'weakest' : `${ORDINAL[rankIn(f, c, 'reportedShare', true)] || 'one of the'}-weakest`} reporting county in this group, so treat the figures as close rather than exact.`,
   },
   {
     // Added 2026-10-03 with batch A. Brooklyn's distinctive figure is the ratio: almost every permitted

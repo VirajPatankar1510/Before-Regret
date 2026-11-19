@@ -43,6 +43,20 @@ const dirWord = (x: number) => (x < 0 ? 'fell' : 'rose');
 
 const nat = f.national;
 const size = nat.bySize as Array<{ label: string; prior: number; current: number; changePct: number }>;
+
+// Refresh 2026-11-19 (Jan-Sep data): three sentences below were written when the total ROSE (+0.1% through July) and
+// stopped being true once it fell (-0.5%): "The fourth cancelled them", "more than enough to offset the N houses", and
+// a standfirst that printed last year's figure before this year's. They now follow the data. The page's whole
+// framing is "flat on top", so a total that moves 1% or more either way stops the run for a rewrite instead.
+if (Math.abs(nat.all.changePct) >= 1) {
+  throw new Error(`ABORT: total permits ${nat.all.changePct}% -- the "flat on top" framing no longer holds; rewrite the headline first`);
+}
+const apartmentsGained = size[3].current - size[3].prior;
+const housesLost = size[0].prior - size[0].current;
+const cancelledWord = nat.all.changePct >= 0 ? 'cancelled them' : 'almost cancelled them';
+const offsetLine = apartmentsGained >= housesLost
+  ? `which is more than enough to offset the ${num(housesLost)} houses that were not permitted this year`
+  : `against ${num(housesLost)} fewer houses: most of the drop, but not all of it`;
 const fell = size.filter((s) => s.changePct < 0);
 const rose = size.filter((s) => s.changePct > 0);
 
@@ -223,7 +237,7 @@ ${LOOKUP_CSS}
   <p class="kicker">Monthly index &middot; US Census Building Permits Survey &middot; year to date through ${period} ${year}</p>
   <h1>Flat on top, falling underneath</h1>
   <p class="standfirst">American residential building permits are almost exactly level with last
-  year &mdash; ${num(nat.all.prior)} units against ${num(nat.all.current)}, a change of
+  year &mdash; ${num(nat.all.current)} units against ${num(nat.all.prior)}, a change of
   ${sgn(nat.all.changePct!)}. That number is a composite of two opposite movements, and it is the
   only one most people will read. Three of the four categories the Census Bureau counts
   ${dirWord(-1)}. The one that rose is apartment buildings.</p>
@@ -248,16 +262,14 @@ ${LOOKUP_CSS}
   </section>
 
   <h2>Houses against apartments</h2>
-  <h3>Three of the four categories fell. The fourth cancelled them.</h3>
+  <h3>Three of the four categories fell. The fourth ${cancelledWord}.</h3>
   ${chartSvg}
   <p class="cap">Change in permitted units by structure size, year to date through ${period}, ${priorYear} against ${year}. Source: US Census Bureau, Building Permits Survey.</p>
   <p>Single-family permits are ${sgn(size[0].changePct)}, from ${num(size[0].prior)} to
   ${num(size[0].current)} units. Two-unit buildings are ${sgn(size[1].changePct)}; three- and
   four-unit buildings ${sgn(size[2].changePct)}. Only buildings of five units or more &mdash; the
   multifamily category &mdash; rose, by
-  ${sgn(size[3].changePct)}: ${num(size[3].current - size[3].prior)} additional units, which
-  is more than enough to offset the ${num(size[0].prior - size[0].current)} houses that were not
-  permitted this year.</p>
+  ${sgn(size[3].changePct)}: ${num(apartmentsGained)} additional units, ${offsetLine}.</p>
   <div class="finding"><p>A year in which three of four construction categories declined reports as
   ${sgn(nat.all.changePct!)} and is described as flat. The composite is not wrong. It is just not
   about houses.</p></div>
