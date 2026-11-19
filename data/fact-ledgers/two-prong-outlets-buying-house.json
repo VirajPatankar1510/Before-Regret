@@ -1,0 +1,82 @@
+{
+  "_status": "DRAFTED 2026-11-19 -- guides/two-prong-outlets-buying-house.md; awaiting owner review, not published.",
+  "slug": "two-prong-outlets-buying-house",
+  "question": "A house I'm buying has two-prong outlets. What does that mean for the inspection, insurance and what I should ask before closing?",
+  "verdictConfirmed": "Two-prong outlets mean the outlet has no ground connection; the wiring behind it may or may not have a ground path. Current code (IRC E4002.2) requires grounding-type receptacles on 15/20 A circuits. What matters for the buyer: what is behind the wall (knob and tube or not), what the inspector or 4-point form records ('Improper grounding', wiring type), and an electrician's written quote. Adapters only work where the box is grounded.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Florida's Citizens 4-point inspection form (Insp4pt 03 25), which a Florida-licensed inspector completes for insurance on older homes, lists 'Improper grounding' as a checkbox under Electrical 'Hazards Present'.",
+      "quote": "Hazards Present Double taps Blowing fuses Exposed wiring Tripping breakers Unsafe wiring Empty sockets Improper breaker size Loose wiring Scorching Improper grounding Other (explain) Corrosion Over fusing",
+      "url": "https://www.citizensfla.com/documents/20702/48575/4-Point+Inspection+Form.pdf/e8c41965-f225-37fc-b451-4d360ee30b77",
+      "readOn": "2026-11-19",
+      "method": "pdf"
+    },
+    {
+      "id": "f2",
+      "claim": "The same form asks the inspector to tick the wiring type, with knob-and-tube listed as a separate box from NM, BX or conduit.",
+      "quote": "Wiring Type(s) Copper Copper Clad AL NM, BX or Conduit Single Strand AL Cloth (Knob & Tube) Other Multistrand AL Cloth Jacket Rubber Insulated",
+      "url": "https://www.citizensfla.com/documents/20702/48575/4-Point+Inspection+Form.pdf/e8c41965-f225-37fc-b451-4d360ee30b77",
+      "readOn": "2026-11-19",
+      "method": "pdf"
+    },
+    {
+      "id": "f3",
+      "claim": "The form says the insurer's underwriting relies on it to decide insurability. (Describe the form only; never write that a named insurer declines, refuses or requires anything.)",
+      "quote": "Be advised that Underwriting will rely on the information in this sample form, or a similar form, that is obtained from the Florida licensed professional of your choice. This information only is used to determine insurability",
+      "url": "https://www.citizensfla.com/documents/20702/48575/4-Point+Inspection+Form.pdf/e8c41965-f225-37fc-b451-4d360ee30b77",
+      "readOn": "2026-11-19",
+      "method": "pdf"
+    },
+    {
+      "id": "f4",
+      "claim": "Knob-and-tube wiring has no ground conductor; the report engine applies this to houses built up to 1955, with a rewire cost of $8,000 - $30,000+.",
+      "quote": "minYear 1800, maxYear 1955 ... It has no ground conductor ... typicalRepairCost: 'Partial to whole-home rewire $8,000 – $30,000+'",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES knob_and_tube) -- read at publish time, never retyped",
+      "readOn": "2026-11-19",
+      "method": "engine"
+    },
+    {
+      "id": "f5",
+      "claim": "Under the 2021 International Residential Code, receptacles installed on 15- and 20-amp branch circuits must be the grounding (three-prong) type; the IRC brackets this to NEC 406.4(A).",
+      "quote": "E4002.2 Grounding type. Receptacles installed on 15- and 20-ampere-rated branch circuits shall be of the grounding type. [406.4(A)]",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-40-devices-and-luminaires",
+      "readOn": "2026-11-19",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "claim": "A 2-to-3 prong grounding adapter is made for a two-slot outlet whose box is grounded: CPSC's 1997 recall notice quotes the adapter's printed warning to connect the tab to a grounded screw, and the package saying it is for a 2-slot grounded outlet.",
+      "quote": "The adapter plugs are used to connect a three-pronged electrical plug into a two-slot grounded outlet. ... imprinted into the rubber, \"CAUTION...CONNECT TAB TO GROUNDED SCREW...CHINA...15A...125V.\" ... \"3 PK...GROUNDING ADAPTER PLUG...For connection of 3 pronged plug to a 2 slot grounded outlet...UL LISTED...\"",
+      "url": "https://www.cpsc.gov/Recalls/1997/cpsc-dollar-tree-stores-inc-recall-adapter-plug-packs",
+      "readOn": "2026-11-19",
+      "method": "browser"
+    },
+    {
+      "id": "f7",
+      "claim": "That 1997 recall covered about 60,000 adapter packs falsely marked as UL listed, with fire and shock hazards from improper construction (recall number 97-066).",
+      "quote": "recalling about 60,000 adapter plug packs. The adapters were incorrectly identified as being listed with Underwriters Laboratories. The adapters present potential fire and shock hazards due to improper construction. ... Recall number: 97-066",
+      "url": "https://www.cpsc.gov/Recalls/1997/cpsc-dollar-tree-stores-inc-recall-adapter-plug-packs",
+      "readOn": "2026-11-19",
+      "method": "browser"
+    }
+  ],
+  "toVerify": [
+    "NEC 406.4(D)(2) replacement options: NOT verified at a primary source (NFPA needs an account; Michigan's adoption was rescinded 8/29/2025; IRC 2021 ch. 40 has no replacement section). Do not cite 406.4(D) by number. Say the code allows specific replacements and LINK to #235, which explains them.",
+    "Our own Bing query (2026-11-10 capture): 'what's the difference between an open ground and using a 2 to 3 prong adapter' -- first-party evidence of the question, label as ours, never as volume."
+  ],
+  "cut": [
+    {
+      "claim": "The 1962 NEC first required grounding-type receptacles on 15/20 A circuits",
+      "why": "secondary only (Mike Holt / ECN forums), and those sources disagree on 1962 vs 1975; no primary code text reached"
+    },
+    {
+      "claim": "CPSC recommends replacing two-prong outlets with GFCIs",
+      "why": "seen only on an unreliable site, not found on cpsc.gov"
+    }
+  ],
+  "blockedSources": [
+    "codes.iccsafe.org refused WebFetch (403) but reads in the in-app browser after declining non-essential cookies; read 2026-11-19"
+  ],
+  "overlapNotes": "#235 already has 'How to Fix an Open Ground Outlet' (rewire / GFCI + 'No Equipment Ground' / two-prong replacement). #266, #288, #7, #55 mention two-prong outlets in passing; none owns the subject. This page must own 'the house HAS two-prong outlets' (buyer decision, inspection and insurance-form language, adapters), and link to #235 for the repair options rather than restating them."
+}

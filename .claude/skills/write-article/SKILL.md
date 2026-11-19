@@ -101,7 +101,7 @@ internet, it is low-effort. Explain details or edge cases if we need to dive dee
 - **Insurers:** never name an insurer beside an underwriting verb; never write "most carriers…".
 - **Report claims:** never imply the report knows facts about a specific house. Reports are area-based.
 - **Owner titles:** an owner-given title is used word for word. If it breaks a budget, ask, with the tradeoff.
-- **Existing pages:** never change a published slug. Never edit an existing page without the owner's OK. That includes adding links to it.
+- **Grow by adding, never by fixing (owner, 2026-11-19):** "don't fix already existing pages. add new pages." Topical authority comes from NEW pages next to the ones that already rank, each owning an intent the old page doesn't. Don't propose sections, rewrites, title tests or inbound links for published guides. A new page may link out to them in its own prose. Never change a published slug. If you find a factual error on an existing page, report it with the evidence and don't fix it unasked.
 - **Contractors** are an audience too. They advertise and they link.
 
 ---
@@ -151,7 +151,7 @@ Write nothing without `APPLY=true`.
 4. Commit and push.
 5. Wait for the deploy, then check `/api/health`, the live page (title, FAQ schema) and `faq-verify-live.ts`.
 6. Notify Bing through IndexNow.
-7. Run `suggest-inbound-links.ts`. It suggests only; editing an existing page needs the owner's OK.
+7. Optional: `suggest-inbound-links.ts`, as a report only. Existing pages are not edited to add links (owner, 2026-11-19).
 8. Give the owner the link, and ask them to request indexing in Search Console.
 
 **7. Measure.** Put the read date (about 5 weeks out) and the stop condition in the script header and in memory.

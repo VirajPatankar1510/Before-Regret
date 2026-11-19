@@ -1,0 +1,72 @@
+{
+  "_status": "DRAFTED 2026-11-19 -- guides/pushmatic-panel-buying-house.md; awaiting owner review, not published.",
+  "slug": "pushmatic-panel-buying-house",
+  "question": "The house I'm buying has a Pushmatic panel. Is that a problem, and what do I do before closing?",
+  "verdictConfirmed": "Not a recalled product: CPSC's recall database has no Pushmatic record. The real questions are the panel's age and condition, and whether YOUR insurer accepts it -- get that answer in writing. Replacement breakers are still sold, so 'no parts' is not a reason on its own.",
+  "facts": [
+    {
+      "id": "p1",
+      "claim": "CPSC's public recall database returns no records for Pushmatic (we queried it on 2026-11-19). The same query for Challenger returns Challenger's 1988 GFCI breaker replacement program, which shows the search works.",
+      "quote": "GET https://www.saferproducts.gov/RestWebServices/Recall?format=json&ProductName=pushmatic -> 0 records; RecallTitle=pushmatic -> 0 records; ProductName=challenger -> 3 records incl. 1988-11-12 'Challenger Electrical Equipment Corp. Offers Replacement Program For 9000 GFCI C...'",
+      "url": "https://www.saferproducts.gov/RestWebServices/Recall?format=json&ProductName=pushmatic",
+      "readOn": "2026-11-19",
+      "method": "webfetch (our own API query; first-party observation)"
+    },
+    {
+      "id": "p2",
+      "claim": "Replacement breakers for Pushmatic panels are still sold: Connecticut Electric's UBIP line, described as classified for use in Pushmatic and Bulldog load centers, ETL listed.",
+      "quote": "Classified for use in Pushmatic and Bulldog load centers. ... Connecticut Electric replacement circuit breaker for Pushmatic circuit breakers. ... ETL Listed.",
+      "url": "https://dale-electric.com/products/UBIP120",
+      "readOn": "2026-11-19",
+      "method": "webfetch"
+    },
+    {
+      "id": "p3",
+      "claim": "Florida's Citizens 4-point inspection form (Insp4pt 03 25) records the main panel's brand/model, panel age and year last updated, and says underwriting relies on the form to determine insurability. Describe the form; never write that a named insurer declines anything. The same form's Electrical 'Hazards Present' checklist includes scorching, corrosion and tripping breakers.",
+      "quote": "Panel age: ... Year last updated: ... Brand/Model: ... Be advised that Underwriting will rely on the information in this sample form ... This information only is used to determine insurability ... Hazards Present Double taps Blowing fuses Exposed wiring Tripping breakers Unsafe wiring Empty sockets Improper breaker size Loose wiring Scorching Improper grounding Other (explain) Corrosion Over fusing",
+      "url": "https://www.citizensfla.com/documents/20702/48575/4-Point+Inspection+Form.pdf/e8c41965-f225-37fc-b451-4d360ee30b77",
+      "readOn": "2026-11-19",
+      "method": "pdf"
+    },
+    {
+      "id": "p4",
+      "claim": "The report engine's panel-brand rule applies to houses built 1950-1989 and prices a panel replacement at $1,500 - $4,000.",
+      "quote": "id 'electrical_panel_brand', minYear 1950, maxYear 1989, typicalRepairCost 'Panel replacement $1,500 – $4,000'",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES) -- read at publish time, never retyped",
+      "readOn": "2026-11-19",
+      "method": "engine"
+    },
+    {
+      "id": "p5",
+      "claim": "Pushmatic breakers are push buttons rather than toggle switches; the label may say Pushmatic, Bulldog or I-T-E.",
+      "quote": "These are the easiest to spot: instead of toggle switches, the breakers are rectangular push buttons. The label may say Pushmatic, Bulldog or I-T-E.",
+      "url": "/guides/identify-electrical-panel-brand/ (our guide #321) -- link to it; don't repeat its identification section",
+      "readOn": "2026-11-19",
+      "method": "engine"
+    }
+  ],
+  "firstPartyQueryEvidence": "Bing (our site, 2026-11-10 capture): 'how to identify pushmatic panel model number'. Label as a question people asked us, never as volume.",
+  "cut": [
+    {
+      "claim": "Pushmatic breakers stiffen / fail to trip with age",
+      "why": "inspector blogs and forums only (InspectAPedia, homeinspectorpro, inspectorsjournal); no primary source"
+    },
+    {
+      "claim": "A named carrier lists Pushmatic as ineligible",
+      "why": "help.openly.com page is behind an agent login in the browser (WebFetch 403); search snippet only -- not usable, and the carrier rule forbids naming it anyway"
+    },
+    {
+      "claim": "Another carrier's guide omits Pushmatic",
+      "why": "MSI 2025 guide is a new-construction 'Builder Program' (not comparable to old panels) and its text did not extract reliably"
+    },
+    {
+      "claim": "Pushmatic history (Bulldog, I-T-E, Siemens trademark)",
+      "why": "secondary only so far; USPTO record not read"
+    }
+  ],
+  "blockedSources": [
+    "help.openly.com -- agent login wall (2026-11-19); not worked around",
+    "connecticutelectric.com -- 302 to an unrelated login domain (linkuwant.com); not followed"
+  ],
+  "overlapNotes": "#321 'Electrical Panel Brand: How to Tell FPE, Zinsco & Pushmatic' has a short Pushmatic ID section (push buttons). #50 FPE and #23 Zinsco are brand pages. This page owns 'I HAVE a Pushmatic -- is it a problem, what do I do' and links to #321 for identification instead of repeating it."
+}
