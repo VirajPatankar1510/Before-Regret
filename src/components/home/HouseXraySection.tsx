@@ -28,55 +28,100 @@ const SPOTS: Spot[] = [
   { n: 9, x: 89, y: 64, q: 'Was the deck permitted?', a: 'Look up a property’s permit history by address, in any US county.', href: '/guides/look-up-building-permits-by-address/' },
 ];
 
+// 2026-11-19 restyle (owner: the old drawing "feels off and doesn't match our layout/theme"). Same house
+// geometry, so the SPOTS coordinates above still land, but drawn the way the guide diagrams are: thin navy
+// linework on paper, no scenery, and one site colour per system (brass wiring, slate water, brick sewer).
+// Colours are the --color-home-* tokens from src/index.css; SVG attributes can't read CSS variables
+// through Tailwind classes, so they are written out here and must move with those tokens.
+const C = { ink: '#1b2a40', line: '#c9bfae', linen: '#ece6dc', paper: '#fbf9f5', oak: '#b8895c', brass: '#7f5f35', water: '#4f6f8f', brick: '#9b4a3a', sunlit: '#f4e7d1' };
+const XRAY_LEGEND = [
+  { label: 'Wiring', color: C.brass, dash: true },
+  { label: 'Water supply', color: C.water, dash: false },
+  { label: 'Sewer line', color: C.brick, dash: false },
+];
+
 const HouseCutaway: React.FC = () => (
-  <svg viewBox="0 0 640 520" className="w-full h-auto" role="img" aria-label="Cutaway illustration of a two-storey house showing the roof, wiring, water pipes, electrical panel, sewer line, foundation and a rear deck">
-    {/* sky and sun */}
-    <circle cx="560" cy="70" r="34" fill="#f4c983" opacity="0.9" />
-    {/* ground and soil */}
-    <rect x="0" y="360" width="640" height="160" fill="#c8b79e" />
-    <rect x="0" y="352" width="640" height="12" fill="#6f8b64" />
-    {/* water main and sewer main at the street (left / right edges) */}
-    <rect x="0" y="425" width="18" height="22" rx="4" fill="#4f7aa6" />
-    <rect x="610" y="490" width="30" height="24" rx="4" fill="#7a5c43" />
-    {/* basement */}
-    <rect x="120" y="360" width="400" height="112" fill="#e6ddd0" stroke="#9a8b78" strokeWidth="4" />
-    <rect x="112" y="468" width="416" height="12" fill="#9a8b78" />
-    <path d="M300 472 l6 -14 l-5 -8" stroke="#7d6e5d" strokeWidth="2" fill="none" />
-    {/* house body: two floors, cut away */}
-    <rect x="120" y="170" width="400" height="190" fill="#f5efe6" stroke="#8a7966" strokeWidth="4" />
-    <rect x="120" y="262" width="400" height="6" fill="#8a7966" />
-    {/* roof + chimney */}
-    <rect x="418" y="78" width="30" height="72" fill="#7a5a48" />
-    <polygon points="98,178 320,58 542,178" fill="#4a3b33" />
-    <g stroke="#5c4a40" strokeWidth="2" opacity="0.6">
+  <svg viewBox="0 0 640 520" className="w-full h-auto" role="img" aria-label="Line drawing of a two-storey house cut away to show the roof, wiring, water pipes, electrical panel, sewer line, foundation and a rear deck">
+    <defs>
+      <pattern id="xray-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M20 0 H0 V20" fill="none" stroke={C.linen} strokeWidth="1" />
+      </pattern>
+      <pattern id="xray-soil" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="12" stroke={C.line} strokeWidth="1.2" />
+      </pattern>
+    </defs>
+    {/* drafting paper, then soil hatching below grade */}
+    <rect x="0" y="0" width="640" height="520" fill={C.paper} />
+    <rect x="0" y="0" width="640" height="360" fill="url(#xray-grid)" opacity="0.7" />
+    <rect x="0" y="360" width="640" height="160" fill="url(#xray-soil)" opacity="0.8" />
+    <line x1="0" y1="360" x2="640" y2="360" stroke={C.ink} strokeWidth="2" />
+
+    {/* sun, as a drafting mark, and its path into the upper-left room */}
+    <circle cx="566" cy="70" r="16" fill="none" stroke={C.oak} strokeWidth="2" />
+    <g stroke={C.oak} strokeWidth="2" strokeLinecap="round">
+      <line x1="566" y1="40" x2="566" y2="46" /><line x1="566" y1="94" x2="566" y2="100" /><line x1="536" y1="70" x2="542" y2="70" /><line x1="590" y1="70" x2="596" y2="70" />
+    </g>
+    <g stroke={C.oak} strokeWidth="1.5" strokeDasharray="5 6" fill="none">
+      <line x1="548" y1="82" x2="224" y2="200" /><line x1="552" y1="88" x2="224" y2="236" />
+    </g>
+
+    {/* basement and footing */}
+    <rect x="120" y="360" width="400" height="110" fill="#ffffff" stroke={C.ink} strokeWidth="2" />
+    <rect x="112" y="470" width="416" height="10" fill={C.linen} stroke={C.ink} strokeWidth="1.5" />
+    <path d="M300 470 l5 -12 l-4 -7 l3 -6" stroke={C.brick} strokeWidth="1.5" fill="none" strokeLinecap="round" />
+
+    {/* chimney sits behind the roof, so it is drawn first */}
+    <rect x="418" y="80" width="30" height="80" fill="#ffffff" stroke={C.ink} strokeWidth="2" />
+    <polygon points="98,178 320,58 542,178" fill="#ffffff" stroke={C.ink} strokeWidth="2.5" strokeLinejoin="round" />
+    <g stroke={C.line} strokeWidth="1">
       <line x1="150" y1="160" x2="490" y2="160" /><line x1="190" y1="138" x2="450" y2="138" /><line x1="232" y1="115" x2="408" y2="115" /><line x1="272" y1="92" x2="368" y2="92" />
     </g>
-    {/* windows */}
-    <rect x="160" y="192" width="64" height="50" fill="#f6d79e" stroke="#8a7966" strokeWidth="4" />
-    <line x1="192" y1="192" x2="192" y2="242" stroke="#8a7966" strokeWidth="3" />
-    <rect x="420" y="192" width="64" height="50" fill="#dfe8ef" stroke="#8a7966" strokeWidth="4" />
-    {/* sun beam into upper window */}
-    <polygon points="545,90 224,196 224,238" fill="#f6d79e" opacity="0.28" />
-    {/* wiring in walls (amber, dashed) from panel up */}
-    <path d="M175 392 V 300 H 260 V 214 M175 300 V 268" stroke="#d08b2c" strokeWidth="4" strokeDasharray="8 6" fill="none" strokeLinecap="round" />
-    <circle cx="260" cy="214" r="6" fill="#d08b2c" />
-    {/* water supply (blue) from street up to the sink */}
-    <path d="M18 436 H 130 V 430 H 400 V 318" stroke="#4f7aa6" strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+
+    {/* two floors, cut away */}
+    <rect x="120" y="178" width="400" height="182" fill="#ffffff" stroke={C.ink} strokeWidth="2.5" />
+    <line x1="120" y1="265" x2="520" y2="265" stroke={C.ink} strokeWidth="1.5" />
+
+    {/* windows: the sunlit one is tinted */}
+    <rect x="160" y="192" width="64" height="50" fill={C.sunlit} stroke={C.ink} strokeWidth="2" />
+    <line x1="192" y1="192" x2="192" y2="242" stroke={C.ink} strokeWidth="1.5" />
+    <rect x="420" y="192" width="64" height="50" fill="#ffffff" stroke={C.ink} strokeWidth="2" />
+    <line x1="452" y1="192" x2="452" y2="242" stroke={C.ink} strokeWidth="1.5" />
+
+    {/* front door */}
+    <rect x="296" y="292" width="48" height="68" fill={C.linen} stroke={C.ink} strokeWidth="2" />
+    <circle cx="335" cy="328" r="2.5" fill={C.ink} />
+
+    {/* wiring in the walls, from the panel up */}
+    <path d="M176 378 V 300 H 260 V 214 M176 300 V 268" stroke={C.brass} strokeWidth="2.5" strokeDasharray="7 5" fill="none" strokeLinecap="round" />
+    <circle cx="260" cy="214" r="4.5" fill="#ffffff" stroke={C.brass} strokeWidth="2" />
+
+    {/* water supply, street to sink */}
+    <rect x="2" y="428" width="16" height="18" rx="3" fill="#ffffff" stroke={C.water} strokeWidth="2" />
+    <path d="M18 437 H 130 V 430 H 400 V 318" stroke={C.water} strokeWidth="3.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+
     {/* sink cabinet */}
-    <rect x="372" y="300" width="84" height="56" fill="#cdbba3" stroke="#8a7966" strokeWidth="3" />
-    <rect x="380" y="292" width="68" height="10" fill="#8a7966" />
-    {/* sewer (brown, sloping) from basement to street */}
-    <path d="M330 472 L 470 492 L 612 500" stroke="#7a5c43" strokeWidth="9" fill="none" strokeLinecap="round" />
+    <rect x="372" y="302" width="84" height="56" fill="#ffffff" stroke={C.ink} strokeWidth="2" />
+    <line x1="366" y1="302" x2="462" y2="302" stroke={C.ink} strokeWidth="3" strokeLinecap="round" />
+    <line x1="414" y1="310" x2="414" y2="350" stroke={C.line} strokeWidth="1.5" />
+
+    {/* sewer, sloping from the basement to the street */}
+    <path d="M330 470 L 470 490 L 612 498" stroke={C.brick} strokeWidth="4.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    <rect x="612" y="488" width="24" height="20" rx="3" fill="#ffffff" stroke={C.brick} strokeWidth="2" />
+
     {/* electrical panel */}
-    <rect x="160" y="378" width="32" height="46" rx="3" fill="#7d8792" stroke="#4f5964" strokeWidth="3" />
+    <rect x="160" y="378" width="32" height="46" rx="2" fill="#ffffff" stroke={C.ink} strokeWidth="2" />
+    <g stroke={C.ink} strokeWidth="1.2"><line x1="167" y1="388" x2="185" y2="388" /><line x1="167" y1="396" x2="185" y2="396" /><line x1="167" y1="404" x2="185" y2="404" /><line x1="167" y1="412" x2="185" y2="412" /></g>
+
     {/* water heater */}
-    <rect x="436" y="384" width="40" height="78" rx="18" fill="#c9ced3" stroke="#7d8792" strokeWidth="3" />
+    <rect x="436" y="384" width="40" height="76" rx="16" fill="#ffffff" stroke={C.ink} strokeWidth="1.5" />
+
     {/* rear deck */}
-    <rect x="520" y="330" width="96" height="10" fill="#a07a55" />
-    <g stroke="#a07a55" strokeWidth="5"><line x1="530" y1="340" x2="530" y2="360" /><line x1="606" y1="340" x2="606" y2="360" /></g>
-    <g stroke="#a07a55" strokeWidth="3"><line x1="520" y1="306" x2="616" y2="306" /><line x1="540" y1="306" x2="540" y2="330" /><line x1="568" y1="306" x2="568" y2="330" /><line x1="596" y1="306" x2="596" y2="330" /></g>
-    {/* front door + porch hint */}
-    <rect x="296" y="292" width="48" height="68" fill="#2f4a3a" stroke="#8a7966" strokeWidth="4" />
+    <g stroke={C.ink} strokeWidth="2" strokeLinecap="round">
+      <line x1="520" y1="332" x2="616" y2="332" /><line x1="530" y1="332" x2="530" y2="360" /><line x1="606" y1="332" x2="606" y2="360" />
+    </g>
+    <g stroke={C.ink} strokeWidth="1.5" strokeLinecap="round">
+      <line x1="520" y1="306" x2="616" y2="306" /><line x1="540" y1="306" x2="540" y2="332" /><line x1="568" y1="306" x2="568" y2="332" /><line x1="596" y1="306" x2="596" y2="332" /><line x1="616" y1="306" x2="616" y2="332" />
+    </g>
   </svg>
 );
 
@@ -94,7 +139,7 @@ export const HouseXraySection: React.FC<{ onNavigate?: (path: string) => void }>
         </div>
 
         <div className="mt-10 grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-8 lg:gap-12 items-start">
-          <div className="relative rounded-3xl bg-gradient-to-b from-[#dfe8ef] to-home-stone border border-home-linen p-3 sm:p-5 shadow-sm">
+          <div className="relative rounded-3xl bg-[#fbf9f5] border border-home-linen p-3 sm:p-5 shadow-sm">
             <div className="relative">
               <HouseCutaway />
               {SPOTS.map((s) => (
@@ -114,6 +159,14 @@ export const HouseXraySection: React.FC<{ onNavigate?: (path: string) => void }>
                 </button>
               ))}
             </div>
+            <ul aria-hidden="true" className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 px-1 text-xs font-medium text-slate-600">
+              {XRAY_LEGEND.map((l) => (
+                <li key={l.label} className="inline-flex items-center gap-2">
+                  <svg width="22" height="6" viewBox="0 0 22 6"><line x1="1" y1="3" x2="21" y2="3" stroke={l.color} strokeWidth="3" strokeLinecap="round" strokeDasharray={l.dash ? '5 4' : undefined} /></svg>
+                  {l.label}
+                </li>
+              ))}
+            </ul>
           </div>
 
           <ol className="space-y-2">
@@ -133,7 +186,7 @@ export const HouseXraySection: React.FC<{ onNavigate?: (path: string) => void }>
                         <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[#f2c98f] px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-home-navy shadow-sm ring-1 ring-home-oak/50"><span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-home-brick" />{s.tag}</span>
                       )}
                       <span className="block text-sm text-slate-600 leading-relaxed">{s.a}</span>
-                      <span className={`mt-1 inline-flex items-center gap-1 text-xs font-semibold text-blue-700 ${on ? '' : 'sr-only group-hover:not-sr-only'}`}>
+                      <span className={`mt-1 inline-flex items-center gap-1 text-xs font-semibold text-home-brass ${on ? '' : 'sr-only group-hover:not-sr-only'}`}>
                         Read more <ArrowRight className="w-3.5 h-3.5" />
                       </span>
                     </span>
