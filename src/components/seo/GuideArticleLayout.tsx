@@ -4,7 +4,6 @@ import { renderArticleMarkdown, parseInline, articleSections } from '../../utils
 import { resolveKnownSource } from '../../data/knownSources';
 import { classifyGuideTopic, GUIDE_CLUSTER_META } from '../../utils/homeContent';
 import { ArticleClosingNote } from './ArticleClosingNote';
-import { BookPromoCard, BookPromoSkyscraper } from '../BookPromo';
 import { ContentLink } from '../home/ContentLink';
 import { CountyDataSection } from './CountyDataSection';
 import { GUIDE_AD_SLOT_PLACEHOLDER } from '../GuideAdSlot';
@@ -196,9 +195,6 @@ export const GuideArticleLayout: React.FC<GuideArticleLayoutProps> = ({
           {/* County figures, on the county permit guides only (CountyDataSection.tsx for the rules). */}
           <CountyDataSection slug={article.slug} onNavigate={onNavigate} />
 
-          {/* The book on phones and tablets; desktop carries it in the right rail instead. */}
-          <BookPromoCard className="lg:hidden" />
-
           <ArticleClosingNote onNavigate={onNavigate} />
 
           {permitCounty && (
@@ -308,17 +304,6 @@ export const GuideArticleLayout: React.FC<GuideArticleLayoutProps> = ({
               <Flag className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Something wrong on this page? Tell us.</span>
             </button>
-          </div>
-        </div>
-
-        {/* Right rail, desktop only: the book, sticky beside a long guide. Plain div, not <aside>:
-            BookPromoSkyscraper renders its own labelled <aside>. */}
-        {/* self-stretch is what lets the book actually stick: with the row's items-start, the rail
-            was only as tall as the book, so `sticky` had no room to move in and the book scrolled
-            away with the first screen -- true before the 2026-10-04 redesign as well. */}
-        <div className="hidden lg:block lg:w-[300px] lg:shrink-0 lg:self-stretch">
-          <div className="sticky top-24">
-            <BookPromoSkyscraper />
           </div>
         </div>
       </div>

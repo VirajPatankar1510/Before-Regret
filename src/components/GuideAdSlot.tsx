@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Phone, ExternalLink, ArrowRight, Megaphone } from 'lucide-react';
-import { guessBusinessPhraseFromTitle } from '../data/guideAdCategoryGuess';
+import { Phone, ExternalLink, ArrowDown, Megaphone } from 'lucide-react';
+import { guessBusinessPhraseFromTitle, guessTradeCategoryFromTitle } from '../data/guideAdCategoryGuess';
 import { reportAdClick } from '../utils/adClickBeacon';
 
 interface GuideAdSlotProps {
@@ -13,8 +13,9 @@ interface GuideAdSlotProps {
 /** The slot's resting height before it knows what to show -- measured from the open (unsold) card,
  *  which is what almost every guide shows. Re-measured 2026-11-16 when the card gained its button.
  *  Used for the loading state here and for the static stand-in in GuideArticleLayout, so neither the
- *  static page nor the first live render jumps. */
-export const GUIDE_AD_SLOT_PLACEHOLDER = 'h-[147px] sm:h-[103px]';
+ *  static page nor the first live render jumps. Re-measured 2026-11-19 when the open slot gained
+ *  its example ad inside the same box, re-measured after two lines were cut: 276px on a phone, 206px from sm. */
+export const GUIDE_AD_SLOT_PLACEHOLDER = 'h-[276px] sm:h-[206px]';
 /** The open box never renders shorter than the placeholder, so loading → open never jumps; only a
  *  long trade phrase that wraps can make it taller (measured 169px / 125px for the longest). */
 const OPEN_SLOT_MIN_HEIGHT = 'min-h-[147px] sm:min-h-[103px]';
@@ -104,33 +105,51 @@ export const GuideAdVendorCard: React.FC<{ vendor: ActiveVendor }> = ({ vendor }
   </aside>
 );
 
-/** The open state: our own offer to businesses, shown while nobody holds the slot. */
+/** The open state: our own offer to businesses, shown while nobody holds the slot, with a demo of
+ *  the ad a business would get directly under it (owner, 2026-11-19: "add a demo ad for topic ads
+ *  below the advertise here button", and the button's arrow points down at it).
+ *
+ *  THE DEMO IS INERT AND OBVIOUSLY A PLACEHOLDER. It's the real GuideAdVendorCard, so it can't drift
+ *  from what a buyer gets, but wrapped the way GuideAdsCheckout.tsx wraps its example: inert, no
+ *  pointer events, one accessible name. The name "Your Business Name"
+ *  (owner removed the "Your ad would look like this" label, 2026-11-19) keeps a reader from mistaking it for a real business, and the 555-01xx number is a range reserved
+ *  for fiction, so it can't reach anyone even if copied. The trade matches the guide's. */
 export const GuideAdOpenSlot: React.FC<{ guideTitle: string; guideSlug?: string }> = ({ guideTitle, guideSlug }) => {
   const href = guideSlug ? `/topic-ads/?guide=${encodeURIComponent(guideSlug)}` : '/topic-ads/';
+  // ONE section, not two (owner, 2026-11-19): the demo sits inside the same navy box, under the
+  // pitch row, as a preview. The box itself is a div because the demo card contains links; only the
+  // pitch row is the link to /topic-ads/.
   return (
-    <a
-      href={href}
-      className={`group flex flex-col justify-center ${OPEN_SLOT_MIN_HEIGHT} bg-home-navy text-white rounded-2xl p-4 sm:p-5 shadow-sm hover:bg-home-ink transition-colors`}
-    >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-5">
-        <div className="flex items-start gap-3 min-w-0">
-          <span className="hidden sm:flex shrink-0 w-9 h-9 rounded-full bg-home-oak/20 items-center justify-center" aria-hidden="true">
-            <Megaphone className="w-4 h-4 text-home-oak" />
-          </span>
-          <span className="min-w-0">
-            <span className="block text-base font-bold leading-snug">
-              Are you in the {guessBusinessPhraseFromTitle(guideTitle)} business?
+    <div className={`${OPEN_SLOT_MIN_HEIGHT} bg-home-navy text-white rounded-2xl p-4 sm:p-5 shadow-sm`}>
+      <a href={href} className="group block">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-5">
+          <div className="flex items-start gap-3 min-w-0">
+            <span className="hidden sm:flex shrink-0 w-9 h-9 rounded-full bg-home-oak/20 items-center justify-center" aria-hidden="true">
+              <Megaphone className="w-4 h-4 text-home-oak" />
             </span>
-            <span className="block mt-0.5 text-sm text-slate-300 leading-snug">
-              Put your number in front of people reading about this exact problem.
+            <span className="min-w-0">
+              <span className="block text-base font-bold leading-snug group-hover:underline underline-offset-2">
+                Are you in the {guessBusinessPhraseFromTitle(guideTitle)} business?
+              </span>
             </span>
+          </div>
+          <span className="shrink-0 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 sm:py-3 bg-home-oak text-home-navy text-sm font-bold rounded-xl group-hover:brightness-105">
+            Advertise here <ArrowDown className="w-4 h-4" aria-hidden="true" />
           </span>
         </div>
-        <span className="shrink-0 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 sm:py-3 bg-home-oak text-home-navy text-sm font-bold rounded-xl group-hover:brightness-105">
-          Advertise here <ArrowRight className="w-4 h-4" aria-hidden="true" />
-        </span>
+      </a>
+      <div
+        className="mt-4 border-t border-white/10 pt-4 pointer-events-none select-none"
+        role="img"
+        aria-label="Example ad: how a business's listing appears here, with its name, trade and phone number"
+      >
+        <div aria-hidden="true" inert>
+          <GuideAdVendorCard
+            vendor={{ businessName: 'Your Business Name', tradeCategory: guessTradeCategoryFromTitle(guideTitle), phone: '(555) 555-0100' }}
+          />
+        </div>
       </div>
-    </a>
+    </div>
   );
 };
 

@@ -4,7 +4,6 @@ import { checkVendorWebsite } from '../data/vendorWebsite.js';
 import crypto from 'crypto';
 import { withDb, isDbConfigured } from './db.js';
 import { detectAiCrawler } from '../utils/detectAiCrawler.js';
-import { BOOK } from '../data/book.js';
 
 // Vendor ad click measurement. This exists to answer the one question a paying advertiser asks at
 // the end of their 30 days -- "did anything come of it?" -- which /my-ads previously could not
@@ -75,28 +74,13 @@ async function recordClick(
 }
 
 export function registerAdClickRoutes(app: Express) {
-  // --- Outbound click on the site's own book: log, then forward to the listing -------------------
+  // --- Retired: the old book promo's click route -----------------------------------------------
   //
-  // Two segments, not three, so this cannot collide with the /out/:adKind/:purchaseId route below
-  // however they are ordered -- that pattern requires a path Express reads as three parts.
-  //
-  // THE DESTINATION IS A COMPILE-TIME CONSTANT. The route below goes to some length to make sure a
-  // URL can never be read from the request, because a `?url=` there would be an open redirect
-  // wearing this domain's reputation. The same property holds here for free: BOOK.url is imported,
-  // and nothing the caller sends can influence where this forwards.
-  //
-  // purchase_id 0 is a sentinel. vendor_ad_clicks is already generic in ad_kind and the column is
-  // NOT NULL, and the book has no purchase row to point at -- it is the site's own product, not a
-  // placement anyone bought. Reusing the table rather than adding one means this inherits the parts
-  // that matter: recordClick's crawler filter, and the unique index on
-  // (ad_kind, purchase_id, target, click_day, visitor_hash), which collapses a reader who clicks
-  // four times in a day into one count without any extra logic here.
-  app.get('/out/book', async (req: Request, res: Response) => {
-    await recordClick(req, 'book', 0, 'listing');
-    // 302 for the same reason the route below is: a 301 would be cached by the browser and every
-    // click after the first would go straight to Amazon without ever reaching this server, which
-    // would quietly stop the counting a week after it started.
-    res.redirect(302, BOOK.url);
+  // The book promo was removed from every page on 2026-11-19 (owner). The route stays so a stale
+  // cached page or bookmark lands on the homepage instead of a 404; it no longer counts clicks or
+  // forwards to Amazon. Two segments, so it can't collide with /out/:adKind/:purchaseId below.
+  app.get('/out/book', (_req: Request, res: Response) => {
+    res.redirect(302, '/');
   });
 
   // --- Outbound website click: log, then redirect to the advertiser's own site ------------------

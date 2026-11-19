@@ -18,7 +18,7 @@ const KEYWORD_RULES: Array<{ keywords: string[]; category: typeof TRADE_CATEGORI
   // Foundation/seismic topics point at General Contractor, not a stamping engineer -- see
   // sponsoredVendors.ts for why 'Foundation Engineer' was dropped from TRADE_CATEGORIES.
   { keywords: ['foundation', 'seismic', 'earthquake', 'crawlspace', 'renovation', 'remodel', 'contractor', 'building permit'], category: 'General Contractor' },
-  { keywords: ['electric', 'wiring', 'panel', 'breaker', 'knob-and-tube', 'knob and tube', 'aluminum wir'], category: 'Electrician' },
+  { keywords: ['electric', 'wiring', 'panel', 'breaker', 'knob-and-tube', 'knob and tube', 'aluminum wir', 'outlet', 'gfci', 'open ground'], category: 'Electrician' },
   { keywords: ['asbestos', 'mold'], category: 'Asbestos/Mold Abatement' },
   { keywords: ['termite', 'pest', 'rodent'], category: 'Pest/Termite Control' },
   { keywords: ['chimney'], category: 'Chimney Sweep' },
