@@ -109,6 +109,7 @@ internet, it is low-effort. Explain details or edge cases if we need to dive dee
 ## The flow
 
 **0. Is it worth a new page?**
+- **Decision map:** list the questions the buyer must answer before acting, then check the site for each one (`answer-ready-writing` skill, part 1). A gap becomes a section of this page by default, and a new page only if it passes the five questions on its own.
 - **Demand:** `npx tsx scripts/topic-demand.ts "2-4 word phrase" ...`. Tier 1 is our own impressions,
   tier 2 is Bing counts (relative), tier 3 is nothing, which means writing it as an experiment with a
   stop condition.
@@ -131,6 +132,7 @@ gets made: run the numbers, walk the portal, take the screenshot.
 - **Links:** prose links only where the text already discusses the target.
 - **Cluster:** the slug and title must match a `GUIDE_TOPIC_PATTERNS` bucket.
 - **"How we checked this"** section.
+- **Passages:** key paragraphs must make sense on their own. See the `answer-ready-writing` skill, part 2, and run its `check-passages.ts`. The target is zero flagged key paragraphs.
 
 **4. Publish script.** Dry run by default. Use the latest `scripts/publish-*.ts` as the pattern, for
 example `publish-home-insurance-nonrenewal-roof-photo.ts`. It must:
@@ -154,7 +156,7 @@ Write nothing without `APPLY=true`.
 7. Optional: `suggest-inbound-links.ts`, as a report only. Existing pages are not edited to add links (owner, 2026-11-19).
 8. Give the owner the link, and ask them to request indexing in Search Console.
 
-**7. Measure.** Put the read date (about 5 weeks out) and the stop condition in the script header and in memory.
+**7. Measure.** Record seen, clicked and acted separately (`answer-ready-writing` skill, part 3). Put the read date (about 5 weeks out) and the stop condition in the script header and in memory.
 On that date, check whether the page was shown, and act on the stop condition.
 
 ## Pace
