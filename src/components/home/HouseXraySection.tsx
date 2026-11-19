@@ -34,9 +34,6 @@ export const HouseXraySection: React.FC<{ onNavigate?: (path: string) => void }>
       <div className="max-w-2xl">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-home-brass">Look behind the listing photos</p>
         <h2 className="mt-3 font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">What a Listing Won&rsquo;t Tell You</h2>
-        <p className="mt-4 text-base sm:text-lg text-slate-700 leading-relaxed">
-          Listings are written to sell the house. Here&rsquo;s what the photos don&rsquo;t show, and how to check each one.
-        </p>
       </div>
 
       <ol className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
