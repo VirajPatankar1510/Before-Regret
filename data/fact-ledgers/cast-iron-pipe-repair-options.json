@@ -1,0 +1,155 @@
+{
+  "_status": "DRAFTED 2026-11-20 -- guides/cast-iron-pipe-repair-options.md; plumber-facing pair with water-heater-expansion-tank-required; awaiting owner review, not published.",
+  "slug": "cast-iron-pipe-repair-options",
+  "question": "My cast iron drain is corroded. Should it be descaled, lined, spot-repaired or replaced, and what does each cost?",
+  "verdictConfirmed": "The choice follows the video taken after cleaning. Under the 2021 IRC, descaling appears only as the required first step before relining; relining is limited to gravity drain pipe 4 inches and larger and barred where the video shows backslope, complete wall deterioration or separations; those portions are exposed and repaired with new pipe. Engine: spot repair $1,500 - $5,000, full replacement $4,000 - $15,000+.",
+  "decisionMap": [
+    { "q": "What are my options?", "where": "this page (table: descale, line, spot repair, replace / pipe bursting)" },
+    { "q": "Is descaling enough?", "where": "this page (P3011.3: a prep step followed by a recorded video)" },
+    { "q": "Can my pipe be lined?", "where": "this page (P3011.2 size, P3011.5 defects, IPC 717.2 identical)" },
+    { "q": "Does a repair need a permit?", "where": "this page (R105.2 plumbing item 1; P3011.4 / P3011.8 for relining; P3010.7 for bursting)" },
+    { "q": "How is a spot repair joined?", "where": "this page (P3003.4.3, P3003.13, P3003.13.4)" },
+    { "q": "What does each cost?", "where": "this page (engine sewer_cast_iron); descaling and lining: SKIPPED, no first-party figure" },
+    { "q": "Is my pipe actually bad / what are the signs?", "where": "#300 (link)" },
+    { "q": "A sag (belly) in the line?", "where": "#335 (link)" },
+    { "q": "How do I get the camera inspection?", "where": "#339 (link)" }
+  ],
+  "facts": [
+    {
+      "id": "c1",
+      "claim": "IRC 2021 P3011.2: relining of building sewer and building drainage piping is limited to gravity drainage piping 4 inches and larger; relined pipe stays the same nominal size.",
+      "quote": "The relining of existing building sewer piping and building drainage piping shall be limited to gravity drainage piping 4 inches (102 mm) in diameter and larger. The relined piping shall be of the same nominal size as the existing piping.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-30-sanitary-drainage",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "c2",
+      "claim": "IPC 2021 717.2 says the same: relining limited to gravity drainage piping 4 inches and larger.",
+      "quote": "The relining of existing building sewers and building drainage piping shall be limited to gravity drainage piping 4 inches (102 mm) in diameter and larger. The relined piping shall be of the same nominal size as the existing piping.",
+      "url": "https://codes.iccsafe.org/content/IPC2021P1/chapter-7-sanitary-drainage",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "c3",
+      "claim": "IRC 2021 P3011.3: before relining, the pipe is descaled and cleaned, flushed with water, then inspected internally by a recorded video camera survey.",
+      "quote": "Prior to commencement of the relining installation, the existing piping sections to be relined shall be descaled and cleaned. After the cleaning process has occurred and water has been flushed through the system, the piping shall be inspected internally by a recorded video camera survey.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-30-sanitary-drainage",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "c4",
+      "claim": "IRC 2021 P3011.4: before issuing a relining permit, the building official reviews the pre-installation video to decide whether the pipe can be relined.",
+      "quote": "Prior to issuing a permit for relining, the building official shall review and evaluate the preinstallation recorded video camera survey to determine whether the piping system is able to be relined in accordance with the proposed lining system manufacturer’s installation requirements and applicable referenced standards.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-30-sanitary-drainage",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "c5",
+      "claim": "IRC 2021 P3011.5: where the video shows the pipe not installed correctly or defects, relining is not permitted; defective portions are exposed and repaired with pipe and fittings. Defects include backslope or insufficient slope, complete pipe wall deterioration, complete separations such as from roots or improper support.",
+      "quote": "Where the preinstallation recorded video camera survey reveals that piping systems are not installed correctly, or defects exist, relining shall not be permitted. The defective portions of piping shall be exposed and repaired with pipe and fittings in accordance with this code. Defects shall include, but are not limited to, backslope or insufficient slope, complete pipe wall deterioration or complete separations such as from tree root invasion or improper support.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-30-sanitary-drainage",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "c6",
+      "claim": "IRC 2021 P3011.6: relining materials made to applicable standards and certified per P2609; fold-and-form reline materials to ASTM F1504 or ASTM F1871.",
+      "quote": "The relining materials shall be manufactured in compliance with applicable standards and certified as required in Section P2609. Fold-and-form pipe reline materials shall be manufactured in compliance with ASTM F1504 or ASTM F1871.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-30-sanitary-drainage",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "c7",
+      "claim": "IRC 2021 P3011.8: after relining, the system is flushed and flow-tested, then filmed; the video goes to the building official before the permit is finalized and is reviewed to verify no defects exist.",
+      "quote": "The completed relined piping system shall be inspected internally by a recorded video camera survey after the system has been flushed and flow-tested with water. The video survey shall be submitted to the building official prior to finalization of the permit. The video survey shall be reviewed and evaluated to provide verification that no defects exist.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-30-sanitary-drainage",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "c8",
+      "claim": "IPC 2021 718.1: cure-in-place rehabilitation: sectional per ASTM F2599; main and lateral per ASTM F2561; hydrophilic rings or gaskets per ASTM F3240.",
+      "quote": "Sectional cure-in-place rehabilitation of building sewer piping and sewer service lateral piping shall be in accordance with ASTM F2599. Main and lateral cure-in-place rehabilitation of building sewer and sewer service lateral pipe and their connections to the main sewer pipe shall be in accordance with ASTM F2561. Hydrophilic rings or gaskets in cure-in-place rehabilitation of building sewer piping and sewer service laterals shall be in accordance with ASTM F3240 to ensure water tightness and elimination of ground water penetration.",
+      "url": "https://codes.iccsafe.org/content/IPC2021P1/chapter-7-sanitary-drainage",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "c9",
+      "claim": "IRC 2021 P3010.1-P3010.2: pipe bursting is a replacement method for building sewer and building drain piping, limited to gravity drainage piping 6 inches and smaller, same nominal size. (IPC 716.2 identical.)",
+      "quote": "This section shall govern the replacement of existing building sewer and building drain piping by pipe-bursting methods. ... The replacement of building sewer and building drain piping by pipe bursting methods shall be limited to gravity drainage piping of sizes 6 inches (150 mm) and smaller. The replacement piping shall be of the same nominal size as the existing piping.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-30-sanitary-drainage",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "c10",
+      "claim": "IRC 2021 P3010.3, P3010.4, P3010.5 and P3010.6: recorded video before pipe bursting, noting cleanouts and connection depths; replacement pipe HDPE to ASTM F714, fittings HDPE to ASTM D2683; cleanouts added where the old line lacked code cleanouts.",
+      "quote": "The existing piping sections to be replaced shall be inspected internally by a recorded video camera survey. The survey shall include notations of the position of cleanouts and the depth of connections to the existing piping. ... The replacement pipe shall be made of a high-density polyethylene (HDPE) and shall be in compliance with ASTM F714. ... Pipe fittings to be connected to the replacement pipe shall be made of high-density polyethylene (HDPE) and shall be in compliance with ASTM D2683. ... Where the existing building sewer or building drain did not have cleanouts meeting the requirements of this code, cleanout fittings shall be installed as required by this code.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-30-sanitary-drainage",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "c11",
+      "claim": "IRC 2021 P3010.7: post-installation video of the burst replacement, reviewed and approved by the building official before pressure testing.",
+      "quote": "The completed replacement piping section shall be inspected internally by a recorded video camera survey. The video survey shall be reviewed and approved by the building official prior to pressure testing of the replacement piping system.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-30-sanitary-drainage",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "c12",
+      "claim": "IRC 2021 R105.2 (work exempt from permit), plumbing item 1: stopping leaks is exempt, but if a concealed drain, soil, waste or vent pipe becomes defective and must be removed and replaced with new material, that is new work needing a permit and inspection. Item 2: clearing stoppages is exempt where no pipes are replaced.",
+      "quote": "The stopping of leaks in drains, water, soil, waste or vent pipe; provided, however, that if any concealed trap, drainpipe, water, soil, waste or vent pipe becomes defective and it becomes necessary to remove and replace the same with new material, such work shall be considered as new work and a permit shall be obtained and inspection made as provided in this code. ... The clearing of stoppages or the repairing of leaks in pipes, valves or fixtures, and the removal and reinstallation of water closets, provided such repairs do not involve or require the replacement or rearrangement of valves, pipes or fixtures.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-1-scope-and-administration",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "c13",
+      "claim": "IRC 2021 P3003.4.3: hubless mechanical joint couplings have an elastomeric sealing sleeve and a metallic shield complying with CISPI 310, ASTM C1277 or ASTM C1540; the sleeve has a center stop.",
+      "quote": "Mechanical joint couplings for hubless pipe and fittings shall consist of an elastomeric sealing sleeve and a metallic shield that comply with CISPI 310, ASTM C1277 or ASTM C1540. The elastomeric sealing sleeve shall conform to ASTM C564 or CSA B602 and shall have a center stop.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-30-sanitary-drainage",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "c14",
+      "claim": "IRC 2021 P3003.13 and P3003.13.4: joints between different materials are mechanical joints to ASTM C1173, C1460 or C1461; plastic to other material via an approved adapter fitting; plastic to cast-iron hub pipe by a caulked joint or mechanical compression joint.",
+      "quote": "Joints between different piping materials shall be made with a mechanical joint of the compression or mechanical-sealing type conforming to ASTM C1173, ASTM C1460 or ASTM C1461. ... Joints between plastic pipe and other piping material shall be made with an approved adapter fitting. Joints between plastic pipe and cast-iron hub pipe shall be made by a caulked joint or a mechanical compression joint.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-30-sanitary-drainage",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "c15",
+      "claim": "Our report engine (rule sewer_cast_iron) flags houses built up to 1973; camera scope $300 – $500; spot repair $1,500 – $5,000; full replacement $4,000 – $15,000+.",
+      "quote": "maxYear: 1973; costToCheck: '$300 – $500 for a camera scope'; typicalRepairCost: 'Spot repair $1,500 – $5,000; full replacement $4,000 – $15,000+'",
+      "url": "src/engine/inspectionPriorities.ts",
+      "readOn": "2026-11-20",
+      "method": "engine"
+    },
+    {
+      "id": "c16",
+      "claim": "Edition labels used on the page: 2021 IRC and 2021 IPC on ICC's public site.",
+      "quote": "2021 INTERNATIONAL RESIDENTIAL CODE (IRC); 2021 INTERNATIONAL PLUMBING CODE (IPC)",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    { "claim": "Prices for descaling or for lining", "why": "no first-party figure; the engine has none and we don't quote third-party price surveys" },
+    { "claim": "How long a liner lasts", "why": "no primary source read" },
+    { "claim": "Typical stack and branch diameters in houses", "why": "no primary source read; the page tells the reader to ask instead" },
+    { "claim": "What ASTM F2599 / F2561 say inside", "why": "ASTM standards are paywalled; only their names via IPC 718.1 are used" }
+  ],
+  "blockedSources": ["epubs.iapmo.org (Uniform Plumbing Code) -- robot challenge, 2026-11-19; not worked around"],
+  "overlapNotes": "#300 why-cast-iron-pipes-corrode covers signs, causes and a one-line lining caveat + engine costs; this page covers the method decision and the code steps. #335 owns sags; linked, not repeated. #339 owns the scope; linked."
+}

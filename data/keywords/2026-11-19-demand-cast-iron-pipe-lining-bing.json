@@ -1,0 +1,67 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-19T18:18:31.376Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "cast iron pipe lining",
+    "descaling cast iron pipe",
+    "nibco pex",
+    "lead service line replacement",
+    "water heater expansion tank",
+    "backflow test"
+  ],
+  "keywords": [
+    {
+      "keyword": "cast iron pipe lining",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "descaling cast iron pipe",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "nibco pex",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "lead service line replacement",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "water heater expansion tank",
+      "search_volume": 605,
+      "metric": "market",
+      "broad_impressions": 673,
+      "kind": "seed"
+    },
+    {
+      "keyword": "expansion tank for water heater",
+      "search_volume": 456,
+      "metric": "market",
+      "broad_impressions": 456,
+      "kind": "related"
+    },
+    {
+      "keyword": "backflow test",
+      "search_volume": 17,
+      "metric": "market",
+      "broad_impressions": 17,
+      "kind": "seed"
+    }
+  ]
+}

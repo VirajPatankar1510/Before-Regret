@@ -1,0 +1,178 @@
+{
+  "_status": "DRAFTED 2026-11-20 -- guides/water-heater-expansion-tank-required.md; plumber-facing pair with cast-iron-pipe-repair-options; awaiting owner review, not published.",
+  "slug": "water-heater-expansion-tank-required",
+  "question": "Does a water heater need an expansion tank, and does code require one in my house?",
+  "verdictConfirmed": "Not always. The 2021 IRC and IPC require a device to control thermal expansion only where a check valve, backflow preventer or pressure-reducing valve closes the system; a tank is one such device. Utilities installing check valves in meter assemblies can close a house's system without any change to its plumbing.",
+  "decisionMap": [
+    { "q": "Does code require an expansion tank?", "where": "this page (IRC P2903.4-P2903.4.2, IPC 607.3)" },
+    { "q": "Is my house a closed system?", "where": "this page (meter check valve per two utility notices, PRV over 80 psi per P2903.3.2 / IPC 604.8, backflow preventer)" },
+    { "q": "What happens without thermal expansion control?", "where": "this page (Kingsport symptom list); the T&P valve itself -> #56" },
+    { "q": "Is a tank the only option?", "where": "this page (Kingsport: relief valve, ball-cock, tank; code says 'device')" },
+    { "q": "Where does it go and how is it set?", "where": "this page (Amtrol instructions: cold supply, vertical, precharge = supply pressure, empty, ambient)" },
+    { "q": "Does it need maintenance?", "where": "this page (Amtrol: yearly check by a licensed professional)" },
+    { "q": "What does it cost?", "where": "SKIPPED for the tank (no first-party price); water heater replacement from engine hvac_age" },
+    { "q": "What about the Uniform Plumbing Code?", "where": "SKIPPED -- iapmo robot check; named as unread" }
+  ],
+  "facts": [
+    {
+      "id": "e1",
+      "claim": "IRC 2021 P2903.4: a means for controlling increased pressure caused by thermal expansion shall be installed where required by P2903.4.1 and P2903.4.2.",
+      "quote": "A means for controlling increased pressure caused by thermal expansion shall be installed where required in accordance with Sections P2903.4.1 and P2903.4.2.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-29-water-supply-and-distribution",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "e2",
+      "claim": "IRC 2021 P2903.4.1: for water services up to and including 2 inches, a pressure-control device is required where thermal expansion pushes the pressure downstream of a pressure-reducing valve above the valve's setting.",
+      "quote": "For water service system sizes up to and including 2 inches (51 mm), a device for controlling pressure shall be installed where, because of thermal expansion, the pressure on the downstream side of a pressure-reducing valve exceeds the pressure-reducing valve setting.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-29-water-supply-and-distribution",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "e3",
+      "claim": "IRC 2021 P2903.4.2: where a backflow prevention device, check valve or other device is on a supply with a storage water heater such that thermal expansion raises pressure, a device for controlling pressure is required.",
+      "quote": "Where a backflow prevention device, check valve or other device is installed on a water supply system using storage water heating equipment such that thermal expansion causes an increase in pressure, a device for controlling pressure shall be installed.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-29-water-supply-and-distribution",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "e4",
+      "claim": "IRC 2021 P2903.3.2: static pressure not greater than 80 psi; where the main pressure exceeds 80 psi, a pressure-reducing valve is required at the connection to the water service pipe.",
+      "quote": "The static water pressure shall be not greater than 80 psi (551 kPa). Where the main pressure exceeds 80 psi (551 kPa), an approved pressure-reducing valve conforming to ASSE 1003 or CSA B356 shall be installed on the domestic water branch main or riser at the connection to the water service pipe.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-29-water-supply-and-distribution",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "e5",
+      "claim": "IPC 2021 607.3: where a storage water heater's cold supply passes through a check valve, PRV or backflow preventer, a thermal expansion control device goes on the heater's cold supply downstream of all of them; tanks sized per the tank maker so pressure stays within 604.8.",
+      "quote": "Where a storage water heater is supplied with cold water that passes through a check valve, pressure reducing valve or backflow preventer, a thermal expansion control device shall be connected to the water heater cold water supply pipe at a point that is downstream of all check valves, pressure reducing valves and backflow preventers. Thermal expansion tanks shall be sized in accordance with the tank manufacturer's instructions and shall be sized such that the pressure in the water distribution system shall not exceed that required by Section 604.8.",
+      "url": "https://codes.iccsafe.org/content/IPC2021P1/chapter-6-water-supply-and-distribution",
+      "readOn": "2026-11-19",
+      "method": "browser"
+    },
+    {
+      "id": "e6",
+      "claim": "IPC 2021 604.8: where pressure exceeds 80 psi static, a PRV with strainer reduces building pressure to not greater than 80 psi static.",
+      "quote": "Where water pressure within a building exceeds 80 psi (552 kPa) static, an approved water pressure-reducing valve conforming to ASSE 1003 or CSA B356 with strainer shall be installed to reduce the pressure in the building water distribution piping to not greater than 80 psi (552 kPa) static.",
+      "url": "https://codes.iccsafe.org/content/IPC2021P1/chapter-6-water-supply-and-distribution",
+      "readOn": "2026-11-19",
+      "method": "browser"
+    },
+    {
+      "id": "e7",
+      "claim": "Kingsport, Tennessee's water department is installing meter assemblies with a dual check valve on new connections and on existing ones as warranted or scheduled, which makes the customer's system 'closed'.",
+      "quote": "The City of Kingsport Water Maintenance Department has began installing water meter assemblies equipped with a dual check valve on all new service connections and as existing connections are warranted or scheduled. This assembly is to prevent potential backflow from a private water system into the public drinking supply. ... This installation will cause a customer’s private system to become a “closed” plumbing system.",
+      "url": "https://www.kingsporttn.gov/wp-content/uploads/2026/04/Thermal_Expansion.pdf",
+      "readOn": "2026-11-20",
+      "method": "pdf"
+    },
+    {
+      "id": "e8",
+      "claim": "Kingsport: before the check valve, the public system acted as a cushion that absorbed pressure from the water heater; the T&P valve is an emergency relief valve, not meant to handle thermal expansion.",
+      "quote": "Prior to the installation of a residential dual check valve or other backflow prevention assembly, the public water distribution system had provided a ‘cushion’ that would absorb built up pressure within your system, usually from your water heater, and allow that pressure to ‘backflow’ into the public system. ... This valve is an emergency relief valve and is not intended to compensate pressure increases created by thermal expansion.",
+      "url": "https://www.kingsporttn.gov/wp-content/uploads/2026/04/Thermal_Expansion.pdf",
+      "readOn": "2026-11-20",
+      "method": "pdf"
+    },
+    {
+      "id": "e9",
+      "claim": "Kingsport lists what thermal expansion can do on a closed system: T&P valve leaking, icemaker and dishwasher solenoid valves, toilet fill valves leaking, washing machine hoses leaking or bursting, dripping faucets, hot water forced into the cold side.",
+      "quote": "Thermal Expansion may cause the T&P valve to leak or can affect other plumbing fixtures such as solenoid valves on icemakers and dishwashers, toilet ball - cocks to leak, washing machine hoses to leak or burst, faucets to drip. It can also cause hot water to be forced into your normally cold water system.",
+      "url": "https://www.kingsporttn.gov/wp-content/uploads/2026/04/Thermal_Expansion.pdf",
+      "readOn": "2026-11-20",
+      "method": "pdf"
+    },
+    {
+      "id": "e10",
+      "claim": "Kingsport names three devices that contain thermal expansion: a thermal expansion relief valve, a thermal expansion ball-cock, or a thermal expansion tank; it encourages a licensed plumber inspection and says the city is not responsible for damage from thermal expansion.",
+      "quote": "Thermal expansion can be easily contained through the use of either a Thermal Expansion Relief Valve, Thermal Expansion Ball - Cock, or Thermal Expansion Tank. These products are available at most plumbing supply stores. You are encouraged to have a licensed plumber inspect your system to determine the steps needed to safeguard your plumbing fixtures from Thermal Expansion. ... The City of Kingsport Water Services Division is not responsible for any damage to private property caused by Thermal Expansion.",
+      "url": "https://www.kingsporttn.gov/wp-content/uploads/2026/04/Thermal_Expansion.pdf",
+      "readOn": "2026-11-20",
+      "method": "pdf"
+    },
+    {
+      "id": "e11",
+      "claim": "Enterprise, Oregon: on all new service connections and those replaced in the last ten years, the city has installed meter setters with check valves.",
+      "quote": "On all our new service connections and any that we have been replacing in the last ten years we have been installing meter setters that have check valves installed in them. These check valves prevent the back flow from the household plumbing system from going back into the public supply.",
+      "url": "https://www.enterpriseoregon.gov/public-works/page/protection-thermal-expansion",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "e12",
+      "claim": "Enterprise, Oregon: the T&P valve's temperature side opens at approximately 210 degrees Fahrenheit; the pressure side is normally pre-set at 125 psi or 150 psi. The expansion tank holds expanded water in a sealed compressible air cushion.",
+      "quote": "The small tank with a sealed compressible air cushion provides a space to store and hold the additional expanded water volume. The T&P Valve is the primary safety feature for the water heater. The temperature portion of the T&P Valve is designed to open and vent water to the atmosphere whenever the water temperature within the tank reaches approximately 210 degrees Fahrenheit. ... The T&P Valve is normally pre-set at 125 psi or 150 psi.",
+      "url": "https://www.enterpriseoregon.gov/public-works/page/protection-thermal-expansion",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "e13",
+      "claim": "Amtrol Therm-X-Trol instructions (part 9017-091, 04/24): with the tank empty of water, set the precharge to match the cold water supply pressure; adjust precharge at ambient temperature only.",
+      "quote": "With tank empty of water, adjust pre-charge to match cold water supply pressure. ... Adjustments to pre-charge must be done at ambient temperature only.",
+      "url": "https://www.amtrol.com/wp-content/uploads/2024/04/9017-091-04_24-THERMXTROL-ST5C-ST210VC-IO.pdf",
+      "readOn": "2026-11-19",
+      "method": "pdf"
+    },
+    {
+      "id": "e14",
+      "claim": "Amtrol: install on the supply line to the water heater, between the heater and the backflow preventer, check valve or PRV; mount vertically only; must be installed by a licensed professional.",
+      "quote": "Install the THERM-X-TROL on the city supply line to the water heater at a point between the water heater and backflow preventer, check valve or pressure reducing valve (see Figure 1). Mount vertically only. ... THIS PRODUCT MUST BE INSTALLED BY A LICENSED PROFESSIONAL.",
+      "url": "https://www.amtrol.com/wp-content/uploads/2024/04/9017-091-04_24-THERMXTROL-ST5C-ST210VC-IO.pdf",
+      "readOn": "2026-11-19",
+      "method": "pdf"
+    },
+    {
+      "id": "e15",
+      "claim": "Amtrol: the sealed-in air precharge keeps water out until system pressure exceeds the precharge; as hot water is used, the air pushes the water back until the tank is empty.",
+      "quote": "Its sealed-in air pre-charge prevents water from entering it until the system pressure exceeds the pre-charge pressure. ... As hot water is used, the pressure in the air chamber forces water back into the system until the THERM-X-TROL is empty.",
+      "url": "https://www.amtrol.com/wp-content/uploads/2024/04/9017-091-04_24-THERMXTROL-ST5C-ST210VC-IO.pdf",
+      "readOn": "2026-11-19",
+      "method": "pdf"
+    },
+    {
+      "id": "e16",
+      "claim": "Amtrol: a licensed professional should check the complete heating system, including the tank, yearly and more often as it ages.",
+      "quote": "A licensed professional should check the complete heating system, including the THERM-X-TROL, yearly and more frequently as the system ages.",
+      "url": "https://www.amtrol.com/wp-content/uploads/2024/04/9017-091-04_24-THERMXTROL-ST5C-ST210VC-IO.pdf",
+      "readOn": "2026-11-19",
+      "method": "pdf"
+    },
+    {
+      "id": "e17",
+      "claim": "Our report engine (rule hvac_age) puts water heater replacement at $1,200 – $3,000 and asks the inspector to record the manufacture date from the water heater data plate.",
+      "quote": "typicalRepairCost: 'HVAC replacement $6,000 – $15,000; water heater replacement $1,200 – $3,000'; howToCheck: 'Ask your inspector to record the manufacture date from the data plate on the furnace, condenser, and water heater.'",
+      "url": "src/engine/inspectionPriorities.ts",
+      "readOn": "2026-11-20",
+      "method": "engine"
+    },
+    {
+      "id": "e18",
+      "claim": "Edition and scope labels used on the page: the 2021 International Residential Code and 2021 International Plumbing Code, read on ICC's public site.",
+      "quote": "2021 INTERNATIONAL RESIDENTIAL CODE (IRC); 2021 INTERNATIONAL PLUMBING CODE (IPC)",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "e19",
+      "claim": "Kingsport's notice says most, if not all, water heater makers invalidate the warranty when a heater is installed on a closed system without thermal expansion protection (attributed, not verified).",
+      "quote": "Most, if not all water heater manufacturers automatically invalidate their warranty if a water heater is installed on a closed system lacking proper Thermal Expansion protection.",
+      "url": "https://www.kingsporttn.gov/wp-content/uploads/2026/04/Thermal_Expansion.pdf",
+      "readOn": "2026-11-20",
+      "method": "pdf"
+    }
+  ],
+  "cut": [
+    { "claim": "Price of an expansion tank or of installing one", "why": "no first-party figure; the engine has no expansion-tank rule" },
+    { "claim": "Factory precharge of other makers' tanks (e.g. 40 psi)", "why": "seen in search snippets only, manuals not opened" },
+    { "claim": "Enterprise OR: tank goes 'in the hot water system piping downstream of the hot water tank'", "why": "conflicts with IPC 607.3 and Amtrol (cold supply); not repeated" },
+    { "claim": "As fact: water heater makers void the warranty on a closed system without expansion control", "why": "only attributed to Kingsport on the page (fact e19); not checked against any maker's warranty" },
+    { "claim": "Kingsport: thermal expansion protection mandated since 1994 by the Standard Plumbing Code, IPC and CABO", "why": "not verified against those codes' 1994 texts" }
+  ],
+  "blockedSources": ["epubs.iapmo.org (Uniform Plumbing Code) -- robot challenge, 2026-11-19; not worked around"]
+}

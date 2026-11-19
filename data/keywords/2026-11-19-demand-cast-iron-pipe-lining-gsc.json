@@ -1,0 +1,17 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-11-19T18:18:31.376Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "cast iron pipe lining",
+    "descaling cast iron pipe",
+    "nibco pex",
+    "lead service line replacement",
+    "water heater expansion tank",
+    "backflow test"
+  ],
+  "keywords": []
+}
