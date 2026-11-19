@@ -1,0 +1,99 @@
+{
+  "_status": "DRAFTED 2026-11-19 -- guides/burst-pipe-what-to-do-insurance.md; report-4 plan item #7; awaiting owner review, not published.",
+  "slug": "burst-pipe-what-to-do-insurance",
+  "question": "A pipe just burst in my house. What do I do in the next few minutes, and will homeowners insurance pay for the damage?",
+  "verdictConfirmed": "Regulators say most homeowners policies cover damage from a 'sudden and accidental' discharge from plumbing, with a condition: the home was kept heated (and, if vacant, the water shut off and drained). A burst pipe inside one house is not a 'flood' under the federal flood policy, which needs two or more acres or two or more properties. First steps: close the main valve, keep away from wet electrics, dry within 24-48 hours.",
+  "decisionMap": [
+    { "q": "How do I stop the water?", "where": "this page (Charlotte Water valve locations and how to close each valve type)" },
+    { "q": "Is it safe with the power on?", "where": "this page (Ready.gov)" },
+    { "q": "Will homeowners insurance pay?", "where": "this page (DC DISB, NAIC, Massachusetts DOI)" },
+    { "q": "What if the house was empty or the heat was off?", "where": "this page (DC DISB vacancy line); leaving-home prevention is #366" },
+    { "q": "Is it a flood? Will flood insurance pay?", "where": "this page (44 CFR Part 61 App. A(1) flood definition)" },
+    { "q": "How fast before mold?", "where": "this page (EPA 24-48 hours); coverage of mold is #346" },
+    { "q": "Is the rest of the plumbing the same age/material?", "where": "this page (engine galvanized_supply / polybutylene_supply); identification is #320, polybutylene #24/#313" },
+    { "q": "The pipe outside, between the street and the house?", "where": "#345 (link only)" },
+    { "q": "How do I make the claim (photos, receipts)?", "where": "#366 already gives Connecticut's claim steps; link, don't repeat" },
+    { "q": "Does the policy pay to fix the pipe itself, and to open the wall?", "where": "SKIPPED -- the policy text (ISO HO 00 03) was blocked at both regulator copies; told to ask the insurer instead" }
+  ],
+  "facts": [
+    {
+      "id": "b1",
+      "claim": "Charlotte Water (city utility) says the master shut-off valve is on the house side of the meter inside the house: near the front wall closest to the street in a basement or crawl space home, near the water heater or in the garage on a slab, typically where plumbing enters the building. Gate valves turn clockwise; ball valves turn perpendicular to the pipe.",
+      "quote": "If a water pipe bursts, it is important to know how to turn the water off before your home is flooded. Your master shut off valve is located on the house side of your meter inside the house. If you have a basement or crawl space, the main water shut-off is probably located in the basement, near the front wall of your home (closest to the street). If your home was built on a slab, the main water shut-off could be located near your hot water heater or inside of your garage. Master Shut-off valve for your drinking water is typically where plumbing enters a building. Once you find the shutoff valve you will either hand turn it (clockwise for gate valves and perpendicular to the pipe for ball valves).",
+      "url": "https://www.charlottenc.gov/water/Customer-Care/Fixes-Troubleshooting",
+      "readOn": "2026-11-19",
+      "method": "browser"
+    },
+    {
+      "id": "b2",
+      "claim": "Ready.gov (FEMA) flood guidance: do not touch wet electrical equipment or touch electrical equipment while standing in water; turn off electricity only if it is safe to do so. Page last updated 11/18/2026.",
+      "quote": "Do not touch electrical equipment if it is wet or if you are standing in water. Turn off the electricity to prevent electric shock if it is safe to do so.",
+      "url": "https://www.ready.gov/floods",
+      "readOn": "2026-11-19",
+      "method": "browser"
+    },
+    {
+      "id": "b3",
+      "claim": "DC Department of Insurance, Securities and Banking: most homeowner policies generally cover damage from a frozen pipe that bursts when the damage resulted from a 'sudden and accidental' discharge from a plumbing source; the policy may not respond if you neglected to safeguard the property; policies usually require heat to be maintained, some a certain temperature even if vacant; a vacant or unoccupied property with no heat should have the water supply shut off and the systems drained.",
+      "quote": "Most homeowner and commercial property insurance policies, in general, will cover damage from a frozen pipe that bursts. Coverage usually exists if the policy contains the following or similar language: Coverage is provided when it is determined damage resulted from a “sudden and accidental” discharge from a plumbing source or system ... your insurance policy may not respond if it appears you neglected to take the proper steps to safeguard your property. Your policy usually requires that heat be maintained within the property, and some policies require that you maintain a certain temperature, even if the property is vacant, occupied or unoccupied. ... If your vacant or unoccupied property has no heat, be sure to shut off the water supply and drain the system(s) and appliance(s) of water to avoid freezing pipes.",
+      "url": "https://disb.dc.gov/page/if-my-frozen-pipes-burst-am-i-covered-insurance",
+      "readOn": "2026-11-19",
+      "method": "browser"
+    },
+    {
+      "id": "b4",
+      "claim": "Massachusetts Division of Insurance, 1/21/2026: in 2024, 48.6% of homeowners' insurance claims in Massachusetts were for non-flood water losses and freezing-related damage.",
+      "quote": "According to our most recent home insurance report, in 2024, 48.6% of homeowners’ insurance claims in Massachusetts were for non‑flood water losses and freezing‑related damage.",
+      "url": "https://www.mass.gov/news/massachusetts-cold-snap-dont-let-frozen-pipes-become-your-next-insurance-claim",
+      "readOn": "2026-11-19",
+      "method": "browser"
+    },
+    {
+      "id": "b5",
+      "claim": "NAIC consumer article (dateModified 2024-02-08): homeowners policies cover damage from a 'sudden and accidental' discharge from a plumbing system; policies generally require a minimum temperature; if the insurer determines you neglected your plumbing system, burst-pipe damage may not be covered.",
+      "quote": "Homeowners policies cover damage from a “sudden and accidental” discharge from a plumbing system. ... Policies generally require homeowners to maintain the home at a minimum temperature ... If your insurance company determines you neglected your plumbing system ... the damage from a burst pipe may not be covered.",
+      "url": "https://content.naic.org/article/will-my-homeowners-insurance-policy-cover-water-damage-burst-pipe",
+      "readOn": "2026-11-19",
+      "method": "webfetch"
+    },
+    {
+      "id": "b6",
+      "claim": "The federal Standard Flood Insurance Policy (Dwelling Form, 44 CFR Part 61, Appendix A(1)) defines flood as a general and temporary condition of inundation of two or more acres of normally dry land or of two or more properties (one of which is yours), from overflow of inland or tidal waters, unusual and rapid accumulation or runoff of surface waters, or mudflow. A pipe bursting inside one house does not meet that definition.",
+      "quote": "Flood, as used in this flood insurance policy, means: 1. A general and temporary condition of partial or complete inundation of two or more acres of normally dry land area or of two or more properties (one of which is your property) from: a. Overflow of inland or tidal waters; b. Unusual and rapid accumulation or runoff of surface waters from any source; c. Mudflow.",
+      "url": "https://www.law.cornell.edu/cfr/text/44/appendix-A(1)_to_part_61",
+      "readOn": "2026-11-19",
+      "method": "browser (eCFR API returned 503; read on Cornell LII)"
+    },
+    {
+      "id": "b7",
+      "claim": "EPA (page last updated February 18, 2026): dry water-damaged areas and items within 24-48 hours to prevent mold growth; mold may be hidden behind drywall, under carpets and pads.",
+      "quote": "It is important to dry water-damaged areas and items within 24-48 hours to prevent mold growth. ... If wet or damp materials or areas are dried 24-48 hours after a leak or spill happens, in most cases mold will not grow. ... Mold may be hidden in places such as the back side of dry wall, wallpaper, or paneling, the top side of ceiling tiles, the underside of carpets and pads",
+      "url": "https://www.epa.gov/mold/brief-guide-mold-moisture-and-your-home",
+      "readOn": "2026-11-19",
+      "method": "browser"
+    },
+    {
+      "id": "b8",
+      "claim": "Our report engine: galvanized_supply applies to houses built 1800-1969 and polybutylene_supply to 1978-1996; both price a whole-home repipe at $4,000 - $15,000.",
+      "quote": "galvanized_supply minYear 1800 maxYear 1969; polybutylene_supply minYear 1978 maxYear 1996; typicalRepairCost 'Whole-home repipe $4,000 – $15,000'",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES) -- read at publish time, never retyped",
+      "readOn": "2026-11-19",
+      "method": "engine"
+    }
+  ],
+  "firstPartyQueryEvidence": "Bing AI Topic Portfolio export (2026-11-04): 'what to do with a burst pipe now', 'homeowners insurance water damage coverage', 'water pipe insurance for homeowners', 'water damage coverage' -- AI answers cite other sites, not ours. topic-demand 2026-11-19: Bing exact 41 for 'burst pipe' (relative only), nothing via this site. Never quote these on the page.",
+  "cut": [
+    { "claim": "A gradual leak over weeks or months is excluded", "why": "only in the ISO form (blocked) and the Washington OIC page (404); regulators read only say 'sudden and accidental'" },
+    { "claim": "The policy pays to tear out the wall but not to fix the pipe itself", "why": "ISO HO 00 03 text not reached (Maine and Nevada copies blocked); not stated by any regulator page read" },
+    { "claim": "Open the lowest faucet to drain the lines after shutting off", "why": "plumber and restoration blogs only" },
+    { "claim": "Lawn-weeds fan-out / any average burst-pipe claim cost", "why": "no primary source" }
+  ],
+  "blockedSources": [
+    "maine.gov ISO HO 00 03 05 11 copy -- CloudFront 403 'Request blocked' (2026-11-19); not worked around",
+    "doi.nv.gov ISO HO 00 03 04 91 copy -- 'Request Rejected' WAF page (2026-11-19); not worked around",
+    "insurance.maryland.gov and dfr.vermont.gov frozen-pipe PDFs -- 403 to WebFetch; not opened in the browser (PDFs trigger a download)",
+    "insurance.wa.gov mold/water page -- 404",
+    "ecfr.gov API -- 503 at read time; same regulation read on Cornell LII"
+  ],
+  "overlapNotes": "#366 (Thanksgiving) already quotes Massachusetts' 'properly heated and not left unoccupied' line, the Red Cross 55F floor, thawing steps and Connecticut's claim steps -- this page does NOT repeat them; it links #366 for the leaving-home case. #346 owns mold coverage, #345 the service line, #231 sump pumps, #340 fall prevention, #320 pipe identification, #24/#313 polybutylene."
+}

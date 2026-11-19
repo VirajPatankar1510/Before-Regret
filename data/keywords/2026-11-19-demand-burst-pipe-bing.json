@@ -1,0 +1,44 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-19T13:44:04.871Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "burst pipe",
+    "frozen pipe insurance",
+    "water damage coverage",
+    "pipe burst what to do"
+  ],
+  "keywords": [
+    {
+      "keyword": "burst pipe",
+      "search_volume": 41,
+      "metric": "market",
+      "broad_impressions": 41,
+      "kind": "seed"
+    },
+    {
+      "keyword": "frozen pipe insurance",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "water damage coverage",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "pipe burst what to do",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}
