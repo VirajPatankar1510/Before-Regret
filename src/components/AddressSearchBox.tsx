@@ -218,6 +218,29 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   // same panel as the address confirmation -- shown as its own modal so it reads as a distinct
   // step rather than adding more clutter to an already-busy confirmation panel.
   const [showPropertyTypeModal, setShowPropertyTypeModal] = useState(false);
+  // Audit 2026-11-19 (F13): the pop-up had no dialog role, Escape did nothing and focus stayed on the page behind it.
+  // On open: focus moves into it, Tab stays inside it, Escape closes it; on close, focus returns to where it was.
+  const propertyTypeDialogRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!showPropertyTypeModal) return;
+    const opener = document.activeElement as HTMLElement | null;
+    const dialog = propertyTypeDialogRef.current;
+    dialog?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.preventDefault(); setShowPropertyTypeModal(false); return; }
+      if (e.key !== 'Tab' || !dialog) return;
+      const items: HTMLElement[] = Array.from<HTMLElement>(dialog.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), select, textarea, a[href], [tabindex]:not([tabindex="-1"])'));
+      if (items.length === 0) return;
+      const first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && (document.activeElement === first || document.activeElement === dialog)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      if (opener && document.contains(opener)) opener.focus();
+    };
+  }, [showPropertyTypeModal]);
 
   const [mapSearchQuery, setMapSearchQuery] = useState(() => {
     try {
@@ -1047,7 +1070,12 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           onClick={() => setShowPropertyTypeModal(false)}
         >
           <div
-            className="w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4"
+            ref={propertyTypeDialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="property-type-dialog-title"
+            tabIndex={-1}
+            className="w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4 focus:outline-none"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-3">
@@ -1055,7 +1083,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                 <div className="text-[10px] font-mono font-bold text-blue-600 uppercase tracking-wider">
                   One more step
                 </div>
-                <h3 className="text-base sm:text-lg font-bold text-slate-900">What type of property is this?</h3>
+                <h3 id="property-type-dialog-title" className="text-base sm:text-lg font-bold text-slate-900">What type of property is this?</h3>
                 <p className="text-xs text-slate-500 truncate">{selectedPinResult.displayName}</p>
               </div>
               <button

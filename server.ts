@@ -1,4 +1,5 @@
 import express, { type Request, type Response } from "express";
+import { clientIp } from "./src/server/clientIp.js";
 import path from "path";
 import fs from "fs";
 import dotenv from "dotenv";
@@ -82,6 +83,18 @@ const KNOWN_STATIC_ROUTE_PREFIXES = [
   '/insights/', '/report/', '/reports/',
 ];
 
+// Audit 2026-11-19 (F2): routes from the list above that have NO child pages, or only the named ones. The one-segment
+// rule below let /about/<anything>, /terms/<anything>, /advertise/<anything> etc. answer 200 with the shell, and the
+// client's startsWith() routing then drew the real page there: an endless set of duplicate-content soft 404s. Checked
+// against App.tsx and every return URL the payment code builds (2026-11-19): only /topic-ads/success and
+// /report-ads/success exist below these.
+const ROUTE_CHILDREN: Record<string, string[]> = {
+  '/advertise': [], '/my-ads': [], '/about': [], '/support': [], '/terms': [], '/privacy': [], '/refunds': [],
+  '/refund-policy': [], '/disclaimer': [], '/accessibility': [], '/payment-success': [], '/payment-cancelled': [],
+  '/tools/inspection-decoder': [], '/tools/house-research': [],
+  '/topic-ads': ['success'], '/report-ads': ['success'],
+};
+
 // Only read when this file bootstraps its own listener (npm run dev / npm start); Vercel never
 // reaches the app.listen() below. The env override exists so the dev server and a local
 // production build (node dist/server.cjs, serving the real prerendered dist/) can run at the same
@@ -114,14 +127,22 @@ export async function createApp() {
   // homepage pages, which are all prerendered static files that never reach this Express app at
   // all). This route is just the DB-write half: middleware.ts fire-and-forget POSTs here with the
   // bot name it already matched, since the Neon driver's schema-ensuring code has no business
-  // running inside an edge isolate. No auth -- this is a same-origin, fire-and-forget internal
+  // running inside an edge isolate. Originally no auth -- this is a same-origin, fire-and-forget internal
   // call carrying no sensitive data (a bot name, a path, a user-agent string), and requiring auth
   // would mean provisioning and shipping a secret to the edge runtime for no real protection.
   // Always responds 204 immediately without awaiting the write, matching logAiCrawlerVisit's own
   // fire-and-forget contract -- a slow or failed DB write must never make this endpoint (or the
   // edge middleware's fetch to it) hang or error.
+  //
+  // Audit 2026-11-19 (F17): with no check at all, anyone could POST rows into ai_crawler_visits, the table the
+  // LLM-citation measurement reads. middleware.ts now sends CRON_SECRET (already set for the Vercel cron, and
+  // readable by the edge runtime) in X-Internal-Log; a request without it is answered the same 204 and not written,
+  // so nothing tells a caller which it was. If CRON_SECRET isn't set on a deployment, logging carries on as before
+  // rather than silently stopping.
   app.post('/api/internal/log-ai-crawler', (req, res) => {
     res.status(204).end();
+    const secret = process.env.CRON_SECRET;
+    if (secret && req.get('x-internal-log') !== secret) return;
     const { botName, path, userAgent } = req.body || {};
     if (typeof botName === 'string' && typeof path === 'string' && typeof userAgent === 'string') {
       void logAiCrawlerVisit(botName, path, userAgent);
@@ -158,7 +179,7 @@ export async function createApp() {
   }
 
   function requestIp(req: Request): string {
-    return String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim();
+    return clientIp(req);
   }
 
   // Best-effort identity capture for generate-report, NOT a gate -- unlike requireVerifiedUser
@@ -370,8 +391,14 @@ export async function createApp() {
     res.send(INDEXNOW_KEY);
   });
 
-  // IndexNow API Submission Proxy Endpoint
+  // IndexNow API Submission Proxy Endpoint. Admin session only (audit 2026-11-19, F16): it was open, so anyone could
+  // make the site submit any URL list to IndexNow under this site's key. Nothing in the app calls it -- publishing
+  // pings IndexNow itself (articlesApi.ts) -- so this only stays as a signed-in manual tool.
   app.post("/api/seo/indexnow", async (req, res) => {
+    if (!hasValidSession(req)) {
+      res.status(401).json({ success: false, error: "Sign in required." });
+      return;
+    }
     const { urls } = req.body;
     if (!Array.isArray(urls) || urls.length === 0) {
       res.status(400).json({ success: false, error: "Array of URLs is required." });
@@ -710,7 +737,8 @@ export async function createApp() {
       gateResult.resolvedState || state,
       gateResult.resolvedZip || zipCode,
       county,
-      propertyType
+      propertyType,
+      declaredPropertyType || null
     );
     const addressKey = resolvedMeta.formattedAddress.toLowerCase();
     const hash = simpleHash(addressKey);
@@ -855,7 +883,8 @@ export async function createApp() {
       gateResult.resolvedState || state,
       gateResult.resolvedZip || zipCode,
       county,
-      propertyType
+      propertyType,
+      declaredPropertyType || null
     );
 
     // BeforeRegret's first genuinely live, confirmed finding (see seismicHazard.ts) -- queried
@@ -1546,6 +1575,9 @@ export async function createApp() {
           // /county/:slug handlers above already do a real existence check for the one-segment
           // case; this only stops the deeper paths that bypass them entirely.
           const rest = path.slice(boundary.length).replace(/\/+$/, '');
+          if (rest === '') return true;
+          const children = ROUTE_CHILDREN[prefix];
+          if (children) return children.includes(rest);
           return !rest.includes('/');
         });
       sendShellWithStatus(res, isKnownRoute ? 200 : 404);
@@ -2140,7 +2172,8 @@ function resolvePropertyMetadata(
   rawState?: string,
   rawZip?: string,
   rawCounty?: string,
-  rawPropertyType?: string
+  rawPropertyType?: string,
+  declaredPropertyType?: string | null
 ): PropertyMetadata {
   const addrLower = (fullAddr || '').toLowerCase();
   const zipStr = rawZip || '78701';
@@ -2227,27 +2260,21 @@ function resolvePropertyMetadata(
   const propType = rawPropertyType || 'Single Family Home';
   const propTypeLower = propType.toLowerCase();
 
+  // Audit 2026-11-19 (F15): this used to also match words in the ADDRESS -- "tower", "enclave", "commons",
+  // "residences", "lofts", "#", " unit", " apt", " ste", " suite" -- and labelled a declared single-family house on
+  // "Tower Ave", a "Commons" street or "Sterling Dr" as "Condo / Multi-Family Complex" at the top of its report.
+  // The same street-word trap as the Lost Trail refusal above. The visitor's declared type is the only thing either
+  // report route knows (runAddressGate refuses a report without one), so it decides; the property-type text is the
+  // fallback for callers that pass no declaration.
   const isMultiFamilyOrApartment =
-    propTypeLower.includes('apartment') ||
-    propTypeLower.includes('condo') ||
-    propTypeLower.includes('multi-family') ||
-    propTypeLower.includes('complex') ||
-    propTypeLower.includes('townhouse') ||
-    addrLower.includes('apartment') ||
-    addrLower.includes('condo') ||
-    addrLower.includes('tower') ||
-    addrLower.includes('enclave') ||
-    addrLower.includes('willow & maple') ||
-    addrLower.includes('willow and maple') ||
-    addrLower.includes('glade on laurel') ||
-    addrLower.includes('#') ||
-    addrLower.includes(' unit') ||
-    addrLower.includes(' apt') ||
-    addrLower.includes(' ste') ||
-    addrLower.includes(' suite') ||
-    addrLower.includes('residences') ||
-    addrLower.includes('lofts') ||
-    addrLower.includes('commons');
+    declaredPropertyType === 'condo_or_multifamily' ||
+    (declaredPropertyType !== 'single_family' && (
+      propTypeLower.includes('apartment') ||
+      propTypeLower.includes('condo') ||
+      propTypeLower.includes('multi-family') ||
+      propTypeLower.includes('complex') ||
+      propTypeLower.includes('townhouse')
+    ));
 
   return {
     formattedAddress: fullAddr,

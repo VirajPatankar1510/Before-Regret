@@ -1,0 +1,12 @@
+Read 2026-11-19 in browser at ecfr.gov (current).
+24 CFR 3282.8(a): "This part applies to all manufactured homes that enter the first stage of production on or after June 15, 1976" -> matches guide #316 ("on or after June 15 1976 (24 CFR 3282.8)").
+24 CFR 3280.5: "data plate affixed in a permanent manner near the main electrical panel or other readily accessible and visible location" -> matches #316 ("near the main electrical panel or another accessible visible spot (24 CFR 3280.5)").
+Not opened: 201.21, 3280.11, 3285.6, 3285.801, 3285.804 (sampled 2 of 7).
+
+Second batch, read 2026-11-19 in the in-app browser at ecfr.gov/current:
+24 CFR 201.21(e)(1),(e)(3),(b)(1): home "placed on a leased site in a manufactured home park"; principal residence; lender gets State/local certification on "vehicular access, water supply, sewage disposal, utility connections", or "a registered civil engineer" where none exist -> matches #316. Label: 201.21 refers to "a label or tag affixed ... in accordance with 24 CFR 3280.8" -> matches "still needs its certification label".
+24 CFR 3280.11(b): label attached "by means that render it difficult to remove without defacing it", carries a label number -> matches.
+24 CFR 3285.6: "no more than 1/4 inch difference between adjacent pier supports ... exterior doors and windows of the home do not bind" -> matches.
+24 CFR 3285.801(e): mate-line gaskets "resist the entry of air, water, water vapor, insects, and rodents at all mate-line locations exposed to the exterior" -> matches.
+24 CFR 3285.804(a)-(c): bottom board inspected for loosening/torn areas, missing insulation replaced, splits resealed, P-traps insulated and covered -> matches.
+Result: 7 of 7 CFR cites on #316 match.

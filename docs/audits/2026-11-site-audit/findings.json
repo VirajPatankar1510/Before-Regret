@@ -1,0 +1,334 @@
+{
+ "audit": "2026-11 site audit",
+ "date": "2026-11-19",
+ "live_commit": "eda92829095f8ef4d99cca3de11c63fc299c846f",
+ "findings": [
+  {
+   "id": "F12",
+   "severity": "High",
+   "status": "CONFIRMED",
+   "title": "Reports say 'Certain recalled panel brands' for every 1950-1989 home",
+   "evidence": [
+    "src/engine/inspectionPriorities.ts:252",
+    "guide #50 body (same sentence)",
+    "guide #321: CPSC closed its FPE Stab-Lok investigation in 1983 without deciding on a safety risk",
+    "local report for a 1985 house showed the line"
+   ],
+   "fix": "Change insuranceRedFlag to: 'Certain panel brands from this era with documented breaker problems -- some insurance carriers decline to write policies on homes that still have them.' Same wording fix in guide #50 (DB body).",
+   "risk": "Engine change: none. Guide #50 is a live ranking page -> needs owner OK, one sentence only.",
+   "effort": "S",
+   "batch": "A"
+  },
+  {
+   "id": "F15",
+   "severity": "High",
+   "status": "CONFIRMED",
+   "title": "Declared single-family homes labelled 'Condo / Multi-Family Complex' when the street name contains tower/commons/enclave/' ste'/#/' unit'",
+   "evidence": [
+    "server.ts:2230-2260 isMultiFamilyOrApartment address-word checks",
+    "local API: 1530 Tower Ave, Superior WI declared single_family -> 'Condo / Multi-Family Complex'"
+   ],
+   "fix": "In resolvePropertyMetadata, drop the addrLower.* checks (keep the propTypeLower ones) and let the declared type decide the label; or pass declaredPropertyType in and map it with PROPERTY_TYPE_LABEL. Same lesson as the 2026-11-19 'Lost Trail' fix.",
+   "risk": "None for SEO. Check that unit-number reports still show Condo via the declared type.",
+   "effort": "S",
+   "batch": "A"
+  },
+  {
+   "id": "F8",
+   "severity": "Medium",
+   "status": "CONFIRMED",
+   "title": "Permit Pulse is two months stale on 20 county guides and the study page",
+   "evidence": [
+    "docs/data/permit-pulse-figures.json generatedAt 2026-09-18, data through 2026-07",
+    "20 guides say 'Right Now ... through July 2026'",
+    "Census co2609y.txt live since 2026-10-27",
+    "study page says 'rebuilt monthly'"
+   ],
+   "fix": "Run scripts/build-permit-pulse.ts, then the inject script dry run, then APPLY=true, rebuild, deploy (the designed monthly refresh).",
+   "risk": "DB writes to 20 live county guides (ranking pages): the refresh only replaces the dated paragraph; needs owner OK.",
+   "effort": "M",
+   "batch": "B"
+  },
+  {
+   "id": "F9",
+   "severity": "Medium",
+   "status": "CONFIRMED",
+   "title": "Hurricane Isaias guides still open with the 9 Oct pre-landfall forecast",
+   "evidence": [
+    "#327 and #328 body start (DB)",
+    "live HTML: 'was expected to reach ... that evening'"
+   ],
+   "fix": "Rewrite the opening paragraph of #327 and #328 in past tense from the NHC report (verify landfall facts at nhc.noaa.gov first).",
+   "risk": "Two live pages; owner OK per page; needs verified facts.",
+   "effort": "S",
+   "batch": "B"
+  },
+  {
+   "id": "F14",
+   "severity": "Medium",
+   "status": "CONFIRMED",
+   "title": "Research tool promises to 'put the date on your report' but the date is missing",
+   "evidence": [
+    "HouseResearchTool.tsx:203 promise",
+    "researchState.ts:307-316 forDeadline does not rewrite 'before your inspection deadline'",
+    "HouseResearchTool.tsx:600 date only in 'To confirm before' block",
+    "local run: deadline Nov 29 set, report shows no date"
+   ],
+   "fix": "In forDeadline also replace 'before your inspection deadline' with 'before <date>' when a deadline is ahead, and show 'Deadline <date>' in the report header whenever state.deadline is set.",
+   "risk": "None (noindex tool).",
+   "effort": "S",
+   "batch": "A"
+  },
+  {
+   "id": "F2",
+   "severity": "Medium",
+   "status": "CONFIRMED",
+   "title": "Soft 404: /about/x/, /advertise/x/, /terms/x/, /accessibility/x/ answer 200 with the homepage",
+   "evidence": [
+    "evidence/soft404.txt",
+    "server.ts:72-83 + 1525-1550 allow one segment under every prefix"
+   ],
+   "fix": "Split KNOWN_STATIC_ROUTE_PREFIXES into exact pages (/about, /terms, /privacy, /refunds, /refund-policy, /disclaimer, /accessibility, /support, /advertise, /payment-*) and prefixes that really take a child (/guides/, /counties/, /insights/, /report/, /reports/, /topic-ads/success, /report-ads/..., /my-ads/...). Only the second list allows a segment.",
+   "risk": "Check App.tsx children first (e.g. /advertise/topic-ads, /report-ads/success) so no real page starts to 404.",
+   "effort": "S",
+   "batch": "A"
+  },
+  {
+   "id": "F16",
+   "severity": "Medium",
+   "status": "CONFIRMED",
+   "title": "/api/seo/indexnow has no authentication",
+   "evidence": [
+    "server.ts:374-382",
+    "local server: unauthenticated POST only refused when the URL list is missing"
+   ],
+   "fix": "Require an admin session (hasValidSession) or remove the route (publishing already pings IndexNow from articlesApi.ts:774).",
+   "risk": "None.",
+   "effort": "S",
+   "batch": "A"
+  },
+  {
+   "id": "F6",
+   "severity": "Medium",
+   "status": "CONFIRMED",
+   "title": "Engine cost ranges have no recorded source but appear on reports and guides",
+   "evidence": [
+    "src/engine/inspectionPriorities.ts (28 $ lines, no source field)",
+    "plan doc notes the 42 cost fields are untraced",
+    "local report shows them"
+   ],
+   "fix": "Add a source field per cost (or a costs ledger) and a gate that fails an untraced cost; until then label ranges 'typical ranges, not quotes' (already partly there).",
+   "risk": "Research effort; guides that quote engine figures inherit the fix.",
+   "effort": "L",
+   "batch": "C"
+  },
+  {
+   "id": "F7",
+   "severity": "Medium",
+   "status": "CONFIRMED",
+   "title": "81 of 136 guides have no fact ledger; several high-traffic ones cite no source",
+   "evidence": [
+    "evidence/ledger-coverage.json",
+    "evidence/top-pages-claims.json (e.g. #235 open-ground: 0 sources)"
+   ],
+   "fix": "Backfill ledgers for the top-traffic unledgered guides first, one page at a time.",
+   "risk": "Ranking pages: verify-only work is safe; any body edit needs owner OK per page.",
+   "effort": "L",
+   "batch": "C"
+  },
+  {
+   "id": "F18",
+   "severity": "Medium",
+   "status": "CONFIRMED",
+   "title": "npm audit: 1 critical (not reachable), 11 high, 3 moderate in production deps",
+   "evidence": [
+    "evidence/npm-audit.json",
+    "proxy-addr critical not reachable: no 'trust proxy'"
+   ],
+   "fix": "npm audit fix on a branch, run build + gates + smoke test, then deploy.",
+   "risk": "Dependency bumps (express/body-parser/vite) can break the build; test first.",
+   "effort": "M",
+   "batch": "A2"
+  },
+  {
+   "id": "F3",
+   "severity": "Low",
+   "status": "CONFIRMED",
+   "title": "Two research pages contain a second full HTML document inside <head>",
+   "evidence": [
+    "dist/research/high-hazard-dams/index.html and outside-the-zone: 2 doctypes, 2 <html>, 3 <head>, 2 <body>",
+    "scripts/prerender-research.tsx:825 copies the source file's doctype/html/head/body into the outer head"
+   ],
+   "fix": "Before inserting zHead (and the dam equivalent), strip <!DOCTYPE>, <html...>, <head>, </head>, <body...> so only meta/link/style survive.",
+   "risk": "None.",
+   "effort": "S",
+   "batch": "A"
+  },
+  {
+   "id": "F13",
+   "severity": "Low",
+   "status": "CONFIRMED",
+   "title": "Property-type pop-up is not an accessible dialog; decoder paste box has no label",
+   "evidence": [
+    "AddressSearchBox.tsx: no role=dialog / aria-modal / Escape",
+    "browser: Escape leaves it open",
+    "decoder textarea: placeholder only"
+   ],
+   "fix": "Add role='dialog' aria-modal='true' aria-labelledby, Escape to close, focus to first control and back on close; add an aria-label to the textarea.",
+   "risk": "None.",
+   "effort": "S",
+   "batch": "A"
+  },
+  {
+   "id": "F20",
+   "severity": "Low",
+   "status": "CONFIRMED",
+   "title": "Gold eyebrow labels fail contrast (2.8:1); 'QUICK ANSWER' label 4.36:1",
+   "evidence": [
+    "rgb(184,137,92) on rgb(246,243,238) = 2.80:1 at 12px",
+    "rgb(85,112,93) on rgb(226,232,223) = 4.36:1 at 11px"
+   ],
+   "fix": "Darken the eyebrow token to reach at least 4.5:1 on cream (one design-token change).",
+   "risk": "Visual only.",
+   "effort": "S",
+   "batch": "A"
+  },
+  {
+   "id": "F11",
+   "severity": "Low",
+   "status": "CONFIRMED",
+   "title": "Terms 3.6 still offers 'a refund' for a report mismatch though reports are free",
+   "evidence": [
+    "src/components/TermsConditions.tsx:136 vs :122, :131"
+   ],
+   "fix": "Replace 'or a refund determined under our Cancellation & Refund Policy' with nothing (correction or regeneration only) and bump the effective date.",
+   "risk": "Legal text: owner approval.",
+   "effort": "S",
+   "batch": "A"
+  },
+  {
+   "id": "F10",
+   "severity": "Low",
+   "status": "CONFIRMED",
+   "title": "8 guides use banned AI-cliche phrasing",
+   "evidence": [
+    "evidence/aitells-context.txt (#7 #115 #135 #171 #216 #221 #266 #284)"
+   ],
+   "fix": "One-phrase edits per page, e.g. #216 'Here is a comprehensive guide on how to research' -> 'How to research'.",
+   "risk": "Live ranking pages: owner OK per page, never as a batch programme.",
+   "effort": "S",
+   "batch": "C"
+  },
+  {
+   "id": "F17",
+   "severity": "Low",
+   "status": "CONFIRMED",
+   "title": "/api/internal/log-ai-crawler accepts unauthenticated writes",
+   "evidence": [
+    "server.ts:123-129",
+    "local: 204"
+   ],
+   "fix": "Require a shared secret header set by the edge middleware.",
+   "risk": "None.",
+   "effort": "S",
+   "batch": "A"
+  },
+  {
+   "id": "F5",
+   "severity": "Low",
+   "status": "PLAUSIBLE",
+   "title": "Experiment read dates have passed with no recorded result",
+   "evidence": [
+    "MEMORY.md read dates 11-02..11-18",
+    "13 memory files show no recorded read result (pattern search); #300 title read on 11-17 is recorded in the index"
+   ],
+   "fix": "Run the due reads in date order and write each result into its memory file.",
+   "risk": "None.",
+   "effort": "M",
+   "batch": "D"
+  },
+  {
+   "id": "F19",
+   "severity": "Low",
+   "status": "PLAUSIBLE",
+   "title": "Per-IP report cap trusts the leftmost X-Forwarded-For",
+   "evidence": [
+    "server.ts:160"
+   ],
+   "fix": "Use x-real-ip / the platform's client IP header, or the rightmost XFF hop.",
+   "risk": "None.",
+   "effort": "S",
+   "batch": "A"
+  },
+  {
+   "id": "F4",
+   "severity": "Info",
+   "status": "CONFIRMED",
+   "title": "#13 and #22 'Discovered - currently not indexed', 0 Google impressions in 90 days",
+   "evidence": [
+    "evidence/url-inspection.txt",
+    "evidence/page-visibility.json"
+   ],
+   "fix": "None now: #22 restored 2026-11-14 (under 5 weeks); #13 read is due 2026-11-23.",
+   "risk": "-",
+   "effort": "-",
+   "batch": "D"
+  }
+ ],
+ "leads": [
+  {
+   "id": "L1",
+   "title": "msc.fema.gov (#322) and gao.gov (#327) links",
+   "status": "NOT VERIFIED",
+   "reason": "Connection reset / DNS failure from this machine in both browser and curl; likely blocked from this location; not worked around."
+  },
+  {
+   "id": "L2",
+   "title": "Homepage CLS 0.9+ at 1024 px",
+   "status": "PLAUSIBLE",
+   "reason": "Two desktop loads 0.958/0.915 from the footer moving during hydration; 0.000 at 375 px; pane was hidden. Confirm in GSC Core Web Vitals."
+  }
+ ],
+ "dropped": [
+  {
+   "id": "F1",
+   "title": "#312 'truncated'",
+   "reason": "Body ends on a Sources bullet list without a full stop; not truncated."
+  },
+  {
+   "id": "-",
+   "title": "internalSeoNote hit on #195",
+   "reason": "'which is why this page sends you to your inspector' is reader prose."
+  },
+  {
+   "id": "-",
+   "title": "FAQ JSON-LD count = faq_json+1 on 109 guides",
+   "reason": "By design (prerender adds title + quick answer as Q1)."
+  },
+  {
+   "id": "-",
+   "title": "5 titles over 60 chars",
+   "reason": "All in OWNER_LONG_TITLES."
+  },
+  {
+   "id": "-",
+   "title": "h1 count 0 in raw HTML on 2 tools",
+   "reason": "Client-rendered, noindex; h1 present after render."
+  },
+  {
+   "id": "-",
+   "title": "fema.gov x3 + plasticpipe.org timeouts",
+   "reason": "Load in a real browser; script timeouts were bot-side."
+  },
+  {
+   "id": "-",
+   "title": "proxy-addr critical advisory",
+   "reason": "Not reachable: the app never sets 'trust proxy' (kept inside F18 as a dependency bump)."
+  },
+  {
+   "id": "-",
+   "title": "Local bundle has jsxDEV + local file paths",
+   "reason": "Live bundle is a production build without them; local-only."
+  }
+ ]
+}

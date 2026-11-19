@@ -1,0 +1,53 @@
+Scanned 136 article(s) (full corpus).
+
+7 finding(s):
+
+truncated (1):
+[
+ {
+  "id": 312,
+  "slug": "home-insurance-aerial-photos-roof",
+  "title": "Roof Flagged by Aerial Photos? How to Appeal a Nonrenewal",
+  "detail": "Ends mid-sentence: \"…gov\n- Cotality premium projections, reported by Fox Business\""
+ }
+]
+
+deadLink (6):
+[
+ {
+  "id": 313,
+  "slug": "polybutylene-pipes-home-insurance",
+  "title": "Can You Insure a House With Polybutylene Pipes? Repipe Cost",
+  "detail": "External link timed out: https://plasticpipe.org/common/Uploaded%20files/1-PPI/News%20Releases/PPI%20BCD%20TN-31%20News%20Release_03-07-24.pdf"
+ },
+ {
+  "id": 322,
+  "slug": "flood-zone-by-address",
+  "title": "Flood Zone by Address: Look It Up Before You Buy",
+  "detail": "External link fetch failed: https://msc.fema.gov/portal/home"
+ },
+ {
+  "id": 322,
+  "slug": "flood-zone-by-address",
+  "title": "Flood Zone by Address: Look It Up Before You Buy",
+  "detail": "External link timed out: https://www.fema.gov/flood-insurance/risk-rating"
+ },
+ {
+  "id": 322,
+  "slug": "flood-zone-by-address",
+  "title": "Flood Zone by Address: Look It Up Before You Buy",
+  "detail": "External link timed out: https://www.fema.gov/about/glossary/assignment"
+ },
+ {
+  "id": 322,
+  "slug": "flood-zone-by-address",
+  "title": "Flood Zone by Address: Look It Up Before You Buy",
+  "detail": "External link timed out: https://www.fema.gov/flood-maps/change-your-flood-zone"
+ },
+ {
+  "id": 327,
+  "slug": "hurricane-flood-insurance-gulf-coast-homebuyers",
+  "title": "Hurricane Isaias: Flood Risk and Insurance for Gulf Buyers",
+  "detail": "External link timed out: https://www.gao.gov/products/gao-27-108012"
+ }
+]

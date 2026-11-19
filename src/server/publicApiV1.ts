@@ -1,4 +1,5 @@
 import type { Express, Request, Response, NextFunction } from 'express';
+import { clientIp } from './clientIp.js';
 import { withDb, isDbConfigured } from './db.js';
 
 // Versioned, documented, cached, rate-limited public API -- the "clean door" for agents and
@@ -61,7 +62,7 @@ const RATE_LIMIT_MAX_REQUESTS = 30;
 const requestLog = new Map<string, number[]>();
 
 function rateLimit(req: Request, res: Response, next: NextFunction) {
-  const key = (req.headers['x-forwarded-for'] as string)?.split(',')[0].trim() || req.socket.remoteAddress || 'unknown';
+  const key = clientIp(req);
   const now = Date.now();
   const windowStart = now - RATE_LIMIT_WINDOW_MS;
   const timestamps = (requestLog.get(key) || []).filter((t) => t > windowStart);

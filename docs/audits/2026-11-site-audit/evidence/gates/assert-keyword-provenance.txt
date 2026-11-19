@@ -1,0 +1,7 @@
+
+  keyword provenance
+    15 targeted keyword(s), 252 capture file(s)
+    warn  "contractor found unpermitted work" was returned with NO volume; it is real but unquantified
+    warn  "buying a mobile home" was returned with NO volume; it is real but unquantified
+    warn  "how to find out if a house has a lead service line" was returned with NO volume; it is real but unquantified
+    ok  every targeted keyword traces to a capture that contains it

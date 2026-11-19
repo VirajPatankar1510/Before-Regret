@@ -309,7 +309,13 @@ export function forDeadline(text: string, s: ResearchState): string {
   if (!s.deadline) t = NO_DEADLINE.reduce((x, [re, to]) => x.replace(re, to), t);
   else if ((daysLeft(s.deadline) ?? -1) >= 0) {
     const d = formatShortDate(s.deadline);
-    t = t.replace(/before your inspection or option period ends/g, `before ${d}`).replace(/before your deadline/g, `before ${d}`);
+    // Audit 2026-11-19 (F14): the engine's own wordings ("before your inspection deadline", "before your option
+    // period ends") were left as they were, so a visitor who gave a date never saw it in the checklist.
+    t = t.replace(/before your inspection or option period ends/g, `before ${d}`)
+      .replace(/before your deadline/g, `before ${d}`)
+      .replace(/before your inspection deadline/g, `before ${d}`)
+      .replace(/before your option period (ends|closes)/g, `before ${d}`)
+      .replace(/before your inspection period ends/g, `before ${d}`);
   }
   if (s.property.state !== 'TX') t = t.replace(/inspection or option period/g, 'inspection period');
   if (s.stage === 'contract') t = t.replace(/at a showing/g, 'at your inspection').replace(/at your showing/g, 'at your inspection');
@@ -325,14 +331,14 @@ export function forStage(text: string, s: Pick<ResearchState, 'stage'>): string 
     .replace(/before your option period (ends|closes)/g, 'during your option period')
     .replace(/before your inspection period ends/g, 'during your inspection period');
 }
-/** forStage on every string inside a value (the saved report itself is never changed, only what this visitor sees). */
-export function forStageDeep<T>(value: T, s: Pick<ResearchState, 'stage'>): T {
-  if (s.stage === 'contract') return value;
-  if (typeof value === 'string') return forStage(value, s) as unknown as T;
-  if (Array.isArray(value)) return value.map((v) => forStageDeep(v, s)) as unknown as T;
+/** forDeadline on every string inside a value: the area report inside the research report gets the visitor's date
+ *  and stage too (audit 2026-11-19, F14). The saved report itself is never changed, only what this visitor sees. */
+export function forDeadlineDeep<T>(value: T, s: ResearchState): T {
+  if (typeof value === 'string') return forDeadline(value, s) as unknown as T;
+  if (Array.isArray(value)) return value.map((v) => forDeadlineDeep(v, s)) as unknown as T;
   if (value && typeof value === 'object') {
     const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(value as Record<string, unknown>)) out[k] = forStageDeep(v, s);
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) out[k] = forDeadlineDeep(v, s);
     return out as T;
   }
   return value;

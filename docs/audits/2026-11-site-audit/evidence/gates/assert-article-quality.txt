@@ -1,0 +1,9 @@
+
+  article quality
+    136 published, 41 grandfathered on the reproducibility rule
+    66 still thin (grandfathered, not failing the gate)
+
+    clusters under 3 members -- the next guide is worth most here:
+      seasonal-buying (2)
+      house-age (2)
+    ok  no carrier underwriting claims, every guide has a TL;DR, no new thin guides

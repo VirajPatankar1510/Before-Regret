@@ -1,0 +1,12 @@
+200 /about/zzz-audit/ | <link rel="canonical" href="https://www.beforeregret.com/" / | <meta name="robots" content="index, follow, max-image-preview:large" /
+404 /sunlight/zzz-audit/ | <link rel="canonical" href="https://www.beforeregret.com/" / | <meta name="robots" content="index, follow, max-image-preview:large" /
+404 /walkthrough/zzz-audit/ | <link rel="canonical" href="https://www.beforeregret.com/" / | <meta name="robots" content="index, follow, max-image-preview:large" /
+404 /tools/zzz-audit/ | <link rel="canonical" href="https://www.beforeregret.com/" / | <meta name="robots" content="index, follow, max-image-preview:large" /
+200 /advertise/zzz-audit/ | <link rel="canonical" href="https://www.beforeregret.com/" / | <meta name="robots" content="index, follow, max-image-preview:large" /
+404 /insights/zzz-audit/ |  | <meta name="robots" content="noindex, nofollow" /
+301 /report/zzz-audit/ |  | 
+200 /terms/zzz-audit/ | <link rel="canonical" href="https://www.beforeregret.com/" / | <meta name="robots" content="index, follow, max-image-preview:large" /
+200 /accessibility/zzz-audit/ | <link rel="canonical" href="https://www.beforeregret.com/" / | <meta name="robots" content="index, follow, max-image-preview:large" /
+404 /my-placements/ | <link rel="canonical" href="https://www.beforeregret.com/" / | <meta name="robots" content="index, follow, max-image-preview:large" /
+404 /admin/ | <link rel="canonical" href="https://www.beforeregret.com/" / | <meta name="robots" content="index, follow, max-image-preview:large" /
+200 /admin/seo/ | <link rel="canonical" href="https://www.beforeregret.com/admin/seo/" / | <meta name="robots" content="noindex, nofollow" /

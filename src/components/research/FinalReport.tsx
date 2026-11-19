@@ -1,7 +1,7 @@
 import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import type { PropertyReport, PropertySearchResult } from '../../types';
-import { forStageDeep, type ResearchState } from './researchState';
+import { forDeadlineDeep, type ResearchState } from './researchState';
 import type { Updater } from './ui';
 
 // The final outcome of the guided flow (owner, 2026-11-18: "the report should be the final outcome after the
@@ -53,7 +53,7 @@ export const FinalReportView: React.FC<{
 }> = ({ state, update, report, setReport, onReset, findings }) => {
   const [failed, setFailed] = useState(false);
   // The area report's timing lines fit this visitor's stage, as the research section's do.
-  const shown = useMemo(() => (report ? forStageDeep(report, state) : null), [report, state.stage]);
+  const shown = useMemo(() => (report ? forDeadlineDeep(report, state) : null), [report, state.stage, state.deadline, state.property.state]);
 
   // After a reload the report is fetched again by its id; the findings come from this device's storage.
   useEffect(() => {

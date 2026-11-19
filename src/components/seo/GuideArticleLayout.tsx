@@ -122,7 +122,7 @@ export const GuideArticleLayout: React.FC<GuideArticleLayoutProps> = ({
         <div className="max-w-3xl">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-home-brass">
             {kind}
-            {topic && <span className="text-home-oak"> &middot; {topic}</span>}
+            {topic && <span> &middot; {topic}</span>}
           </p>
           <h1 className="mt-3 font-serif text-[2.1rem] leading-[1.1] sm:text-5xl sm:leading-[1.05] font-semibold text-home-ink tracking-[-0.01em] [text-wrap:balance]">
             {article.title}

@@ -1,4 +1,5 @@
 import type { Express, Request, Response } from 'express';
+import { clientIp } from './clientIp.js';
 import { checkVendorWebsite } from '../data/vendorWebsite.js';
 import crypto from 'crypto';
 import { withDb, isDbConfigured } from './db.js';
@@ -42,11 +43,7 @@ const AD_KINDS = new Set(['guide', 'zip']);
 const IP_SALT = process.env.ADMIN_SESSION_SECRET || crypto.randomBytes(32).toString('hex');
 
 export function hashVisitor(req: Request): string {
-  const forwarded = req.headers['x-forwarded-for'];
-  const ip =
-    (typeof forwarded === 'string' ? forwarded.split(',')[0].trim() : '') ||
-    req.socket.remoteAddress ||
-    'unknown';
+  const ip = clientIp(req);
   return crypto.createHmac('sha256', IP_SALT).update(ip).digest('hex').slice(0, 32);
 }
 

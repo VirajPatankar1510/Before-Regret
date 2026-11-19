@@ -1,0 +1,36 @@
+== connect-pex-copper-to-galvanized-pipe
+  ok   ledger: 6 facts, 4 cut, verdict "Yes, both joins are allowed by the IRC, but only through the right fit..."
+  ok   shape: "Can You Connect PEX or Copper to Galvanized Pipe?" / quick opens "Yes, but only through the right fitting. The 2021 Internatio..."
+  ok   numbers: all 7 traced to the ledger
+  ok   code sections: P2906.18, P2906.18.1, P2906.18.3 -- all in the ledger
+  ok   wording: no banned phrasing
+
+  connect-pex-copper-to-galvanized-pipe: gate passed -- next: publish script dry run, then show the owner
+exit=0
+== home-insurance-with-wood-stove
+  ok   ledger: 6 facts, 4 cut, verdict "Yes, a house with a wood stove can be insured, but the stove can raise..."
+  ok   shape: "Can You Get Home Insurance With a Wood Stove?" / quick opens "Yes, a house with a wood stove can be insured, but the stove..."
+  ok   numbers: all 5 traced to the ledger
+  ok   code sections: 211 -- all in the ledger
+  ok   wording: no banned phrasing
+
+  home-insurance-with-wood-stove: gate passed -- next: publish script dry run, then show the owner
+exit=0
+== unpermitted-deck-after-closing-who-pays
+  ok   ledger: 12 facts, 5 cut, verdict "Sometimes. Texas and Washington both make a seller answer, on a statut..."
+  ok   shape: "Can You Make a Seller Pay for an Unpermitted Deck?" / quick opens "Sometimes. If the seller knew the deck was built without a p..."
+  ok   numbers: all 4 traced to the ledger
+  ok   code sections: 5.008 -- all in the ledger
+  ok   wording: no banned phrasing
+
+  unpermitted-deck-after-closing-who-pays: gate passed -- next: publish script dry run, then show the owner
+exit=0
+== home-insurance-cancelled-after-buying-house-roof
+  ok   ledger: 9 facts, 5 cut, verdict "Sometimes, mainly early. In Texas and Florida an insurer has a window ..."
+  ok   shape: "Can You Lose Home Insurance After Closing Over the Roof?" / quick opens "Sometimes, mostly in the first weeks. In Texas and Florida a..."
+  ok   numbers: all 18 traced to the ledger
+  ok   code sections: 551.104, 551.002, 1024.37 -- all in the ledger
+  ok   wording: no banned phrasing
+
+  home-insurance-cancelled-after-buying-house-roof: gate passed -- next: publish script dry run, then show the owner
+exit=0

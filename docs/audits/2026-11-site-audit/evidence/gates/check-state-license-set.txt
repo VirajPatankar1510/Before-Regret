@@ -1,0 +1,12 @@
+
+  state license set: 7 page(s)
+
+  ok   new-mexico-contractor-license-lookup: max overlap 2.8% (with virginia-contractor-license-lookup)
+  ok   oregon-contractor-license-lookup: max overlap 2.6% (with washington-contractor-license-lookup)
+  ok   tennessee-contractor-license-lookup: max overlap 3.2% (with virginia-contractor-license-lookup)
+  ok   texas-contractor-license-lookup: max overlap 2.3% (with tennessee-contractor-license-lookup)
+  ok   virginia-contractor-license-lookup: max overlap 2.3% (with new-mexico-contractor-license-lookup)
+  ok   washington-contractor-license-lookup: max overlap 3.1% (with oregon-contractor-license-lookup)
+  ok   cslb-license-check-california-contractor: max overlap 2.7% (with washington-contractor-license-lookup)
+
+  worst pairwise overlap 3.2% · 0 fail(s), 0 warning(s)

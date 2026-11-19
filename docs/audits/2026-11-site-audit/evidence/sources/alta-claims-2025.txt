@@ -1,0 +1,4 @@
+Guide #304 how-common-are-title-insurance-claims: "161,934 claims from policy years 2014 to 2023 ... underwriters representing over 90% of industry premium volume ... roughly 80% of all claims reported".
+Route 1 (2026-11-19, in-app browser): ALTA news 2025-11-18 "Mortgage Refinances Have Significant Fraud Risks, Study Shows" says "over 90% of the industry's annual premium volume in 2023", "nearly 162,000 claims", "approximately 80% ... policies issued between 2014 and 2023". -> consistent.
+Route 2: ALTA PDF "2025 Analysis of Claims and Claims Related Losses" fetched (200, application/pdf, 373,761 bytes) but no text extractor on this machine (no pdftotext/pypdf/poppler) -> exact 161,934 NOT verified.
+Status: PLAUSIBLE (rounded figure confirmed; exact count unverified).

@@ -1,0 +1,1 @@
+Census API (ACS 5-yr 2023, B25034, key from .env, key not stored): Dallas 1053471/483651, Queens 903598/755317, Riverside 860042/260104, Orange 1138473/653229 -> all four guides match exactly (2019-2023 ACS).

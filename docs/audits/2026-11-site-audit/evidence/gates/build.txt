@@ -1,0 +1,145 @@
+
+> react-example@0.0.0 build
+> npx tsx scripts/build-home-stats.ts && npx tsx scripts/build-permit-index.ts && npx tsx scripts/assert-walkthrough-checks.ts &&npx tsx scripts/generate-sitemap.ts && npx tsx scripts/assert-keyword-provenance.ts && vite build && npx tsx scripts/prerender-guides.tsx && npx tsx scripts/prerender-homepage.tsx && npx tsx scripts/prerender-legal-pages.tsx && npx tsx scripts/prerender-advertise.tsx && npx tsx scripts/prerender-walkthrough.tsx && npx tsx scripts/prerender-research.tsx && npx tsx scripts/prerender-sunlight.tsx && npx tsx scripts/prerender-noindex-routes.tsx && npx tsx scripts/assert-canonical-urls.ts && rm -rf dist/.vite && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs
+
+[build-home-stats] wrote src/data/homeStats.json: outside-zone 26.6%, dams 17049, single-family -3.2%
+[build-permit-index] 25 counties, 76 jurisdictions, 1 state sheets -> src/data/permitRecords/permitIndex.json (141.0 KB)
+[walkthrough] 25 checks, all linking published guides (23 distinct)
+[walkthrough] checks offered per configuration:
+    2010s or newer   slab 11   basement 15   crawlspace 13   unsure 11
+    2000s            slab 12   basement 16   crawlspace 14   unsure 12
+    1990s            slab 13   basement 17   crawlspace 15   unsure 13
+    1980s            slab 14   basement 18   crawlspace 16   unsure 14
+    1970s            slab 15   basement 20   crawlspace 18   unsure 15
+    1960s            slab 16   basement 21   crawlspace 19   unsure 16
+    1950s            slab 15   basement 20   crawlspace 18   unsure 15
+    1940s            slab 15   basement 20   crawlspace 18   unsure 15
+    Before 1940      slab 15   basement 20   crawlspace 18   unsure 15
+Generating static sitemap.xml, child sitemaps, and robots.txt for www.beforeregret.com...
+Sitemap index + 2 child sitemap(s) + robots.txt written to: /Users/viraj/Desktop/Claud Code/Before-Regret/public
+
+  keyword provenance
+    15 targeted keyword(s), 252 capture file(s)
+    warn  "contractor found unpermitted work" was returned with NO volume; it is real but unquantified
+    warn  "buying a mobile home" was returned with NO volume; it is real but unquantified
+    warn  "how to find out if a house has a lead service line" was returned with NO volume; it is real but unquantified
+    ok  every targeted keyword traces to a capture that contains it
+vite v6.4.3 building for production...
+transforming...
+✓ 1837 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                        13.37 kB │ gzip:   5.09 kB
+dist/.vite/manifest.json                               18.48 kB │ gzip:   2.44 kB
+dist/assets/index-Be2McmVT.css                         92.65 kB │ gzip:  15.73 kB
+dist/assets/chevron-right-BLUM3yGR.js                   0.30 kB │ gzip:   0.25 kB
+dist/assets/arrow-left-CKiXwvD3.js                      0.34 kB │ gzip:   0.27 kB
+dist/assets/rotate-ccw-Ws4iPxEt.js                      0.37 kB │ gzip:   0.29 kB
+dist/assets/circle-x-CmMiZpru.js                        0.38 kB │ gzip:   0.28 kB
+dist/assets/credit-card-Jc8Amhbz.js                     0.38 kB │ gzip:   0.30 kB
+dist/assets/mail-C2kbmVI4.js                            0.39 kB │ gzip:   0.31 kB
+dist/assets/copy-BGkW2vDf.js                            0.40 kB │ gzip:   0.31 kB
+dist/assets/link-2-KxgerrSz.js                          0.42 kB │ gzip:   0.31 kB
+dist/assets/database-C10GJcnS.js                        0.42 kB │ gzip:   0.31 kB
+dist/assets/circle-question-mark-Bbj9kS_i.js            0.42 kB │ gzip:   0.31 kB
+dist/assets/eye-BwWoioK5.js                             0.42 kB │ gzip:   0.30 kB
+dist/assets/external-link-DQmDmdj9.js                   0.42 kB │ gzip:   0.30 kB
+dist/assets/flag-hci1eO3p.js                            0.43 kB │ gzip:   0.32 kB
+dist/assets/calendar-DG6o4TQo.js                        0.43 kB │ gzip:   0.31 kB
+dist/assets/list-checks-D0dVXG3j.js                     0.45 kB │ gzip:   0.29 kB
+dist/assets/send-DQzckjUv.js                            0.46 kB │ gzip:   0.34 kB
+dist/assets/printer-DnieAaE1.js                         0.49 kB │ gzip:   0.34 kB
+dist/assets/file-search-BxoBVA6B.js                     0.50 kB │ gzip:   0.35 kB
+dist/assets/file-text-BY_vZTrC.js                       0.51 kB │ gzip:   0.32 kB
+dist/assets/shield-alert-CyC8l8uV.js                    0.53 kB │ gzip:   0.37 kB
+dist/assets/message-circle-question-mark-DF6Rt8XZ.js    0.53 kB │ gzip:   0.37 kB
+dist/assets/scale-B33XJX3k.js                           0.54 kB │ gzip:   0.34 kB
+dist/assets/clipboard-list-DYEzDiFh.js                  0.58 kB │ gzip:   0.37 kB
+dist/assets/mouse-pointer-click-Cg26UQ71.js             0.59 kB │ gzip:   0.39 kB
+dist/assets/sparkles-4mrqUQUe.js                        0.67 kB │ gzip:   0.39 kB
+dist/assets/adClickBeacon-DjehNeJN.js                   0.72 kB │ gzip:   0.48 kB
+dist/assets/ResearchProgressView-LC6sspE_.js            2.35 kB │ gzip:   0.70 kB
+dist/assets/sponsoredVendors-CDUAnFSg.js                2.50 kB │ gzip:   1.21 kB
+dist/assets/PaymentCancelled-B2mLwU0E.js                2.67 kB │ gzip:   0.77 kB
+dist/assets/AdPaidNextStep-DP7CwmCq.js                  3.99 kB │ gzip:   1.13 kB
+dist/assets/SponsoredVendorCard-De4Ds4ii.js             4.34 kB │ gzip:   1.06 kB
+dist/assets/pageTitle-CwrKI_Mt.js                       4.53 kB │ gzip:   2.15 kB
+dist/assets/ReportGatingModal-yJvBkors.js               5.16 kB │ gzip:   1.19 kB
+dist/assets/PaymentSuccess-BtSAmL7j.js                  6.29 kB │ gzip:   1.35 kB
+dist/assets/sellerQuestions-C7N0fQ_s.js                 6.50 kB │ gzip:   2.71 kB
+dist/assets/ResearchSummaryView-DfekU2uQ.js             8.36 kB │ gzip:   1.63 kB
+dist/assets/GuideAdSlot-BzzYz360.js                     9.94 kB │ gzip:   2.65 kB
+dist/assets/GuideAdsCheckoutSuccess-CD-aMALx.js        11.16 kB │ gzip:   2.35 kB
+dist/assets/ZipAdsCheckoutSuccess-DLrrgaor.js          12.87 kB │ gzip:   2.29 kB
+dist/assets/ErrorReportingModal-BkXqohqp.js            12.87 kB │ gzip:   2.65 kB
+dist/assets/GuidesIndexView-DczRjqHP.js                13.49 kB │ gzip:   3.23 kB
+dist/assets/AdminGate-BGasMivh.js                      15.56 kB │ gzip:   2.58 kB
+dist/assets/AboutMethodology-DGoDEsnH.js               20.29 kB │ gzip:   4.31 kB
+dist/assets/Vendors-DV9YwxQW.js                        21.25 kB │ gzip:   5.47 kB
+dist/assets/WalkthroughRadar-Bb1j4Y6E.js               21.52 kB │ gzip:   4.61 kB
+dist/assets/Accessibility-DvCV7zdp.js                  24.68 kB │ gzip:   4.85 kB
+dist/assets/GuideAdsCheckout-CTi_UAzm.js               28.75 kB │ gzip:   6.39 kB
+dist/assets/ContactUs-BaqFkfyB.js                      32.18 kB │ gzip:   5.36 kB
+dist/assets/RefundPolicy-BEBK1Gd_.js                   35.34 kB │ gzip:   5.70 kB
+dist/assets/PrivacyPolicy-DYHIRy4r.js                  36.25 kB │ gzip:   6.51 kB
+dist/assets/Disclaimer-D2IGIpVQ.js                     39.43 kB │ gzip:   8.11 kB
+dist/assets/AdvertiseCompare-CT-wzq_g.js               39.44 kB │ gzip:   6.76 kB
+dist/assets/MyAdsPanel-KDHQWmhE.js                     63.71 kB │ gzip:  10.63 kB
+dist/assets/PropertyReportView-C-TSnZNP.js             66.29 kB │ gzip:  11.39 kB
+dist/assets/TermsConditions-DjFKNn4f.js                70.04 kB │ gzip:  14.00 kB
+dist/assets/InspectionDecoder-DYKJqrOM.js              72.42 kB │ gzip:  18.76 kB
+dist/assets/ClerkAuthBridge-Capq35NV.js                79.90 kB │ gzip:  20.76 kB
+dist/assets/GuidePageView-DNrp1aps.js                 113.06 kB │ gzip:  19.48 kB
+dist/assets/permitIndex-CYgx1qV4.js                   113.26 kB │ gzip:  14.87 kB
+dist/assets/HouseResearchTool-C-19ShZ6.js             119.06 kB │ gzip:  20.29 kB
+dist/assets/SeoAdminPanel-B9DwfRzQ.js                 126.94 kB │ gzip:  20.90 kB
+dist/assets/index-BXs8fPE9.js                         262.32 kB │ gzip:  63.15 kB
+dist/assets/react-vendor-CGPyWLRM.js                  390.92 kB │ gzip: 116.63 kB
+✓ built in 2.51s
+[prerender-guides] Wrote static HTML for 136 published guide(s) to dist/guides/<slug>/index.html
+[prerender-guides] Wrote static HTML for the guides hub to dist/guides/index.html
+[prerender-guides] Wrote dist/llms.txt
+[prerender-homepage] Wrote dist/shell.html (empty, for dead-URL fallback) and overwrote dist/index.html with real homepage content (136 published pages, 0 counties)
+[prerender-legal-pages] Wrote static HTML for 7 page(s): /about/, /support/, /terms/, /privacy/, /disclaimer/, /accessibility/, /refunds/
+[prerender-advertise] Wrote static HTML for /advertise/
+[prerender-walkthrough] Wrote /walkthrough/ with 25 checks and 25 guide links
+[prerender-research] Wrote static HTML for /research/risk-without-cover/ (251 KB)
+[prerender-research] Wrote /research/risk-without-cover/embed/ (104 KB)
+[prerender-research] Wrote static HTML for /research/outside-the-zone/ (130 KB)
+[prerender-research] Wrote /research/outside-the-zone/embed/ (90 KB)
+[prerender-research] Wrote static HTML for /research/high-hazard-dams/ (112 KB)
+[prerender-research] Wrote /research/high-hazard-dams/embed/ (79 KB)
+[prerender-research] Wrote risk-without-price-by-state.csv (51 states)
+[prerender-research] Wrote flood-takeup-by-county.csv (2304 counties)
+[prerender-research] Wrote outside-the-zone-by-county.csv (1921 counties, 263 with no take-up rate)
+[prerender-research] Wrote high-hazard-dams-by-county.csv (2274 counties, NID 2026-08-28)
+[prerender-research] Wrote static HTML for /research/risk-without-price/ (395 KB)
+[prerender-research] Wrote static HTML for /research/allegheny-storm-premium/ (70 KB)
+[prerender-research] Published storm-and-premium county CSV + figures JSON
+[prerender-research] Wrote /research/allegheny-storm-premium/embed/ (17 KB)
+[prerender-research] Wrote static HTML for /research/north-texas-roof-age/ (59 KB)
+[prerender-research] Wrote /research/north-texas-roof-age/embed/ (17 KB)
+[prerender-research] Wrote static HTML for /research/raise-or-remove/ (152 KB)
+[prerender-research] Published raise-or-remove state, ZIP and figures files
+[prerender-research] Wrote /research/raise-or-remove/embed/ (120 KB)
+[prerender-research] Wrote static HTML for /research/oldest-housing/ (211 KB)
+[prerender-research] Published oldest-housing CSV and figures files
+[prerender-research] Wrote /research/oldest-housing/embed/ (165 KB)
+[prerender-research] Wrote static HTML for /research/permit-pulse/ (70 KB, data through 2026-07)
+[prerender-research] Published permit-pulse county and figures files
+[prerender-research] Wrote /research/permit-pulse/embed/ (43 KB)
+[prerender-research] Wrote /research/ index listing 9 studies
+[prerender-research] Verified 37 llms.txt research URLs and every Dataset contentUrl resolve in dist
+[prerender-research] Verified every visible publication date matches its schema datePublished
+[prerender-sunlight] Wrote /sunlight/ (102 KB)
+[prerender-noindex-routes] Wrote noindex shells for /admin/seo/, /topic-ads/, /report-ads/, /report-ads/success/, /topic-ads/success/, /payment-success/, /payment-cancelled/, /my-ads/, /tools/inspection-decoder/, /tools/house-research/
+
+  canonical URLs
+    scanned 273 shipped file(s) in dist/
+    schema checked on 136 guide page(s): Article + FAQPage + BreadcrumbList
+    ok  every emitted guide URL carries its trailing slash
+
+  dist/server.cjs      474.6kb
+  dist/server.cjs.map    1.1mb
+
+⚡ Done in 18ms

@@ -249,7 +249,9 @@ export const PRIORITY_RULES: PriorityRule[] = [
     typicalRepairCost: 'Panel replacement $1,500 – $4,000',
     howToCheck:
       'Ask your inspector to record the panel brand and model in writing, then confirm insurability with your insurance agent before your option period ends.',
-    insuranceRedFlag: 'Certain recalled panel brands from this era — some insurance carriers decline to write policies on homes that still have them.',
+    // Audit 2026-11-19 (F12): said "recalled panel brands". The panels this rule is about were not recalled -- the
+    // CPSC closed its Federal Pacific investigation in 1983 without a finding (see guide #321) -- so the word is gone.
+    insuranceRedFlag: 'Certain panel brands from this era with documented breaker problems — some insurance carriers decline to write policies on homes that still have them.',
   },
 
   // --- Plumbing ---

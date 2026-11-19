@@ -27,6 +27,20 @@ import {
 // markup, with no <head> of its own, because the artifact host supplies its own skeleton. This
 // script supplies the skeleton for the website copy, and adds the two things the artifact does not
 // need and must not have: crawlable site navigation, and real SEO metadata.
+
+// Audit 2026-11-19 (F3): a study's source file is a whole HTML document, and everything before its first
+// <div class="wrap"> used to be pasted into the page's <head> as-is -- so /research/outside-the-zone/ and
+// /research/high-hazard-dams/ each shipped a second <!DOCTYPE>, <html lang="en">, <head> and <body> inside
+// the real <head>. Browsers recover; parsers and validators read it as a broken document. Only the head's
+// contents (styles, scripts, meta) belong there.
+function headContents(sourceHead: string): string {
+  return sourceHead
+    .replace(/<!doctype[^>]*>/gi, '')
+    .replace(/<\/?html\b[^>]*>/gi, '')
+    .replace(/<\/?head\b[^>]*>/gi, '')
+    .replace(/<\/?body\b[^>]*>/gi, '');
+}
+
 const SOURCE = path.join(process.cwd(), 'docs', 'risk-without-price.html');
 
 const CANONICAL_URL = 'https://www.beforeregret.com/research/risk-without-price/';
@@ -566,7 +580,7 @@ ${lookupScript}
       console.error('[prerender-research] risk-without-cover.html has no document body.');
       process.exit(1);
     }
-    const cHead = coverSource.slice(0, cWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
+    const cHead = headContents(coverSource.slice(0, cWrap).replace(/<title>[^<]*<\/title>\s*/i, ''));
     const cBodyRaw = coverSource.slice(cWrap);
     const COVER_URL = 'https://www.beforeregret.com/research/risk-without-cover/';
 
@@ -822,7 +836,7 @@ ${cJsScript}
       console.error('[prerender-research] outside-the-zone.html has no document body.');
       process.exit(1);
     }
-    const zHead = zoneSource.slice(0, zWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
+    const zHead = headContents(zoneSource.slice(0, zWrap).replace(/<title>[^<]*<\/title>\s*/i, ''));
     const zBodyRaw = zoneSource.slice(zWrap);
     const ZONE_URL = 'https://www.beforeregret.com/research/outside-the-zone/';
 
@@ -1070,7 +1084,7 @@ ${zJsScript}
       console.error('[prerender-research] high-hazard-dams.html has no document body.');
       process.exit(1);
     }
-    const dHead = damSource.slice(0, dWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
+    const dHead = headContents(damSource.slice(0, dWrap).replace(/<title>[^<]*<\/title>\s*/i, ''));
     const dBodyRaw = damSource.slice(dWrap);
     const DAM_URL = 'https://www.beforeregret.com/research/high-hazard-dams/';
 
@@ -1532,7 +1546,7 @@ ${dJsScript}
       console.error('[prerender-research] allegheny-storm-premium.html has no document body.');
       process.exit(1);
     }
-    const aHead = algSource.slice(0, aWrap).replace(/<title>[^<]*<\/title>\s*/i, '');
+    const aHead = headContents(algSource.slice(0, aWrap).replace(/<title>[^<]*<\/title>\s*/i, ''));
     const aBody = algSource.slice(aWrap);
     const ALG_URL = 'https://www.beforeregret.com/research/allegheny-storm-premium/';
     const ALG_TITLE = 'Home Insurance in Pittsburgh: Storms vs What You Pay';

@@ -1,0 +1,11 @@
+[walkthrough] 25 checks, all linking published guides (23 distinct)
+[walkthrough] checks offered per configuration:
+    2010s or newer   slab 11   basement 15   crawlspace 13   unsure 11
+    2000s            slab 12   basement 16   crawlspace 14   unsure 12
+    1990s            slab 13   basement 17   crawlspace 15   unsure 13
+    1980s            slab 14   basement 18   crawlspace 16   unsure 14
+    1970s            slab 15   basement 20   crawlspace 18   unsure 15
+    1960s            slab 16   basement 21   crawlspace 19   unsure 16
+    1950s            slab 15   basement 20   crawlspace 18   unsure 15
+    1940s            slab 15   basement 20   crawlspace 18   unsure 15
+    Before 1940      slab 15   basement 20   crawlspace 18   unsure 15

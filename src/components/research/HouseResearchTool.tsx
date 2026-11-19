@@ -526,8 +526,14 @@ export const ResearchFindings: React.FC<{ state: ResearchState; compact?: boolea
   const p = state.property;
   const { checklist, permitRows, missionRows, seller, verify } = collectFindings(state);
   const open = countedQuestions(state).filter((q) => !isSolved(state, q.id));
+  const dl = daysLeft(state.deadline);
   return (
     <div className="space-y-7">
+      {/* The setup screen promises "put the date on your report" (audit 2026-11-19, F14). The answers page already
+          shows it in its header; the full report's research section had no date unless something needed confirming. */}
+      {compact && dl !== null && dl >= 0 && (
+        <p className="text-sm font-semibold text-home-ink">Your deadline: {formatShortDate(state.deadline)} · {dl} day{dl === 1 ? '' : 's'} left</p>
+      )}
       {open.length > 0 && (
         <p className="rounded-2xl bg-home-stone/70 border border-home-linen p-4 text-sm">
           <b>Not answered yet:</b> {open.map((q) => q.title(state)).join(' · ')}

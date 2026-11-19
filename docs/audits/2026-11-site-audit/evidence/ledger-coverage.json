@@ -1,0 +1,778 @@
+{
+ "withLedger": [
+  "get-clue-report-before-buying-house",
+  "get-homeowners-insurance-knob-tube-wiring",
+  "i-buy-house-knob-tube-wiring",
+  "spot-polybutylene-pipes-before-buying-house",
+  "check-building-permits-dallas-county-tx",
+  "check-building-permits-cook-county-il",
+  "check-building-permits-miami-dade-county-fl",
+  "check-building-permits-philadelphia-county-pa",
+  "happens-if-seller-didn-t-disclose-past-insurance-claim",
+  "home-inspection-cover-retaining-walls",
+  "check-building-permits-middlesex-county-ma",
+  "check-building-permits-riverside-county-ca",
+  "check-building-permits-orange-county-ca",
+  "check-building-permits-los-angeles-county-ca",
+  "find-unpermitted-work-before-buying",
+  "connect-pex-copper-to-galvanized-pipe",
+  "home-insurance-with-wood-stove",
+  "unpermitted-deck-after-closing-who-pays",
+  "home-insurance-cancelled-after-buying-house-roof",
+  "eifs-vs-stucco-how-to-tell",
+  "buy-house-with-eifs-stucco",
+  "how-to-choose-eifs-stucco-inspector",
+  "stucco-repair-before-buying-house",
+  "dryvit-house-what-it-means-buyer",
+  "sewer-line-belly-found-inspection",
+  "buying-house-unpermitted-deck-before-closing",
+  "home-insurance-nonrenewal-roof-photo",
+  "mortgage-house-knob-and-tube-wiring",
+  "sewer-scope-before-buying-house",
+  "fall-home-maintenance-checklist-new-homeowners",
+  "when-was-my-house-built-by-address",
+  "dont-skip-the-home-inspection",
+  "city-utilities-vs-septic-water-sewer-costs",
+  "final-walkthrough-checklist-before-closing",
+  "home-insurance-water-sewer-service-line",
+  "homeowners-insurance-cover-mold",
+  "sewer-lateral-inspection-at-sale-cities",
+  "septic-inspection-to-sell-state-rules",
+  "home-insurance-roof-age-law-by-state",
+  "cslb-license-check-california-contractor",
+  "resolve-open-building-permits-before-closing",
+  "option-period-negotiating-home-repairs",
+  "knob-and-tube-wiring-insulation",
+  "is-knob-and-tube-wiring-still-live",
+  "knob-and-tube-removal-cost-permits",
+  "check-building-permits-pinellas-county-fl",
+  "thanksgiving-home-cooking-fires-what-to-check",
+  "daisy-chaining-power-strips-holiday-decorations",
+  "snow-hide-winter-home-inspection",
+  "leaving-home-thanksgiving-checklist",
+  "best-time-to-buy-house-christmas-by-city",
+  "aluminum-wiring-repair-cost-before-closing",
+  "pier-and-beam-foundation-inspection-red-flags",
+  "buying-1970s-house-problems-inspection",
+  "check-building-permits-collier-county-fl"
+ ],
+ "withoutLedger": [
+  [
+   7,
+   "knob-tube-wiring-have-be-replaced-before-closing"
+  ],
+  [
+   23,
+   "will-zinsco-panel-fail-4-point-inspection"
+  ],
+  [
+   25,
+   "negotiate-radon-mitigation-after-inspection"
+  ],
+  [
+   28,
+   "standard-home-inspection-check-asbestos"
+  ],
+  [
+   30,
+   "get-home-insurance-aluminum-wiring"
+  ],
+  [
+   31,
+   "standard-home-inspection-check-eifs-stucco-moisture"
+  ],
+  [
+   35,
+   "home-inspection-check-underground-oil-tanks"
+  ],
+  [
+   37,
+   "amateur-workmanship-mean-home-inspection-report"
+  ],
+  [
+   39,
+   "home-solar-panels-don-t-own-affect-getting-insurance"
+  ],
+  [
+   50,
+   "federal-pacific-stab-lok-panel-inspectors-flag"
+  ],
+  [
+   52,
+   "evidence-prior-repair-mean-home-inspection-report"
+  ],
+  [
+   53,
+   "not-inspected-due-storage-mean-inspection-report"
+  ],
+  [
+   55,
+   "reverse-polarity-mean-electrical-inspection"
+  ],
+  [
+   56,
+   "tpr-valve-inspectors-always-check"
+  ],
+  [
+   57,
+   "get-insurance-house-trampoline-unfenced-pool"
+  ],
+  [
+   71,
+   "get-home-insurance-flat-roof"
+  ],
+  [
+   76,
+   "get-home-insurance-fuse-box"
+  ],
+  [
+   78,
+   "check-harris-county-permit-history-before-buying"
+  ],
+  [
+   82,
+   "check-building-permits-maricopa-county-az"
+  ],
+  [
+   83,
+   "check-code-violations-property-online"
+  ],
+  [
+   87,
+   "check-building-permits-clark-county-nv"
+  ],
+  [
+   91,
+   "check-building-permits-san-diego-county-ca"
+  ],
+  [
+   93,
+   "check-building-permits-manhattan-ny"
+  ],
+  [
+   94,
+   "check-building-permits-brooklyn-ny"
+  ],
+  [
+   99,
+   "home-inspection-check-mold-behind-walls"
+  ],
+  [
+   111,
+   "buying-house-reset-property-tax-assessment-sale-price"
+  ],
+  [
+   115,
+   "us-housing-age-ranking-oldest-vs-newest-counties"
+  ],
+  [
+   135,
+   "buy-house-active-hoa-lawsuit"
+  ],
+  [
+   138,
+   "check-building-permits-queens-ny"
+  ],
+  [
+   140,
+   "check-building-permits-bronx-ny"
+  ],
+  [
+   171,
+   "when-reasonable-walk-away-after-inspection"
+  ],
+  [
+   176,
+   "hvac-techs-wish-buyers-knew-about-system-age"
+  ],
+  [
+   177,
+   "va-loan-require-termite-inspection"
+  ],
+  [
+   180,
+   "seller-back-out-after-accepting-inspection-response"
+  ],
+  [
+   181,
+   "standard-home-inspection-include-termites"
+  ],
+  [
+   182,
+   "wdo-report-who-supposed-order"
+  ],
+  [
+   187,
+   "typical-settlement-cracking-mean-inspection-report"
+  ],
+  [
+   190,
+   "when-foundation-crack-need-structural-engineer"
+  ],
+  [
+   191,
+   "should-buy-house-s-already-had-foundation-repair"
+  ],
+  [
+   197,
+   "home-inspection-include-septic-system"
+  ],
+  [
+   206,
+   "who-s-responsible-shared-well-shared-driveway"
+  ],
+  [
+   208,
+   "check-building-permits-hillsborough-county-fl"
+  ],
+  [
+   210,
+   "check-building-permits-sacramento-county-ca"
+  ],
+  [
+   214,
+   "check-building-permits-broward-county-fl"
+  ],
+  [
+   215,
+   "check-building-permits-san-bernardino-county-ca"
+  ],
+  [
+   220,
+   "check-building-permits-santa-clara-county-ca"
+  ],
+  [
+   223,
+   "check-building-permits-tarrant-county-tx"
+  ],
+  [
+   231,
+   "homeowners-insurance-cover-failed-sump-pump"
+  ],
+  [
+   234,
+   "double-tapped-breaker-did-inspector-flag"
+  ],
+  [
+   235,
+   "open-ground-mean-electrical-inspection"
+  ],
+  [
+   266,
+   "need-gfci-outlets-pass-home-inspection"
+  ],
+  [
+   267,
+   "100-amp-service-enough-house-re-buying"
+  ],
+  [
+   276,
+   "orangeburg-pipe-collapse"
+  ],
+  [
+   284,
+   "happens-if-termite-infestation-found-during-home-inspection"
+  ],
+  [
+   286,
+   "look-up-building-permits-by-address"
+  ],
+  [
+   288,
+   "what-is-knob-and-tube-wiring"
+  ],
+  [
+   289,
+   "splice-romex-knob-tube-wiring"
+  ],
+  [
+   300,
+   "why-cast-iron-pipes-corrode"
+  ],
+  [
+   304,
+   "how-common-are-title-insurance-claims"
+  ],
+  [
+   307,
+   "prove-roof-age-for-insurance"
+  ],
+  [
+   311,
+   "legalize-unpermitted-deck"
+  ],
+  [
+   312,
+   "home-insurance-aerial-photos-roof"
+  ],
+  [
+   313,
+   "polybutylene-pipes-home-insurance"
+  ],
+  [
+   314,
+   "south-facing-house-sun-by-direction"
+  ],
+  [
+   315,
+   "unpermitted-work-behind-the-wall"
+  ],
+  [
+   316,
+   "buying-a-mobile-home-what-to-check"
+  ],
+  [
+   317,
+   "lead-service-line-lookup-by-address"
+  ],
+  [
+   318,
+   "how-to-tell-how-old-a-roof-is"
+  ],
+  [
+   319,
+   "accela-citizen-access-permit-search"
+  ],
+  [
+   320,
+   "identify-water-pipes-pex-copper-galvanized"
+  ],
+  [
+   321,
+   "identify-electrical-panel-brand"
+  ],
+  [
+   322,
+   "flood-zone-by-address"
+  ],
+  [
+   323,
+   "hpd-online-check-nyc-building-violations"
+  ],
+  [
+   327,
+   "hurricane-flood-insurance-gulf-coast-homebuyers"
+  ],
+  [
+   328,
+   "hurricane-home-checklist-flood-insurance"
+  ],
+  [
+   353,
+   "oregon-contractor-license-lookup"
+  ],
+  [
+   354,
+   "washington-contractor-license-lookup"
+  ],
+  [
+   358,
+   "texas-contractor-license-lookup"
+  ],
+  [
+   359,
+   "tennessee-contractor-license-lookup"
+  ],
+  [
+   360,
+   "virginia-contractor-license-lookup"
+  ],
+  [
+   361,
+   "new-mexico-contractor-license-lookup"
+  ]
+ ],
+ "numbersNotInLedger": [
+  {
+   "slug": "check-building-permits-riverside-county-ca",
+   "id": 216,
+   "missing": [
+    "1500",
+    "180",
+    "1891",
+    "1900",
+    "1980",
+    "200",
+    "2025",
+    "22.3",
+    "260104",
+    "28",
+    "3.3",
+    "30.2",
+    "3736",
+    "61.2",
+    "733",
+    "81",
+    "84",
+    "860042"
+   ]
+  },
+  {
+   "slug": "check-building-permits-cook-county-il",
+   "id": 89,
+   "missing": [
+    "130",
+    "14",
+    "140",
+    "1589",
+    "1950",
+    "2025",
+    "2278",
+    "34.8",
+    "3496",
+    "42",
+    "689",
+    "757",
+    "86.8"
+   ]
+  },
+  {
+   "slug": "check-building-permits-los-angeles-county-ca",
+   "id": 222,
+   "missing": [
+    "0.9",
+    "100",
+    "11213",
+    "114.8",
+    "17045",
+    "200",
+    "2000",
+    "2025",
+    "55",
+    "5781",
+    "5832",
+    "60",
+    "90.2"
+   ]
+  },
+  {
+   "slug": "check-building-permits-dallas-county-tx",
+   "id": 79,
+   "missing": [
+    "1053471",
+    "1800",
+    "2.9",
+    "2200",
+    "2886",
+    "3034",
+    "3962",
+    "45.9",
+    "483651",
+    "5.1",
+    "8.3",
+    "98.8"
+   ]
+  },
+  {
+   "slug": "check-building-permits-miami-dade-county-fl",
+   "id": 90,
+   "missing": [
+    "119",
+    "13",
+    "1345",
+    "1390",
+    "2025",
+    "35.3",
+    "40.8",
+    "45",
+    "4857",
+    "6202",
+    "85.1",
+    "9592"
+   ]
+  },
+  {
+   "slug": "check-building-permits-philadelphia-county-pa",
+   "id": 92,
+   "missing": [
+    "100",
+    "2000",
+    "2025",
+    "2462",
+    "342",
+    "374",
+    "75",
+    "76.9",
+    "9.4",
+    "95.2"
+   ]
+  },
+  {
+   "slug": "check-building-permits-collier-county-fl",
+   "id": 371,
+   "missing": [
+    "1.6",
+    "1284",
+    "1305",
+    "14.7",
+    "2025",
+    "2233",
+    "47.8",
+    "642",
+    "949",
+    "95.8"
+   ]
+  },
+  {
+   "slug": "check-building-permits-pinellas-county-fl",
+   "id": 362,
+   "missing": [
+    "1109",
+    "1524",
+    "1772",
+    "37.3",
+    "663",
+    "695",
+    "829",
+    "97.9"
+   ]
+  },
+  {
+   "slug": "check-building-permits-orange-county-ca",
+   "id": 221,
+   "missing": [
+    "1138473",
+    "1960",
+    "1980",
+    "200",
+    "57.4",
+    "653229"
+   ]
+  },
+  {
+   "slug": "check-building-permits-middlesex-county-ma",
+   "id": 213,
+   "missing": [
+    "10",
+    "1997",
+    "54",
+    "780"
+   ]
+  },
+  {
+   "slug": "get-clue-report-before-buying-house",
+   "id": 13,
+   "missing": []
+  },
+  {
+   "slug": "get-homeowners-insurance-knob-tube-wiring",
+   "id": 16,
+   "missing": []
+  },
+  {
+   "slug": "i-buy-house-knob-tube-wiring",
+   "id": 22,
+   "missing": []
+  },
+  {
+   "slug": "spot-polybutylene-pipes-before-buying-house",
+   "id": 24,
+   "missing": []
+  },
+  {
+   "slug": "happens-if-seller-didn-t-disclose-past-insurance-claim",
+   "id": 165,
+   "missing": []
+  },
+  {
+   "slug": "home-inspection-cover-retaining-walls",
+   "id": 195,
+   "missing": []
+  },
+  {
+   "slug": "find-unpermitted-work-before-buying",
+   "id": 287,
+   "missing": []
+  },
+  {
+   "slug": "connect-pex-copper-to-galvanized-pipe",
+   "id": 324,
+   "missing": []
+  },
+  {
+   "slug": "home-insurance-with-wood-stove",
+   "id": 325,
+   "missing": []
+  },
+  {
+   "slug": "unpermitted-deck-after-closing-who-pays",
+   "id": 326,
+   "missing": []
+  },
+  {
+   "slug": "home-insurance-cancelled-after-buying-house-roof",
+   "id": 329,
+   "missing": []
+  },
+  {
+   "slug": "eifs-vs-stucco-how-to-tell",
+   "id": 330,
+   "missing": []
+  },
+  {
+   "slug": "buy-house-with-eifs-stucco",
+   "id": 331,
+   "missing": []
+  },
+  {
+   "slug": "how-to-choose-eifs-stucco-inspector",
+   "id": 332,
+   "missing": []
+  },
+  {
+   "slug": "stucco-repair-before-buying-house",
+   "id": 333,
+   "missing": []
+  },
+  {
+   "slug": "dryvit-house-what-it-means-buyer",
+   "id": 334,
+   "missing": []
+  },
+  {
+   "slug": "sewer-line-belly-found-inspection",
+   "id": 335,
+   "missing": []
+  },
+  {
+   "slug": "buying-house-unpermitted-deck-before-closing",
+   "id": 336,
+   "missing": []
+  },
+  {
+   "slug": "home-insurance-nonrenewal-roof-photo",
+   "id": 337,
+   "missing": []
+  },
+  {
+   "slug": "mortgage-house-knob-and-tube-wiring",
+   "id": 338,
+   "missing": []
+  },
+  {
+   "slug": "sewer-scope-before-buying-house",
+   "id": 339,
+   "missing": []
+  },
+  {
+   "slug": "fall-home-maintenance-checklist-new-homeowners",
+   "id": 340,
+   "missing": []
+  },
+  {
+   "slug": "when-was-my-house-built-by-address",
+   "id": 341,
+   "missing": []
+  },
+  {
+   "slug": "dont-skip-the-home-inspection",
+   "id": 342,
+   "missing": []
+  },
+  {
+   "slug": "city-utilities-vs-septic-water-sewer-costs",
+   "id": 343,
+   "missing": []
+  },
+  {
+   "slug": "final-walkthrough-checklist-before-closing",
+   "id": 344,
+   "missing": []
+  },
+  {
+   "slug": "home-insurance-water-sewer-service-line",
+   "id": 345,
+   "missing": []
+  },
+  {
+   "slug": "homeowners-insurance-cover-mold",
+   "id": 346,
+   "missing": []
+  },
+  {
+   "slug": "sewer-lateral-inspection-at-sale-cities",
+   "id": 347,
+   "missing": []
+  },
+  {
+   "slug": "septic-inspection-to-sell-state-rules",
+   "id": 348,
+   "missing": []
+  },
+  {
+   "slug": "home-insurance-roof-age-law-by-state",
+   "id": 349,
+   "missing": []
+  },
+  {
+   "slug": "cslb-license-check-california-contractor",
+   "id": 350,
+   "missing": []
+  },
+  {
+   "slug": "resolve-open-building-permits-before-closing",
+   "id": 351,
+   "missing": []
+  },
+  {
+   "slug": "option-period-negotiating-home-repairs",
+   "id": 352,
+   "missing": []
+  },
+  {
+   "slug": "knob-and-tube-wiring-insulation",
+   "id": 355,
+   "missing": []
+  },
+  {
+   "slug": "is-knob-and-tube-wiring-still-live",
+   "id": 356,
+   "missing": []
+  },
+  {
+   "slug": "knob-and-tube-removal-cost-permits",
+   "id": 357,
+   "missing": []
+  },
+  {
+   "slug": "thanksgiving-home-cooking-fires-what-to-check",
+   "id": 363,
+   "missing": []
+  },
+  {
+   "slug": "daisy-chaining-power-strips-holiday-decorations",
+   "id": 364,
+   "missing": []
+  },
+  {
+   "slug": "snow-hide-winter-home-inspection",
+   "id": 365,
+   "missing": []
+  },
+  {
+   "slug": "leaving-home-thanksgiving-checklist",
+   "id": 366,
+   "missing": []
+  },
+  {
+   "slug": "best-time-to-buy-house-christmas-by-city",
+   "id": 367,
+   "missing": []
+  },
+  {
+   "slug": "aluminum-wiring-repair-cost-before-closing",
+   "id": 368,
+   "missing": []
+  },
+  {
+   "slug": "pier-and-beam-foundation-inspection-red-flags",
+   "id": 369,
+   "missing": []
+  },
+  {
+   "slug": "buying-1970s-house-problems-inspection",
+   "id": 370,
+   "missing": []
+  }
+ ]
+}

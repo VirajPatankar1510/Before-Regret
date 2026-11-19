@@ -1,0 +1,35 @@
+
+  report CTA clicks, last 28 days (unique visitors per day)
+
+     4  nav_for_advertisers    /
+     4  decoder_view           /tools/inspection-decoder/
+     2  research_start         /
+     2  choose_research        /
+     2  report_address_selected /
+     2  research_first_solved  /tools/house-research/
+     2  research_details_done  /tools/house-research/
+     1  choose_quick_report    /
+     1  report_submit          /
+     1  guide_closing_report   /guides/check-building-permits-cook-county-il/
+     1  guide_closing_report   /guides/lead-service-line-lookup-by-address/
+     1  nav_free_report        /guides/splice-romex-knob-tube-wiring/
+     1  addon_demo_view_client /tools/add-on-finder/
+     1  addon_demo_view_inspector /tools/add-on-finder/
+     1  research_report_done   /tools/house-research/
+
+  total 26
+
+  by device (report actions only)
+
+     2  guide_closing_report     unknown
+     1  report_address_selected  desktop
+     1  report_address_selected  phone
+     1  report_submit            desktop
+
+  research tool funnel
+
+     2  choose_research
+     2  research_start
+     2  research_details_done
+     2  research_first_solved
+     1  research_report_done

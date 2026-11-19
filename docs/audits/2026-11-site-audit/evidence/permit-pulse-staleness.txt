@@ -1,0 +1,4 @@
+docs/data/permit-pulse-figures.json generatedAt 2026-09-18, period yearToDateThrough 2026-07 (sources co2607y.txt / co2507y.txt).
+20 published county guides carry "What <County> Is Permitting Right Now" with "Source: ... year to date through July 2026" (ids 78 79 82 89 90 91 92 93 94 138 208 210 214 215 216 220 222 223 362 371).
+Census HEAD 2026-11-19: co2608y.txt 200, co2609y.txt 200 (last-modified Tue, 27 Oct 2026 11:45:25 GMT), co2610y.txt 404.
+=> Two newer months are published; memory beforeregret_permit_pulse.md says re-run monthly.

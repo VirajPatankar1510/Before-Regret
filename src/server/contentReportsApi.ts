@@ -1,4 +1,5 @@
 import type { Express, Request, Response } from 'express';
+import { clientIp } from './clientIp.js';
 import { withDb, isDbConfigured } from './db.js';
 import { requireAdmin } from './adminAuth.js';
 
@@ -21,9 +22,8 @@ function clean(value: unknown, max: number): string {
 }
 
 function requestIp(req: Request): string | null {
-  const fwd = req.headers['x-forwarded-for'];
-  if (typeof fwd === 'string' && fwd.length > 0) return fwd.split(',')[0].trim();
-  return req.socket?.remoteAddress || null;
+  const ip = clientIp(req);
+  return ip === 'unknown' ? null : ip;
 }
 
 export function registerContentReportRoutes(app: Express) {

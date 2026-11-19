@@ -1,0 +1,4 @@
+Read 2026-11-19 in browser, leginfo.legislature.ca.gov HSC 19850 and 19851.
+19850: "The building department of every city or county shall maintain an official copy ... of the plans of every building, during the life of the building, for which the department issued a building permit." ... "Except for plans of a common interest development ... plans need not be filed for: (a) Single or multiple dwellings not more than two stories and basement in height."
+19851(a): "shall be open for inspection only on the premises of the building department as a public record. The copy may not be duplicated in whole or in part except (1) with the written permission ..."
+Guide #215 check-building-permits-san-bernardino-county-ca claims: plans kept for life of building; most houses exempt; condos (CID) not exempt; look but not copy. -> MATCHES.

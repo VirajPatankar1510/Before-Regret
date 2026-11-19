@@ -170,7 +170,7 @@ export const InspectionDecoder: React.FC<Props> = ({ onNavigate }) => {
               <ChevronDown className="w-4 h-4 text-slate-400 transition-transform group-open:rotate-180" aria-hidden="true" />
             </summary>
             <div className="px-4 pb-4">
-              <textarea id="decoder-paste" value={pasted} onChange={(e) => { setPasted(e.target.value); setScanNote(''); }} rows={4}
+              <textarea id="decoder-paste" aria-label="Inspection report text to scan for terms" value={pasted} onChange={(e) => { setPasted(e.target.value); setScanNote(''); }} rows={4}
                 placeholder="Paste a paragraph or two. It’s scanned here in your browser and never sent anywhere."
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" />
               <div className="mt-2 flex flex-wrap items-center gap-3">

@@ -1,0 +1,12 @@
+Inspecting 2 URL(s) passed on the command line.
+
+.   [  1/2] Discovered - currently not indexed https://www.beforeregret.com/guides/get-clue-report-before-buying-house/
+.   [  2/2] Discovered - currently not indexed https://www.beforeregret.com/guides/i-buy-house-knob-tube-wiring/
+
+=== SUMMARY ===
+checked           : 2
+indexed           : 0
+errors            : 0
+
+coverage state breakdown:
+     2  Discovered - currently not indexed

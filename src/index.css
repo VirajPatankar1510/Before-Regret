@@ -25,9 +25,11 @@
   --color-home-stone: #f6f3ee;
   --color-home-linen: #ece6dc;
   --color-home-oak: #b8895c;
-  --color-home-brass: #9c7742;
+  /* brass + moss darkened 2026-11-19 (audit F20): small uppercase labels in brass were 3.7:1 on stone and the moss
+     "Quick answer" label 4.36:1 on sage; WCAG AA needs 4.5:1. Now 5.3:1 and 4.8:1. Oak stays: it is mostly used on navy. */
+  --color-home-brass: #7f5f35;
   --color-home-sage: #e2e8df;
-  --color-home-moss: #55705d;
+  --color-home-moss: #4f6957;
   --color-home-brick: #9b4a3a;
 }
 

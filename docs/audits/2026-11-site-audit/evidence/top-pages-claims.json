@@ -1,0 +1,129 @@
+{
+ "open-ground-mean-electrical-inspection": {
+  "cites": [],
+  "money": [],
+  "pct": [],
+  "sources": 0
+ },
+ "splice-romex-knob-tube-wiring": {
+  "cites": [],
+  "money": [],
+  "pct": [],
+  "sources": 0
+ },
+ "standard-home-inspection-check-eifs-stucco-moisture": {
+  "cites": [],
+  "money": [],
+  "pct": [
+   "15%",
+   "16%",
+   "19%",
+   "20%",
+   "28%"
+  ],
+  "sources": 0
+ },
+ "get-home-insurance-fuse-box": {
+  "cites": [],
+  "money": [],
+  "pct": [],
+  "sources": 0
+ },
+ "why-cast-iron-pipes-corrode": {
+  "cites": [],
+  "money": [
+   "$1,500 \u2013 $5,000",
+   "$300 \u2013 $500",
+   "$4,000 \u2013 $15,000"
+  ],
+  "pct": [],
+  "sources": 0
+ },
+ "negotiate-radon-mitigation-after-inspection": {
+  "cites": [],
+  "money": [],
+  "pct": [],
+  "sources": 0
+ },
+ "seller-back-out-after-accepting-inspection-response": {
+  "cites": [],
+  "money": [
+   "$1,000"
+  ],
+  "pct": [],
+  "sources": 0
+ },
+ "check-building-permits-san-bernardino-county-ca": {
+  "cites": [
+   "Section 19851",
+   "section 19850"
+  ],
+  "money": [],
+  "pct": [
+   "22.9%",
+   "39.5%",
+   "7.8%",
+   "93.7%"
+  ],
+  "sources": 0
+ },
+ "south-facing-house-sun-by-direction": {
+  "cites": [],
+  "money": [
+   "$6,000 \u2013 $15,000",
+   "$6,000 \u2013 $15,000,"
+  ],
+  "pct": [],
+  "sources": 0
+ },
+ "reverse-polarity-mean-electrical-inspection": {
+  "cites": [],
+  "money": [],
+  "pct": [],
+  "sources": 0
+ },
+ "check-building-permits-san-diego-county-ca": {
+  "cites": [],
+  "money": [],
+  "pct": [
+   "18.7%",
+   "23.2%",
+   "66%",
+   "8.3%",
+   "93.1%"
+  ],
+  "sources": 2
+ },
+ "home-inspection-include-septic-system": {
+  "cites": [],
+  "money": [],
+  "pct": [],
+  "sources": 0
+ },
+ "va-loan-require-termite-inspection": {
+  "cites": [],
+  "money": [
+   "$1,000 \u2013 $9,000",
+   "$1,200 \u2013 $5,000",
+   "$75 \u2013 $150"
+  ],
+  "pct": [],
+  "sources": 0
+ },
+ "check-building-permits-brooklyn-ny": {
+  "cites": [],
+  "money": [],
+  "pct": [
+   "100%",
+   "58.3%",
+   "95%"
+  ],
+  "sources": 4
+ },
+ "need-gfci-outlets-pass-home-inspection": {
+  "cites": [],
+  "money": [],
+  "pct": [],
+  "sources": 0
+ }
+}

@@ -46,7 +46,8 @@ export default function middleware(request: Request, context: { waitUntil?: (pro
   if (ASSET_PATH.test(url.pathname)) return;
   const logPromise = fetch(`${url.origin}/api/internal/log-ai-crawler`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    // The route only writes a row when this matches its CRON_SECRET (audit 2026-11-19, F17).
+    headers: { 'Content-Type': 'application/json', 'X-Internal-Log': process.env.CRON_SECRET || '' },
     body: JSON.stringify({ botName: bot, path: url.pathname, userAgent }),
   }).catch(() => {
     // Best-effort only -- a failed log POST must never surface anywhere a real visitor (or bot)

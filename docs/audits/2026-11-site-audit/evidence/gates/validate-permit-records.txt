@@ -1,0 +1,46 @@
+25 county files, 76 jurisdictions
+
+field                                Verified Partially verified         Not tested           Outdated     Not researched
+permitsIssuedBy                            38                 24                  0                  0                 14
+buildingDepartment                         36                  2                  0                  0                 11
+currentPortal                              24                  7                  0                  0                 18
+portalUrl                                  21                  9                  0                  0                 19
+searchBy                                   15                  1                 12                  0                 21
+addressSearchTested                         8                  1                 40                  0                  0
+onlineRecordsFrom                           3                  7                  0                  0                 39
+historicalSystems                           4                  8                  0                  0                 37
+olderRecordsRequest                         4                  0                  0                  0                 45
+inspectionHistoryVisible                    2                  3                 44                  0                  0
+localCaveats                               21                  2                  0                  0                 26
+
+county file                        jurisdictions  verified fields
+az/04013-maricopa.json                         2  0/12
+ca/06037-los-angeles.json                      7  7/17
+ca/06059-orange.json                           1  4/11
+ca/06065-riverside.json                        1  9/11
+ca/06067-sacramento.json                       2  6/22
+ca/06071-san-bernardino.json                   0  0/0
+ca/06073-san-diego.json                        2  0/22
+ca/06085-santa-clara.json                      2  4/22
+fl/12011-broward.json                          2  4/22
+fl/12021-collier.json                          4  13/34
+fl/12057-hillsborough.json                     4  11/24
+fl/12086-miami-dade.json                       5  7/15
+fl/12103-pinellas.json                        25  50/205
+il/17031-cook.json                             2  12/22
+ma/25017-middlesex.json                        1  2/11
+nv/32003-clark.json                            4  0/14
+ny/36005-bronx.json                            1  5/11
+ny/36047-kings.json                            1  5/11
+ny/36061-new-york.json                         1  5/11
+ny/36081-queens.json                           1  5/11
+pa/42101-philadelphia.json                     1  7/11
+tx/48113-dallas.json                           2  6/12
+tx/48201-harris.json                           2  4/12
+tx/48439-tarrant.json                          1  4/11
+tx/48453-travis.json                           2  6/12
+
+state sheets: 1/51
+  TX: 4/4 shown (outsideCityLimits, outsideCityJobs, nearCityLimits, olderRecordsLaw)
+
+ok  every verified field resolves to a ledger fact, test, script note or quote

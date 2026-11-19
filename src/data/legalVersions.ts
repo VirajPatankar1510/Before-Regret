@@ -65,4 +65,7 @@
 // its 30 days start only once they are, and that an unclaimed hold lapses 30 days after payment; 4.4's
 // licence number is due "before the placement goes live" instead of "at checkout". Changes what a
 // vendor agrees to, hence a new string.
-export const TERMS_VERSION = '2026-11-15.2';
+// 2026-11-19: 3.6 no longer offers a report refund as a remedy for an inaccurate input (site audit F11). Reports have
+// been free since 2026-10-05 and 3.4 already says there is no report purchase to refund, so the two paragraphs
+// contradicted each other. Removes a remedy nobody could use; still a change to the text, hence a new string.
+export const TERMS_VERSION = '2026-11-19';
