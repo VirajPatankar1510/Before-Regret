@@ -80,7 +80,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
 
   const [guides, setGuides] = useState<GuideRow[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [pricePerSlot, setPricePerSlot] = useState(7.99);
+  const [pricePerSlot, setPricePerSlot] = useState(9.99);
   const [slotDurationDays, setSlotDurationDays] = useState(30);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [clusters, setClusters] = useState<ClusterOffer[]>([]);

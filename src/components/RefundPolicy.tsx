@@ -105,7 +105,7 @@ export const RefundPolicy: React.FC<RefundPolicyProps> = ({ onBackToHome, onNavi
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md mx-auto">
                 <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl text-center space-y-1">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">Topic Ad, Per Slot</span>
-                  <div className="text-lg font-black text-blue-900">$7.99 <span className="text-xs font-normal text-blue-600">/ 30 days</span></div>
+                  <div className="text-lg font-black text-blue-900">$9.99 <span className="text-xs font-normal text-blue-600">/ 30 days</span></div>
                   <p className="text-xs text-blue-800 font-medium">One-time charge, no auto-renewal</p>
                 </div>
                 <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-1">

@@ -209,7 +209,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
                 <ArrowRight className="w-5 h-5 text-home-oak transition-transform group-hover:translate-x-1" aria-hidden="true" />
               </div>
               <div className="mt-3 font-serif text-2xl font-semibold">Topic Ads</div>
-              <div className="mt-1 text-sm text-slate-300">$7.99 per article, 30 days</div>
+              <div className="mt-1 text-sm text-slate-300">$9.99 per article, 30 days</div>
               <div className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-home-navy">Buy now</div>
             </ContentLink>
           </div>
@@ -301,7 +301,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               article's quick answer. Everyone who reads that article sees it, wherever they are.
             </p>
             <div className="mt-6 font-serif text-4xl font-semibold text-home-navy">
-              $7.99 <span className="font-sans text-base font-medium text-slate-500">per article, 30 days</span>
+              $9.99 <span className="font-sans text-base font-medium text-slate-500">per article, 30 days</span>
             </div>
             <ul className="mt-6 space-y-3 text-[15px] text-slate-700 leading-relaxed">
               <Bullet>One advertiser per article. While it is yours, nobody else appears on that page.</Bullet>

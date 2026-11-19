@@ -409,7 +409,7 @@ export async function ensureArticlesSchema(): Promise<void> {
   // active right now" is always a live query (paid_through > now() AND active), never a status
   // flag that could drift stale.
   //
-  // No auto-renewal by design: $7.99 buys a flat 30-day window (paid_through), full stop. No
+  // No auto-renewal by design: one payment buys a flat 30-day window (paid_through), full stop. No
   // recurring billing was built for a feature with zero proven vendor demand yet -- the existing
   // PayPal integration here only does one-time orders anyway, and true subscriptions are a
   // separate integration (PayPal Billing Plans + webhooks) not worth building before anyone's

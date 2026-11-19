@@ -30,9 +30,11 @@ export type GuideAdTier = 'standard' | 'geo';
 // The tier column and this two-key shape stay, so the rest of the system (quotes, renewals, the
 // founding-rate lock on stored prices) is untouched -- only the number moved. No guide purchase
 // had ever been made at $29 (guide_ad_purchases was empty on 2026-10-04), so nothing renews at it.
+// 2026-11-19, owner: $7.99 -> $9.99 per article. guide_ad_purchases and guide_ad_orders were both
+// empty that day, so no vendor holds a stored $7.99 price that quoteGuideRenewal would honour.
 export const GUIDE_AD_TIER_PRICES_USD: Record<GuideAdTier, number> = {
-  standard: 7.99,
-  geo: 7.99,
+  standard: 9.99,
+  geo: 9.99,
 };
 
 export const GUIDE_AD_TIER_LABELS: Record<GuideAdTier, string> = {

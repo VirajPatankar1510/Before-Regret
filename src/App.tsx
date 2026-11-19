@@ -765,7 +765,7 @@ export function App() {
     } else if (pseoRoute.type === 'guideAds') {
       applyHeadSeo({
         title: 'Topic Ads | Before Regret',
-        description: 'Self-serve topic-based ad placements on Before Regret -- $7.99 per slot, 30 days, open to any business.',
+        description: 'Self-serve topic-based ad placements on Before Regret -- $9.99 per article, 30 days, open to any business.',
         canonicalUrl: 'https://www.beforeregret.com/topic-ads/',
         robotsDirective: 'noindex, nofollow'
       });

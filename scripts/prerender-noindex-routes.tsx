@@ -59,7 +59,7 @@ const ROUTES: NoindexRoute[] = [
     dir: 'topic-ads',
     title: 'Topic Ads | Before Regret',
     description:
-      'Self-serve topic-based ad placements on Before Regret -- $7.99 per slot, 30 days, open to any business.',
+      'Self-serve topic-based ad placements on Before Regret -- $9.99 per article, 30 days, open to any business.',
     canonical: 'https://www.beforeregret.com/topic-ads/',
   },
   {

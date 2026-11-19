@@ -18,7 +18,7 @@ import {
 } from './adPricing.js';
 
 // Self-serve vendor ad slots on guide pages: one slot per guide, open market (any business, any
-// guide, no trade-category matching required), $7.99 per slot for a flat 30-day window, no
+// guide, no trade-category matching required), $9.99 per slot for a flat 30-day window, no
 // auto-renewal. Used to be two slots per guide ('top', 'bottom') at the same price -- retired
 // because a rational vendor always bought 'top' (it sits right after the Quick Answer; 'bottom'
 // sits after the whole article), so 'bottom' never sold and every guide showed two empty

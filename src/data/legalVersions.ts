@@ -68,4 +68,6 @@
 // 2026-11-19: 3.6 no longer offers a report refund as a remedy for an inaccurate input (site audit F11). Reports have
 // been free since 2026-10-05 and 3.4 already says there is no report purchase to refund, so the two paragraphs
 // contradicted each other. Removes a remedy nobody could use; still a change to the text, hence a new string.
-export const TERMS_VERSION = '2026-11-19';
+// 2026-11-19 (second revision that day): 4.1's Topic Ad price is $9.99 per slot, up from $7.99 (owner
+// decision). The price a vendor agrees to pay is substance, hence a new string.
+export const TERMS_VERSION = '2026-11-19.2';
