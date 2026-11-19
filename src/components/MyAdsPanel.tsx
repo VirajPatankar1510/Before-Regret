@@ -103,7 +103,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   const [editPhone, setEditPhone] = useState('');
   const [editWebsite, setEditWebsite] = useState('');
   const [editLicence, setEditLicence] = useState('');
-  // Separate from the edit-form state above on purpose: backfilling a missing required licence
+  // Separate from the edit-form state above on purpose: backfilling a missing required license
   // number is its own action (see /api/my-ads/<kind>/:id/licence), available even when the one-time
   // contact edit has been used, so it must not share that form's open/closed state.
   const [licenceKey, setLicenceKey] = useState<string | null>(null);
@@ -272,7 +272,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
 
   const saveLicence = async (kind: 'guide' | 'zip', purchaseId: number) => {
     setLicenceError('');
-    if (licenceValue.trim().length < 3) return setLicenceError('Enter your licence, registration, or certification number.');
+    if (licenceValue.trim().length < 3) return setLicenceError('Enter your license, registration, or certification number.');
     setSavingLicence(true);
     try {
       const token = await getToken();
@@ -283,7 +283,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
         body: JSON.stringify({ licenceNumber: licenceValue.trim() }),
       });
       const data = await res.json();
-      if (!data.success) { setSavingLicence(false); return setLicenceError(data?.error || 'Could not save your licence number.'); }
+      if (!data.success) { setSavingLicence(false); return setLicenceError(data?.error || 'Could not save your license number.'); }
       const saved = licenceValue.trim();
       if (kind === 'guide') {
         setGuidePlacements((prev) => (prev || []).map((p) => p.purchaseId === purchaseId ? { ...p, licenceNumber: saved } : p));
@@ -304,13 +304,13 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   // vendor clicks Renew and gets an error back.
   const licencePrompt = (kind: 'guide' | 'zip', purchaseId: number, tradeCategory: string, current: string | null) => {
     if (!requiresLicenceNumber(tradeCategory) || (current || '').trim()) return null;
-    const key = `licence-${kind}-${purchaseId}`;
+    const key = `license-${kind}-${purchaseId}`;
     if (licenceKey !== key) {
       return (
         <div className="mt-3 flex flex-wrap items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl p-3">
           <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
           <p className="text-[11px] text-amber-900 flex-1 min-w-[12rem]">
-            No licence number on file. {tradeCategory} now requires one, and this placement can't be
+            No license number on file. {tradeCategory} now requires one, and this placement can't be
             renewed until it's added.
           </p>
           <button
@@ -318,7 +318,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
             onClick={() => { setLicenceKey(key); setLicenceValue(''); setLicenceError(''); }}
             className="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold rounded-lg"
           >
-            <span>Add licence number</span>
+            <span>Add license number</span>
           </button>
         </div>
       );
@@ -332,7 +332,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
         </p>
         <input
           type="text" value={licenceValue} onChange={(e) => setLicenceValue(e.target.value)}
-          placeholder="Licence / registration number" maxLength={60} autoFocus
+          placeholder="License / registration number" maxLength={60} autoFocus
           className="w-full px-3 py-2 border border-amber-300 rounded-lg text-xs"
         />
         {licenceError && <p className="text-xs text-rose-600">{licenceError}</p>}
@@ -589,12 +589,12 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
       <p className="text-[11px] text-slate-500 leading-snug">{VENDOR_WEBSITE_RULE}</p>
       {/* Same rule as checkout (requiresLicenceNumber), so the two cannot disagree about which
           categories need a number -- and so the one edit a vendor gets is enough to correct a
-          licence that was renewed or mistyped, which is what Terms 4.4 assumes they can do. */}
+          license that was renewed or mistyped, which is what Terms 4.4 assumes they can do. */}
       {requiresLicenceNumber(tradeCategory) && (
         <div className="space-y-1">
           <input
             type="text" value={editLicence} onChange={(e) => setEditLicence(e.target.value)}
-            placeholder="Licence / registration number" maxLength={60}
+            placeholder="License / registration number" maxLength={60}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs"
           />
           <p className="text-[10px] text-slate-500 leading-relaxed">
@@ -701,11 +701,11 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                           <span>{p.clusterName ? `Every ${p.clusterName} guide` : p.title}</span><ExternalLink className="w-3 h-3 shrink-0" />
                         </a>
                         <p className="text-xs text-slate-500 mt-1">{p.businessName} &middot; {p.tradeCategory} &middot; {p.phone}</p>
-                        {/* Shown so the vendor can see the licence number being published in their
+                        {/* Shown so the vendor can see the license number being published in their
                             name -- it was collected and printed in the ad but never surfaced back,
                             which made the "keep it current" warranty impossible to act on. */}
                         {p.licenceNumber && (
-                          <p className="text-[11px] text-slate-400 mt-0.5 font-mono">Licence #{p.licenceNumber}</p>
+                          <p className="text-[11px] text-slate-400 mt-0.5 font-mono">License #{p.licenceNumber}</p>
                         )}
                       </div>
                       <div className="text-right shrink-0">
@@ -752,7 +752,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                         <p className="text-sm font-bold text-slate-900 mt-0.5">{first.tradeCategory}</p>
                         <p className="text-xs text-slate-500 mt-1">{first.businessName} &middot; {first.phone}</p>
                         {first.licenceNumber && (
-                          <p className="text-[11px] text-slate-400 mt-0.5 font-mono">Licence #{first.licenceNumber}</p>
+                          <p className="text-[11px] text-slate-400 mt-0.5 font-mono">License #{first.licenceNumber}</p>
                         )}
                       </div>
                       <div className="text-right shrink-0">

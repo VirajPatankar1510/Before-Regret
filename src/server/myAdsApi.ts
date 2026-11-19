@@ -192,7 +192,7 @@ export function registerMyAdsRoutes(app: Express) {
         tradeCategory: r.trade_category,
         phone: r.phone,
         website: r.website,
-        // Surfaced so a vendor can see the licence number being published in their name. It was
+        // Surfaced so a vendor can see the license number being published in their name. It was
         // collected and printed in the ad but never shown back to them, which made the "keep it
         // current" warranty in Terms 4.4 impossible to actually honour -- you cannot correct a
         // value you cannot see.
@@ -226,7 +226,7 @@ export function registerMyAdsRoutes(app: Express) {
         businessName: r.business_name,
         phone: r.phone,
         website: r.website,
-        // Surfaced so a vendor can see the licence number being published in their name. It was
+        // Surfaced so a vendor can see the license number being published in their name. It was
         // collected and printed in the ad but never shown back to them, which made the "keep it
         // current" warranty in Terms 4.4 impossible to actually honour -- you cannot correct a
         // value you cannot see.
@@ -314,7 +314,7 @@ export function registerMyAdsRoutes(app: Express) {
   // The second half of the quick checkout (owner, 2026-11-15; see the details_pending note in
   // db.ts). One form per ORDER, not per guide or per ZIP: a vendor who bought five guides or a
   // 3-ZIP bundle fills their details in once. Every rule the full checkout enforced is enforced
-  // here instead -- trade category, phone, the licence number for licence-required trades, the
+  // here instead -- trade category, phone, the license number for license-required trades, the
   // brokerage name for agents, the official-website rule, and the accuracy warranty -- so moving
   // the form after payment loses none of them.
   //
@@ -353,8 +353,8 @@ export function registerMyAdsRoutes(app: Express) {
       if (cleanPhone.length < 7 || cleanPhone.length > 30) errors.push('Enter a phone number readers can call.');
       const cleanLicence = typeof licenceNumber === 'string' ? licenceNumber.trim() : '';
       if (requiresLicenceNumber(trade)) {
-        if (cleanLicence.length < 3) errors.push(`A licence, registration, or certification number is required for ${trade}.`);
-        else if (cleanLicence.length > 60) errors.push('That licence number looks too long -- please enter just the number.');
+        if (cleanLicence.length < 3) errors.push(`A license, registration, or certification number is required for ${trade}.`);
+        else if (cleanLicence.length > 60) errors.push('That license number looks too long -- please enter just the number.');
       }
       if (requiresBrokerageName(trade)) {
         const brokerageErr = brokerageNameError(brokerageName);
@@ -465,27 +465,27 @@ export function registerMyAdsRoutes(app: Express) {
       // kind of race the capture-time slot allocation guard does (see guideAdsApi.ts) -- two
       // near-simultaneous save clicks can't both land as "the" one allowed edit.
 
-      // Licence number is editable, but only inside the SAME one-time edit that governs phone and
+      // License number is editable, but only inside the SAME one-time edit that governs phone and
       // website -- deliberately not a freely-mutable field. The comment on this route already
       // explains why the sold identity of a placement must not drift post-purchase without review,
-      // and a licence number is much closer to identity than to contact details: freely mutable, it
+      // and a license number is much closer to identity than to contact details: freely mutable, it
       // would let a vendor buy a slot with a valid number and then swap in anything. Bounded to one
-      // change keeps the legitimate case (a licence renewed under a new number, or a typo at
+      // change keeps the legitimate case (a license renewed under a new number, or a typo at
       // checkout) fixable, which it previously was not -- Terms 4.4 has the vendor warrant the
       // number is current while the product gave them no way to make it so.
       //
       // An ABSENT licenceNumber field means "leave it alone", not "clear it". That distinction
-      // matters: a client that predates this field would otherwise silently wipe the licence off a
+      // matters: a client that predates this field would otherwise silently wipe the license off a
       // live ad on an unrelated phone edit.
       const licenceProvided = typeof licenceNumber === 'string';
       const trimmedLicence = licenceProvided ? licenceNumber.trim() : '';
       if (licenceProvided && requiresLicenceNumber(ownedRow.trade_category)) {
         if (trimmedLicence.length < 3) {
-          res.status(400).json({ success: false, error: 'A licence, registration, or certification number is required for this trade category.' });
+          res.status(400).json({ success: false, error: 'A license, registration, or certification number is required for this trade category.' });
           return;
         }
         if (trimmedLicence.length > 60) {
-          res.status(400).json({ success: false, error: 'That licence number looks too long -- please enter just the number.' });
+          res.status(400).json({ success: false, error: 'That license number looks too long -- please enter just the number.' });
           return;
         }
       }
@@ -547,27 +547,27 @@ export function registerMyAdsRoutes(app: Express) {
         return;
       }
 
-      // Licence number is editable, but only inside the SAME one-time edit that governs phone and
+      // License number is editable, but only inside the SAME one-time edit that governs phone and
       // website -- deliberately not a freely-mutable field. The comment on this route already
       // explains why the sold identity of a placement must not drift post-purchase without review,
-      // and a licence number is much closer to identity than to contact details: freely mutable, it
+      // and a license number is much closer to identity than to contact details: freely mutable, it
       // would let a vendor buy a slot with a valid number and then swap in anything. Bounded to one
-      // change keeps the legitimate case (a licence renewed under a new number, or a typo at
+      // change keeps the legitimate case (a license renewed under a new number, or a typo at
       // checkout) fixable, which it previously was not -- Terms 4.4 has the vendor warrant the
       // number is current while the product gave them no way to make it so.
       //
       // An ABSENT licenceNumber field means "leave it alone", not "clear it". That distinction
-      // matters: a client that predates this field would otherwise silently wipe the licence off a
+      // matters: a client that predates this field would otherwise silently wipe the license off a
       // live ad on an unrelated phone edit.
       const licenceProvided = typeof licenceNumber === 'string';
       const trimmedLicence = licenceProvided ? licenceNumber.trim() : '';
       if (licenceProvided && requiresLicenceNumber(ownedRow.trade_category)) {
         if (trimmedLicence.length < 3) {
-          res.status(400).json({ success: false, error: 'A licence, registration, or certification number is required for this trade category.' });
+          res.status(400).json({ success: false, error: 'A license, registration, or certification number is required for this trade category.' });
           return;
         }
         if (trimmedLicence.length > 60) {
-          res.status(400).json({ success: false, error: 'That licence number looks too long -- please enter just the number.' });
+          res.status(400).json({ success: false, error: 'That license number looks too long -- please enter just the number.' });
           return;
         }
       }
@@ -590,16 +590,16 @@ export function registerMyAdsRoutes(app: Express) {
     }
   });
 
-  // --- Backfill a MISSING required licence number -------------------------------------------
+  // --- Backfill a MISSING required license number -------------------------------------------
   //
   // Deliberately separate from the one-time contact edit above, and deliberately NOT gated on
   // contact_edited. The reason is the renewal guard in zipAdsApi.ts / guideAdsApi.ts: a placement
-  // sold before licence numbers existed cannot renew until it has one, and if supplying that number
+  // sold before license numbers existed cannot renew until it has one, and if supplying that number
   // consumed (or required) the one-time edit allowance, any vendor who had already used their edit
   // would be permanently unable to renew without a human intervening. That is a support ticket
   // manufactured by our own schema change, for a vendor who did nothing wrong.
   //
-  // What keeps this safe despite being unbounded: it can only ever move a placement from NO licence
+  // What keeps this safe despite being unbounded: it can only ever move a placement from NO license
   // number to HAVING one. The WHERE clause requires the stored value to be null or blank, so it
   // physically cannot overwrite an existing number, and it touches no other column. The identity-
   // drift concern that justifies the one-time gate on phone/website/licence-changes therefore does
@@ -620,11 +620,11 @@ export function registerMyAdsRoutes(app: Express) {
     }
     const trimmed = typeof licenceNumber === 'string' ? licenceNumber.trim() : '';
     if (trimmed.length < 3) {
-      res.status(400).json({ success: false, error: 'Enter your licence, registration, or certification number.' });
+      res.status(400).json({ success: false, error: 'Enter your license, registration, or certification number.' });
       return;
     }
     if (trimmed.length > 60) {
-      res.status(400).json({ success: false, error: 'That licence number looks too long -- please enter just the number.' });
+      res.status(400).json({ success: false, error: 'That license number looks too long -- please enter just the number.' });
       return;
     }
     try {
@@ -653,14 +653,14 @@ export function registerMyAdsRoutes(app: Express) {
         // than silently succeeding, so the one-time-edit rule stays the single way to CHANGE a number.
         res.status(409).json({
           success: false,
-          error: 'This placement already has a licence number. Use Edit to change it.',
+          error: 'This placement already has a license number. Use Edit to change it.',
         });
         return;
       }
       if (!requiresLicenceNumber(row.trade_category)) {
         res.status(400).json({
           success: false,
-          error: `A licence number is not required for ${row.trade_category}.`,
+          error: `A license number is not required for ${row.trade_category}.`,
         });
         return;
       }
@@ -679,13 +679,13 @@ export function registerMyAdsRoutes(app: Express) {
             RETURNING id
           `);
       if ((updated as unknown[]).length === 0) {
-        res.status(409).json({ success: false, error: 'This placement already has a licence number. Use Edit to change it.' });
+        res.status(409).json({ success: false, error: 'This placement already has a license number. Use Edit to change it.' });
         return;
       }
       res.json({ success: true, licenceNumber: trimmed });
     } catch (err: any) {
-      console.error(`[my-ads] ${kind} licence backfill failed:`, err);
-      res.status(500).json({ success: false, error: 'Could not save your licence number.' });
+      console.error(`[my-ads] ${kind} license backfill failed:`, err);
+      res.status(500).json({ success: false, error: 'Could not save your license number.' });
     }
   };
 

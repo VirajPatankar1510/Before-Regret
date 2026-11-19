@@ -53,7 +53,7 @@
 // 2026-10-05: consumer reports made free (owner decision). Rewrote 2 (services), 3.1 (reports are
 // free, daily generation limits) and 3.4 (no report purchases; earlier purchases stay under the
 // version in effect then). A substantive change to what a consumer is agreeing to, hence a new string.
-// 2026-10-14: 4.4 names Interior Designer as a second licence-exempt category beside Chimney Sweep
+// 2026-10-14: 4.4 names Interior Designer as a second license-exempt category beside Chimney Sweep
 // (owner decision). It changes which vendors must supply a number, so it gets its own string.
 // 2026-10-18: added 4.6 (free Find a Pro listings: who may list, what is published, never shown in
 // reports, 4.4 warranties apply, removal at Atmostellar's discretion). New obligations for a new kind of
@@ -63,7 +63,7 @@
 // 2026-11-15 (second revision that day): pay-first vendor checkout (owner decision after a vendor
 // survey). 4.1 now says business details may be supplied after payment, that a placement shows and
 // its 30 days start only once they are, and that an unclaimed hold lapses 30 days after payment; 4.4's
-// licence number is due "before the placement goes live" instead of "at checkout". Changes what a
+// license number is due "before the placement goes live" instead of "at checkout". Changes what a
 // vendor agrees to, hence a new string.
 // 2026-11-19: 3.6 no longer offers a report refund as a remedy for an inaccurate input (site audit F11). Reports have
 // been free since 2026-10-05 and 3.4 already says there is no report purchase to refund, so the two paragraphs

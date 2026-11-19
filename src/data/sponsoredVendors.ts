@@ -35,12 +35,12 @@ export const TRADE_CATEGORIES = [
   'Electrician',
   // Added 2026-10-03 at the owner's request, before pitching plumbers. Until then a plumber had no
   // category of their own and would have had to buy as 'Sewer Scope' or 'General Contractor'.
-  // Licence number required at checkout like every trade except Chimney Sweep.
+  // License number required at checkout like every trade except Chimney Sweep.
   'Plumber',
   'Home Inspector',
   // Added 2026-10-12 at the owner's request, with the first sponsored topic (Stucco & EIFS). Until
   // then a stucco or EIFS inspection firm had to buy as 'Home Inspector' or 'General Contractor'.
-  // Licence number required like every trade except Chimney Sweep; the field already accepts a
+  // License number required like every trade except Chimney Sweep; the field already accepts a
   // certification number, which is what many EIFS inspectors hold.
   'Stucco & EIFS',
   'General Contractor',
@@ -50,47 +50,47 @@ export const TRADE_CATEGORIES = [
   'Well & Septic Services',
   'Moving Company',
   // Added 2026-10-13 at the owner's request: agents and real estate advisors, for both Topic Ads and
-  // Report Ads. Unlike the excluded professions above, an agent's own state licence is the thing being
-  // advertised, so the safeguards are built in rather than the category left out: a licence number is
+  // Report Ads. Unlike the excluded professions above, an agent's own state license is the thing being
+  // advertised, so the safeguards are built in rather than the category left out: a license number is
   // required (default rule below), and so is the BROKERAGE name, which is printed on the ad line beside
   // the agent's name -- see BROKERAGE_REQUIRED_CATEGORIES. In Report Ads the category has a fixed slot on
   // every report in the agent's ZIPs (PropertyReport.realEstateAgentVendors), like Moving Company.
   'Real Estate Agent',
   // Added 2026-10-14 at the owner's request. Interior designers are not tied to any finding (like Moving
   // Company and Real Estate Agent), so in Report Ads they get their own fixed box on every report in their
-  // ZIPs (PropertyReport.interiorDesignerVendors). No licence number: see LICENCE_EXEMPT_CATEGORIES.
+  // ZIPs (PropertyReport.interiorDesignerVendors). No license number: see LICENCE_EXEMPT_CATEGORIES.
   'Interior Designer',
   // Added 2026-10-14 at the owner's request, to sell beyond defect topics. TOPIC ADS ONLY for now: no
   // report item maps to them yet, so a Report Ad would never render -- REPORT_AD_TRADE_CATEGORIES leaves
-  // them out until one does. Licence number required by the default rule below.
+  // them out until one does. License number required by the default rule below.
   'Painter & Flooring',
   'Landscaping & Tree Service',
   'Solar Installer',
   'Water Testing & Treatment',
 ] as const;
 
-// Trades for which a licence, registration, or certification number must be supplied at checkout
+// Trades for which a license, registration, or certification number must be supplied at checkout
 // and displayed on the placement.
 //
 // Why this exists: this site sells ZIP-targeted advertising to contractor-tier trades and, until
 // now, collected no credential identifier of any kind. Several states regulate contractor
-// ADVERTISING specifically -- requiring a licence number to appear in the ad, and restricting the
+// ADVERTISING specifically -- requiring a license number to appear in the ad, and restricting the
 // publication of ads for unlicensed persons -- and some of those provisions reach the publisher of
 // the advertisement, not only the advertiser. California is the strictest and this site sells into
 // California ZIPs. Collecting the number and printing it converts the placement from "an ad for a
 // business whose licensure is entirely unknown to the publisher" into "an ad carrying the
-// advertiser's own stated licence number", which is the posture the statutes are written around.
+// advertiser's own stated license number", which is the posture the statutes are written around.
 //
 // Expressed as an exemption set rather than an inclusion list because the honest default is that
 // these trades ARE licensed somewhere they are sold: electrical, general contracting, abatement,
 // pest control, well/septic, HVAC, plumbing-adjacent sewer work, roofing, home inspection and radon
-// measurement all carry a state licence, certification, or registration in a large share of states,
+// measurement all carry a state license, certification, or registration in a large share of states,
 // and interstate movers carry a USDOT/MC number. Defaulting to "required" means a trade added to
 // TRADE_CATEGORIES later inherits the safe behaviour without anyone remembering this file.
 //
 // Chimney Sweep is the single exemption: chimney work is generally not a state-licensed trade, and
 // the recognised credential (CSIA certification) is voluntary and privately issued, so demanding a
-// "licence number" there would invite vendors to type something meaningless into a field this site
+// "license number" there would invite vendors to type something meaningless into a field this site
 // then publishes.
 //
 // NOT a legal opinion and not per-state accurate: this is a deliberately conservative default that

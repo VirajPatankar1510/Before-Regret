@@ -36,7 +36,7 @@ interface GuideAdsCheckoutProps {
 const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
     q: 'What do I fill in after paying?',
-    a: 'Your business name, business type, a phone number readers can call, your website if you have one, and your licence number if your trade needs one. You add them in My Ads right after PayPal, once for the whole order. Your ad goes live as soon as you save them.',
+    a: 'Your business name, business type, a phone number readers can call, your website if you have one, and your license number if your trade needs one. You add them in My Ads right after PayPal, once for the whole order. Your ad goes live as soon as you save them.',
   },
   {
     q: 'When do my 30 days start?',
@@ -58,7 +58,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
 
 // /topic-ads/ -- the Topic Ads checkout. REBUILT 2026-11-15 after the owner's vendor survey: almost
 // every vendor found the old page long and hard to follow before they ever reached PayPal (a
-// business-details form, a trade dropdown, a licence field and a legal checkbox all sat in front of
+// business-details form, a trade dropdown, a license field and a legal checkbox all sat in front of
 // the button). Now the page asks for exactly one thing, which articles, and the button pays for
 // them. Everything about the business is collected AFTER payment in My Ads (see
 // AdDetailsForm.tsx and POST /api/my-ads/details), where the same rules are enforced. The "your

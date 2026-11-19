@@ -35,20 +35,20 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
           <span className="text-[11px] font-semibold text-amber-900">Local {vendor.tradeCategory.toLowerCase()}</span>
         </div>
         <h3 className="font-bold text-slate-900 text-base">{vendor.businessName}</h3>
-        {/* The licence number is printed because several states require a contractor's licence
+        {/* The license number is printed because several states require a contractor's license
             number to appear in the advertisement itself, and because a reader who wants to check
-            the licence needs the number to check it with.
+            the license needs the number to check it with.
 
             The per-card "Paid placement. Details supplied by the advertiser and not verified by us"
             line was removed on 2026-11-14 at the owner's request: it ran to four or five broken lines
             on phones and in print, and read to advertisers as a warning about them. The disclosure
             still stands without it: the SPONSORED pill above marks the card as a paid ad on every
-            card (with or without a licence number), the report footer says "Sponsored listings are
+            card (with or without a license number), the report footer says "Sponsored listings are
             paid placements whose details we do not verify", and /disclaimer/ carries the full terms.
             Do not remove the SPONSORED pill: it is now the card's only ad label. */}
         {vendor.licenceNumber && (
           <p className="text-[11px] text-slate-600 font-mono">
-            Licence #{vendor.licenceNumber}
+            License #{vendor.licenceNumber}
           </p>
         )}
       </div>

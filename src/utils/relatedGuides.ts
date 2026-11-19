@@ -102,7 +102,7 @@ const GUIDE_TOPIC_PATTERNS: ReadonlyArray<readonly [string, RegExp]> = [
   ['pests', /termite|\bwdo\b|wood[- ]destroying|\bpests?\b|rodent|carpenter[- ]ant/],
   ['environmental', /radon|asbestos|lead[- ]paint|\bmold\b|oil[- ]tank|underground[- ]storage|methane|flood[- ]zone|floodplain/],
   ['permits', /permit|unpermitted|code[- ]enforcement|zoning|violation/],
-  // Checking a contractor's state licence before hiring (2026-11-10, first guide: the CSLB License Check). A line of
+  // Checking a contractor's state license before hiring (2026-11-10, first guide: the CSLB License Check). A line of
   // individually researched state pages that reaches people about to hire a pro, and contractors themselves. Verified
   // when added to match no slug or title already published, so it moves nothing out of another cluster.
   ['contractor-licensing', /\bcslb\b|contractor'?s?[- ]licen[cs]e|licen[cs]e[- ](check|lookup)|contractor'?s?[- ]record/],

@@ -12,7 +12,7 @@ interface VendorsProps {
 const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
     q: 'What do I fill in after paying?',
-    a: 'Your business name, a phone number readers can call, your website if you have one, and your licence number if your trade needs one. You add them in My Ads right after PayPal. Your ad goes live as soon as you save them.',
+    a: 'Your business name, a phone number readers can call, your website if you have one, and your license number if your trade needs one. You add them in My Ads right after PayPal. Your ad goes live as soon as you save them.',
   },
   {
     q: 'When do my 30 days start?',
@@ -34,7 +34,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Do you verify businesses?',
-    a: "No. Your details are self-reported, and every ad tells readers its details are advertiser-supplied and unverified. Your licence number prints on the ad exactly as you enter it, so readers can check it themselves.",
+    a: "No. Your details are self-reported, and every ad tells readers its details are advertiser-supplied and unverified. Your license number prints on the ad exactly as you enter it, so readers can check it themselves.",
   },
   {
     q: 'Is this a subscription? Can I get a refund?',

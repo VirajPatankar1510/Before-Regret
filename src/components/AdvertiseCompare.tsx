@@ -57,21 +57,23 @@ export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Do I need to be licensed or verified to advertise?',
-    a: "No -- we don't check your credentials before your placement goes live. Every trade category except chimney sweeping and interior design requires a licence, registration, or certification number when you add your business details after paying; it prints on your ad exactly as you type it, but we don't verify it with any licensing board. Every placement tells readers its details are advertiser-supplied and unverified, and that includes chimney sweep and interior designer listings, which carry that same notice with no number since those categories don't require one. Your business name, trade category, and contact details work the same way: you enter them, confirm they're accurate with a checkbox, and that's the only check that happens.",
+    a: "No -- we don't check your credentials before your placement goes live. Every trade category except chimney sweeping and interior design requires a license, registration, or certification number when you add your business details after paying; it prints on your ad exactly as you type it, but we don't verify it with any licensing board. Every placement tells readers its details are advertiser-supplied and unverified, and that includes chimney sweep and interior designer listings, which carry that same notice with no number since those categories don't require one. Your business name, trade category, and contact details work the same way: you enter them, confirm they're accurate with a checkbox, and that's the only check that happens.",
   },
   {
     q: 'How many people will see my ad?',
     // Never invent an audience figure, and never reintroduce self-deprecating copy (owner,
     // 2026-10-03). Both statements below are true and checkable.
-    a: "We don't guarantee a number, and we won't invent one. A Report Ad is seen by whoever runs a report for an address in your ZIP codes, so it depends on how many reports are run there. Guide pages are served from a cache that never touches our server, so we cannot count their views either -- any figure we quoted would be made up. What you are buying is specific instead: a fixed placement for 30 days. The simplest way to judge it is by the calls and website visits it brings.",
+    // The last sentence is true because /out/ tags every forwarded click (src/server/adClicksApi.ts);
+    // the card links carry noreferrer, so without that tag our visits would arrive as "direct".
+    a: "We don't guarantee a number, and we won't make one up. A Report Ad is seen by whoever runs a report for an address in your ZIP codes. A Topic Ad is seen by everyone who reads that article. What you're buying is a fixed spot for 30 days. Website visits we send you show up in your own analytics as coming from beforeregret, so you can count them yourself.",
   },
   {
     q: 'What website can I list?',
-    a: "Your business's own website, and only that. Link shorteners, link-in-bio pages, redirects and tracking links are not accepted, when you add your details or when you edit a listing later. Readers click through trusting the page, so the link has to go straight to you. The website is optional; a phone number alone is fine.",
+    a: "Your business's own website, and only that. Link shorteners, link-in-bio pages, redirects and tracking links are not accepted, when you add your details or when you edit a listing later. Readers click through trusting the page, so the link has to go straight to you. We add a 'beforeregret' tag to the link when a reader clicks it, so those visits show up in your analytics. The website is optional; a phone number alone is fine.",
   },
   {
     q: 'What do I fill in, and when?',
-    a: 'Before paying, only what you are buying: the articles, or your trade and 3 ZIP codes. After paying with PayPal you add your business name, phone number, website if you have one, and licence number if your trade needs one, in My Ads. Your ad goes live as soon as you save them.',
+    a: 'Before paying, only what you are buying: the articles, or your trade and 3 ZIP codes. After paying with PayPal you add your business name, phone number, website if you have one, and license number if your trade needs one, in My Ads. Your ad goes live as soon as you save them.',
   },
   {
     q: 'When do my 30 days start?',
@@ -91,7 +93,7 @@ export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Can I edit my listing after I’ve paid?',
-    a: 'Yes, once. From My Ads you can change your phone, website and licence number one time per placement, so check them before you save. Business name and trade category are locked once purchased, since those define what was sold.',
+    a: 'Yes, once. From My Ads you can change your phone, website and license number one time per placement, so check them before you save. Business name and trade category are locked once purchased, since those define what was sold.',
   },
 ];
 
@@ -104,9 +106,11 @@ const EXAMPLE_REPORT_VENDOR = {
   active: true,
 };
 
+// A wide-area business on an article about the problem it solves (Topic Ads are not the local
+// product). The title in the mockup below is live guide #331's.
 const EXAMPLE_TOPIC_VENDOR = {
-  businessName: 'Example Moving Co.',
-  tradeCategory: 'Moving Company',
+  businessName: 'Example Stucco Inspections',
+  tradeCategory: 'Stucco & EIFS',
   phone: '(512) 555-0100',
 };
 
@@ -157,6 +161,16 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             <p className="mt-5 text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl">
               Pick a placement and pay with PayPal in about a minute. Add your business details
               after, and your ad goes live. 30 days, no subscription.
+            </p>
+            {/* A vendor who has never heard of the site needs to know what it is before anything
+                else, and the honest proof we can offer is the report itself, not a traffic figure. */}
+            <p className="mt-4 text-sm sm:text-base text-slate-300 leading-relaxed max-w-xl">
+              Before Regret is a free research site for home buyers. They type in an address and get a
+              report on what to check, ask and verify before they buy.{' '}
+              <ContentLink href="/" onNavigate={onNavigate} className="font-semibold text-home-oak underline underline-offset-4 hover:text-white">
+                Run one on a street you serve →
+              </ContentLink>{' '}
+              and you'll see where your listing would sit.
             </p>
             <ol className="mt-7 flex flex-wrap gap-2.5 text-xs font-semibold text-slate-200">
               {[
@@ -219,7 +233,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               <Bullet>Choose any 3 US ZIP codes and one trade per bundle.</Bullet>
               <Bullet>{slotsPerZipPhrase()}, first come, first served.</Bullet>
               <Bullet>Shown beside the report item for your trade, so placement depends on what the report covers for that house.</Bullet>
-              <Bullet>Your licence number prints on the listing, with a line telling readers it is advertiser-supplied.</Bullet>
+              <Bullet>Your license number prints on the listing, with a line telling readers it is advertiser-supplied.</Bullet>
             </ul>
             <ContentLink
               href="/report-ads/"
@@ -262,14 +276,14 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">On a guide article</div>
             <div className="mt-3 rounded-2xl bg-white border border-home-linen p-4 sm:p-5">
               <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-home-brass">Guide</div>
-              <div className="mt-1.5 font-serif text-xl font-semibold text-home-ink leading-snug">How to Spot Polybutylene Pipes Before Buying a House</div>
+              <div className="mt-1.5 font-serif text-xl font-semibold text-home-ink leading-snug">Should You Buy a House With EIFS? What to Check First</div>
               <div aria-hidden="true" className="mt-3 rounded-xl border border-home-linen p-3 space-y-2">
                 <div className="h-2 rounded-full bg-home-sage w-24" />
                 <div className="h-2 rounded-full bg-home-linen w-full" />
                 <div className="h-2 rounded-full bg-home-linen w-11/12" />
               </div>
               <div className="mt-4">
-                <Inert label="Example Topic Ad: a moving company's listing with a phone number, under the article's quick answer">
+                <Inert label="Example Topic Ad: a stucco inspection firm's listing with a phone number, under the article's quick answer">
                   <GuideAdVendorCard vendor={EXAMPLE_TOPIC_VENDOR} />
                 </Inert>
               </div>
@@ -314,7 +328,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             {[
               { t: 'Choose', b: 'Your trade and 3 ZIP codes for a Report Ad, or the articles you want for Topic Ads.' },
               { t: 'Pay with PayPal', b: 'Sign in with your email and pay once. No subscription, nothing renews automatically.' },
-              { t: 'Add your details', b: 'Business name, phone and licence number, in My Ads. Your ad goes live, and your 30 days start.' },
+              { t: 'Add your details', b: 'Business name, phone and license number, in My Ads. Your ad goes live, and your 30 days start.' },
             ].map((s, i) => (
               <li key={s.t} className="rounded-3xl bg-white border border-home-linen p-6 shadow-sm">
                 <div className="w-9 h-9 rounded-full bg-home-navy text-white font-bold text-sm flex items-center justify-center">{i + 1}</div>
@@ -335,7 +349,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             Both ad types are open to businesses in these trades, except those marked Topic Ads only:
             no report section covers them yet, so a Report Ad would have nowhere to show. Every trade
             except {[...LICENCE_EXEMPT_CATEGORIES].map((c) => c.toLowerCase()).join(' and ')} asks for a
-            licence, registration or certification number when you add your details.
+            license, registration or certification number when you add your details.
           </p>
           <ul className="mt-8 flex flex-wrap gap-2.5">
             {TRADE_CATEGORIES.map((c) => (

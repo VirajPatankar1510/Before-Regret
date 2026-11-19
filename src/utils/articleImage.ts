@@ -64,7 +64,7 @@ export function extractFirstArticleImage(bodyMarkdown: string): string | null {
 export function resolveArticleSchemaImage(
   bodyMarkdown: string,
   /** The page's canonical URL. When given and the image is a reusable diagram, the ImageObject
-   *  carries licence metadata pointing at that page's reuse panel. */
+   *  carries license metadata pointing at that page's reuse panel. */
   pageUrl?: string,
 ): string | Record<string, unknown> {
   const url = extractFirstArticleImage(bodyMarkdown) || DEFAULT_ARTICLE_IMAGE;

@@ -186,16 +186,16 @@ export function registerZipAdsRoutes(app: Express) {
     // Server-side is the only place this can actually be enforced -- the client field is a
     // convenience, not a gate. Checked against the SAME requiresLicenceNumber() the form uses, so
     // the two cannot disagree about which categories need a number. Trimmed and length-bounded
-    // rather than pattern-matched: licence formats differ by state and by trade (and a USDOT/MC
-    // number for a mover looks nothing like a state contractor licence), so any regex here would
+    // rather than pattern-matched: license formats differ by state and by trade (and a USDOT/MC
+    // number for a mover looks nothing like a state contractor license), so any regex here would
     // reject real numbers. This value is published verbatim, never verified -- see the column
     // comment in db.ts.
     const trimmedLicence = typeof licenceNumber === 'string' ? licenceNumber.trim() : '';
     if (!quick && typeof tradeCategory === 'string' && requiresLicenceNumber(tradeCategory)) {
       if (trimmedLicence.length < 3) {
-        errors.push('A licence, registration, or certification number is required for this trade category.');
+        errors.push('A license, registration, or certification number is required for this trade category.');
       } else if (trimmedLicence.length > 60) {
-        errors.push('That licence number looks too long -- please enter just the number.');
+        errors.push('That license number looks too long -- please enter just the number.');
       }
     }
     // Brokerage name for agents (sponsoredVendors.ts, BROKERAGE_REQUIRED_CATEGORIES): required here and
@@ -465,7 +465,7 @@ export function registerZipAdsRoutes(app: Express) {
       }
       // Renewal is the one path that could keep an unlicensed ad live indefinitely: it copies the
       // stored vendor details forward without going through the checkout form, so a placement sold
-      // before licence numbers existed (or in a category that later became licence-required) would
+      // before license numbers existed (or in a category that later became license-required) would
       // renew forever with an empty number -- exactly the situation collecting the number was meant
       // to end. Blocked here rather than silently allowed.
       //
@@ -476,8 +476,8 @@ export function registerZipAdsRoutes(app: Express) {
       if (requiresLicenceNumber(bundle.trade_category) && !(bundle.licence_number || '').trim()) {
         res.status(409).json({
           success: false,
-          error: 'This placement has no licence number on file, which is now required for ' +
-            `${bundle.trade_category}. Add it to this placement first (use "Add licence number" on ` +
+          error: 'This placement has no license number on file, which is now required for ' +
+            `${bundle.trade_category}. Add it to this placement first (use "Add license number" on ` +
             'the placement), then renew.',
           needsLicenceNumber: true,
         });

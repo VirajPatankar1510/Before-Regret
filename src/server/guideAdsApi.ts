@@ -112,15 +112,15 @@ function readVendorDetails(body: any): VendorDetails {
     return { ok: false, error: 'You must accept the Terms of Service and confirm your business details before checking out.' };
   }
   // Mirrors the identical check in zipAdsApi.ts's checkout -- both ad products are advertising for
-  // the same trades, so a licence requirement enforced on only one of them would just move an
+  // the same trades, so a license requirement enforced on only one of them would just move an
   // unlicensed advertiser to the cheaper product. See requiresLicenceNumber() for the rationale.
   const trimmedLicence = typeof licenceNumber === 'string' ? licenceNumber.trim() : '';
   if (requiresLicenceNumber(tradeCategory)) {
     if (trimmedLicence.length < 3) {
-      return { ok: false, error: 'A licence, registration, or certification number is required for this trade category.' };
+      return { ok: false, error: 'A license, registration, or certification number is required for this trade category.' };
     }
     if (trimmedLicence.length > 60) {
-      return { ok: false, error: 'That licence number looks too long -- please enter just the number.' };
+      return { ok: false, error: 'That license number looks too long -- please enter just the number.' };
     }
   }
   // Agents must name their brokerage (sponsoredVendors.ts, BROKERAGE_REQUIRED_CATEGORIES); it is joined
@@ -141,7 +141,7 @@ function readVendorDetails(body: any): VendorDetails {
 
 // Pay first, details after (owner, 2026-11-15; see the details_pending note in db.ts). A quick
 // checkout carries no business details at all: only who is paying (the verified account's email)
-// and that they accepted the Terms. The business name, trade, phone, website and licence number
+// and that they accepted the Terms. The business name, trade, phone, website and license number
 // are collected in My Ads afterwards, where POST /api/my-ads/details applies the SAME rules
 // readVendorDetails() applies here, so no rule is lost by moving it. Until then the purchase holds
 // its slot but renders nowhere.
@@ -722,7 +722,7 @@ export function registerGuideAdsRoutes(app: Express) {
       }
       // Renewal is the one path that could keep an unlicensed ad live indefinitely: it copies the
       // stored vendor details forward without going through the checkout form, so a placement sold
-      // before licence numbers existed (or in a category that later became licence-required) would
+      // before license numbers existed (or in a category that later became license-required) would
       // renew forever with an empty number -- exactly the situation collecting the number was meant
       // to end. Blocked here rather than silently allowed.
       //
@@ -733,8 +733,8 @@ export function registerGuideAdsRoutes(app: Express) {
       if (requiresLicenceNumber(purchase.trade_category) && !(purchase.licence_number || '').trim()) {
         res.status(409).json({
           success: false,
-          error: 'This placement has no licence number on file, which is now required for ' +
-            `${purchase.trade_category}. Add it to this placement first (use "Add licence number" on ` +
+          error: 'This placement has no license number on file, which is now required for ' +
+            `${purchase.trade_category}. Add it to this placement first (use "Add license number" on ` +
             'the placement), then renew.',
           needsLicenceNumber: true,
         });
@@ -788,7 +788,7 @@ export function registerGuideAdsRoutes(app: Express) {
         )
         -- licence_number carried across from the purchase being renewed, like every other vendor
         -- detail here: a renewal is the same advertiser continuing, so re-prompting for a number
-        -- they already gave would be friction, and dropping it would silently strip the licence
+        -- they already gave would be friction, and dropping it would silently strip the license
         -- from an ad that had been displaying one.
         SELECT ${paypalOrder.orderId}, business_name, trade_category, phone, website,
                ${purchase.contact_email}, '[]', ${renewalQuote.amount}, 'pending', ${clerkUserId}, ${purchaseId},

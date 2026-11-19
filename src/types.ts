@@ -293,7 +293,7 @@ export interface SponsoredVendor {
   phone: string;
   website?: string;
   // Supplied by the advertiser at checkout and republished verbatim. Required for every trade
-  // category except the licence-exempt one (see requiresLicenceNumber in data/sponsoredVendors.ts).
+  // category except the license-exempt one (see requiresLicenceNumber in data/sponsoredVendors.ts).
   // Optional on this type rather than required because pre-existing placements have no value for it
   // and the exempt category never will -- so every render site must handle its absence rather than
   // assume it. Never verified against a licensing board; every surface that prints it says so.

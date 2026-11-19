@@ -10,7 +10,7 @@ type ZipState = 'empty' | 'checking' | 'open' | 'taken' | 'invalid' | 'duplicate
 
 // The Report Ads checkout box. REBUILT 2026-11-15 after the owner's vendor survey: the old form
 // asked for the trade, then each ZIP one at a time through an "add" button, then sign-in, then a
-// business-details form, a licence field and a legal checkbox, all before PayPal. Now it asks only
+// business-details form, a license field and a legal checkbox, all before PayPal. Now it asks only
 // for what defines the slot -- the trade and 3 ZIP codes, checked live as they're typed -- and the
 // button pays. The business details are added after payment in My Ads (AdDetailsForm.tsx,
 // POST /api/my-ads/details), where the same rules are enforced.

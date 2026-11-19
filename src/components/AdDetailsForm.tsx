@@ -46,7 +46,7 @@ export const AdDetailsForm: React.FC<AdDetailsFormProps> = ({ kind, orderId, fix
     if (businessName.trim().length < 2) return setError('Enter your business name.');
     if (!tradeCategory) return setError('Choose your business type.');
     if (phone.trim().length < 7) return setError('Enter a phone number readers can call.');
-    if (needsLicence && licenceNumber.trim().length < 3) return setError(`A licence, registration, or certification number is required for ${tradeCategory}.`);
+    if (needsLicence && licenceNumber.trim().length < 3) return setError(`A license, registration, or certification number is required for ${tradeCategory}.`);
     if (needsBrokerage) {
       const err = brokerageNameError(brokerageName);
       if (err) return setError(err);
@@ -134,13 +134,13 @@ export const AdDetailsForm: React.FC<AdDetailsFormProps> = ({ kind, orderId, fix
         )}
         {needsLicence && (
           <label className="block sm:col-span-2">
-            <span className="text-xs font-bold text-slate-700">Licence, registration or certification number</span>
+            <span className="text-xs font-bold text-slate-700">License, registration or certification number</span>
             <input type="text" value={licenceNumber} onChange={(e) => setLicenceNumber(e.target.value)} maxLength={60} className={`mt-1 ${field}`} />
             {/* Deliberately does not tell the advertiser "we don't verify this": the public ad card tells
                 readers that, and saying it here only advertises the gap to the one party who could use it. */}
             <span className="mt-1 block text-[11px] text-slate-500 leading-snug">
               Required for {tradeCategory}. It appears in your ad exactly as typed. Movers may enter a USDOT or
-              MC number; agents, their real estate licence number.
+              MC number; agents, their real estate license number.
             </span>
           </label>
         )}
@@ -149,8 +149,8 @@ export const AdDetailsForm: React.FC<AdDetailsFormProps> = ({ kind, orderId, fix
       <label className="flex items-start gap-2.5 px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 cursor-pointer">
         <input type="checkbox" checked={attested} onChange={(e) => setAttested(e.target.checked)} className="mt-0.5 w-4 h-4 shrink-0 accent-home-navy cursor-pointer" />
         <span>
-          These details are accurate, I&apos;m allowed to advertise this business, and it holds the licences and
-          insurance its trade requires. A false or expired licence number means removal without refund{' '}
+          These details are accurate, I&apos;m allowed to advertise this business, and it holds the licenses and
+          insurance its trade requires. A false or expired license number means removal without refund{' '}
           (<a href="/terms/" target="_blank" rel="noopener noreferrer" className="underline">Terms 4.4</a>).
         </span>
       </label>

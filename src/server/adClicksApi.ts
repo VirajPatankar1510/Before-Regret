@@ -147,6 +147,16 @@ export function registerAdClickRoutes(app: Express) {
         return;
       }
       const parsed = new URL(site.url);
+      // Tag the forwarded click so the advertiser can count our visits in their own analytics
+      // (the /advertise/ FAQ promises this). The ad cards link with rel="noreferrer", so without
+      // these the visit arrives as "direct". Vendors still cannot submit tracking links themselves
+      // (vendorWebsite.ts) -- these three are added here, by us, and carry nothing about the reader.
+      // A URL that somehow already carries utm_ tags is left alone rather than overwritten.
+      if (![...parsed.searchParams.keys()].some((k) => k.toLowerCase().startsWith('utm_'))) {
+        parsed.searchParams.set('utm_source', 'beforeregret');
+        parsed.searchParams.set('utm_medium', 'referral');
+        parsed.searchParams.set('utm_campaign', adKind === 'guide' ? 'topic-ad' : 'report-ad');
+      }
       await recordClick(req, adKind, purchaseId, 'website');
       // 302, not 301: a permanent redirect would be cached by the browser, so the next click would
       // never reach this server and would never be counted -- and it would keep forwarding to the

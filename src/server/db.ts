@@ -633,7 +633,7 @@ export async function ensureArticlesSchema(): Promise<void> {
   // decision). The table is left in place in the database, untouched; it holds only the owner's own
   // removed test listing from 2026-10-18.
 
-  // Advertiser-supplied licence / registration / certification number, added to all four ad tables
+  // Advertiser-supplied license / registration / certification number, added to all four ad tables
   // at once so an order and the purchase it becomes carry the same value. See
   // requiresLicenceNumber() in src/data/sponsoredVendors.ts for which trade categories must supply
   // one and why the publisher (not just the advertiser) has an interest in collecting it.

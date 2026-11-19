@@ -5,12 +5,12 @@
 // trade business writing its own content and needing a neutral source. Trade blogs need visuals as
 // much as they need explanations, and these diagrams are original, so offering them for reuse with
 // credit turns each one into something a writer can pick up without asking. Renders as a collapsed
-// "Free to use with credit" panel under the figure (renderArticleMarkdown.tsx) and as licence
+// "Free to use with credit" panel under the figure (renderArticleMarkdown.tsx) and as license
 // metadata on the schema image (articleImage.ts), which is what Google Images reads for its
 // "Licensable" label.
 //
 // AN ALLOWLIST, NOT "everything under /images/". The book cover lives in the same folder and must
-// never pick up an open licence by accident. A new diagram is reusable only once it is added here.
+// never pick up an open license by accident. A new diagram is reusable only once it is added here.
 //
 // CC BY 4.0, deliberately. It requires credit but does not require a followed link, and that
 // difference matters: Google's link-spam policy names "requiring a link as part of a Terms of
@@ -18,7 +18,7 @@
 // link" as a link scheme. So the snippet offers a normal credit link and the terms never demand
 // one. Do not tighten this into "must link to us".
 //
-// A CC licence cannot be revoked for copies already made under it. Removing a diagram from this
+// A CC license cannot be revoked for copies already made under it. Removing a diagram from this
 // list stops offering it; it does not withdraw it from anyone who already took it.
 
 

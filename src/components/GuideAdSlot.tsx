@@ -30,7 +30,7 @@ export interface ActiveVendor {
   website?: string;
   // Advertiser-supplied, republished verbatim, never validated against a licensing board -- same
   // field and same caveat as SponsoredVendor.licenceNumber in types.ts. Optional: absent for the
-  // licence-exempt category and for placements sold before the field existed.
+  // license-exempt category and for placements sold before the field existed.
   licenceNumber?: string;
 }
 
@@ -68,7 +68,7 @@ export const GuideAdVendorCard: React.FC<{ vendor: ActiveVendor }> = ({ vendor }
         </p>
         <p className="mt-1 text-lg font-bold text-slate-900 leading-snug">{vendor.businessName}</p>
         {vendor.licenceNumber && (
-          <p className="mt-0.5 text-[11px] text-slate-600 font-mono">Licence #{vendor.licenceNumber}</p>
+          <p className="mt-0.5 text-[11px] text-slate-600 font-mono">License #{vendor.licenceNumber}</p>
         )}
       </div>
       <div className="grid grid-cols-1 sm:flex sm:items-center gap-2 shrink-0">

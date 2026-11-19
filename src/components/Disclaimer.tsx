@@ -178,13 +178,13 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ onBackToHome, onNavigate
                 not rely on it.
               </p>
               <p>
-                <strong>About the licence numbers shown in placements.</strong> Most placements
-                display a licence, registration, or certification number. That number is
+                <strong>About the license numbers shown in placements.</strong> Most placements
+                display a license, registration, or certification number. That number is
                 <strong> supplied by the advertiser and printed exactly as they entered it.</strong>{' '}
                 We do not check it against any state licensing board, contractor registry, or other
                 authority — we have no connection to any such system. Its presence means only that
                 the advertiser typed something into a required field, and is <strong>not</strong>{' '}
-                evidence that the licence exists, is current, covers the work you need, or belongs to
+                evidence that the license exists, is current, covers the work you need, or belongs to
                 that business. It is published so that you can verify it yourself, and that is the
                 only thing it is good for: look the number up directly with your state or local
                 licensing authority before hiring anyone.
