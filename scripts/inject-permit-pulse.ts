@@ -269,6 +269,23 @@ const BLOCKS: Block[] = [
       return `Martin County's permit total is ${dir(c.unitsChangePct)}, ${n(c.unitsPrior)} units to ${n(c.unitsCurrent)}, and most of that jump is apartments: ${apartments}. Single-family permits, the line that compares with buying an existing house, are ${houses}. The Census count covers the whole county, Stuart and the other towns included, so it reaches beyond what the county's Accela portal holds.`;
     },
   },
+  {
+    // Added 2026-11-20 with the new Hernando guide. Hernando runs the opposite way to Collier and Martin: houses ROSE while
+    // the total fell, because multifamily dropped from a few hundred units to a few dozen. Gated on the signs so the
+    // sentence can't claim a fall that has reversed; houses carry a percentage only above MIN_SF_FOR_PCT.
+    slug: 'check-building-permits-hernando-county-fl', fips: '12053',
+    heading: 'What Hernando County Is Permitting Right Now',
+    prose: (c) => {
+      const houses = c.sfCurrent >= MIN_SF_FOR_PCT && c.sfPrior >= MIN_SF_FOR_PCT
+        ? `${dir(c.sfChangePct)}, ${n(c.sfPrior)} to ${n(c.sfCurrent)} single-family homes`
+        : `${n(c.sfPrior)} single-family homes a year ago against ${n(c.sfCurrent)} now`;
+      const opposite = c.unitsChangePct < 0 && c.sfChangePct > 0;
+      const lead = opposite
+        ? `Hernando County's headline permit count is ${dir(c.unitsChangePct)}, ${n(c.unitsPrior)} units down to ${n(c.unitsCurrent)}, yet house building is ${houses}. The drop is all multifamily, ${n(c.mfPrior)} units a year ago and ${n(c.mfCurrent)} now.`
+        : `Hernando County's permit count is ${dir(c.unitsChangePct)} at ${n(c.unitsCurrent)} units; single-family building is ${houses}, and multifamily went from ${n(c.mfPrior)} to ${n(c.mfCurrent)} units.`;
+      return `${lead} For a buyer comparing a resale with a new build, the single-family line is the one to watch. The Census count takes in the whole county, Brooksville included, not only the records the county's own portals hold.`;
+    },
+  },
 ];
 
 const trigrams = (s: string) => {

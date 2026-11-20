@@ -15,7 +15,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const COUNTIES: Record<string, string> = { '12021': 'Collier', '12115': 'Sarasota', '12081': 'Manatee', '12009': 'Brevard', '12085': 'Martin' };
+const COUNTIES: Record<string, string> = { '12021': 'Collier', '12115': 'Sarasota', '12081': 'Manatee', '12009': 'Brevard', '12085': 'Martin', '12053': 'Hernando' };
 const csvPath = path.join(process.cwd(), 'docs', 'data', 'oldest-housing-by-county.csv');
 const raw = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'docs', 'data', 'oldest-housing-raw.json'), 'utf8'));
 

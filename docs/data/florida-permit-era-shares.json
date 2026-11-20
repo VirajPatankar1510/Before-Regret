@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-20T07:32:06.001Z",
+  "generatedAt": "2026-11-20T11:51:21.009Z",
   "source": "U.S. Census Bureau, American Community Survey 5-year estimates, table B25034 (Year Structure Built)",
   "vintage": "2020-2024",
   "input": "docs/data/oldest-housing-by-county.csv",
@@ -26,6 +26,17 @@
       "built1990to2009Pct": 46.3,
       "built2010OrLaterPct": 18.1,
       "builtBefore2010Pct": 81.9
+    },
+    "Hernando": {
+      "fips": "12053",
+      "housingUnits": 92535,
+      "medianYearBuilt": 1991,
+      "builtBefore1980Pct": 18.6,
+      "built1980sPct": 29.5,
+      "builtBefore1990Pct": 48.1,
+      "built1990to2009Pct": 42.3,
+      "built2010OrLaterPct": 9.6,
+      "builtBefore2010Pct": 90.4
     },
     "Manatee": {
       "fips": "12081",

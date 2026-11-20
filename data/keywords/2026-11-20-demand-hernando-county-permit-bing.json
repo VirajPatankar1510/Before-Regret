@@ -1,0 +1,42 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-20T07:10:25.980Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "hernando county permit",
+    "hernando county building department"
+  ],
+  "keywords": [
+    {
+      "keyword": "hernando county permit",
+      "search_volume": 22,
+      "metric": "market",
+      "broad_impressions": 723,
+      "kind": "seed"
+    },
+    {
+      "keyword": "hernando county permit search",
+      "search_volume": 353,
+      "metric": "market",
+      "broad_impressions": 451,
+      "kind": "related"
+    },
+    {
+      "keyword": "hernando county permit portal",
+      "search_volume": 250,
+      "metric": "market",
+      "broad_impressions": 250,
+      "kind": "related"
+    },
+    {
+      "keyword": "hernando county building department",
+      "search_volume": 1153,
+      "metric": "market",
+      "broad_impressions": 1408,
+      "kind": "seed"
+    }
+  ]
+}

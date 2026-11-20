@@ -1,0 +1,140 @@
+{
+  "slug": "check-building-permits-hernando-county-fl",
+  "question": "How do I find a Hernando County, Florida house's building permits, and how do I read an empty or partial result?",
+  "officialLookupUrl": "https://www.hernandocounty.us/building-development/building/",
+  "verdictConfirmed": "Hernando County's Building Division moved to a Tyler portal on 3/3/26; permits submitted before then sit in the Legacy Permit Application Status Tool. Census year-built shares (90.4% of homes built before 2010) mean almost every resale's original permits are in the legacy tool. The county's August 6, 2026 exemption list and the July 1, 2026 $7,500 notice mean some recent work legally has no permit. The current owner is responsible for permitting earlier unpermitted work. Renewing an expired permit costs $118.65 plus $47.46 per remaining inspection under the schedule effective March 3, 2026.",
+  "demand": {
+    "targetQuery": "hernando county building department",
+    "capture": "2026-11-20-demand-hernando-county-permit-bing",
+    "topicSource": "owner's OpenSEO export serp-hernando-county-building-department-2026-11-20.csv (topic choice only; no OpenSEO figure on the page or here)",
+    "note": "Tier 2: Bing records 'hernando county building department', 'hernando county permit search' and 'hernando county permit portal'; relative only. GSC: none (no Hernando page)."
+  },
+  "ourWork": {
+    "date": "2026-11-20",
+    "census": {
+      "source": "docs/data/florida-permit-era-shares.json (ACS 2020-2024 B25034), built by scripts/build-florida-permit-era-shares.ts with Hernando (12053) added 2026-11-20",
+      "housingUnits": "92,535",
+      "medianYearBuilt": "1991",
+      "builtBefore1980Pct": "18.6%",
+      "built1980sPct": "29.5%",
+      "builtBefore1990Pct": "48.1%",
+      "built1990to2009Pct": "42.3%",
+      "built2010OrLaterPct": "9.6%",
+      "builtBefore2010Pct": "90.4%"
+    },
+    "computations": [
+      "An expired permit with 3 inspections still required, at the March 3, 2026 rates: $118.65 + 3 x $47.46 = $261.03 in Building Division renewal fees (other agencies' fees not included)."
+    ],
+    "observations": [
+      "Building Division page (hernandocounty.us/building-development/building/) links 'New Permit Application Status and Property Search Portal' to hernandocountyfl-energovweb.tylerhost.net/apps/selfservice#/home and 'Legacy Permit Application Status Tool' to pvweb.hernandopa-fl.us. Optional cookies declined.",
+      "Tyler EnerGov self-service portal returned 403 Forbidden from our browser on 2026-11-20. Not worked around.",
+      "Legacy tool pvweb.hernandopa-fl.us: navigation denied or failed. Not worked around.",
+      "City of Brooksville website (cityofbrooksville.us): navigation denied or failed. Not worked around.",
+      "Two county PDFs downloaded with the owner's OK on 2026-11-20 and read as text: Building Fee Resolution No. 2026-037 and Schedule; Residential Permit Exemption List (dated August 6, 2026; file name says updated 09/28/2026)."
+    ]
+  },
+  "facts": [
+    {
+      "id": "h1",
+      "claim": "The Building Division page offers a new portal (as of 03/03/2026) and lists what it does.",
+      "source": "Hernando County Building Division page, hernandocounty.us/building-development/building/, read 2026-11-20",
+      "quote": "New Permit Application Status Tool (As of 03/03/2026) ... Use the \"Permit Application Status and Property Search Portal\" link above to access current permit information and property records. Through this online portal, citizens and contractors can: View current permit statuses Search and review property history (by owner’s name, address, key number, or parcel IDs. View contractor information (by name, business, or license number)",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "h2",
+      "claim": "The legacy tool holds permits submitted before 3/3/26 and is for review, status and inspection scheduling only.",
+      "source": "Hernando County Building Division page, read 2026-11-20",
+      "quote": "The Legacy Permit Application Status tool can be used to view permits and related documents submitted prior to 3/3/26. THE LEGACY PORTAL IS FOR REVIEW, STATUS AND INSPECTION SCHEDULING ONLY. NEWLY SUBMITTED APPLICATIONS THROUGH THE LEGACY PORTAL SHALL BE DENIED. ALL NEW APPLICATIONS MUST BE SUBMITTED THROUGH OUR NEW TYLER PORTAL.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "h3",
+      "claim": "Public searches by address, parcel or permit number without logging in; what the public can see.",
+      "source": "Hernando County Development Services FAQ, hernandocounty.us/building-development/building/development-services-faq/, read 2026-11-20",
+      "quote": "Can I search for permits without logging in? You are able to do public searches by address, parcel number, or permit number through the public portal. What information is available to the public? Publicly accessible information includes: Permit status Project descriptions Inspection results Issued permits.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "h4",
+      "claim": "Current owner is responsible for permitting earlier unpermitted work; title searches only catch reported violations.",
+      "source": "Hernando County Development Services FAQ, read 2026-11-20",
+      "quote": "I did not own the home when the unpermitted work was done. Why do I have to get a permit now? The current owner is ultimately responsible for obtaining a permit for any work performed that would require it even if the unpermitted work was done prior to purchase. Title companies should be checking for existing compliance cases prior to closing to ensure notification. This only works if the violation was reported prior to the search date.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "h5",
+      "claim": "Hernando County has no handyman license; unhappy customers generally go to civil court.",
+      "source": "Hernando County Development Services FAQ, read 2026-11-20",
+      "quote": "Hernando County does not have a handyman license. ... Generally, customers unhappy with their contractor’s work will have to address the matter in civil court through a lawsuit if they cannot resolve the matter directly with the contractor.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "h6",
+      "claim": "Building Division contact.",
+      "source": "Hernando County Building Fees page footer, read 2026-11-20",
+      "quote": "Hernando County Building Division 789 Providence Boulevard Brooksville, FL 34601 (352) 754-4050 bldg@hernandocounty.us",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "h7",
+      "claim": "Fee Resolution 2026-037: effective March 3, 2026; technology fee updated to pay for the new software.",
+      "source": "Hernando County Building Fee Resolution No. 2026-037 and Schedule (PDF, downloaded with owner OK 2026-11-20)",
+      "quote": "(1) updates the technology fee to offset the cost of the new permitting and licensing software that the Building Division will begin to use in March 2026 ... The fees and charges set forth in Exhibit \"A\" hereto shall become effective on March 3, 2026, and will be applied prospectively to building permit applications received, services provided, licensing applications received, and fines and penalties imposed on or after March 3, 2026.",
+      "verified": "2026-11-20 PDF text"
+    },
+    {
+      "id": "h8",
+      "claim": "Permitting fees relevant to an inherited permit.",
+      "source": "Fee Resolution 2026-037, Exhibit A, Section 4 Permitting",
+      "quote": "Change of Main Contractor on Issued Permit (Includes owner/builder to contractor) $105.00 ... Completion Permit, Base Fee $118.65 Completion Permit, Per Required Inspection $80.00 ... Reactivate a Permit $80.00 Renew Expired Permit, Base Fee $118.65 Renew Expired Permit, Per Remaining/Req. Inspection $47.46 ... Technology Fee (Applied to all building permits) $15.00 $93.00 ... (2) Fees represent Building Division Fees Only - May be subject to Other Agencies fees such as Zoning.",
+      "verified": "2026-11-20 PDF text"
+    },
+    {
+      "id": "h9",
+      "claim": "Fine schedule for failing to obtain a required permit before work (in the licensing fines section).",
+      "source": "Fee Resolution 2026-037, Exhibit A, Section 6 Licensing Fees, Fines & Penalties",
+      "quote": "Failure to Obtain Required Permit Prior to Commencement of Work First Offense $500.00 Second Offense $750.00 Third & Repeat Offense ... $1,000.00",
+      "verified": "2026-11-20 PDF text"
+    },
+    {
+      "id": "h10",
+      "claim": "Exemption list: intent, limitations (no commercial, no Special Flood Hazard Area).",
+      "source": "Hernando County Residential Building Permit Exemption List (PDF dated August 6, 2026; file updated 09/28/2026), downloaded with owner OK",
+      "quote": "August 6, 2026 RESIDENTIAL BUILDING PERMIT EXEMPTION LIST ... expanded the list of residential projects that homeowners can complete without a permit. ... The following exemptions would not apply to: • Commercial buildings or commercial properties • Properties located within a Special Flood Hazard Area (Flood Zone)",
+      "verified": "2026-11-20 PDF text"
+    },
+    {
+      "id": "h11",
+      "claim": "Exempt items and their limits.",
+      "source": "Residential Building Permit Exemption List, section 1 and 2",
+      "quote": "Minor Roof Repairs (2 squares/200 sq. ft. or less) ... Tree or storm damage, a hole in the roof, and/or damaged trusses will require a permit. ... Air-Conditioning Repairs o Repair is strictly limited to components of the main unit. A main unit replacement shall require a permit. ... The permit exemption covers repairs up to 8 sheets (256 sq. ft.) ... No permit shall be required for kitchen remodels as long as no new plumbing, electrical, or structural work is required ... No permit shall be required for toilets, sinks, vanities replaced in the same location and utilizing existing connections. ... Small Storage sheds (120 sq. ft. or less meeting applicable requirements) ... \"Like-for-Like\" replacements: These exemptions will remain limited to work utilizing existing wiring, plumbing, or mounting locations without structural alterations. Such work includes the following: ... Receptacles, switches and lighting fixtures • Smoke and carbon monoxide alarms ... • Water Heaters",
+      "verified": "2026-11-20 PDF text"
+    },
+    {
+      "id": "h12",
+      "claim": "Work that still needs a permit.",
+      "source": "Residential Building Permit Exemption List, section 4",
+      "quote": "The following work involves structural integrity, life safety, electrical, mechanical, plumbing, wind resistance, or energy code requirements and remain subject to permitting: • Electrical service upgrades • New electrical circuits • New plumbing piping • Water or sewer line relocations • HVAC system replacements • Structural framing • Window and exterior door replacement (except glass-only replacement) • Major (structural) roofing work (2 squares/200 sq. ft. or more) • Decks, and porches • Solar energy systems • Standby generators • Structural retaining walls",
+      "verified": "2026-11-20 PDF text"
+    },
+    {
+      "id": "h13",
+      "claim": "The $7,500 notice from July 1, 2026 and the no-legal-duty line.",
+      "source": "Residential Building Permit Exemption List, Permit Exemption Notice and request form",
+      "quote": "As of July 1st, 2026, the owner of a single-family dwelling or the owner’s contractor may not need to obtain a permit to perform any work that is valued at less than $7500 on the owner’s property, if the work does not include any mechanical, electrical, plumbing, gas or structural work. ( Exterior doors, windows, roofs and re-roofs still require permits regardless of cost.) THIS DOES NOT INCLUDE ANY PROPERTY LOCATED IN A FLOOD ZONE. PROJECTS MAY NOT BE SPLIT INTO SMALLER PROJECTS TO AVOID OBTAINING A PERMIT. Requesting a Permit Exemption: Submit the following: - This written request form - A copy of the contract or other documentation to demonstrate the cost. ... A local government has no legal duty to the owner, contractor, or successors or assigns thereof for work performed under this exemption.",
+      "verified": "2026-11-20 PDF text"
+    }
+  ],
+  "cut": [
+    "Whether the City of Brooksville runs its own building department: only a third-party site (Jaspector) says so; the city site was blocked. The page tells buyers inside city limits to ask the city.",
+    "Whether approved exemption requests appear in the Tyler portal: not testable.",
+    "Private Provider program / ICI-Sjur-VIP notice (10/1/2026): read, but nothing a buyer can act on without seeing the Private Provider Reports.",
+    "Whether the $93.00 technology fee applies to a renewal: the schedule says 'all building permits'; not stated for renewals, so not included in our example."
+  ],
+  "blockedSources": [
+    "hernandocountyfl-energovweb.tylerhost.net (Tyler EnerGov self-service): 403 Forbidden on 2026-11-20. Not worked around.",
+    "pvweb.hernandopa-fl.us (Legacy Permit Application Status Tool): navigation denied or failed on 2026-11-20. Not worked around.",
+    "cityofbrooksville.us: navigation denied or failed on 2026-11-20. Not worked around."
+  ]
+}
