@@ -1,0 +1,219 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-20T08:40:50.542Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "home inspection",
+    "home inspection cost",
+    "home inspection checklist",
+    "home inspection for insurance"
+  ],
+  "keywords": [
+    {
+      "keyword": "what is inhibited when it pertains to home inspection and termites",
+      "search_volume": 6,
+      "metric": "site",
+      "clicks": 0,
+      "position": 3
+    },
+    {
+      "keyword": "can a va buyer waive termite clearance and home inspection",
+      "search_volume": 3,
+      "metric": "site",
+      "clicks": 0,
+      "position": 4
+    },
+    {
+      "keyword": "what happens if a termite infestation is found during a home inspection",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 3
+    },
+    {
+      "keyword": "are septic tanks included in home inspection",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "termites found during home inspection should i walk away california",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 2
+    },
+    {
+      "keyword": "does home inspections inspect termites",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 3
+    },
+    {
+      "keyword": "do home inspections check for asbestos",
+      "search_volume": 2,
+      "metric": "site",
+      "clicks": 0,
+      "position": 6
+    },
+    {
+      "keyword": "if yermites are found in a home inspection what is the remedy",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "how to report on 1977 garage without gfci outlets in home inspection",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "eifs stucco home inspection moisture meter before drilling",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "will a va home inspection check for underground oil tanks",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 1,
+      "position": 2
+    },
+    {
+      "keyword": "make a disclaimer about underground oil tanks home inspection",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "do i need a wood destroying insects inspection on top of my home inspection",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 2
+    },
+    {
+      "keyword": "the home inspector _____ required to enter all crawl spaces, according to the internachi® home inspection standards of practice. is is not",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 8
+    },
+    {
+      "keyword": "seller backing out after home inspection",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 1,
+      "position": 1
+    },
+    {
+      "keyword": "in a home inspection what is a tprv valve",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 3
+    },
+    {
+      "keyword": "termites during home inspection",
+      "search_volume": 1,
+      "metric": "site",
+      "clicks": 0,
+      "position": 1
+    },
+    {
+      "keyword": "home inspection",
+      "search_volume": 1280,
+      "metric": "market",
+      "broad_impressions": 5430,
+      "kind": "seed"
+    },
+    {
+      "keyword": "pillar to post home inspection",
+      "search_volume": 1220,
+      "metric": "market",
+      "broad_impressions": 1220,
+      "kind": "related"
+    },
+    {
+      "keyword": "home inspection checklist",
+      "search_volume": 633,
+      "metric": "market",
+      "broad_impressions": 707,
+      "kind": "related"
+    },
+    {
+      "keyword": "win home inspection",
+      "search_volume": 444,
+      "metric": "market",
+      "broad_impressions": 444,
+      "kind": "related"
+    },
+    {
+      "keyword": "home inspection report",
+      "search_volume": 214,
+      "metric": "market",
+      "broad_impressions": 214,
+      "kind": "related"
+    },
+    {
+      "keyword": "ez home inspection software",
+      "search_volume": 189,
+      "metric": "market",
+      "broad_impressions": 189,
+      "kind": "related"
+    },
+    {
+      "keyword": "amerispec home inspection",
+      "search_volume": 145,
+      "metric": "market",
+      "broad_impressions": 145,
+      "kind": "related"
+    },
+    {
+      "keyword": "home inspection companies near me",
+      "search_volume": 112,
+      "metric": "market",
+      "broad_impressions": 112,
+      "kind": "related"
+    },
+    {
+      "keyword": "horizon home inspection login",
+      "search_volume": 15,
+      "metric": "market",
+      "broad_impressions": 15,
+      "kind": "related"
+    },
+    {
+      "keyword": "home inspection cost",
+      "search_volume": 141,
+      "metric": "market",
+      "broad_impressions": 390,
+      "kind": "seed"
+    },
+    {
+      "keyword": "home inspection checklist",
+      "search_volume": 633,
+      "metric": "market",
+      "broad_impressions": 707,
+      "kind": "seed"
+    },
+    {
+      "keyword": "home inspection for insurance",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    }
+  ]
+}

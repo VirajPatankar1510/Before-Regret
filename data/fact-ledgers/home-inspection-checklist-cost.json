@@ -1,0 +1,202 @@
+{
+  "slug": "home-inspection-checklist-cost",
+  "question": "What does a home inspection actually cover, what should it cost, how do I check the inspector, and is it the same as an inspection for home insurance?",
+  "verdictConfirmed": "A home inspection is a limited visual examination (Florida 468.8311) or a limited visual survey and basic performance evaluation (Texas 22 TAC 535.227). Texas sets measurable minimums and lets the inspector stop at stated thresholds; it does not require age, code compliance, insurability or repair costs. No government fee survey was found; ASHI's 2021 consumer article gives $300 to $600 for a basic inspection. Florida licenses inspectors (120-hour course, $300,000 liability policy, no repairs, no referral payments, no fee contingent on closing). The Florida wind mitigation form under 627.711 is a separate job with its own signer list and a 3-hour hurricane mitigation training requirement for home inspectors.",
+  "demand": {
+    "targetQuery": "home inspection",
+    "capture": "2026-11-20-demand-home-inspection-bing",
+    "topicSource": "owner's request 2026-11-20 with OpenSEO keyword-overview links (topic and phrasing only; no OpenSEO figure appears on the page or here)",
+    "note": "Tier 2: Bing records 'home inspection', 'home inspection checklist' and 'home inspection cost'; relative only, never stated as a volume. Tier 1 (our GSC) is narrow 'does a home inspection check X' questions."
+  },
+  "ourWork": {
+    "date": "2026-11-20",
+    "observations": [
+      "Florida DBPR Verify a Licensee (myfloridalicense.com/portalsearches/VerifyLicensee), Search by License Type: License Category 'Home Inspectors' offers License Types 'Home CE Provider' and 'Home Inspector'. With License Type Home Inspector selected, the Special Qualification list offers only 'Home Inspector' and 'Temp Home Inspector'; nothing marks hurricane mitigation training.",
+      "Same search with County = Martin, historic licences OFF, on 11/20/2026: 'Search Results - 209 Records'. Licence numbers start with HI; statuses shown read 'Current, Active'. Names and addresses were not recorded; the screenshot is cropped to the results header.",
+      "Texas TREC licence holder search (trec.texas.gov/apps/license-holder-search/) did not load: navigation denied or failed. Not worked around."
+    ],
+    "computations": [
+      "Counted from 22 TAC 535.229(b)(1)(C)(i): the GFCI list names 11 locations (I to XI). From (b)(1)(C)(ii): the arc-fault list names 13 locations."
+    ],
+    "engineComparison": {
+      "source": "src/engine/inspectionPriorities.ts PRIORITY_RULES, read at run time by the publish script",
+      "roof_age.costToCheck": "Included in a general inspection — ask your inspector to estimate remaining roof life and note the material and condition",
+      "hvac_age.costToCheck": "Included in a general inspection — ask for the manufacture date on the furnace, condenser, and water heater data plates",
+      "finding": "Texas 535.228(c)(2)(B)(i) does not require the remaining life expectancy of the roof covering, and 535.227(d)(3)(F)(iv) does not require life expectancy or age. Our report states both as included; on the page we say our report puts it more loosely than the Texas rule. Engine copy NOT changed (flagged to owner)."
+    }
+  },
+  "facts": [
+    {
+      "id": "fl1",
+      "claim": "Florida defines home inspection services as a limited visual examination of eight named systems for a written opinion.",
+      "source": "Florida Statutes 468.8311(4), 2025, flsenate.gov/Laws/Statutes/2025/468.8311",
+      "quote": "“Home inspection services” means a limited visual examination of the following readily accessible installed systems and components of a home: the structure, electrical system, HVAC system, roof covering, plumbing system, interior components, exterior components, and site conditions that affect the structure, for the purposes of providing a written professional opinion of the condition of the home.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "fl2",
+      "claim": "Florida 'home' includes condo units but not condo common areas.",
+      "source": "Florida Statutes 468.8311(2), 2025",
+      "quote": "“Home” means any residential real property, or manufactured or modular home, which is a single-family dwelling, duplex, triplex, quadruplex, condominium unit, or cooperative unit. The term does not include the common areas of condominiums or cooperatives.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "fl3",
+      "claim": "Florida inspectors may not repair a home they inspected, inspect property they have a financial interest in, pay agents for referrals, or take a fee contingent on the report or closing.",
+      "source": "Florida Statutes 468.8319(1)(f)-(i), 2025",
+      "quote": "(f) Perform or offer to perform any repairs to a home on which the inspector or the inspector’s company has prepared a home inspection report. (g) Inspect any property in which the inspector or the inspector’s company has any financial or transfer interest. (h) Offer or deliver any compensation, inducement, or reward to any broker or agent therefor for the referral of the owner of the inspected property to the inspector or the inspection company. (i) Accept an engagement to make an omission or prepare a report in which the inspection itself, or the fee payable for the inspection, is contingent upon either the conclusions in the report, preestablished findings, or the close of escrow.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "fl4",
+      "claim": "Florida licence requires an exam, good moral character, a course of at least 120 hours, and fingerprints.",
+      "source": "Florida Statutes 468.8313(2) and (6), 2025",
+      "quote": "An applicant may practice in this state as a home inspector if he or she passes the required examination, is of good moral character, and completes a course of study of at least 120 hours that covers all of the following components of a home: structure, electrical system, HVAC system, roof covering, plumbing system, interior components, exterior components, and site conditions that affect the structure. ... An applicant for a license shall submit, together with the application, a complete set of electronic fingerprints to the department.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "fl5",
+      "claim": "Florida inspectors must carry commercial general liability insurance of at least $300,000.",
+      "source": "Florida Statutes 468.8322, 2025",
+      "quote": "A home inspector shall maintain a commercial general liability insurance policy in an amount of not less than $300,000.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "fl6",
+      "claim": "Florida's uniform mitigation verification form: who may sign it.",
+      "source": "Florida Statutes 627.711(2)(a), 2025, flsenate.gov/Laws/Statutes/2025/627.711",
+      "quote": "The Financial Services Commission shall develop by rule a uniform mitigation verification inspection form that shall be used by all insurers when submitted by policyholders for the purpose of factoring discounts for wind insurance. ... An insurer shall accept as valid a uniform mitigation verification form signed by the following authorized mitigation inspectors: 1. A home inspector licensed under s. 468.8314 who has completed at least 3 hours of hurricane mitigation training approved by the Construction Industry Licensing Board which includes hurricane mitigation techniques and compliance with the uniform mitigation verification form and completion of a proficiency exam; 2. A building code inspector certified under s. 468.607; 3. A general, building, or residential contractor licensed under s. 489.111; 4. A professional engineer licensed under s. 471.015; 5. A professional architect licensed under s. 481.213; or 6. Any other individual or entity recognized by the insurer as possessing the necessary qualifications to properly complete a uniform mitigation verification form.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "fl7",
+      "claim": "The signer must inspect personally; engineers and contractors may use a direct employee.",
+      "source": "Florida Statutes 627.711(3), 2025",
+      "quote": "A person who is authorized to sign a mitigation verification form must inspect the structures referenced by the form personally, not through employees or other persons, and must certify or attest to personal inspection of the structures referenced by the form. However, licensees under s. 471.015 or s. 489.111 may authorize a direct employee, who is not an independent contractor, and who possesses the requisite skill, knowledge and experience, to conduct a mitigation verification inspection.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "fl8",
+      "claim": "Mitigation inspectors may not pay insurance agents for referrals.",
+      "source": "Florida Statutes 627.711(6)(a), 2025",
+      "quote": "An authorized mitigation inspector may not directly or indirectly offer or deliver any compensation, inducement, or reward to an insurance agency, insurance agent, customer representative, or an employee of an insurance agency for the referral of the owner of the inspected property to the inspector or the inspection company.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "tx1",
+      "claim": "Texas standards of practice: scope, one to four family, limited visual survey.",
+      "source": "22 Tex. Admin. Code § 535.227(a), via LII copy law.cornell.edu/regulations/texas/22-Tex-Admin-Code-SS-535-227 (amended eff. 2/1/2022)",
+      "quote": "These standards of practice apply when a professional inspector or real estate inspector who is licensed under this chapter accepts employment to perform a real estate inspection for a prospective buyer or seller of real property. These standards of practice define the minimum requirements for a real estate inspection conducted on a one to four family unit that is substantially completed. ... is a limited visual survey and basic performance evaluation of the systems and components of a building using normal controls that provides information regarding the general condition of a residence at the time of inspection",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "tx2",
+      "claim": "Texas inspection does not require specialized equipment such as thermal imaging, moisture meters, gas or CO detection, ladders over one story, sewer cameras or drones; an inspector may go further with competency.",
+      "source": "22 TAC § 535.227(a)(3)(C)(i) and (a)(4)",
+      "quote": "However an inspection does not require the use of: (i) specialized equipment, including but not limited to: (I) thermal imaging equipment; (II) moisture meters; (III) gas or carbon monoxide detection equipment; (IV) environmental testing equipment and devices; (V) elevation determination devices; (VI) ladders capable of reaching surfaces over one story above ground surfaces; (VII) cameras or other tools used to inspect the interior of a drain or sewer line; or (VIII) drones ... If an inspector provides services beyond the scope required by these standards of practice, including the use of specialized equipment, or inspects components and systems in addition to those listed under the standards of practice, the inspector must possess the competency required to do so.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "tx3",
+      "claim": "Texas inspector not required to determine pests, environmental hazards, insurability, age, code compliance; not required to give repair cost estimates or designate conditions as safe.",
+      "source": "22 TAC § 535.227(d)(3), (d)(6), (d)(15)",
+      "quote": "(3) determine: (A) the presence or absence of pests, termites, or other wood-destroying insects or organisms; (B) the presence, absence, or risk of: (i) asbestos; (ii) lead-based paint; (iii) mold, mildew; ... (F) any of the following issues concerning a system or component: (i) insurability or warrantability; ... (iv) life expectancy or age; ... (vi) compliance with any code, listing, testing or protocol authority; ... (6) designate conditions as safe; ... (15) provide repair cost estimates, recommendations, or re-inspection services.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "tx4",
+      "claim": "Texas departure provision: when an inspector may skip a required item, and the notice owed.",
+      "source": "22 TAC § 535.227(f)",
+      "quote": "An inspector may depart from the inspection of a component or system required by the standards of practice only if: (A) the inspector and client agree the item is not to be inspected; (B) the inspector is not qualified to inspect the item; (C) in the reasonable judgment of the inspector, the inspector determines that: (i) conditions exist that prevent inspection of an item; (ii) conditions or materials are hazardous to the health or safety of the inspector; or (iii) the actions of the inspector may cause damage to the property; or (D) the item is a common element of a multi-family development ... the inspector shall: (A) notify the client at the earliest practical opportunity that the component or system will not be inspected; and (B) make an appropriate notation on the inspection report form, stating the reason the component or system was not inspected. (3) If the inspector routinely departs from inspection of a component or system required by the standards of practice, and the inspector has reason to believe that the property being inspected includes that component or system, the inspector shall not perform the inspection of the property until the inspector notifies the client",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "tx5",
+      "claim": "Texas enforcement: failure to comply is grounds for discipline under Chapter 1102.",
+      "source": "22 TAC § 535.227(g) and (b)(2)",
+      "quote": "Chapter 1102--Texas Occupations Code, Chapter 1102. ... Failure to comply with the standards of practice is grounds for disciplinary action as prescribed by Chapter 1102.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "tx6",
+      "claim": "Foundation: written opinion on performance; crawl space vantage point; crawl space entry threshold.",
+      "source": "22 TAC § 535.228(a)",
+      "quote": "render a written opinion as to the performance of the foundation; (B) report: (i) the type of foundations; and (ii) the vantage point from which the crawl space was inspected; ... The inspector is not required to: (A) enter a crawl space or any area where headroom is less than 18 inches or the access opening is less than 24 inches wide and 18 inches high",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "tx7",
+      "claim": "Roof covering: inspect from the surface, report water penetration and previous repairs; not required to walk an unsafe roof, give remaining life or layers, or identify latent hail damage.",
+      "source": "22 TAC § 535.228(c)",
+      "quote": "(A) inspect the roof covering materials from the surface of the roof; (B) report: (i) type of roof coverings; (ii) vantage point from where the roof was inspected; (iii) evidence of water penetration; and (iv) evidence of previous repairs to the roof covering material ... The inspector is not required to: (A) inspect the roof from the roof level if, in the inspector's reasonable judgment: (i) the inspector cannot safely reach or stay on the roof; ... (B) determine: (i) the remaining life expectancy of the roof covering; or (ii) the number of layers of roof covering material; (C) identify latent hail damage",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "tx8",
+      "claim": "Attic: report vantage point, approximate average insulation depth, water penetration; entry threshold 22 by 30 inches, headroom 30 inches.",
+      "source": "22 TAC § 535.228(d)",
+      "quote": "(i) the vantage point from which the attic space was inspected; (ii) approximate average depth of attic insulation; and (iii) evidence of water penetration ... The inspector is not required to: (A) enter attics or unfinished spaces where openings are less than 22 inches by 30 inches or headroom is less than 30 inches",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "tx9",
+      "claim": "Exterior walls/doors: sleeping room escape openings; garage-to-house door thickness and fire rating.",
+      "source": "22 TAC § 535.228(f)(1)(B)",
+      "quote": "(i) the absence of performing emergency escape and rescue openings in all sleeping rooms; (ii) an attached garage doorway that is not equipped with self-closing or automatic closing devices; (iii) a door between the residence and an attached garage that is: (I) a solid wood door less than 1-3/8 inches thick; (II) a solid honeycomb core steel door less than 1-3/8 inches thick; or (III) not a 20-minute fire-rated door",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "tx10",
+      "claim": "Electrical: panel clearance, dead fronts, GFCI and arc-fault lists, smoke alarms in each sleeping room, manual test of alarms; not required to judge service capacity or verify smoke alarm interconnection.",
+      "source": "22 TAC § 535.229",
+      "quote": "electrical cabinets and panel boards that are not accessible or do not have a minimum of 36-inches of clearance in front of them; ... missing or damaged dead fronts or covers plates ... manually test the installed and accessible smoke and carbon monoxide alarms ... the absence of smoke alarms: (I) in each sleeping room ... The inspector is not required to: (A) determine present or future sufficiency of service capacity amperage, voltage, or the capacity of the electrical system ... (D) verify interconnectivity of smoke alarms",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "tx11",
+      "claim": "Plumbing: report water meter, main shutoff location, static pressure, pressure over 80 PSI; not required to operate main valves, inspect sewer clean-outs or private sewage systems, or judge water quality.",
+      "source": "22 TAC § 535.231(a)",
+      "quote": "(i) location of water meter; (ii) location of homeowners main water supply shutoff valve; and (iii) static water pressure ... (i) the presence of active leaks; (ii) water pressure exceeding 80 PSI ... The inspector is not required to: (A) operate any main, branch, or shut-off valves ... (iv) for sewer clean-outs; or (v) for the presence or performance of private sewage disposal systems; or (E) determine: (i) quality, potability, or volume of the water supply",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "tx12",
+      "claim": "Optional systems (irrigation, pools/spas/hot tubs, outbuildings) are not required.",
+      "source": "22 TAC § 535.233(a), (c), (d), (e)",
+      "quote": "An inspector is not required to inspect the components or systems described under this section. ... Landscape irrigation (sprinkler) systems. ... Swimming pools, spas, hot tubs, and equipment. ... Outbuildings.",
+      "verified": "2026-11-20 browser (section read in part)"
+    },
+    {
+      "id": "ashi1",
+      "claim": "ASHI 2021 consumer article: basic inspections $300 to $600; price depends on size, specialized tests, zip code; describes looking for code violations and estimating appliance age.",
+      "source": "American Society of Home Inspectors, 'What to Expect From a Home Inspection', ASHI Reporter, May 13, 2021, homeinspector.org/reporter-articles/what-to-expect-from-a-home-inspection/",
+      "quote": "The size of your home, how many specialized tests it may require, and your zip code will influence your total professional inspection bill. Everything is more expensive in large cities. Basic home inspections are typically priced between $300 and $600. ... Your inspector will look for code violations, among other things, which are not uncommon in historic homes. ... your home inspector will check all appliances to see if they are all in good working order and estimate how old they are.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "eng1",
+      "claim": "Our report engine lists roof remaining life and HVAC/water heater age as included in a general inspection.",
+      "source": "src/engine/inspectionPriorities.ts roof_age and hvac_age costToCheck (read at run time)",
+      "quote": "Included in a general inspection — ask your inspector to estimate remaining roof life and note the material and condition. Included in a general inspection — ask for the manufacture date on the furnace, condenser, and water heater data plates",
+      "verified": "2026-11-20 file read"
+    },
+    {
+      "id": "dbpr1",
+      "claim": "Florida DBPR licence search: Home Inspector search for Martin County returned 209 records; statuses 'Current, Active'; complaints and discipline under each name; Special Qualification offers only Home Inspector and Temp Home Inspector.",
+      "source": "Our observation, DBPR Verify a Licensee, myfloridalicense.com/portalsearches/VerifyLicensee, 11/20/2026 (data current as of 11/20/2026 03:49 AM)",
+      "quote": "Search Results - 209 Records. For additional information, including any complaints or discipline, click on the name. Current, Active. Special Qualification options: \"Home Inspector\", \"Temp Home Inspector\".",
+      "verified": "2026-11-20 browser, our observation"
+    }
+  ],
+  "cut": [
+    "A national typical inspection fee from any government source: none found (HUD hits were servicer occupancy fees and a historical 1988 financing cap).",
+    "Florida administrative rule 61-30.801 standards of practice: not read, so the page makes no claim about Florida's detailed standards.",
+    "Definition of a 4-point inspection: no primary source read; the page links #23 instead.",
+    "Whether every Texas inspector's report uses one layout: 535.222/535.223 not read.",
+    "Texas private water wells under optional systems: section truncated in our read, not claimed."
+  ],
+  "blockedSources": [
+    "trec.texas.gov licence holder search: navigation denied or failed from our browser on 2026-11-20. Not worked around.",
+    "ASHI 'Why You Should Always Get a Home Inspection' (homeinspector.org): redirects to a member login. Not worked around."
+  ]
+}
