@@ -1,0 +1,71 @@
+{
+  "generatedAt": "2026-11-20T12:39:22.348Z",
+  "source": "U.S. Census Bureau, American Community Survey 2020-2024 5-year estimates, table B25034 (Year Structure Built): county (050) minus incorporated places (160); place list from level 070",
+  "note": "Estimates. County-served = unincorporated Brevard (CDPs + remainder) + Grant-Valkaria town. Year built is not permit year.",
+  "countyServed": {
+    "housingUnits": 114752,
+    "builtBefore1990Pct": 51.6,
+    "built1990sPct": 18.7,
+    "built2000sPct": 19,
+    "built2010OrLaterPct": 10.7
+  },
+  "cities": {
+    "housingUnits": 184553,
+    "builtBefore1990Pct": 58.5,
+    "built1990sPct": 12,
+    "built2000sPct": 18.4,
+    "built2010OrLaterPct": 11.1
+  },
+  "countywide": {
+    "housingUnits": 299305,
+    "builtBefore1990Pct": 55.8,
+    "built1990sPct": 14.6,
+    "built2000sPct": 18.7,
+    "built2010OrLaterPct": 10.9
+  },
+  "countyServedShareOfAllUnitsPct": 38.3,
+  "incorporatedPlacesExcluded": [
+    "Cape Canaveral city",
+    "Cocoa Beach city",
+    "Cocoa city",
+    "Indialantic town",
+    "Indian Harbour Beach city",
+    "Malabar town",
+    "Melbourne Beach town",
+    "Melbourne Village town",
+    "Melbourne city",
+    "Palm Bay city",
+    "Palm Shores town",
+    "Rockledge city",
+    "Satellite Beach city",
+    "Titusville city",
+    "West Melbourne city"
+  ],
+  "unincorporatedPlaces": [
+    "Cocoa West CDP",
+    "June Park CDP",
+    "Melbourne Shores-Floridana Beach CCD",
+    "Merritt Island CDP",
+    "Micco CDP",
+    "Mims CDP",
+    "North Merritt Island CDP",
+    "Patrick AFB CDP",
+    "Port St. John CDP",
+    "Remainder of Cocoa Beach-Cape Canaveral CCD",
+    "Remainder of Cocoa-Rockledge CCD",
+    "Remainder of Indialantic-Melbourne Beach CCD",
+    "Remainder of Malabar CCD",
+    "Remainder of Melbourne CCD",
+    "Remainder of Palm Bay CCD",
+    "Remainder of Space Center CCD",
+    "Remainder of Titusville CCD",
+    "Remainder of West Brevard CCD",
+    "Scottsmoor CDP",
+    "Sharpes CDP",
+    "South Patrick Shores CDP",
+    "Tropical Park CDP",
+    "Viera East CDP",
+    "Viera West CDP",
+    "West Canaveral Groves CDP"
+  ]
+}

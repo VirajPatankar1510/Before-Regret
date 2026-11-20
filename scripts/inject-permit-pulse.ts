@@ -286,6 +286,24 @@ const BLOCKS: Block[] = [
       return `${lead} For a buyer comparing a resale with a new build, the single-family line is the one to watch. The Census count takes in the whole county, Brooksville included, not only the records the county's own portals hold.`;
     },
   },
+  {
+    // Added 2026-11-20 with the new Brevard guide. Brevard's houses rose faster than its total because multifamily fell, so the
+    // lead lets single-family carry the sentence; gated on the signs so it can't outlive a reversal. The Census county file counts
+    // every permit office in Brevard, while BASS holds only unincorporated Brevard and Grant-Valkaria (38.3% of the county's
+    // homes, docs/data/brevard-permit-era-shares.json), so the closing line names the cities the figures include.
+    slug: 'check-building-permits-brevard-county-fl', fips: '12009',
+    heading: 'What Brevard County Is Permitting Right Now',
+    prose: (c) => {
+      const houses = c.sfCurrent >= MIN_SF_FOR_PCT && c.sfPrior >= MIN_SF_FOR_PCT
+        ? `${dir(c.sfChangePct)}, from ${n(c.sfPrior)} to ${n(c.sfCurrent)} homes`
+        : `${n(c.sfPrior)} homes a year ago against ${n(c.sfCurrent)} now`;
+      const housesLead = c.sfChangePct > c.unitsChangePct && c.mfChangePct < 0 && c.unitsChangePct > 0;
+      const lead = housesLead
+        ? `New single-family homes are carrying Brevard's permit count: houses are ${houses}, while multifamily fell from ${n(c.mfPrior)} to ${n(c.mfCurrent)} units, which leaves the overall count ${dir(c.unitsChangePct)} at ${n(c.unitsCurrent)} units.`
+        : `Brevard's permit count is ${dir(c.unitsChangePct)} at ${n(c.unitsCurrent)} units; single-family permits are ${houses}, and multifamily went from ${n(c.mfPrior)} to ${n(c.mfCurrent)} units.`;
+      return `${lead} These are countywide Census figures, so they include permits issued by Palm Bay, Melbourne, Titusville and Brevard's other cities, which BASS doesn't hold.`;
+    },
+  },
 ];
 
 const trigrams = (s: string) => {

@@ -1,0 +1,123 @@
+{
+  "slug": "check-building-permits-brevard-county-fl",
+  "question": "How do I find a Brevard County, Florida house's building permits, and how do I avoid missing records?",
+  "officialLookupUrl": "https://www.brevardfl.gov/PlanningAndDevelopment/BuildingPermits/PermitSearch",
+  "verdictConfirmed": "Brevard County holds building permits only for unincorporated Brevard and the Town of Grant Valkaria; each city keeps its own. The county's records run in three eras: BASS (Accela) for 2003 to present, the Legacy Permit Search for 1990 to 2002 building permits, and nothing online before 1990. In the area the county serves (114,752 homes, 38.3% of the county), 51.6% of homes were built before 1990, so most original construction permits predate the online records.",
+  "demand": {
+    "targetQuery": "brevard county permit search",
+    "capture": "2026-11-20-demand-brevard-county-permit-bing",
+    "topicSource": "owner's keyword-gap export (topic choice only; no OpenSEO figure on the page or here)",
+    "note": "Tier 2: Bing records searches for 'brevard county permit search' and 'brevard county building permits' (relative only). This site has no Brevard page and no Brevard impressions."
+  },
+  "ourWork": {
+    "date": "2026-11-20",
+    "census": {
+      "source": "docs/data/brevard-permit-era-shares.json (ACS 2020-2024 B25034), built by scripts/build-brevard-permit-era-shares.ts: county row minus the 15 incorporated cities (level 160); county-served = unincorporated + Grant-Valkaria town",
+      "countyServedHousingUnits": "114,752",
+      "countyServedShareOfAllUnits": "38.3%",
+      "citiesHousingUnits": "184,553",
+      "countywideHousingUnits": "299,305",
+      "countyServedBuiltBefore1990": "51.6%",
+      "countyServedBuilt1990s": "18.7%",
+      "countyServedBuilt2000s": "19.0%",
+      "countyServedBuilt2010OrLater": "10.7%",
+      "unincorporatedPlacesIncluded": "Merritt Island, North Merritt Island, Viera East, Viera West, Port St. John, Mims, Scottsmoor, Sharpes, Cocoa West, June Park, Micco, South Patrick Shores, Tropical Park, West Canaveral Groves, Patrick AFB (CDPs) and the CCD remainders"
+    },
+    "computations": [
+      "County-served homes: 114,752 of 299,305 = 38.3%. Built before 1990: 51.6%; 1990s: 18.7%; 2000s: 19.0%; 2010 or later: 10.7% (ACS estimates; subtraction widens margins of error).",
+      "Patrick AFB CDP (military base) is counted in the unincorporated total; it is small and the page calls the shares estimates."
+    ],
+    "observations": [
+      "BASS (aca-prod.accela.com/BREVARD, Building module, General Search) on 2026-11-20: Start Date box pre-filled 11/16/2021 and End Date 11/20/2026.",
+      "Searched street number 2725 to 2725, street name 'Judge Fran Jamieson', no street type or direction, start date set to 01/01/1990: result header '100+ Record results matching your search results', 'Showing 1-10 of 100+'. Sorted by date, the oldest record shown was from 2017 (17BI-00029, 08/23/2017).",
+      "Same search with End Date 12/31/2016: again 100+ results, newest 2016 records. With End Date 12/31/2005: 13 records, oldest 04/14/2003 (M0144183), newest 11/22/2005 (L0206557).",
+      "Older BASS records are numbered like M0163907, F0155501, L0206557, with types like 'Building/Commercial/Add - Alt/Misc' and statuses FINALED / CLOSED; newer ones like 26BC15453 with types like 'COM Electrical'. Older records spell the street 'JUDGE FRAN JAMIESON WY', newer 'JUDGE FRAN JAMIESON WAY'.",
+      "Every result address reads 'MELBOURNE FL 32940' although the county's own pages give the same building as 2725 Judge Fran Jamieson Way, Viera, FL 32940.",
+      "Results mix permit types: a bingo licence, county fire alarm and commercial permits appear in the same Building search.",
+      "Record M0163907 (2004) detail: Description INTERIOR RENOVATION @ BLDG D (a 2004 interior renovation on the county campus); fields Location, Licensed Professional with business and state licence number, Description, Owner; tabs Processing Status, Related Buildings, Attachments, Inspections, Payments, Fees. Inspections tab: 'Completed (6)' with result dates in April and May 2004, codes including FRAME, INSUL and DWALL.",
+      "Legacy Permit Search (sites.brevardfl.gov/LPS) fields: Permit Number, Contractor Last Name, Owner Name, Property Street Number, Property Street Name, Property City (drop-down of postal names incl. Merritt Island, Mims, Scottsmoor, Sharpes, Titusville; no Viera), Property Zip Code, Application Date From/To.",
+      "Legacy search for 2725 / 'JUDGE FRAN': 4,933 items, the first page all street-naming and addressing applications filed under the county's headquarters address. Not a fair test of a house address.",
+      "Legacy record detail fields: Permit Number, Application Date, Issue Date, Status, Status Date, C.O. Date, Parcel ID, Census Code, Use Description, Property Address, Subdivision, Owner Name/Address/Phone, Building Number Units, Building Total Sq Feet, Construction Value, Contractor Name/License Number, and Drywall, Electrician, HVAC, Plumber, Roofer and Septic name and license number.",
+      "Screenshot public/images/brevard-bass-permit-search-2003-records.webp: BASS results for 2725 Judge Fran Jamieson Way, 1990 to 2005, showing the 2003-2005 record format. No personal names in frame."
+    ]
+  },
+  "facts": [
+    {
+      "id": "b1",
+      "claim": "Brevard's cities keep their own permit records; the county database covers unincorporated Brevard and Grant Valkaria.",
+      "source": "BASS Building search page, aca-prod.accela.com/BREVARD/Cap/CapHome.aspx?module=Building, read 2026-11-20",
+      "quote": "Each of the municipalities within Brevard County (except the Town of Grant Valkaria prior to September 17, 2018) are responsible for permitting within their jurisdiction and maintain their own records. Enter information below to search the County database for applications/permits in unincorporated Brevard County and the Town of Grant Valkaria. Use the dropdown menu within the gray bar to change the Search type. For additional information related to building permits please contact 321-633-2187 or building.licensing@brevardfl.gov.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "b2",
+      "claim": "The account number is the most accurate search.",
+      "source": "BASS Building search page, read 2026-11-20",
+      "quote": "For the most accurate search on a property, enter ONLY the Property Appraiser's Account Number below. To find the Property Appraiser's Account Number visit the Property Appraiser's Website.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "b3",
+      "claim": "County building permit records run from 1990; BASS from 2003.",
+      "source": "Brevard County Building Permits page, brevardfl.gov/PlanningAndDevelopment/BuildingPermits, read 2026-11-20",
+      "quote": "Access building permit records from 1990 to present. Utilize Brevard's Advance Service Site for permits from 2003 onward for efficient searching.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "b4",
+      "claim": "Permit Search page splits BASS (2003 on) from the 1990 to 2002 legacy search.",
+      "source": "Search Permits page, brevardfl.gov/PlanningAndDevelopment/BuildingPermits/PermitSearch, read 2026-11-20",
+      "quote": "Search and review building permit records from 1990 to present using available online tools and resources. ... For permits 2003 to present use Brevard's Advance Service Site (BASS) . ... 1990 to 2002 - Building Permits",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "b5",
+      "claim": "The legacy search covers building permits 1990 to 2002, other permits to 2007, and septic permits.",
+      "source": "Brevard County Legacy Permit Search, sites.brevardfl.gov/LPS, read 2026-11-20",
+      "quote": "This site provides for the searching and retrieval of building permits from 1990 to 2002 and other permits from 1990 to 2007. Note: This search also applies to septic permits.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "b6",
+      "claim": "Anyone can view permits without an account; address search tips.",
+      "source": "How to Permit Online page, brevardfl.gov/PlanningAndDevelopment/BuildingPermits/HowToPermitOnline, read 2026-11-20",
+      "quote": "Contractor and Code Enforcement and Building Permit records are available to the public using Brevard’s Advanced Service Site (BASS) .A licensed contractor can register to apply for permit applications online.A homeowner can create an account to schedule inspections.Anyone can view permit information without an account. ... Remember with address search, less is best. Only use street number and first few letters of street name. Do not select street type or direction.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "b7",
+      "claim": "To check jurisdiction, use the Property Appraiser's Taxing District.",
+      "source": "Building Permits FAQ, brevardfl.gov/PlanningAndDevelopment/BuildingPermits/FrequentlyAskedQuestions, read 2026-11-20",
+      "quote": "How do I find out if my property is within unincorporated Brevard County?Go to property appraiser web page . Open “Search for Property” and find property. \"Taxing District\" will appear on the left side of the page indicating the jurisdiction.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "b8",
+      "claim": "County building permits are for unincorporated areas; owner-builders file in person.",
+      "source": "Types of Permits page, brevardfl.gov/PlanningAndDevelopment/BuildingPermits/BrevardCountyBuildingPermits, read 2026-11-20",
+      "quote": "Building permits are issued for new construction, alterations, additions, and changes to properties within unincorporated areas of Brevard County. ... Owners working as their own contractors, wishing to submit permits (referred to as Owner/Builders) must appear in person to file their permit application.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "b9",
+      "claim": "How to request records the online tools don't hold.",
+      "source": "Make a Public Records Request, brevardfl.gov/PublicRecordsRequest, read 2026-11-20",
+      "quote": "Email: PublicRecordsRequest@BrevardFL.gov Phone: Call the Public Records Request Coordinator at (321) 633-2071 ... Under Florida law, you are not required to identify yourself or to submit a public records request in writing. ... Very broad requests can take longer to fulfill and may become costly.",
+      "verified": "2026-11-20 browser"
+    },
+    {
+      "id": "b10",
+      "claim": "Planning and Development's location.",
+      "source": "Planning and Development Department page, brevardfl.gov/PlanningAndDevelopment, read 2026-11-20",
+      "quote": "Planning and Development Department ... Location 2725 Judge Fran Jamieson Way Viera, FL 32940",
+      "verified": "2026-11-20 browser"
+    }
+  ],
+  "cut": [
+    "What the Town of Grant Valkaria's September 17, 2018 change means for which body holds its later permits: the county's sentence is ambiguous; the page quotes it and tells Grant-Valkaria buyers to ask both.",
+    "Whether paper permits from before 1990 survive: no county page says. The page points to a public records request without promising a result.",
+    "What 'Pay Fees Due' means on finished 2003-2004 records: not explained publicly; left out.",
+    "A typical house result in the legacy search: our only test address was the county headquarters, which returns thousands of administrative applications."
+  ],
+  "blockedSources": []
+}
