@@ -1,0 +1,46 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-11-20T06:30:22.258Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "splice romex in wall",
+    "splice romex",
+    "junction box in wall",
+    "romex splice kit"
+  ],
+  "keywords": [
+    {
+      "keyword": "can you splice romex in a wall",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 10,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "how to splice romex in a junction box",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 87,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 1
+      }
+    },
+    {
+      "keyword": "splice romex",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 14,
+      "pages": {
+        "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/": 1
+      }
+    }
+  ]
+}

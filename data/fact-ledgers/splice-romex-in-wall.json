@@ -1,0 +1,138 @@
+{
+  "_status": "DRAFTED 2026-11-20 -- guides/splice-romex-in-wall.md; owner picked #1 from the shared-keywords review; awaiting owner review, not published.",
+  "slug": "splice-romex-in-wall",
+  "question": "Can you splice Romex (NM cable) inside a wall, and what does the code allow?",
+  "verdictConfirmed": "Only in a box that stays accessible. 2021 IRC E3905.1 requires a box at each splice point (six exceptions, none an NM splice kit) and E3905.10 requires boxes reachable without removing any part of the building. Listed in-wall splice kits carry maker limits (TE 408-4504-1: solid copper 14/12 AWG, not NM made before 1990, qualified personnel); the IRC text doesn't list them, so the building department decides.",
+  "decisionMap": [
+    {
+      "q": "Can I splice inside a wall?",
+      "where": "this page (E3905.1, E3905.10)"
+    },
+    {
+      "q": "What makes a splice legal?",
+      "where": "this page (E3406.11 listed devices; E3406.11.3 6-inch free conductor)"
+    },
+    {
+      "q": "Are there exceptions to the box rule?",
+      "where": "this page (E3905.1.1-E3905.1.6; E3803.4 buried)"
+    },
+    {
+      "q": "What about in-wall splice kits?",
+      "where": "this page (TE instruction sheet 408-4504-1); NEC text SKIPPED (NFPA account)"
+    },
+    {
+      "q": "Other ways when the cable is short?",
+      "where": "this page (new cable end to end; accessible box)"
+    },
+    {
+      "q": "Splicing to knob and tube?",
+      "where": "#289 (link)"
+    },
+    {
+      "q": "Buying a house with hidden splices?",
+      "where": "#315 (link)"
+    },
+    {
+      "q": "Permit?",
+      "where": "this page (R105.2 item 5); local call"
+    }
+  ],
+  "facts": [
+    {
+      "id": "s1",
+      "claim": "IRC 2021 E3905.1 (NEC 300.15): a box or conduit body at each conductor splice point, outlet, switch point, junction point and pull point, except as permitted in E3905.1.1 through E3905.1.6; fittings and connectors only with the wiring methods they are designed and listed for.",
+      "quote": "A box or conduit body shall be installed at each conductor splice point, outlet, switch point, junction point and pull point except as otherwise permitted in Sections E3905.1.1 through E3905.1.6. Fittings and connectors shall be used only with the specific wiring methods for which they are designed and listed. (300.15)",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-39-power-and-lighting-distribution",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "s2",
+      "claim": "IRC 2021 E3905.1.1 to E3905.1.6, the six exceptions: E3905.1.1 an integral junction box that is part of listed equipment; E3905.1.2 cables entering or leaving conduit used for support or protection; E3905.1.3 a wiring device with an integral enclosure identified for the use, with brackets, for NM cable; E3905.1.4 a fitting identified for the use, accessible and containing no splices; E3905.1.5 buried conductors per E3803.4; E3905.1.6 a luminaire listed as a raceway.",
+      "quote": "An integral junction box or wiring compartment that is part of listed equipment shall be permitted to serve as a box or conduit body. [300.15(B)] ... A box or conduit body shall not be required where cables enter or exit from conduit or tubing that is used to provide cable support or protection against physical damage. ... A wiring device with integral enclosure identified for the use, having brackets that securely fasten the device to walls or ceilings of conventional on-site frame construction, for use with nonmetallic-sheathed cable, shall be permitted in lieu of a box or conduit body. [300.15(E)] ... A fitting identified for the use shall be permitted in lieu of a box or conduit body where such fitting is accessible after installation and does not contain spliced or terminated conductors. [300.15(F)] ... Splices and taps in buried conductors and cables shall not be required to be enclosed in a box or conduit body where installed in accordance with Section E3803.4. ... Where a luminaire is listed to be used as a raceway, a box or conduit body shall not be required for wiring installed therein. [300.15(J)]",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-39-power-and-lighting-distribution",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "s3",
+      "claim": "IRC 2021 E3905.10 (NEC 314.29): junction, pull and outlet boxes installed so the wiring can be accessed without removing any part of the building or structure.",
+      "quote": "Conduit bodies and junction, pull and outlet boxes shall be installed so that the wiring therein can be accessed without removing any part of the building or structure or, in underground circuits, without excavating sidewalks, paving, earth or other substance used to establish the finished grade. [314.29(A) & (B)]",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-39-power-and-lighting-distribution",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "s4",
+      "claim": "IRC 2021 E3803.4: direct buried conductors or cables may be spliced without splice boxes, by approved methods with listed materials.",
+      "quote": "Direct buried conductors or cables shall be permitted to be spliced or tapped without the use of splice boxes. The splices or taps shall be made by approved methods with materials listed for the application. [300.5(E)]",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-38-wiring-methods",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "s5",
+      "claim": "IRC 2021 E3406.11 (NEC 110.14(B)): conductors spliced with splicing devices listed for the purpose, and the splice insulated.",
+      "quote": "Conductors shall be spliced or joined with splicing devices listed for the purpose. Splices and joints and the free ends of conductors shall be covered with an insulation equivalent to that of the conductors or with an insulating device listed for the purpose. [110.14(B)]",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-34-general-requirements",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "s6",
+      "claim": "IRC 2021 E3406.11.3 (NEC 300.14): at least 6 inches of free conductor at each outlet, junction or switch point; where the opening is less than 8 inches in any dimension, each conductor long enough to reach at least 3 inches outside it.",
+      "quote": "Where conductors are to be spliced, terminated or connected to fixtures or devices, a minimum length of 6 inches (152 mm) of free conductor shall be provided at each outlet, junction or switch point. The required length shall be measured from the point in the box where the conductor emerges from its raceway or cable sheath. Where the opening to an outlet, junction or switch point is less than 8 inches (200 mm) in any dimension, each conductor shall be long enough to extend at least 3 inches (75 mm) outside of such opening. (300.14)",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-34-general-requirements",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "s7",
+      "claim": "IRC 2021 R105.2 work exempt from permit, electrical item 5: minor repair work.",
+      "quote": "5. Minor repair work, including the replacement of lamps or the connection of approved portable electrical equipment to approved permanently installed receptacles.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-1-scope-and-administration",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "s8",
+      "claim": "TE Connectivity (Tyco Electronics) instruction sheet 408-4504-1, Rev H, 25 APR 11, for the Type NM-1 nonmetallic sheathed cable splicing device 1116377: for 15A 14 AWG and 20A 12 AWG solid copper conductors, 300 Vac maximum branch circuits, 105 C maximum; not for NM cable made prior to 1990; installed and serviced only by qualified electrical personnel; do not re-terminate a splice if wire was previously inserted; do not strip insulation on the individual wires; do not use where directly exposed to water.",
+      "quote": "Instruction Sheet Nonmetallic (Type NM-1) Sheathed Cable Splicing Device 1116377 ... 408-4504-1 ... 25 APR 11 Rev H ... For use with 15A, 2 mm2 [14 AWG], and 20A, 3 mm2 [12 AWG] solid-copper-conductors, 300 Vac maximum branch circuits, and 105_C [221_F] maximum operating temperature. ... Risk of electrical shock -- do NOT use where directly exposed to water. Do NOT re-terminate a splice if wire was previously inserted into contacts. Do NOT strip insulation on the individual wires. This kit must be installed and serviced only by qualified electrical personnel. ... Not for use with non-metallic sheathed cable made prior to 1990.",
+      "url": "https://www.hkjdwchip.com/image//files/teconnectivity-11163772-datasheets-5534.pdf (copy; te.com serves 408-4504-1 only as a file download)",
+      "readOn": "2026-11-20",
+      "method": "pdf"
+    },
+    {
+      "id": "s9",
+      "claim": "Edition label: the 2021 International Residential Code on ICC's public site; its electrical sections cite the NEC section in brackets.",
+      "quote": "2021 INTERNATIONAL RESIDENTIAL CODE (IRC)",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "Kit makers rely on NEC 334.40(B) for box-free splices in existing walls",
+      "why": "seen only in search snippets of a TE brochure; the TE page we opened (2008 product listing) does not say it, and the NEC itself needs an NFPA account"
+    },
+    {
+      "claim": "Romex is Southwire's brand name",
+      "why": "not checked at source; the page calls it 'the name most people use'"
+    },
+    {
+      "claim": "NSI Tork NMS-2 kit details",
+      "why": "only distributor and retailer copies found"
+    },
+    {
+      "claim": "What it costs to fix a buried splice",
+      "why": "no first-party figure"
+    }
+  ],
+  "blockedSources": [
+    "codes.iccsafe.org reCAPTCHA 2026-11-20 -- cleared by the owner in the browser pane; not worked around",
+    "te.com DocumentDelivery returns 403 to scripts and a file download in the browser; read a copy of the same document number and revision",
+    "nfpa.org free-access NEC -- requires an account; not attempted"
+  ],
+  "overlapNotes": "#289 splice-romex-knob-tube-wiring covers Romex to knob and tube; this page is NM to NM in a wall and links #289 for K&T. #315 covers spotting hidden work when buying."
+}
