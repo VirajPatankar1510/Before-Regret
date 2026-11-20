@@ -8,12 +8,14 @@
 //   - Collier's systems (county page read 2026-11-17): Property Appraiser before 1989, CDPlus 1989-2011, CityView 2011-present.
 //     "built before 2010" is the clean statement: those houses' construction permits predate CityView's 2011 start.
 //     The 1980s band straddles the 1989 switch and is reported on its own, never split by guesswork.
+//   - Martin's Accela portal (searched 2026-11-20): 24 records dated before 1990, 81 dated 1990, and the 100+ display cap
+//     reached for 1991 and every later year checked. "Built before 1990" lines up exactly with the Census band edge.
 // Year built is when the structure was built, not when its permit was issued; a house finished in early 2011 may carry a
 // 2010 permit. The page says "built", never "permitted".
 import fs from 'node:fs';
 import path from 'node:path';
 
-const COUNTIES: Record<string, string> = { '12021': 'Collier', '12115': 'Sarasota', '12081': 'Manatee', '12009': 'Brevard' };
+const COUNTIES: Record<string, string> = { '12021': 'Collier', '12115': 'Sarasota', '12081': 'Manatee', '12009': 'Brevard', '12085': 'Martin' };
 const csvPath = path.join(process.cwd(), 'docs', 'data', 'oldest-housing-by-county.csv');
 const raw = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'docs', 'data', 'oldest-housing-raw.json'), 'utf8'));
 
@@ -48,6 +50,7 @@ for (const line of lines.slice(1)) {
     fips, housingUnits: units, medianYearBuilt: col(row, 'median_year_built'),
     builtBefore1980Pct: pct(pre1980, units),
     built1980sPct: pct(b1980s, units),
+    builtBefore1990Pct: pct(pre1980 + b1980s, units),
     built1990to2009Pct: pct(b1990to2009, units),
     built2010OrLaterPct: pct(b2010on, units),
     builtBefore2010Pct: pct(units - b2010on, units),

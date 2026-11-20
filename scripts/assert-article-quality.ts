@@ -168,7 +168,10 @@ const COST = /\$[\d,]{3,}/;
 // pushed writers toward a worse standard or an invented cost figure. Found 2026-09-17 when a
 // verified "ASTM E2356" citation failed this gate. ANSI (Z535), UL (UL 94) and NFPA (NFPA 13)
 // take the same shape. A digit is still mandatory, so a bare "per ASTM" still fails.
-const NUMBERED_STANDARD = /\b(NFPA|NEC|IRC|IBC|ASTM|ASCE|ANSI|UL)\s*[A-Z]?\s?[\d][\d.\-]*/i;
+// Also: the IRC's electrical part is cited by section as "Section E3905.1" with "IRC" earlier in the sentence; the E plus
+// four digits is unique to IRC Chapters 34-43, so it is the same evidence. Added 2026-11-20 when #380 (verified
+// E3905.1.2, E3406) failed only on word order.
+const NUMBERED_STANDARD = /\b(NFPA|NEC|IRC|IBC|ASTM|ASCE|ANSI|UL)\s*[A-Z]?\s?[\d][\d.\-]*|\bSection\s+E[34]\d{3}(\.\d+)*/i;
 // Federal and state law cited by number is the same kind of evidence -- checkable, specific, and
 // beyond what a general model reproduces. Added 2026-10-02: HUD's manufactured-home standards
 // (24 CFR Part 3280) and Florida Statutes § 119.071 failed the rule above, which would have forced a

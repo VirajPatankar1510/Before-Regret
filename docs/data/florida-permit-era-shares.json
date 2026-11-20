@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-17T12:42:05.705Z",
+  "generatedAt": "2026-11-20T07:32:06.001Z",
   "source": "U.S. Census Bureau, American Community Survey 5-year estimates, table B25034 (Year Structure Built)",
   "vintage": "2020-2024",
   "input": "docs/data/oldest-housing-by-county.csv",
@@ -11,6 +11,7 @@
       "medianYearBuilt": 1988,
       "builtBefore1980Pct": 32.1,
       "built1980sPct": 23.8,
+      "builtBefore1990Pct": 55.8,
       "built1990to2009Pct": 33.2,
       "built2010OrLaterPct": 10.9,
       "builtBefore2010Pct": 89.1
@@ -21,6 +22,7 @@
       "medianYearBuilt": 1996,
       "builtBefore1980Pct": 16.6,
       "built1980sPct": 19,
+      "builtBefore1990Pct": 35.6,
       "built1990to2009Pct": 46.3,
       "built2010OrLaterPct": 18.1,
       "builtBefore2010Pct": 81.9
@@ -31,9 +33,21 @@
       "medianYearBuilt": 1991,
       "builtBefore1980Pct": 33.1,
       "built1980sPct": 15.9,
+      "builtBefore1990Pct": 49,
       "built1990to2009Pct": 28.6,
       "built2010OrLaterPct": 22.4,
       "builtBefore2010Pct": 77.6
+    },
+    "Martin": {
+      "fips": "12085",
+      "housingUnits": 83121,
+      "medianYearBuilt": 1986,
+      "builtBefore1980Pct": 33.5,
+      "built1980sPct": 27.8,
+      "builtBefore1990Pct": 61.3,
+      "built1990to2009Pct": 31.3,
+      "built2010OrLaterPct": 7.4,
+      "builtBefore2010Pct": 92.6
     },
     "Sarasota": {
       "fips": "12115",
@@ -41,6 +55,7 @@
       "medianYearBuilt": 1988,
       "builtBefore1980Pct": 35.7,
       "built1980sPct": 18.6,
+      "builtBefore1990Pct": 54.3,
       "built1990to2009Pct": 30.5,
       "built2010OrLaterPct": 15.2,
       "builtBefore2010Pct": 84.8

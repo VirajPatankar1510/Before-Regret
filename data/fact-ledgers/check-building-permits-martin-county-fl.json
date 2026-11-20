@@ -1,0 +1,218 @@
+{
+  "slug": "check-building-permits-martin-county-fl",
+  "question": "How do I search Martin County, Florida building permits by address, and how do I know the search showed me everything?",
+  "verdictConfirmed": "Martin County's permits are searched in Accela Citizen Access with no login. One address can be stored as many separate entries, each holding different records, so every entry must be opened. The online record is thin before 1990, and 61.3% of the county's housing units were built before then, so the permit that built most houses needs a records request. A DONE status can sit beside an applied Hold condition. Work under the 2026 HB 803 exemption is approved but never inspected, and no exemption record type appears in the public search.",
+  "officialLookupUrl": "https://www.martin.fl.us/martin-county-services/building-permit-status",
+  "demand": {
+    "targetQuery": "martin county permit search",
+    "capture": "2026-11-20-demand-martin-county-permit-bing",
+    "topicSource": "owner's OpenSEO export serp-martin-county-permit-2026-11-20.csv (topic choice only; no figure from it appears on the page or in this ledger)",
+    "note": "Tier 2: Bing records 'martin county building department' and 'martin county permit search'; relative only, never stated as a volume."
+  },
+  "portalWalk": {
+    "date": "2026-11-20",
+    "system": "Accela Citizen Access, https://aca-prod.accela.com/MARTINCO/Cap/CapHome.aspx?module=Building&TabName=Building (Building module). No login, no bot check.",
+    "address": "2401 SE Monterey Rd, Stuart -- the Martin County Administrative Center. Owner on the record reads MARTIN COUNTY. Public property, no private person.",
+    "observations": [
+      "Search by Address with Street No. From 2401, Street No. To 2401 and Street Name Monterey (typed by hand; no direction or street type): '12 search results returned matching your address' -- 12 separate address entries for the one building, e.g. '2401 SE Monterey RD', '2401 SE MONTEREY RD, STUART FL 34996', '2401 SE MONTEREY RD, GMD First Floor, Stuart FL 34996', '2401 SE MONTEREY RD, STUART FL 34996-3322' and several with trailing codes.",
+      "Opening each of the 12 entries: 1 entry ('2401 SE Monterey RD') listed 4 records; 1 entry ('2401 SE MONTEREY RD, STUART FL 34996') listed 3 records, missing the 2010 roof; 2 entries opened the 2010 roof record directly; 8 entries returned 'No records found.'",
+      "The 4 records: 04/07/2023 BLD2023040351 Commercial Remodel, Closed-Certificate Issued; 11/08/2021 BLD2021110378 Heating-A/C-Refrig-Commercial Changeout, Closed-Certificate Issued; 04/19/2018 BLD2018041396 Commercial Antenna at 2351 SE Monterey Rd, Expired, described as a test record; 03/30/2010 BRR2010040187 Residential Roofing, DONE, a reroof of a low roof on a pre-engineered metal building.",
+      "Record BRR2010040187 detail: 'Record Status: DONE' and, on the same screen, 'The record was placed on HOLD on 02/17/2018.' Condition: 'CITY-STU - STUART PROPERTY', Severity: Hold; in the conditions list it reads 'Applied | Hold | 02/01/2018' under Historical. 'Total Conditions: 3 (Hold: 1, Notice: 2, Met: 13)'. The portal does not explain the condition. Contractor and contact rows were not photographed and are not named.",
+      "Search by Record Information requires a Record Number; '%' alone is accepted. The Start Date box is pre-filled 01/01/1990.",
+      "Record Number % with dates 01/01/1900 to 12/31/1989: '24 Record results'. Dates 01/01/1990 to 12/31/1990: '81 Record results'. 1991, 1995 and 2000 each: '100+ Record results' (the display cap). Pre-1990 records carry short numbers such as BSFR14959 and statuses such as DONE and Closed-Cancelled.",
+      "The first page of pre-1990 results lists county records at PALM CITY FL, JENSEN BEACH FL, HOBE SOUND FL and STUART FL mailing addresses; none of Palm City, Jensen Beach or Hobe Sound is among the Property Appraiser's five municipalities. Of the 10 pre-1990 records on that page, 8 read DONE, 1 Closed-Cancelled and 1 Closed-CH 2019-45.",
+      "The General Search Record Type list has 132 Building record types; none is an exemption. Roofing, windows and doors, shutters, electrical and plumbing types are listed.",
+      "Screenshots: the 12-entry address list, the 4-record list (2023 and 2021 records), the DONE record with its Hold banner, and the pre-1990 count with the date boxes. No personal names or private addresses in any of them."
+    ]
+  },
+  "facts": [
+    {
+      "id": "m1",
+      "claim": "The county says no login is needed to search permits or status, and the search takes a record number, house number and street name, or a contractor name.",
+      "quote": "You can check the status of a permit via Martin County's online permit system – Accela Citizen Access. You do not need a login in order to search Martin County permits or permit status. You will need the record number, house number/street name, or name of contractor/professional.",
+      "url": "https://www.martin.fl.us/martin-county-services/building-permit-status",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "m2",
+      "claim": "The county's path to the building search.",
+      "quote": "Then, from the homepage, select Advanced Search > Search Records / Applications > Building.",
+      "url": "https://www.martin.fl.us/martin-county-services/building-permit-status",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "m3",
+      "claim": "The portal's search note: % is the wildcard for partial entries.",
+      "quote": "Search Note: please use the % symbol as a wildcard for searches. Example: If a record number is BLD123456, but you only have part of the number, please enter %1234% as your search criteria. This will bring back any record that includes 1234 in the number.",
+      "url": "https://aca-prod.accela.com/MARTINCO/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "m4",
+      "claim": "The portal home page: logging in is for creating Building, Fire or Growth Management applications.",
+      "quote": "You must log in to to create a Building, Fire or Growth Management Application. All other applications must be submitted in paper form.",
+      "url": "https://aca-prod.accela.com/MARTINCO/Default.aspx",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "m5",
+      "claim": "The Building Department supplies copies of permit files, plans and surveys on request; email is free, a disk costs $1, paper is priced by size.",
+      "quote": "From this page you can request copies of building records such as blueprints, site plans, surveys, building plans, permit files or other documents from the Martin County Building Department. Copies can be requested in paper format, disk, or by email. There is no charge for emailed documents and a $1 charge for a disk. Fees for paper copies are based on the amount and size of the documents.",
+      "url": "https://www.martin.fl.us/martin-county-services/request-blue-prints",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "m6",
+      "claim": "Records are kept under the state General Records Schedule GS1-SL; requests go through a Request for Help or Information form.",
+      "quote": "Building Department records are maintained in accordance with the General Records Schedule GS1-SL, Rule 1B-24.003(1)(a), Florida Administrative Code. ... To request blueprints, surveys, site plans, or other building permit files, select the “Request for Help or Information” button to submit your request.",
+      "url": "https://www.martin.fl.us/martin-county-services/request-blue-prints",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "m7",
+      "claim": "Lien searches go only through the Orange Data portal, which needs registration; lien payoffs go to the county. Building Department contact for questions.",
+      "quote": "Martin County has established a partnership with Orange Data to enhance the efficiency of our lien search requests. As a result, all such requests will now be exclusively facilitated through the Orange Data Portal. ... If you are not currently registered with Orange Data, please visit their website for registration instructions. Lien payoffs are to be remitted exclusively to the County. ... 900 SE Ruhnke Street, Stuart, FL 34994, Monday through Friday between 7:30 a.m. and 4:00 p.m., or by phone at (772) 288-5505.",
+      "url": "https://www.martin.fl.us/martin-county-services/lien-and-records-search",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "m8",
+      "claim": "The Property Appraiser lists five municipalities in Martin County.",
+      "quote": "City of Stuart ... Town of Sewall’s Point ... Town of Ocean Breeze ... Village of Indiantown ... Town of Jupiter Island",
+      "url": "https://www.pamartinfl.gov/municipalities",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "m9",
+      "claim": "Ocean Breeze takes permit applications itself by email, with fees payable to the town, from a Jensen Beach address, and lists its own permit status and lien search request links.",
+      "quote": "Please submit the completed permit application, plans and other documents via email ... Make the permit fee check payable to Town of Ocean Breeze and mail it to P. O. Box 1025, Jensen Beach, FL 34958 ... BUILDING PERMITS - STATUS LIEN SEARCH REQUEST",
+      "url": "https://townofoceanbreeze.com/building-permitting/",
+      "readOn": "2026-11-20",
+      "method": "browser (staff name on the page deliberately left out)"
+    },
+    {
+      "id": "m10",
+      "claim": "Martin County: HB 803 exemptions took effect July 1, 2026, and approval must come before the work.",
+      "quote": "New building permit exemption provisions have been established under Florida House Bill (HB) 803 and are effective July 1, 2026. ... While some qualifying projects may no longer require a building permit, property owners and contractors must obtain exemption approval through the Building Department before proceeding with the exempt work.",
+      "url": "https://www.martin.fl.us/new-rules-related-building-permit-exemptions",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "m11",
+      "claim": "The exemption covers certain non-structural projects under $7,500 including materials and labor, and excludes flood zones and electrical, plumbing, mechanical, gas and structural work.",
+      "quote": "Under HB 803, certain non-structural residential construction projects with a total value of less than $7,500 (including materials and labor) may qualify for a permit exemption. Property owners and contractors should be aware that the exemption does not apply to: Properties located in a flood zone or flood hazard area Electrical work Plumbing work Mechanical work Gas work Structural work",
+      "url": "https://www.martin.fl.us/new-rules-related-building-permit-exemptions",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "m12",
+      "claim": "Martin's list of work that still needs a permit counts roofing, windows and doors, elevated decks and storage sheds as structural.",
+      "quote": "Many common home projects still require permits, even if they cost well under $7,500. Some examples include: Water heater replacements Water softener installations Air conditioning or HVAC work Electrical panels, Rewiring or any electrical upgrades Plumbing repairs or replacements Gas appliances Structural (e.g. roofing, load bearing walls, elevated decks, window and doors, storage sheds)",
+      "url": "https://www.martin.fl.us/new-rules-related-building-permit-exemptions",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "m13",
+      "claim": "To qualify: a written Permit Exemption Application with documentation and the signed contract with an itemized cost breakdown.",
+      "quote": "To qualify for an exemption, applicants must submit a written Permit Exemption Application (PDF) with a permit request to the Building Department, along with documentation of the work and a copy of the signed contract including an itemized cost breakdown.",
+      "url": "https://www.martin.fl.us/new-rules-related-building-permit-exemptions",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "m14",
+      "claim": "Exempt work is not inspected by the county; the Building Department phone for questions.",
+      "quote": "Work performed under an approved permit exemption will not be inspected by Building Department staff. Property owners and contractors are responsible for ensuring all exempt work complies with applicable laws, regulations and building standards. ... please contact the Martin County Building Department at (772) 288-5916",
+      "url": "https://www.martin.fl.us/new-rules-related-building-permit-exemptions",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "m15",
+      "claim": "First-party: Martin County housing units by decade built (Census ACS 5-year 2020-2024, table B25034): 83,121 units, median year built 1986; 61.3% built before 1990; 33.5% before 1980; 27.8% in the 1980s; 31.3% 1990-2009; 7.4% 2010 or later.",
+      "quote": "housingUnits 83121; medianYearBuilt 1986; builtBefore1990Pct 61.3; builtBefore1980Pct 33.5; built1980sPct 27.8; built1990to2009Pct 31.3; built2010OrLaterPct 7.4",
+      "url": "docs/data/florida-permit-era-shares.json (scripts/build-florida-permit-era-shares.ts)",
+      "readOn": "2026-11-20",
+      "method": "our computation"
+    },
+    {
+      "id": "s1",
+      "claim": "Florida Statutes s. 553.79(1)(g)1 (2026): local governments shall exempt single-family owners or their contractors from a permit for work valued at less than $7,500.",
+      "quote": "A local government that issues building permits shall exempt an owner of a single-family dwelling or the owner’s contractor from the requirement to obtain a building permit to perform any work valued at less than $7,500 on the owner’s property.",
+      "url": "http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0500-0599/0553/Sections/0553.79.html",
+      "readOn": "2026-11-17",
+      "method": "browser (The 2026 Florida Statutes) (read for the Collier guide, reused)"
+    },
+    {
+      "id": "s2",
+      "claim": "s. 553.79(1)(g)2: the exemption does not apply in a flood hazard area or to electrical, plumbing, structural, mechanical or gas work; no project splitting.",
+      "quote": "The exemption under subparagraph 1. does not apply to any of the following: a. Work on a property that is partially or entirely located in a flood hazard area as defined by the Florida Building Code. b. Any electrical, plumbing, structural, mechanical, or gas work performed on property containing a single-family dwelling. A construction project may not be divided into more than one project for the purpose of evading the requirements of this paragraph.",
+      "url": "http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0500-0599/0553/Sections/0553.79.html",
+      "readOn": "2026-11-17",
+      "method": "browser (read for the Collier guide, reused)"
+    },
+    {
+      "id": "s3",
+      "claim": "s. 553.79(1)(g)3-4: to qualify, a written exemption request with the contract or other documentation goes to the local enforcement agency; the local government has no legal duty for exempted work.",
+      "quote": "To qualify for the exemption under subparagraph 1., the owner or the owner’s contractor must submit a written request for exemption to the local enforcement agency with a copy of the contract or other documentation demonstrating the nature and the value of the work to be performed. 4. A local government has no legal duty to the owner, contractor, or successors or assigns thereof for exempted work performed under this paragraph.",
+      "url": "http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0500-0599/0553/Sections/0553.79.html",
+      "readOn": "2026-11-17",
+      "method": "browser (read for the Collier guide, reused)"
+    },
+    {
+      "id": "s4",
+      "claim": "These provisions came from CS/CS/HB 803 (2026), approved by the Governor as Chapter No. 2026-63; the Senate summary gives July 1, 2026 as the effective date.",
+      "quote": "Approved by Governor | Chapter No. 2026-63 | If approved by the Governor, or allowed to become law without the Governor’s signature, these provisions take effect on July 1, 2026.",
+      "url": "https://www.flsenate.gov/Session/Bill/2026/803/?Tab=BillHistory ; https://www.flsenate.gov/Committees/BillSummaries/2026/html/803",
+      "readOn": "2026-11-17",
+      "method": "browser (read for the Collier guide, reused)"
+    },
+    {
+      "id": "s5",
+      "claim": "s. 553.79(16)(a): any property owner, listed on the application or not, may close a permit, including by hiring a different licensed contractor.",
+      "quote": "A property owner, regardless of whether the property owner is the one listed on the application for the building permit, may close a building permit by complying with the following requirements: 1. The property owner may retain the original contractor listed on the permit or hire a different contractor appropriately licensed in this state",
+      "url": "http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0500-0599/0553/Sections/0553.79.html",
+      "readOn": "2026-11-17",
+      "method": "browser (read for the Collier guide, reused)"
+    }
+  ],
+  "cut": [
+    "What the CITY-STU - STUART PROPERTY hold means -- the portal does not say; the page reports it as seen and tells the reader to ask.",
+    "Whether the City of Stuart, Sewall's Point, Indiantown and Jupiter Island issue their own permits and where they publish them -- their sites were unreachable from our location; the page says to ask the town.",
+    "Whether approved HB 803 exemptions appear anywhere in Accela -- no exemption record type is listed; unknown, and the page says so.",
+    "Martin County lien search results and cost -- Orange Data needs registration; not registered."
+  ],
+  "blockedSources": [
+    {
+      "url": "https://www.cityofstuart.us/ (redirects to stuartfl.gov)",
+      "result": "Did not load from our location on 2026-11-20 (timeout / access denied). Not worked around."
+    },
+    {
+      "url": "https://www.sewallspoint.org/",
+      "result": "HTTP 403 on 2026-11-20. Not worked around."
+    },
+    {
+      "url": "https://www.indiantownfl.gov/",
+      "result": "HTTP 403 on 2026-11-20. Not worked around."
+    },
+    {
+      "url": "https://www.townofjupiterisland.com/",
+      "result": "Timed out on 2026-11-20. Not worked around."
+    },
+    {
+      "url": "Orange Data lien portal",
+      "result": "Requires registration; creating accounts is not allowed. Not used."
+    }
+  ]
+}

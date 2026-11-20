@@ -253,6 +253,22 @@ const BLOCKS: Block[] = [
       return `${lead} If you're weighing an older house against new construction, watch the single-family line rather than the total. The Census file also counts permits from Naples and Marco Island, which keep their own records.`;
     },
   },
+  {
+    // Added 2026-11-20 with the new Martin guide. Martin's total jump is apartments arriving from almost none
+    // (2 units a year earlier), so the multifamily change is spoken as counts only -- a percentage on a base of 2
+    // is arithmetic, not information. Houses carry their own percentage only above MIN_SF_FOR_PCT.
+    slug: 'check-building-permits-martin-county-fl', fips: '12085',
+    heading: 'What Martin County Is Permitting Right Now',
+    prose: (c) => {
+      const houses = c.sfCurrent >= MIN_SF_FOR_PCT && c.sfPrior >= MIN_SF_FOR_PCT
+        ? `${dir(c.sfChangePct)}, from ${n(c.sfPrior)} to ${n(c.sfCurrent)} homes`
+        : `${n(c.sfPrior)} homes a year ago against ${n(c.sfCurrent)} now`;
+      const apartments = c.mfPrior < MIN_SF_FOR_PCT
+        ? `multifamily went from ${n(c.mfPrior)} units to ${n(c.mfCurrent)}`
+        : `multifamily is ${dir(c.mfChangePct)}, from ${n(c.mfPrior)} to ${n(c.mfCurrent)} units`;
+      return `Martin County's permit total is ${dir(c.unitsChangePct)}, ${n(c.unitsPrior)} units to ${n(c.unitsCurrent)}, and most of that jump is apartments: ${apartments}. Single-family permits, the line that compares with buying an existing house, are ${houses}. The Census count covers the whole county, Stuart and the other towns included, so it reaches beyond what the county's Accela portal holds.`;
+    },
+  },
 ];
 
 const trigrams = (s: string) => {
