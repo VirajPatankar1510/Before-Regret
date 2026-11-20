@@ -1,0 +1,86 @@
+{
+  "source": "gsc",
+  "endpoint": "search console api searchAnalytics.query, dimensions=query+page, query contains seed, 16 months (this site's impressions, not market volume)",
+  "captured_at": "2026-11-20T05:07:56.121Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "pigtail double tap breaker",
+    "double tapped breaker",
+    "double tap breaker",
+    "double tap neutral"
+  ],
+  "keywords": [
+    {
+      "keyword": "double tapped breakers",
+      "search_volume": 17,
+      "impressions": 17,
+      "clicks": 0,
+      "position": 66.8,
+      "pages": {
+        "https://www.beforeregret.com/guides/double-tapped-breaker-did-inspector-flag/": 17
+      }
+    },
+    {
+      "keyword": "double tapped breaker",
+      "search_volume": 4,
+      "impressions": 4,
+      "clicks": 0,
+      "position": 70,
+      "pages": {
+        "https://www.beforeregret.com/guides/double-tapped-breaker-did-inspector-flag/": 4
+      }
+    },
+    {
+      "keyword": "double tap breakers",
+      "search_volume": 2,
+      "impressions": 2,
+      "clicks": 0,
+      "position": 61,
+      "pages": {
+        "https://www.beforeregret.com/guides/double-tapped-breaker-did-inspector-flag/": 2
+      }
+    },
+    {
+      "keyword": "what is a double tapped breaker",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 72,
+      "pages": {
+        "https://www.beforeregret.com/guides/double-tapped-breaker-did-inspector-flag/": 1
+      }
+    },
+    {
+      "keyword": "what is double tapped breaker",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 75,
+      "pages": {
+        "https://www.beforeregret.com/guides/double-tapped-breaker-did-inspector-flag/": 1
+      }
+    },
+    {
+      "keyword": "double tap breaker",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 67,
+      "pages": {
+        "https://www.beforeregret.com/guides/double-tapped-breaker-did-inspector-flag/": 1
+      }
+    },
+    {
+      "keyword": "what is a double tap breaker",
+      "search_volume": 1,
+      "impressions": 1,
+      "clicks": 0,
+      "position": 65,
+      "pages": {
+        "https://www.beforeregret.com/guides/double-tapped-breaker-did-inspector-flag/": 1
+      }
+    }
+  ]
+}

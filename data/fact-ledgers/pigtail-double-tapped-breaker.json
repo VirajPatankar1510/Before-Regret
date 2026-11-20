@@ -1,0 +1,120 @@
+{
+  "_status": "DRAFTED 2026-11-20 -- guides/pigtail-double-tapped-breaker.md; owner's topic 'pigtail double tap breaker'; awaiting owner review, not published.",
+  "slug": "pigtail-double-tapped-breaker",
+  "question": "Can a double-tapped breaker be fixed with a pigtail, and when isn't that the right fix?",
+  "verdictConfirmed": "Usually. A pigtail moves the joint into a listed splice (IRC E3406.11) so one wire lands on a terminal not identified for two (E3406.10). It doesn't fix mismatched wire sizes (E3705.5.3), circuits that must stand alone (E3703.2-E3703.4), neutrals (E3706.4) or aluminum without identified connectors. Square D QO 10-30 A breakers are rated for two copper wires, but not their AFI/CAFI/GFI/DF versions.",
+  "decisionMap": [
+    { "q": "Is a pigtail a code-compliant fix?", "where": "this page (E3406.10, E3406.11, splices in the panel E3907.1.1)" },
+    { "q": "When doesn't a pigtail fix it?", "where": "this page (wire sizes E3705.5.3; required circuits E3703.2-.4; neutrals E3706.4; aluminum E3406.10 + engine/CPSC -> #368)" },
+    { "q": "Is my breaker already rated for two wires?", "where": "this page (Schneider FAQ FA97891 for QO; other makers SKIPPED, no maker document read)" },
+    { "q": "What if the panel is full?", "where": "this page (engine panel replacement cost); tandem breakers -> #234" },
+    { "q": "Does it need a permit?", "where": "this page (R105.2 electrical items 3 and 5); local call" },
+    { "q": "What is a double tap / why is it flagged?", "where": "#234 (link)" }
+  ],
+  "facts": [
+    {
+      "id": "p1",
+      "claim": "IRC 2021 E3406.10 (NEC 110.14(A)): connections to terminals by pressure connectors, splices to flexible leads, or binding screws for 10 AWG and smaller; terminals for more than one conductor and for aluminum conductors shall be identified for the application.",
+      "quote": "Connection of conductors to terminal parts shall be made without damaging the conductors and shall be made by means of pressure connectors, including set-screw type, by means of splices to flexible leads, or for conductor sizes of 10 AWG and smaller, by means of wire binding screws or studs and nuts having upturned lugs or the equivalent. Terminals for more than one conductor and terminals for connecting aluminum conductors shall be identified for the application. [110.14(A)]",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-34-general-requirements",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "p2",
+      "claim": "IRC 2021 E3406.11 (NEC 110.14(B)): conductors spliced or joined with splicing devices listed for the purpose; splices covered with equivalent insulation or a listed insulating device.",
+      "quote": "Conductors shall be spliced or joined with splicing devices listed for the purpose. Splices and joints and the free ends of conductors shall be covered with an insulation equivalent to that of the conductors or with an insulating device listed for the purpose. [110.14(B)]",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-34-general-requirements",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "p3",
+      "claim": "IRC 2021 E3706.4 (NEC 408.41): each grounded conductor terminates in the panelboard on an individual terminal not also used for another conductor (exception: parallel conductors on a terminal identified for more than one).",
+      "quote": "Each grounded conductor shall terminate within the panelboard on an individual terminal that is not also used for another conductor, except that grounded conductors of circuits with parallel conductors shall be permitted to terminate on a single terminal where the terminal is identified for connection of more than one conductor. (408.41 and 408.41 Exception)",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-37-branch-circuit-and-feeder-requirements",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "p4",
+      "claim": "IRC 2021 E3907.1 and E3907.1.1 (NEC 312.8): the wiring space in a switch or overcurrent device enclosure may hold splices and taps if conductors fill no more than 40 percent of any cross section and conductors, splices and taps no more than 75 percent.",
+      "quote": "The wiring space within enclosures for switches and overcurrent devices shall be permitted for other wiring and equipment in accordance with Sections E3907.1.1 and E3907.1.2. [312.8] ... Where the wiring space of enclosures for switches or overcurrent device contains conductors feeding through, spliced, or tapping off to other enclosures, switches, or overcurrent devices, the following conditions shall be met: 1. The total area of all conductors installed at any cross section of the wiring space shall not exceed 40 percent of the cross-sectional area of that space. 2. The total area of all conductors, splices and taps installed at any cross section of the wiring space shall not exceed 75 percent of the cross-sectional area of that space.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-39-power-and-lighting-distribution",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "p5",
+      "claim": "IRC 2021 E3705.5.3 and Table E3705.5.3 (NEC 240.4(D)): maximum breaker for copper 14 AWG is 15 amps, 12 AWG 20 amps, 10 AWG 30 amps.",
+      "quote": "Except as specifically permitted by Section E3705.5.4, the rating of overcurrent protection devices shall not exceed the ratings shown in Table E3705.5.3 for the conductors specified therein. [240.4(D)] ... COPPER Size (AWG) Maximum overcurrent-protection-device rating (amps) 14 15; 12 20; 10 30",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-37-branch-circuit-and-feeder-requirements",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "p6",
+      "claim": "IRC 2021 E3703.4: at least one 20-ampere bathroom receptacle circuit, which shall have no other outlets (exception: a circuit serving a single bathroom may supply other equipment in that bathroom).",
+      "quote": "A minimum of one 20-ampere branch circuit shall be provided to supply bathroom receptacle outlet(s) required by Section E3901.6 and any countertop or similar work surface receptacle outlets. Such circuits shall have no other outlets. [210.11(C)(3)] Exception: Where the 20-ampere circuit supplies a single bathroom, outlets for other equipment within the same bathroom shall be permitted to be supplied in accordance with Section E3702.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-37-branch-circuit-and-feeder-requirements",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "p7",
+      "claim": "IRC 2021 E3703.3: at least one 20-ampere laundry circuit, serving only receptacle outlets in the laundry area. E3703.2: at least two 20-ampere circuits for the kitchen and dining area receptacles.",
+      "quote": "A minimum of two 20-ampere-rated branch circuits shall be provided for all receptacle outlets specified by Section E3901.3. [210.11(C)(1)] ... A minimum of one 20-ampere-rated branch circuit shall be provided for receptacle outlets required by Section E3901.8 and shall serve only receptacle outlets located in the laundry area. [210.11(C)(2)]",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-37-branch-circuit-and-feeder-requirements",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "p8",
+      "claim": "IRC 2021 R105.2 work exempt from permit, electrical items 3 and 5: replacement of branch circuit overcurrent devices of the required capacity in the same location; minor repair work.",
+      "quote": "3. Replacement of branch circuit overcurrent devices of the required capacity in the same location. ... 5. Minor repair work, including the replacement of lamps or the connection of approved portable electrical equipment to approved permanently installed receptacles.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-1-scope-and-administration",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "p9",
+      "claim": "Schneider Electric FAQ FA97891 (last modified 10/28/2025): 10 to 30 A QO breakers are rated for 2 conductors under 1 terminal for copper #14-#10; 1 conductor #14-#8 Cu or Al; applies to QO and QOB, 1, 2 and 3 pole; not QOT; not suffix GFI, AFI, CAFI, DF, EPD or EPE.",
+      "quote": "Yes, 10 to 30 A QO breakers are rated to accept 2 conductors under 1 terminal for copper wire size #14-#10. The breakers are also rated to accept 1 conductor for wire size #14-#8 Cu or Al. Applies to QO and QOB, 1, 2, and 3 pole, 10 to 30 A Does not apply to QOT breakers. Does not apply to breakers with suffix GFI, AFI, CAFI, DF, EPD, or EPE. ... Last Modified on:10/28/2025",
+      "url": "https://www.se.com/us/en/faqs/FA97891/",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "p10",
+      "claim": "Our report engine (rule electrical_panel_brand) puts panel replacement at $1,500 – $4,000.",
+      "quote": "typicalRepairCost: 'Panel replacement $1,500 – $4,000'",
+      "url": "src/engine/inspectionPriorities.ts",
+      "readOn": "2026-11-20",
+      "method": "engine"
+    },
+    {
+      "id": "p11",
+      "claim": "Our report engine (rule electrical_aluminum_wiring), citing CPSC Publication 516: three permanent repairs (copper rewiring, COPALUM, AlumiConn); recommends against pigtailing with ordinary twist-on connectors, a temporary repair at best.",
+      "quote": "Its Publication 516 recognizes three permanent repairs (replacing the wiring with copper, the COPALUM method, or the AlumiConn connector) and recommends against pigtailing with ordinary twist-on connectors, which it treats as a temporary repair at best.",
+      "url": "src/engine/inspectionPriorities.ts",
+      "readOn": "2026-11-20",
+      "method": "engine"
+    },
+    {
+      "id": "p12",
+      "claim": "Edition label: the 2021 International Residential Code on ICC's public site; its electrical sections cite the NEC section they come from in brackets.",
+      "quote": "2021 INTERNATIONAL RESIDENTIAL CODE (IRC)",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    { "claim": "Homeline, Eaton CH/BR, Siemens breakers rated for two wires", "why": "only forum posts and retailer listings found; no maker document read" },
+    { "claim": "Which panels accept tandem breakers", "why": "no maker document read; #234 already covers tandems" },
+    { "claim": "Texas TREC 22 TAC 535.229 reporting line", "why": "read (LII), but it never says 'double tap'; tying it to double taps would be our inference" },
+    { "claim": "NEC text itself", "why": "NFPA free access needs an account; we don't create accounts. IRC carries the NEC references in brackets" },
+    { "claim": "What a pigtail repair costs", "why": "no first-party figure" }
+  ],
+  "blockedSources": ["nfpa.org free-access NEC -- requires creating an account; not attempted"]
+}
