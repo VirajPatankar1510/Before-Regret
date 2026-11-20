@@ -1,0 +1,164 @@
+{
+  "slug": "water-heater-age-serial-number",
+  "question": "How do I tell how old a water heater is from its serial number, by brand, and what does the age mean for a house I'm buying?",
+  "verdictConfirmed": "The manufacture date is coded into the serial number on the rating label, but each brand codes it differently. A.O. Smith: first two digits year, next two week. Rheem/Ruud: older ten-digit serials start with month then year; from April 2, 2012 a new format starts with a plant letter, then week, then year. Bradford White: a year letter and a month letter, and each year letter maps to dates 20 years apart; its two official charts list different pairs. Age is a prompt, not a verdict: A.O. Smith gives 8 to 12 years, the DOE figure our report uses is about 15.",
+  "demand": {
+    "targetQuery": "water heater age",
+    "capture": "2026-11-20-demand-water-heater-age-bing",
+    "topicSource": "owner's OpenSEO export serp-age-of-a-o-smith-water-heater-2026-11-20.csv (topic choice only; no figure from it appears on the page or here)",
+    "note": "Tier 2: Bing records 'water heater age' and 'bradford white water heater age'; relative only, never stated as a volume."
+  },
+  "ourWork": {
+    "date": "2026-11-20",
+    "observations": [
+      "Ruud's water heater age calculator (ruud.com/how-old-is-my-water-heater), given Rheem's own published example serial 1209D01234, answered: 'It looks like this serial number isn't coming up - please reach out to us via our contact page to speak with customer service.' The calculator looks up serials; it did not decode the published pattern.",
+      "Bradford White's two official date charts disagree on the year pairs: the For The Pro page lists A = 1984 or 2004 through Z = 2003 or 2023; the consumer My Water Heater page lists A = 2004 or 2024 through Z = 2023 or 2043. Read together, a year letter can mean three years 20 years apart (A: 1984, 2004 or 2024). Only the pro page gives the sequence-length rule (7 digits before December 2007, 8 after), which separates 2024 from 1984 and 2004 but not 1984 from 2004.",
+      "Worked comparison of the same four digits under each published rule, digits 0912: A.O. Smith (year then week) reads week 12 of 2009; a newer Rheem serial with a plant letter in front (week then year) reads week 9 of 2012; an older all-digit Rheem serial (month then year) reads September 2012.",
+      "Rheem's own serial page says month then year; Rheem's 2022 blog says week and year. Bulletin 1207 shows both are right for different label formats: the plant-letter format started April 2, 2012 at Mexicali and June 4 at Nuevo Laredo."
+    ]
+  },
+  "facts": [
+    {
+      "id": "a1",
+      "claim": "A.O. Smith: the first two digits of the serial number are the year of manufacture (example 17 = 2017).",
+      "quote": "17: The first two digits of the serial number represent the year of manufacturing. In this case the year is 2017.",
+      "url": "https://university.hotwater.com/wp-content/uploads/sites/2/2025/01/ServiceWarrantyGuide_2024.pdf",
+      "readOn": "2026-11-20",
+      "method": "PDF (A.O. Smith Service and Warranty Guide, July 2024) downloaded with owner OK, text extracted"
+    },
+    {
+      "id": "a2",
+      "claim": "A.O. Smith: the next two digits are the week of manufacture; up to 53 weeks in a year; the example is week 19 of 2017.",
+      "quote": "19: The second two digits represent the week of manufac- turing. There can be up to fifty-three (53) weeks in a given manufacturing year. In this example, the unit was manufac- tured the nineteenth week of 2017.",
+      "url": "https://university.hotwater.com/wp-content/uploads/sites/2/2025/01/ServiceWarrantyGuide_2024.pdf",
+      "readOn": "2026-11-20",
+      "method": "PDF downloaded with owner OK"
+    },
+    {
+      "id": "a3",
+      "claim": "A.O. Smith: the nameplate on the side of the tank lists model and serial number, among other data.",
+      "quote": "Before making repairs or purchasing a new water heater, check the nameplate on the side of your current unit. Here you'll find helpful information, including the tank capacity, insulation R-value, installation guidelines, working pressure, model and serial number.",
+      "url": "https://www.hotwater.com/info-center/when-to-repair-or-replace.html",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "a4",
+      "claim": "A.O. Smith gives an average life expectancy of about 8 to 12 years, and says a heater more than 10 years old that leaks at the base or runs erratically is probably due for replacement.",
+      "quote": "Based on the manufacturer's suggested service life, the average life expectancy of a water heater is about 8 to 12 years. That varies with the location and design of the unit, quality of installation, maintenance schedule and water quality. If your water heater is more than 10 years old, leaks around the base of the tank or operates erratically, it's probably time to replace your water heater.",
+      "url": "https://www.hotwater.com/info-center/when-to-repair-or-replace.html",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "a5",
+      "claim": "A.O. Smith's warranty verification page takes a serial number.",
+      "quote": "Enter your Serial Number or Reference Number in the warranty check fields below to get started.",
+      "url": "https://www.hotwater.com/support/warranty-verification.html",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "r1",
+      "claim": "Rheem's serial page: ten digits, month manufactured then year manufactured, plant line code, consecutive number (example 12 09 D 01234).",
+      "quote": "The serial number identification on all Rheem water heating product rating labels contain ten(10) digits. If follows the example below: Serial Number 12 09 D 01234 Description Month Manufactured Year Manufactured Plant Line Code Consective Serial Number",
+      "url": "https://www.rheem.com/how-to-locate-and-read-your-rheem-water-heating-serial-numbers/",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "r2",
+      "claim": "Rheem's 2022 blog post says the first few digits give the week and year.",
+      "quote": "On a Rheem® water heater, you can find the week and year of manufacture by looking at the first few digits of the serial number.",
+      "url": "https://www.rheem.com/water-heating/articles/5-things-to-do-before-you-call-a-plumber/",
+      "readOn": "2026-11-20",
+      "method": "browser (post dated December 15, 2022)"
+    },
+    {
+      "id": "r3",
+      "claim": "Rheem bulletin 1207, page 1: ten digits, month then year, plant line code, consecutive number.",
+      "quote": "The serial number identification on all rating labels contains ten digits. It follows the example below: 09 12 D 01234 Month Manufactured Year Manufactured Plant Line Code Consecutive Serial Number",
+      "url": "https://www.rheem.com/whtechbulletins/ (bulletin 1207, cdn.globalimageserver.com)",
+      "readOn": "2026-11-20",
+      "method": "PDF downloaded with owner OK, text extracted"
+    },
+    {
+      "id": "r4",
+      "claim": "Bulletin 1207, page 2: from April 2, 2012 (Mexicali) and June 4 (Nuevo Laredo) a new label format based on week and year.",
+      "quote": "Effective April 2, 2012 product being produced in Mexicali started using a new rating label. Effective June 4th, product being manufactured in Nuevo Laredo started using the new rating label. You will notice a different format based on the week and year of manufacture.",
+      "url": "https://www.rheem.com/whtechbulletins/ (bulletin 1207)",
+      "readOn": "2026-11-20",
+      "method": "PDF downloaded with owner OK"
+    },
+    {
+      "id": "r5",
+      "claim": "New format PWWYY00001: plant letter, week, year; example M141209135 = Mexicali, week 14, 2012; plant codes A Montgomery, W Water Heater Innovations, Q Nuevo Laredo, M Mexicali, C Canada; a letter suffix marks a conversion.",
+      "quote": "Serial Number – PWWYY00001 • P = Plant Identification Code – see below • WW = week • YY = Year – PWWYY00001A • A, B, C, etc Suffix after serial number designates a conversion ... For Example the serial number: M141209135 Mexicali plant, week 14, 2012, (09135) actual consecutive serial number.",
+      "url": "https://www.rheem.com/whtechbulletins/ (bulletin 1207)",
+      "readOn": "2026-11-20",
+      "method": "PDF downloaded with owner OK"
+    },
+    {
+      "id": "b1",
+      "claim": "Bradford White For The Pro: first two characters are year and month; the rest is a sequence number of 7 digits before December 2007 (DM) and 8 after; A = 1984 or 2004 ... Z = 2003 or 2023; month letters A-M without I.",
+      "quote": "The first two characters of the serial number represent the year and month of manufacture. The remainder of the serial is a sequential production number, seven digits in length before December 2007 (DM), and eight digits in length after. ... A = 1984 or 2004 ... Z = 2003 or 2023 ... A=January ... M=December ... For the year column, we do not use the letters : I, O, Q, R U, V For the month column we do not use the letters: I & N – Z",
+      "url": "https://forthepro.bradfordwhite.com/determining-the-age-of-a-water-heater/",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "b2",
+      "claim": "Bradford White For The Pro: some OA serials exist from a computer error and were built in January 1997.",
+      "quote": "Due to a computer error there were some OA serial water heaters manufactured. They were built in January of 1997.",
+      "url": "https://forthepro.bradfordwhite.com/determining-the-age-of-a-water-heater/",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "b3",
+      "claim": "Bradford White consumer page chart: A = 2004 or 2024 ... C = 2006 or 2026 ... Z = 2023 or 2043.",
+      "quote": "The first two characters of the serial number represent the year and month of manufacture. ... A = 2004 or 2024 B = 2005 or 2025 C = 2006 or 2026 ... Z = 2023 or 2043",
+      "url": "https://www.bradfordwhite.com/my-water-heater/",
+      "readOn": "2026-11-20",
+      "method": "browser (non-essential cookies declined)"
+    },
+    {
+      "id": "b4",
+      "claim": "Bradford White FAQ: the manufactured date is available on the My Water Heater Information page with the serial number.",
+      "quote": "How old is my water heater? You can get the manufactured date of your water heater on the My Water Heater Information page. You'll need to have the serial number of your water heater handy",
+      "url": "https://www.bradfordwhite.com/faqs/",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "e1",
+      "claim": "Our report engine (PRIORITY_RULES hvac_age): DOE estimates the average life of a tank water heater at about 15 years; replacement $1,200 – $3,000; ask the inspector to record the manufacture date from the data plate.",
+      "quote": "The Department of Energy estimates the average life of a tank water heater at about 15 years, and individual units vary widely. ... water heater replacement $1,200 – $3,000 ... Ask your inspector to record the manufacture date from the data plate on the furnace, condenser, and water heater.",
+      "url": "src/engine/inspectionPriorities.ts (hvac_age)",
+      "readOn": "2026-11-20",
+      "method": "our report engine, read at run time by the publish script"
+    },
+    {
+      "id": "m1",
+      "claim": "Martin County, FL lists water heater replacements among projects that still need a permit under HB 803 (2026).",
+      "quote": "Many common home projects still require permits, even if they cost well under $7,500. Some examples include: Water heater replacements",
+      "url": "https://www.martin.fl.us/new-rules-related-building-permit-exemptions",
+      "readOn": "2026-11-20",
+      "method": "browser"
+    },
+    {
+      "id": "u1",
+      "claim": "Ruud's water heater age calculator, given Rheem's published example serial 1209D01234 on 2026-11-20, returned a not-found message.",
+      "quote": "It looks like this serial number isn't coming up - please reach out to us via our contact page to speak with customer service.",
+      "url": "https://www.ruud.com/how-old-is-my-water-heater/",
+      "readOn": "2026-11-20",
+      "method": "browser (our test with the manufacturer's published example serial)"
+    }
+  ],
+  "cut": [
+    "Ruud calculator results for a real serial -- we have none that isn't someone's property; not tested beyond the published example.",
+    "Serial formats for brands not covered (State, American, Kenmore, Whirlpool, GE and others) -- no primary source read; the page sends readers to the maker's lookup.",
+    "Bradford White's sample serial from its service manual -- the manual PDF was not opened."
+  ],
+  "blockedSources": []
+}

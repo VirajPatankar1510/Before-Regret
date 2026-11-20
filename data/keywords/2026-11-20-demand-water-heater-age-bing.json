@@ -1,0 +1,43 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-20T07:10:17.750Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "water heater age",
+    "a o smith water heater age",
+    "water heater serial number"
+  ],
+  "keywords": [
+    {
+      "keyword": "water heater age",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 1330,
+      "kind": "seed"
+    },
+    {
+      "keyword": "bradford white water heater age",
+      "search_volume": 1019,
+      "metric": "market",
+      "broad_impressions": 1019,
+      "kind": "related"
+    },
+    {
+      "keyword": "a o smith water heater age",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 0,
+      "kind": "seed"
+    },
+    {
+      "keyword": "water heater serial number",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 20,
+      "kind": "seed"
+    }
+  ]
+}
