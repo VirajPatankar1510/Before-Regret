@@ -1,6 +1,6 @@
 ---
 name: state-license-guides
-description: The enforced flow for the 50-state contractor license lookup set on BeforeRegret ("How to check a contractor's license in [State]") and its hub table. Use whenever the owner asks to start, continue, research, draft, check or publish a state contractor-license page, the hub, the next batch, or asks where the set stands. Do NOT use for county permit guides, other article types or FAQs on an existing page (article-faqs). California is already live as #350 (cslb-license-check-california-contractor) and is never renamed.
+description: "The enforced flow for the 50-state contractor license lookup set on BeforeRegret (\"How to check a contractor's license in [State]\") and its hub table. Use whenever the owner asks to start, continue, research, draft, check or publish a state contractor-license page, the hub, the next batch, or asks where the set stands. Do NOT use for county permit guides, other article types or FAQs on an existing page (article-faqs). California is already live as #350 (cslb-license-check-california-contractor) and is never renamed."
 ---
 
 # State contractor-license pages: the flow

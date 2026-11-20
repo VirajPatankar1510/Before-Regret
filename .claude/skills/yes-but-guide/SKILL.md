@@ -1,6 +1,6 @@
 ---
 name: yes-but-guide
-description: The enforced flow for the "Yes, but" guide strand on BeforeRegret -- "Can you [do X / get Y] with [an old-house system]?" articles whose honest answer is conditional. Use whenever the owner asks to start, continue, draft or publish the next one of these, names one of the queued questions (currently: home insurance with a wood stove; who pays for an unpermitted deck found after closing -- the queue file is the source of truth), or asks what is next in this strand. Do NOT use for county permit guides, records-by-address guides or FAQs on an existing page.
+description: "The enforced flow for the \"Yes, but\" guide strand on BeforeRegret -- \"Can you [do X / get Y] with [an old-house system]?\" articles whose honest answer is conditional. Use whenever the owner asks to start, continue, draft or publish the next one of these, names one of the queued questions (currently: home insurance with a wood stove; who pays for an unpermitted deck found after closing -- the queue file is the source of truth), or asks what is next in this strand. Do NOT use for county permit guides, records-by-address guides or FAQs on an existing page."
 ---
 
 # The "Yes, but" guide flow
