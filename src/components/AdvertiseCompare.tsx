@@ -166,11 +166,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
                 else, and the honest proof we can offer is the report itself, not a traffic figure. */}
             <p className="mt-4 text-sm sm:text-base text-slate-300 leading-relaxed max-w-xl">
               Before Regret is a free research site for home buyers. They type in an address and get a
-              report on what to check, ask and verify before they buy.{' '}
-              <ContentLink href="/" onNavigate={onNavigate} className="font-semibold text-home-oak underline underline-offset-4 hover:text-white">
-                Run one on a street you serve →
-              </ContentLink>{' '}
-              and you'll see where your listing would sit.
+              report on what to check, ask and verify before they buy.
             </p>
             <ol className="mt-7 flex flex-wrap gap-2.5 text-xs font-semibold text-slate-200">
               {[
