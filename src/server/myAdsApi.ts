@@ -346,8 +346,11 @@ export function registerMyAdsRoutes(app: Express) {
         return;
       }
 
-      // A Report Ad's trade was chosen at checkout (it is part of the slot). A Topic Ad's is chosen here.
-      const trade: string = kind === 'zip' ? order.trade_category : (typeof req.body?.tradeCategory === 'string' ? req.body.tradeCategory : '');
+      // A Report Ad's trade was chosen at checkout (it is part of the slot). Since 2026-11-22 a Topic
+      // Ad's is too, so it is locked here; only an older Topic Ad order bought without one picks it now.
+      const trade: string = kind === 'zip' || (order.trade_category || '').trim()
+        ? order.trade_category
+        : (typeof req.body?.tradeCategory === 'string' ? req.body.tradeCategory : '');
       const errors: string[] = [];
       let name = typeof req.body?.businessName === 'string' ? req.body.businessName.trim() : '';
       if (name.length < 2) errors.push('Enter your business name.');

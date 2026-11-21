@@ -82,4 +82,6 @@
 // 2026-11-22 (third revision that day): 4.6 describes the price as the vendor's evaluation,
 // inspection or test (labelled per trade), exact or "from"; a "from" price is the least the vendor
 // charges; no "credited" option for home inspectors. Changes what a vendor warrants, hence a new string.
-export const TERMS_VERSION = '2026-11-22.3';
+// 2026-11-22 (fourth revision that day): 4.1 says the trade category and any required license number
+// are given at checkout, before payment, for both products (owner: "do the same for topic ads").
+export const TERMS_VERSION = '2026-11-22.4';

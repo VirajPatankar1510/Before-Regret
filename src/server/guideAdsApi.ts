@@ -140,16 +140,32 @@ function readVendorDetails(body: any): VendorDetails {
 }
 
 // Pay first, details after (owner, 2026-11-15; see the details_pending note in db.ts). A quick
-// checkout carries no business details at all: only who is paying (the verified account's email)
-// and that they accepted the Terms. The business name, trade, phone, website and license number
-// are collected in My Ads afterwards, where POST /api/my-ads/details applies the SAME rules
-// readVendorDetails() applies here, so no rule is lost by moving it. Until then the purchase holds
-// its slot but renders nowhere.
+// checkout carries who is paying (the verified account's email), Terms acceptance, and -- since
+// 2026-11-22 (owner) -- the business type and, for trades that need one, the license number, so a
+// business without a license number can't pay and then be stuck unable to finish. The trade is then
+// fixed for the order, like a Report Ad's. Business name, phone and website are still collected in
+// My Ads afterwards, where POST /api/my-ads/details applies the same rules readVendorDetails() applies
+// here. Until then the purchase holds its slot but renders nowhere.
 function readQuickBuyer(body: any): VendorDetails {
-  const { contactEmail, acceptedTerms } = body || {};
+  const { contactEmail, acceptedTerms, tradeCategory, licenceNumber } = body || {};
   if (!contactEmail || typeof contactEmail !== 'string') return { ok: false, error: 'Contact email is required.' };
   if (acceptedTerms !== true) return { ok: false, error: 'Please accept the Terms of Service to continue.' };
-  return { ok: true, businessName: '', tradeCategory: '', phone: '', contactEmail, website: null, licenceNumber: '' };
+  if (!tradeCategory || !(TRADE_CATEGORIES as readonly string[]).includes(tradeCategory)) {
+    return { ok: false, error: 'Choose your business type.' };
+  }
+  const trimmedLicence = typeof licenceNumber === 'string' ? licenceNumber.trim() : '';
+  if (requiresLicenceNumber(tradeCategory)) {
+    if (trimmedLicence.length < 3) {
+      return { ok: false, error: 'A license, registration, or certification number is required for this trade category.' };
+    }
+    if (trimmedLicence.length > 60) {
+      return { ok: false, error: 'That license number looks too long -- please enter just the number.' };
+    }
+  }
+  return {
+    ok: true, businessName: '', tradeCategory, phone: '', contactEmail, website: null,
+    licenceNumber: requiresLicenceNumber(tradeCategory) ? trimmedLicence : '',
+  };
 }
 
 /** What the success page needs to say "you sponsor the Stucco & EIFS guides" instead of naming one guide. */

@@ -167,3 +167,23 @@ Owner: "remove all the services options and Jobs you do. keep only Price of the 
 - **Home inspectors:** no "credited toward the work" option.
 - **Terms:** 4.6 updated to match, `TERMS_VERSION` 2026-11-22.3.
 - **License before payment on Report Ads** (owner): the /report-ads/ checkout asks for the license number before PayPal for trades that need one, and the server refuses a quick checkout without it. It's stored on the order and pre-filled on the details form. Topic Ads still ask for it after payment (open question to the owner).
+
+## 2026-11-22 -- Topic Ads: business type + license before payment (built, not yet published)
+
+Owner: "yes, do the same for topic ads". Same reason as the Report Ads change: a business with no
+license number must find out before paying, not after.
+
+- /topic-ads/ (GuideAdsCheckout.tsx): the trade dropdown is now "Your business type (required)" (it
+  still sorts the article list). For trades where requiresLicenceNumber() is true a "Your license
+  number" field appears under it. Buy now stays disabled until both are filled; the buy bar says what
+  is missing. Both survive the sign-in round trip (stash).
+- Server (guideAdsApi.readQuickBuyer): the quick checkout refuses an order with no valid trade, or
+  with no license (3-60 chars) for a licensed trade. Both checkout inserts already stored the trade
+  and license, and capture already copies them to guide_ad_purchases.
+- After payment (myAdsApi /api/my-ads/details): a Topic Ad order that already has a trade is locked
+  to it; only older orders bought without one pick it on the form. MyAdsPanel passes fixedTrade and
+  the license as the prefill.
+- Copy: Topic Ads FAQ, two AdvertiseCompare answers, Terms 4.1 (trade + license at checkout, both
+  products). TERMS_VERSION 2026-11-22.4.
+- Checked in the no-database preview: Electrician shows the license field, Chimney Sweep hides it.
+  tsc clean, full build exit 0.

@@ -240,6 +240,9 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
         label: cluster ? `Topic sponsorship: every ${cluster.clusterName} article` : `Topic Ad · ${group.length} article${group.length === 1 ? '' : 's'}`,
         items: cluster ? [] : group.map((p) => p.title),
         holdUntil: group[0].paidThrough,
+        // Chosen at checkout since 2026-11-22; older orders have none and pick it on the form.
+        fixedTrade: group[0].tradeCategory || undefined,
+        licenceNumber: group[0].licenceNumber,
       });
     }
     for (const group of groupZipsByOrder((zipPlacements || []).filter((p) => p.detailsPending && p.active))) {

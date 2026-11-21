@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   ArrowLeft, ArrowRight, Loader2, AlertCircle, Check, Search, ChevronDown, Lock, CreditCard, ClipboardEdit, MousePointerClick,
 } from 'lucide-react';
-import { TRADE_CATEGORIES } from '../data/sponsoredVendors';
+import { TRADE_CATEGORIES, requiresLicenceNumber } from '../data/sponsoredVendors';
 import { guessTradeCategoryFromTitle } from '../data/guideAdCategoryGuess';
 import { useAuth } from '../context/AuthContext';
 import { GuideAdVendorCard } from './GuideAdSlot';
@@ -36,7 +36,7 @@ interface GuideAdsCheckoutProps {
 const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
     q: 'What do I fill in after paying?',
-    a: 'Your business name, business type, a phone number readers can call, your website if you have one, and your license number if your trade needs one. You add them in My Ads right after PayPal, once for the whole order. Your ad goes live as soon as you save them.',
+    a: 'Your business name, a phone number readers can call, and your website if you have one. You add them in My Ads right after PayPal, once for the whole order, and your ad goes live as soon as you save them. Your business type, and your license number if your trade needs one, are asked before you pay, so you can finish without getting stuck.',
   },
   {
     q: 'When do my 30 days start?',
@@ -60,10 +60,11 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
 // every vendor found the old page long and hard to follow before they ever reached PayPal (a
 // business-details form, a trade dropdown, a license field and a legal checkbox all sat in front of
 // the button). Now the page asks for exactly one thing, which articles, and the button pays for
-// them. Everything about the business is collected AFTER payment in My Ads (see
-// AdDetailsForm.tsx and POST /api/my-ads/details), where the same rules are enforced. The "your
-// trade" dropdown survives only as an optional sort, because it is genuinely useful for finding
-// relevant articles in a long list, and it no longer has to be filled in.
+// them. The business name, phone and website are collected AFTER payment in My Ads (see
+// AdDetailsForm.tsx and POST /api/my-ads/details), where the same rules are enforced. Owner,
+// 2026-11-22: the business type (and the license number for trades that need one) moved back in
+// front of the button, so a business that has no license number finds out before paying, not after.
+// The business-type dropdown also sorts the article list.
 //
 // Sign-in still happens before PayPal: the order has to belong to an account so the vendor can
 // find it again to add their details. A vendor who isn't signed in clicks Buy now, signs in, and is
@@ -73,7 +74,7 @@ const RENEW_STASH_KEY = 'br_renew_guide_ads';
 // Written right before the redirect to PayPal, so "Cancel and return" (?token=...) brings back the selection.
 const PAYPAL_STASH_KEY = 'br_paypal_return_guide_ads';
 
-type Stash = { articleIds?: number[]; clusterKey?: string | null; tradeCategory?: string; autoBuy?: boolean };
+type Stash = { articleIds?: number[]; clusterKey?: string | null; tradeCategory?: string; licenceNumber?: string | null; autoBuy?: boolean };
 
 export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }) => {
   const { user, loading: authLoading, triggerClerkSignIn, getToken, requestClerkLoad } = useAuth();
@@ -87,8 +88,11 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   // A topic sponsorship and single guides are separate purchases, so choosing one clears the other.
   const [selectedCluster, setSelectedCluster] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-  // Optional: only sorts the list so articles for this trade come first. Not sent to the server.
+  // Required since 2026-11-22 (owner): the business type is chosen before payment, with the license
+  // number for trades that need one, so nobody pays and then can't finish. It also sorts the list so
+  // articles for this trade come first, and it is fixed for the order after payment.
   const [tradeCategory, setTradeCategory] = useState('');
+  const [licenceNumber, setLicenceNumber] = useState('');
   const [showAllGuides, setShowAllGuides] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -112,6 +116,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
       setSelected(new Set(stash.articleIds || []));
       setSelectedCluster(stash.clusterKey || null);
       if (stash.tradeCategory) setTradeCategory(stash.tradeCategory);
+      if (stash.licenceNumber) setLicenceNumber(stash.licenceNumber);
       return stash;
     };
     const paypalRaw = sessionStorage.getItem(PAYPAL_STASH_KEY);
@@ -223,11 +228,17 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guides, selected, pricePerSlot, selectedCount, chosenCluster]);
   const hasSelection = selectedCount > 0 || chosenCluster !== null;
+  const needsLicence = Boolean(tradeCategory) && requiresLicenceNumber(tradeCategory);
+  const licenceTrimmed = licenceNumber.trim();
+  const licenceOk = !needsLicence || (licenceTrimmed.length >= 3 && licenceTrimmed.length <= 60);
+  const canBuy = hasSelection && Boolean(tradeCategory) && licenceOk;
 
   const buy = async () => {
     setSubmitError(null);
     setReturnNotice(null);
     if (!hasSelection) return setSubmitError('Pick at least one article first.');
+    if (!tradeCategory) return setSubmitError('Choose your business type at the top.');
+    if (!licenceOk) return setSubmitError(`Enter your license number at the top. It's required for ${tradeCategory}.`);
     if (authLoading) {
       setResumeBuy('click');
       return;
@@ -236,7 +247,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
       // Sign-in's completion is a real browser navigation, so the selection rides in sessionStorage
       // and autoBuy carries the vendor straight on to PayPal once they're back.
       sessionStorage.setItem(AUTH_STASH_KEY, JSON.stringify({
-        articleIds: Array.from(selected), clusterKey: selectedCluster, tradeCategory, autoBuy: true,
+        articleIds: Array.from(selected), clusterKey: selectedCluster, tradeCategory, licenceNumber: licenceTrimmed, autoBuy: true,
       } satisfies Stash));
       triggerClerkSignIn();
       return;
@@ -249,7 +260,10 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
       return;
     }
     try {
-      const base = { quick: true, acceptedTerms: true, contactEmail: user.email || `${user.uid}@beforeregret.com` };
+      const base = {
+        quick: true, acceptedTerms: true, contactEmail: user.email || `${user.uid}@beforeregret.com`,
+        tradeCategory, licenceNumber: needsLicence ? licenceTrimmed : undefined,
+      };
       const res = await fetch(chosenCluster ? '/api/guide-ads/cluster-checkout' : '/api/guide-ads/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -268,7 +282,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
         return;
       }
       sessionStorage.setItem(PAYPAL_STASH_KEY, JSON.stringify({
-        articleIds: Array.from(selected), clusterKey: selectedCluster, tradeCategory,
+        articleIds: Array.from(selected), clusterKey: selectedCluster, tradeCategory, licenceNumber: licenceTrimmed,
       } satisfies Stash));
       window.location.href = data.approvalUrl;
     } catch {
@@ -282,9 +296,9 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     if (!resumeBuy || authLoading || !guides) return;
     const why = resumeBuy;
     setResumeBuy(null);
-    if (hasSelection && (user || why === 'click')) buy();
+    if (canBuy && (user || why === 'click')) buy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resumeBuy, authLoading, user, guides, hasSelection]);
+  }, [resumeBuy, authLoading, user, guides, canBuy]);
 
   const renderGuideRow = (g: GuideRow) => {
     const isSelected = selected.has(g.articleId);
@@ -369,16 +383,35 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
               />
             </div>
             <select
-              value={tradeCategory} onChange={(e) => setTradeCategory(e.target.value)}
-              aria-label="Show articles for your trade first"
-              className="px-3 py-2.5 border border-slate-300 rounded-xl text-sm bg-white"
+              value={tradeCategory} onChange={(e) => { setTradeCategory(e.target.value); setSubmitError(null); }}
+              aria-label="Your business type"
+              className={`px-3 py-2.5 border rounded-xl text-sm bg-white ${tradeCategory ? 'border-slate-300' : 'border-home-oak'}`}
             >
-              <option value="">Show articles for: any trade</option>
+              <option value="">Your business type (required)</option>
               {TRADE_CATEGORIES.map((c) => (
-                <option key={c} value={c}>Show articles for: {c}</option>
+                <option key={c} value={c}>{c}</option>
               ))}
             </select>
           </div>
+          {needsLicence && (
+            <div className="mt-3">
+              <label htmlFor="topic-ad-licence" className="block text-xs font-bold text-slate-700 px-1">Your license number</label>
+              <input
+                id="topic-ad-licence"
+                type="text"
+                value={licenceNumber}
+                onChange={(e) => { setLicenceNumber(e.target.value); setSubmitError(null); }}
+                maxLength={60}
+                placeholder="License or registration number"
+                className="mt-1 w-full px-3 py-2.5 border border-slate-300 rounded-xl text-base sm:text-sm bg-white"
+              />
+              <p className="mt-1 px-1 text-[11px] text-slate-500 leading-snug">
+                Required for {tradeCategory} before you can buy. It appears in your ad exactly as typed.
+                {tradeCategory === 'Moving Company' ? ' Movers may enter a USDOT or MC number.' : ''}
+                {tradeCategory === 'Real Estate Agent' ? ' Agents, your real estate license number.' : ''}
+              </p>
+            </div>
+          )}
 
           {visibleClusters.length > 0 && (
             <div className="mt-5 space-y-3">
@@ -526,12 +559,14 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
                   : selectedCount === 0
                     ? 'Pick an article above'
                     : `${selectedCount} article${selectedCount === 1 ? '' : 's'} · ${slotDurationDays} days`}
+                {hasSelection && !tradeCategory ? ' · choose your business type above' : ''}
+                {hasSelection && tradeCategory && !licenceOk ? ' · add your license number above' : ''}
               </div>
             </div>
             <button
               type="button"
               onClick={buy}
-              disabled={submitting || resumeBuy !== null || !hasSelection}
+              disabled={submitting || resumeBuy !== null || !canBuy}
               className="shrink-0 inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 bg-home-navy hover:bg-home-ink disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition-colors cursor-pointer"
             >
               {submitting || resumeBuy !== null ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : user ? <ArrowRight className="w-4 h-4" aria-hidden="true" /> : <Lock className="w-4 h-4" aria-hidden="true" />}
@@ -539,7 +574,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
             </button>
           </div>
           <p className="text-[11px] text-slate-500 leading-snug">
-            Add your business details after paying. By buying you agree to the{' '}
+            Add your business name and phone after paying. By buying you agree to the{' '}
             <a href="/terms/" target="_blank" rel="noopener noreferrer" className="underline hover:text-home-ink">Terms of Service</a>,
             including arbitration (Section 7).
           </p>

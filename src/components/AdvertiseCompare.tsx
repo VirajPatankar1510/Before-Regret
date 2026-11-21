@@ -57,7 +57,7 @@ export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Do I need to be licensed or verified to advertise?',
-    a: "No -- we don't check your credentials before your placement goes live. Every trade category except chimney sweeping and interior design requires a license, registration, or certification number when you add your business details after paying; it prints on your ad exactly as you type it, but we don't verify it with any licensing board. Every placement tells readers its details are advertiser-supplied and unverified, and that includes chimney sweep and interior designer listings, which carry that same notice with no number since those categories don't require one. Your business name, trade category, and contact details work the same way: you enter them, confirm they're accurate with a checkbox, and that's the only check that happens.",
+    a: "No -- we don't check your credentials before your placement goes live. Every trade category except chimney sweeping and interior design requires a license, registration, or certification number, which we ask for before you pay; it prints on your ad exactly as you type it, but we don't verify it with any licensing board. Every placement tells readers its details are advertiser-supplied and unverified, and that includes chimney sweep and interior designer listings, which carry that same notice with no number since those categories don't require one. Your business name, trade category, and contact details work the same way: you enter them, confirm they're accurate with a checkbox, and that's the only check that happens.",
   },
   {
     q: 'How many people will see my ad?',
@@ -73,7 +73,7 @@ export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'What do I fill in, and when?',
-    a: 'Before paying, only what you are buying: the articles, or your trade and 3 ZIP codes. After paying with PayPal you add your business name, phone number, website if you have one, and license number if your trade needs one, in My Ads. Your ad goes live as soon as you save them.',
+    a: 'Before paying, what you are buying (the articles, or 3 ZIP codes), your business type, and your license number if your trade needs one. After paying with PayPal you add your business name, phone number and website if you have one, in My Ads. Your ad goes live as soon as you save them.',
   },
   {
     q: 'When do my 30 days start?',
