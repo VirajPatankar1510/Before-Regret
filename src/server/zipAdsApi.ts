@@ -2,6 +2,7 @@ import type { Express, Request, Response } from 'express';
 import zipcodes from 'zipcodes';
 import { withDb, isDbConfigured } from './db.js';
 import { isPayPalConfigured, createPayPalOrder, capturePayPalOrder } from './paypalService.js';
+import { parseStoredCardExtras } from '../data/vendorCardExtras.js';
 import { canBuyReportAd, MAX_SLOTS_PER_ZIP_TRADE, requiresLicenceNumber, requiresBrokerageName, brokerageNameError, composeAdvertiserName } from '../data/sponsoredVendors.js';
 import type { SponsoredVendor } from '../types.js';
 import { requireVerifiedUser } from './clerkAuth.js';
@@ -64,14 +65,14 @@ export async function fetchActiveZipVendors(zipCode: string | undefined | null):
   if (!zipCode || !isDbConfigured()) return map;
   try {
     const rows = await withDb((sql) => sql`
-      SELECT id, zip_code, trade_category, business_name, phone, website, licence_number
+      SELECT id, zip_code, trade_category, business_name, phone, website, licence_number, card_extras_json
       FROM zip_ad_purchases
       WHERE zip_code = ${zipCode} AND active = true AND paid_through > now() AND details_pending = false
       ORDER BY created_at ASC
     `);
     for (const row of rows as unknown as Array<{
       id: number; zip_code: string; trade_category: string; business_name: string; phone: string; website: string | null;
-      licence_number: string | null;
+      licence_number: string | null; card_extras_json: string | null;
     }>) {
       // All active vendors for a (zip, trade) pair now, not just the first -- ORDER BY created_at
       // ASC keeps earliest-purchased first within each list. Capped at MAX_SLOTS_PER_ZIP_TRADE as
@@ -83,6 +84,7 @@ export async function fetchActiveZipVendors(zipCode: string | undefined | null):
           id: String(row.id),
           zipCode: row.zip_code,
           licenceNumber: row.licence_number || undefined,
+          cardExtras: parseStoredCardExtras(row.card_extras_json, row.trade_category),
           businessName: row.business_name,
           tradeCategory: row.trade_category,
           phone: row.phone,

@@ -298,6 +298,9 @@ export interface SponsoredVendor {
   // and the exempt category never will -- so every render site must handle its absence rather than
   // assume it. Never verified against a licensing board; every surface that prints it says so.
   licenceNumber?: string;
+  // Optional card extras (visit price, jobs, visit wait, phone window, languages). Structured only --
+  // see src/data/vendorCardExtras.ts. Absent on most cards; every render site must handle that.
+  cardExtras?: import('./data/vendorCardExtras').CardExtras;
   active: boolean;
 }
 

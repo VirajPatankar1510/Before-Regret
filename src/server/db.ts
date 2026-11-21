@@ -707,6 +707,40 @@ export async function ensureArticlesSchema(): Promise<void> {
   await sql`ALTER TABLE guide_ad_orders ADD COLUMN IF NOT EXISTS details_attested_at TIMESTAMPTZ`;
   await sql`ALTER TABLE zip_ad_orders ADD COLUMN IF NOT EXISTS details_attested_at TIMESTAMPTZ`;
 
+  // Optional Report Ad card extras (owner, 2026-11-22): visit price, jobs, visit wait, phone window,
+  // languages. Stored as JSON text like zip_codes_json, on the PURCHASE rows (a renewal extends those
+  // same rows, so extras carry across renewals with no copying). Every value is structured and
+  // validated by sanitizeCardExtras in src/data/vendorCardExtras.ts -- never free text, for the
+  // reason in the NOTE ON `tagline` above. Changing extras does NOT use up the one contact edit
+  // (contact_edited): the one-edit rule stops a placement turning into a different business, and a
+  // price or a phone window doesn't do that. Every change is logged below, so we can see what a
+  // buyer was shown and when.
+  await sql`ALTER TABLE zip_ad_purchases ADD COLUMN IF NOT EXISTS card_extras_json TEXT`;
+  await sql`ALTER TABLE zip_ad_purchases ADD COLUMN IF NOT EXISTS card_extras_updated_at TIMESTAMPTZ`;
+  await sql`
+    CREATE TABLE IF NOT EXISTS zip_ad_card_extras_log (
+      id SERIAL PRIMARY KEY,
+      order_id INTEGER NOT NULL,
+      card_extras_json TEXT,
+      changed_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+  // "Suggest a service" (owner, 2026-11-22): what a business types when its job isn't on our list.
+  // Never shown on any ad. The owner reads these (scripts/service-suggestions.ts) and either adds the
+  // service to JOB_OPTIONS in src/data/vendorCardExtras.ts or declines it. status: pending | added | declined.
+  await sql`
+    CREATE TABLE IF NOT EXISTS vendor_service_suggestions (
+      id SERIAL PRIMARY KEY,
+      order_id INTEGER NOT NULL,
+      clerk_user_id TEXT NOT NULL,
+      trade_category TEXT NOT NULL,
+      suggestion TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      reviewed_at TIMESTAMPTZ
+    )
+  `;
+
   // Dedup ledger for the FEMA-declaration county-event drafter (see
   // src/server/femaDeclarationsService.ts / countyEventGenerator.ts). OpenFEMA has no "give me
   // only what's new" cursor -- every check re-fetches a wide recent window, so this table is what

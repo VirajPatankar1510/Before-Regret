@@ -223,7 +223,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
       </div>
       )}
 
-      <SponsoredVendorCards vendors={finding.sponsoredVendors} />
+      <SponsoredVendorCards vendors={finding.sponsoredVendors} itemKey={finding.id} />
     </div>
   );
 
@@ -372,7 +372,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
                     )}
                   </div>
                   <p className="text-sm text-slate-600 leading-relaxed">{finding.suggestedNextStep}</p>
-                  <SponsoredVendorCards vendors={finding.sponsoredVendors} />
+                  <SponsoredVendorCards vendors={finding.sponsoredVendors} itemKey={finding.id} />
                 </li>
               ))}
             </ul>

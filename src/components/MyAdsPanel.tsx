@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Loader2, Lock, ExternalLink, Pencil, Check, X, RotateCcw, Receipt, MapPin, BookOpen, CreditCard, AlertCircle, ClipboardEdit } from 'lucide-react';
 import { AdDetailsForm, type AdDetailsDefaults } from './AdDetailsForm';
+import { ZipExtrasEditor } from './ZipExtrasEditor';
+import type { CardExtras } from '../data/vendorCardExtras';
 import { setAdDetailsHint } from '../utils/adDetailsHint';
 import { useAuth } from '../context/AuthContext';
 import { requiresLicenceNumber } from '../data/sponsoredVendors';
@@ -47,6 +49,7 @@ interface ZipPlacement {
   paidThrough: string;
   active: boolean;
   contactEdited: boolean;
+  cardExtras?: CardExtras | null;
 }
 
 interface OrderHistoryRow {
@@ -787,6 +790,14 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                     </ul>
                     {editingRow && editForm(() => saveZipEdit(editingRow.purchaseId), editingRow.tradeCategory)}
                     {licencePrompt('zip', first.purchaseId, first.tradeCategory, first.licenceNumber)}
+                    <ZipExtrasEditor
+                      key={`extras-${first.orderId}`}
+                      orderId={first.orderId}
+                      trade={first.tradeCategory}
+                      current={first.cardExtras}
+                      getToken={getToken}
+                      onSaved={loadPlacements}
+                    />
 
                     <div className="mt-3">
                       {renewControl(

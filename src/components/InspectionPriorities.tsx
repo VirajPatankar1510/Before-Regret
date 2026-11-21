@@ -107,7 +107,7 @@ export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ year
             item by indent and the ad card's own amber treatment. */}
         {vendors && vendors.length > 0 && (
           <div className="mt-3 sm:pl-8">
-            <SponsoredVendorCards vendors={vendors} />
+            <SponsoredVendorCards vendors={vendors} itemKey={item.id} />
           </div>
         )}
       </li>

@@ -93,7 +93,7 @@ export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Can I edit my listing after I’ve paid?',
-    a: 'Yes, once. From My Ads you can change your phone, website and license number one time per placement, so check them before you save. Business name and trade category are locked once purchased, since those define what was sold.',
+    a: 'Yes, once. From My Ads you can change your phone, website and license number one time per placement, so check them before you save. Business name and trade category are locked once purchased, since those define what was sold. The optional Report Ad extras (your visit price, jobs, how soon you can come out, phone hours, texts and languages) can be changed any time.',
   },
 ];
 
@@ -104,6 +104,16 @@ const EXAMPLE_REPORT_VENDOR = {
   tradeCategory: 'Plumber',
   phone: '(512) 555-0100',
   active: true,
+  // Shows the optional extras (src/data/vendorCardExtras.ts) so advertisers see what they can add.
+  cardExtras: {
+    evalFeeUsd: 175,
+    evalFeeCredited: true,
+    jobs: ['repipe', 'plumb_written'],
+    visitWait: 'this_week' as const,
+    callWindow: 'business_hours' as const,
+    textsOk: true,
+    languages: ['spanish' as const],
+  },
 };
 
 // A wide-area business on an article about the problem it solves (Topic Ads are not the local
@@ -253,8 +263,8 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
                 <div className="h-2 rounded-full bg-home-linen w-4/5" />
               </div>
               <div className="mt-4">
-                <Inert label="Example Report Ad: a plumber's listing with a phone number, beside the supply pipe check">
-                  <SponsoredVendorCard vendor={EXAMPLE_REPORT_VENDOR} />
+                <Inert label="Example Report Ad: a plumber's listing with a visit price, jobs and a phone number, beside the supply pipe check">
+                  <SponsoredVendorCard vendor={EXAMPLE_REPORT_VENDOR} itemKey="galvanized_supply" />
                 </Inert>
               </div>
             </div>

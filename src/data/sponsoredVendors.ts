@@ -44,6 +44,12 @@ export const TRADE_CATEGORIES = [
   // certification number, which is what many EIFS inspectors hold.
   'Stucco & EIFS',
   'General Contractor',
+  // Added 2026-11-22 at the owner's request, after pitching a foundation repair company (batch 7) that
+  // would otherwise have had to buy as 'General Contractor'. Contractor tier only -- foundation REPAIR
+  // crews, not stamping engineers, so the 'Foundation Engineer' exclusion above still holds. Takes over
+  // the three foundation report items from General Contractor (see PRIORITY_TRADE_CATEGORY below).
+  // License number required by the default rule.
+  'Foundation Repair',
   'Asbestos/Mold Abatement',
   'Pest/Termite Control',
   'Chimney Sweep',
@@ -172,15 +178,17 @@ export const PRIORITY_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGO
   // sit beside and would never render. sewer_cast_iron stays Sewer Scope: its advice is to scope it.
   galvanized_supply: 'Plumber',
   polybutylene_supply: 'Plumber',
-  foundation_pre_posttension: 'General Contractor',
-  foundation_posttension: 'General Contractor',
+  // The foundation family moved from General Contractor to Foundation Repair on 2026-11-22 (owner).
+  // No General Contractor Report Ad had ever been sold, so no placement moved. General Contractor now
+  // has no report item, so it drops out of REPORT_AD_TRADE_CATEGORIES automatically and stays a
+  // Topic Ads trade.
+  foundation_pre_posttension: 'Foundation Repair',
+  foundation_posttension: 'Foundation Repair',
   // foundation_type_general is the region-agnostic sibling of the two rules above (same "hire a
-  // structural engineer" howToCheck, same topic, just outside the 13 expansive-soil counties) --
-  // grouping it with the same trade keeps the foundation family coherent rather than splitting it
-  // across two categories for no reason tied to the content itself. Since 2026-10-10 this is
-  // General Contractor's only report placement (the f_seismic finding was removed); it is pure code,
-  // so it renders for every report.
-  foundation_type_general: 'General Contractor',
+  // structural engineer" howToCheck, same topic, just outside the expansive-soil counties) --
+  // grouping it with the same trade keeps the foundation family coherent. It is pure code, so it
+  // renders for every report: Foundation Repair has a placement on every report.
+  foundation_type_general: 'Foundation Repair',
   pier_and_beam: 'Home Inspector',
   // Was Home Inspector until 2026-10-12, when Stucco & EIFS became its own business type. No Report
   // Ad had been sold, so no placement moved; Home Inspector keeps pier_and_beam above.

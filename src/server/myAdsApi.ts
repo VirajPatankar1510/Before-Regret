@@ -2,6 +2,7 @@ import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireVerifiedUser } from './clerkAuth.js';
 import { checkVendorWebsite } from '../data/vendorWebsite.js';
+import { sanitizeCardExtras, parseStoredCardExtras, checkServiceSuggestions } from '../data/vendorCardExtras.js';
 import { requiresLicenceNumber, requiresBrokerageName, brokerageNameError, composeAdvertiserName, TRADE_CATEGORIES } from '../data/sponsoredVendors.js';
 import { PRICE_PER_SLOT_USD as GUIDE_PRICE_USD, SLOT_DURATION_DAYS as RENEWAL_DAYS } from './guideAdsApi.js';
 import { PRICE_PER_BUNDLE_USD as ZIP_PRICE_USD, ZIPS_PER_BUNDLE } from './zipAdsApi.js';
@@ -123,7 +124,8 @@ export function registerMyAdsRoutes(app: Express) {
       const zipRows = await withDb((sql) => sql`
         SELECT p.id AS purchase_id, p.zip_code, p.trade_category, p.business_name, p.phone, p.website,
                p.licence_number, p.paid_through, p.created_at, p.contact_edited, o.id AS order_id, o.amount_usd,
-               o.paypal_order_id, o.paypal_capture_id, o.created_at AS order_created_at, p.details_pending
+               o.paypal_order_id, o.paypal_capture_id, o.created_at AS order_created_at, p.details_pending,
+               p.card_extras_json
         FROM zip_ad_purchases p
         JOIN zip_ad_orders o ON o.id = p.order_id
         WHERE o.clerk_user_id = ${clerkUserId} AND p.active = true
@@ -176,6 +178,7 @@ export function registerMyAdsRoutes(app: Express) {
         phone: string; website: string | null; licence_number: string | null; paid_through: string;
         created_at: string; contact_edited: boolean; order_id: number; amount_usd: string; paypal_order_id: string;
         paypal_capture_id: string | null; order_created_at: string; details_pending: boolean;
+        card_extras_json: string | null;
       };
 
       const now = Date.now();
@@ -234,6 +237,7 @@ export function registerMyAdsRoutes(app: Express) {
         paidThrough: r.paid_through,
         active: new Date(r.paid_through).getTime() > now,
         contactEdited: r.contact_edited,
+        cardExtras: parseStoredCardExtras(r.card_extras_json, r.trade_category) ?? null,
       }));
 
       const orders = [
@@ -364,10 +368,14 @@ export function registerMyAdsRoutes(app: Express) {
       const site = checkVendorWebsite(website);
       if (!site.ok) errors.push(site.error as string);
       if (attestedAccurate !== true) errors.push('Tick the box to confirm your details are accurate.');
+      // Optional card extras (Report Ads only; src/data/vendorCardExtras.ts). Absent or empty = none.
+      const extrasCheck = kind === 'zip' ? sanitizeCardExtras(req.body?.cardExtras, trade) : { ok: true, extras: null, error: undefined };
+      if (!extrasCheck.ok) errors.push(extrasCheck.error);
       if (errors.length > 0) {
         res.status(400).json({ success: false, error: errors[0], errors });
         return;
       }
+      const extrasJson = extrasCheck.ok && extrasCheck.extras ? JSON.stringify(extrasCheck.extras) : null;
 
       const licenceToStore = requiresLicenceNumber(trade) ? cleanLicence : null;
       const liveUntil = new Date(Date.now() + RENEWAL_DAYS * 24 * 60 * 60 * 1000).toISOString();
@@ -384,7 +392,8 @@ export function registerMyAdsRoutes(app: Express) {
         : await withDb((sql) => sql`
             UPDATE zip_ad_purchases
             SET business_name = ${name}, phone = ${cleanPhone}, website = ${site.url},
-                licence_number = ${licenceToStore}, details_pending = false, paid_through = ${liveUntil}
+                licence_number = ${licenceToStore}, details_pending = false, paid_through = ${liveUntil},
+                card_extras_json = ${extrasJson}, card_extras_updated_at = ${extrasJson ? new Date().toISOString() : null}
             WHERE order_id = ${id} AND details_pending = true AND active = true AND paid_through > now()
             RETURNING id
           `);
@@ -410,11 +419,110 @@ export function registerMyAdsRoutes(app: Express) {
             details_attested_at = now(), updated_at = now()
           WHERE id = ${id}
         `);
+        if (extrasJson) {
+          await withDb((sql) => sql`INSERT INTO zip_ad_card_extras_log (order_id, card_extras_json) VALUES (${id}, ${extrasJson})`);
+        }
       }
       res.json({ success: true, liveCount: (updated as unknown[]).length, paidThrough: liveUntil });
     } catch (err: any) {
       console.error('[my-ads] details save failed:', err);
       res.status(500).json({ success: false, error: 'Could not save your details.' });
+    }
+  });
+
+  // --- Change the optional card extras on a Report Ad (all 3 ZIPs of one order) ----------------
+  //
+  // Visit price, jobs, visit wait, phone window, languages (src/data/vendorCardExtras.ts). Kept
+  // OUTSIDE the one-time contact edit on purpose (owner, 2026-11-22): the one-edit rule exists so a
+  // placement can't turn into a different business, and none of these fields can do that. Name,
+  // trade, phone, website and license stay where they were. Every change is logged with a timestamp
+  // in zip_ad_card_extras_log, so what a buyer saw on a given day can be reconstructed. Sending
+  // empty extras clears them. orderId is the ORIGINAL order (a renewal extends that order's rows).
+  app.post('/api/my-ads/zip-order/:orderId/extras', requireVerifiedUser, async (req: Request, res: Response) => {
+    if (!isDbConfigured()) return dbUnavailable(res);
+    const orderId = parseInt(req.params.orderId, 10);
+    const clerkUserId = req.verifiedUserId as string;
+    if (!Number.isFinite(orderId)) {
+      res.status(400).json({ success: false, error: 'Invalid request.' });
+      return;
+    }
+    try {
+      const owned = await withDb((sql) => sql`
+        SELECT o.trade_category FROM zip_ad_orders o
+        WHERE o.id = ${orderId} AND o.clerk_user_id = ${clerkUserId} AND o.status = 'completed'
+          AND EXISTS (SELECT 1 FROM zip_ad_purchases p WHERE p.order_id = o.id AND p.active = true AND p.paid_through > now())
+        LIMIT 1
+      `);
+      const row = (owned as unknown as Array<{ trade_category: string }>)[0];
+      if (!row) {
+        res.status(404).json({ success: false, error: 'No live placement found for this order.' });
+        return;
+      }
+      const check = sanitizeCardExtras(req.body?.cardExtras, row.trade_category);
+      if (!check.ok) {
+        res.status(400).json({ success: false, error: check.error });
+        return;
+      }
+      const json = check.extras ? JSON.stringify(check.extras) : null;
+      const changedAt = new Date().toISOString();
+      await withDb((sql) => sql`
+        UPDATE zip_ad_purchases SET card_extras_json = ${json}, card_extras_updated_at = ${changedAt}
+        WHERE order_id = ${orderId} AND active = true AND paid_through > now()
+      `);
+      await withDb((sql) => sql`INSERT INTO zip_ad_card_extras_log (order_id, card_extras_json) VALUES (${orderId}, ${json})`);
+      res.json({ success: true, cardExtras: check.extras });
+    } catch (err: any) {
+      console.error('[my-ads] extras save failed:', err);
+      res.status(500).json({ success: false, error: 'Could not save your changes.' });
+    }
+  });
+
+  // --- Suggest a service that isn't on the jobs list ----------------------------------------------
+  // Stored for the owner to review; NEVER printed on an ad (see the note above checkServiceSuggestions
+  // in src/data/vendorCardExtras.ts). Only for a business with a live Report Ad, and capped at 10
+  // unreviewed suggestions per order so the box can't be used to flood the table.
+  app.post('/api/my-ads/zip-order/:orderId/suggest-service', requireVerifiedUser, async (req: Request, res: Response) => {
+    if (!isDbConfigured()) return dbUnavailable(res);
+    const orderId = parseInt(req.params.orderId, 10);
+    const clerkUserId = req.verifiedUserId as string;
+    if (!Number.isFinite(orderId)) {
+      res.status(400).json({ success: false, error: 'Invalid request.' });
+      return;
+    }
+    const check = checkServiceSuggestions(req.body?.suggestions);
+    if (!check.ok) {
+      res.status(400).json({ success: false, error: check.error });
+      return;
+    }
+    try {
+      const owned = await withDb((sql) => sql`
+        SELECT o.trade_category,
+               (SELECT COUNT(*)::int FROM vendor_service_suggestions s WHERE s.order_id = o.id AND s.status = 'pending') AS pending
+        FROM zip_ad_orders o
+        WHERE o.id = ${orderId} AND o.clerk_user_id = ${clerkUserId} AND o.status = 'completed'
+          AND EXISTS (SELECT 1 FROM zip_ad_purchases p WHERE p.order_id = o.id AND p.active = true AND p.paid_through > now())
+        LIMIT 1
+      `);
+      const row = (owned as unknown as Array<{ trade_category: string; pending: number }>)[0];
+      if (!row) {
+        res.status(404).json({ success: false, error: 'No live placement found for this order.' });
+        return;
+      }
+      if (row.pending + check.suggestions.length > 10) {
+        res.status(429).json({ success: false, error: "You have suggestions waiting for us to read. We'll get to them soon." });
+        return;
+      }
+      for (const suggestion of check.suggestions) {
+        await withDb((sql) => sql`
+          INSERT INTO vendor_service_suggestions (order_id, clerk_user_id, trade_category, suggestion)
+          VALUES (${orderId}, ${clerkUserId}, ${row.trade_category}, ${suggestion})
+        `);
+      }
+      console.log(`[my-ads] ${check.suggestions.length} service suggestion(s) for ${row.trade_category} (order ${orderId})`);
+      res.json({ success: true, received: check.suggestions.length });
+    } catch (err: any) {
+      console.error('[my-ads] suggestion save failed:', err);
+      res.status(500).json({ success: false, error: 'Could not send your suggestion.' });
     }
   });
 

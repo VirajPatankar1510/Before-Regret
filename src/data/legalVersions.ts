@@ -70,4 +70,10 @@
 // contradicted each other. Removes a remedy nobody could use; still a change to the text, hence a new string.
 // 2026-11-19 (second revision that day): 4.1's Topic Ad price is $9.99 per slot, up from $7.99 (owner
 // decision). The price a vendor agrees to pay is substance, hence a new string.
-export const TERMS_VERSION = '2026-11-19.2';
+// 2026-11-22: added 4.6 (optional Report Ad extras: visit price, jobs, visit wait, phone window, texts,
+// languages; the vendor must honor any price it shows; we don't check them; owner decision). A new
+// obligation for vendors, hence a new string.
+// Same revision: 4.2 now says one active vendor per trade per ZIP (the cap has been 1 since 2026-11-01;
+// the text still said two), and 4.4 no longer says every ad carries an "unverified" line on its face
+// (removed from the card 2026-11-14); it now points to the Sponsored label and the report's own notice.
+export const TERMS_VERSION = '2026-11-22';

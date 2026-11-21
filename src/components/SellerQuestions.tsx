@@ -88,7 +88,7 @@ export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
             sponsoredVendors.ts) -- server-precomputed path only, same as InspectionPriorities.tsx. */}
         {vendors && vendors.length > 0 && (
           <div className="mt-3 sm:pl-9">
-            <SponsoredVendorCards vendors={vendors} />
+            <SponsoredVendorCards vendors={vendors} itemKey={item.id} />
           </div>
         )}
       </li>

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Loader2, Rocket, AlertCircle } from 'lucide-react';
 import { TRADE_CATEGORIES, requiresLicenceNumber, requiresBrokerageName, brokerageNameError } from '../data/sponsoredVendors';
 import { checkVendorWebsite, VENDOR_WEBSITE_RULE } from '../data/vendorWebsite';
+import { CardExtras, sanitizeCardExtras } from '../data/vendorCardExtras';
+import { CardExtrasFields } from './CardExtrasFields';
 
 export interface AdDetailsDefaults {
   businessName?: string;
@@ -9,6 +11,7 @@ export interface AdDetailsDefaults {
   phone?: string;
   website?: string | null;
   licenceNumber?: string | null;
+  cardExtras?: CardExtras | null;
 }
 
 interface AdDetailsFormProps {
@@ -33,6 +36,7 @@ export const AdDetailsForm: React.FC<AdDetailsFormProps> = ({ kind, orderId, fix
   const [website, setWebsite] = useState(defaults?.website || '');
   const [licenceNumber, setLicenceNumber] = useState(defaults?.licenceNumber || '');
   const [brokerageName, setBrokerageName] = useState('');
+  const [cardExtras, setCardExtras] = useState<CardExtras>(defaults?.cardExtras || {});
   const [attested, setAttested] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +57,8 @@ export const AdDetailsForm: React.FC<AdDetailsFormProps> = ({ kind, orderId, fix
     }
     const site = checkVendorWebsite(website);
     if (!site.ok) return setError(site.error || VENDOR_WEBSITE_RULE);
+    const extrasCheck = kind === 'zip' ? sanitizeCardExtras(cardExtras, tradeCategory) : null;
+    if (extrasCheck && !extrasCheck.ok) return setError(extrasCheck.error || 'Check the optional extras.');
     if (!attested) return setError('Tick the box to confirm your details are accurate.');
 
     setSaving(true);
@@ -74,6 +80,7 @@ export const AdDetailsForm: React.FC<AdDetailsFormProps> = ({ kind, orderId, fix
           website: website.trim() || undefined,
           licenceNumber: needsLicence ? licenceNumber.trim() : undefined,
           brokerageName: needsBrokerage ? brokerageName.trim() : undefined,
+          cardExtras: extrasCheck?.extras ?? undefined,
           attestedAccurate: true,
         }),
       });
@@ -145,6 +152,11 @@ export const AdDetailsForm: React.FC<AdDetailsFormProps> = ({ kind, orderId, fix
           </label>
         )}
       </div>
+
+      {/* Report Ads only: the optional card extras (visit price, jobs, wait, phone window, languages). */}
+      {kind === 'zip' && tradeCategory && (
+        <CardExtrasFields trade={tradeCategory} value={cardExtras} onChange={setCardExtras} />
+      )}
 
       <label className="flex items-start gap-2.5 px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 cursor-pointer">
         <input type="checkbox" checked={attested} onChange={(e) => setAttested(e.target.checked)} className="mt-0.5 w-4 h-4 shrink-0 accent-home-navy cursor-pointer" />

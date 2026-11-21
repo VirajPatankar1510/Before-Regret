@@ -15,6 +15,10 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
     a: 'Your business name, a phone number readers can call, your website if you have one, and your license number if your trade needs one. You add them in My Ads right after PayPal. Your ad goes live as soon as you save them.',
   },
   {
+    q: 'Can my ad show the price of my pre-closing visit?',
+    a: "Yes, if you want it to. Trades that do a check before closing can show the price of that visit and whether it is credited toward the work, tick the jobs they do, and say how soon they can usually come out. Any Report Ad can also say when someone answers the phone, whether buyers can text, and other languages you speak. All of it is optional, each job prints only beside the report check it belongs to, and you can change these any time in My Ads without using up your one contact edit. If a job you do isn't on the list, you can suggest it there and we'll add it if it's a service.",
+  },
+  {
     q: 'When do my 30 days start?',
     a: 'When your ad goes live, which is when you save your business details. Until then your 3 ZIP codes are held for you. If details are never added, the hold ends 30 days after payment and the ZIP codes reopen.',
   },
@@ -34,7 +38,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Do you verify businesses?',
-    a: "No. Your details are self-reported, and every ad tells readers its details are advertiser-supplied and unverified. Your license number prints on the ad exactly as you enter it, so readers can check it themselves.",
+    a: "No. Your details are self-reported. Every ad is labeled Sponsored, and the report tells readers that sponsored listings are paid placements whose details we don't verify. Your license number prints on the ad exactly as you enter it, so readers can check it themselves.",
   },
   {
     q: 'Is this a subscription? Can I get a refund?',
@@ -49,6 +53,16 @@ const EXAMPLE_VENDOR = {
   tradeCategory: 'Plumber',
   phone: '(512) 555-0100',
   active: true,
+  // Shows the optional extras (src/data/vendorCardExtras.ts) so advertisers see what they can add.
+  cardExtras: {
+    evalFeeUsd: 175,
+    evalFeeCredited: true,
+    jobs: ['repipe', 'plumb_written'],
+    visitWait: 'this_week' as const,
+    callWindow: 'business_hours' as const,
+    textsOk: true,
+    languages: ['spanish' as const],
+  },
 };
 
 // /report-ads/ -- REBUILT 2026-11-15 after the owner's vendor survey said the old page was long and
@@ -121,9 +135,9 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
               <div className="h-2 rounded-full bg-home-linen w-full" />
               <div className="h-2 rounded-full bg-home-linen w-4/5" />
             </div>
-            <div className="mt-4 pointer-events-none select-none" role="img" aria-label="Example Report Ad: a plumber's listing with a phone number inside a property report">
+            <div className="mt-4 pointer-events-none select-none" role="img" aria-label="Example Report Ad: a plumber's listing with a visit price, jobs and a phone number inside a property report">
               <div aria-hidden="true" inert>
-                <SponsoredVendorCard vendor={EXAMPLE_VENDOR} />
+                <SponsoredVendorCard vendor={EXAMPLE_VENDOR} itemKey="galvanized_supply" />
               </div>
             </div>
           </div>
