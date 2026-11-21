@@ -3,7 +3,7 @@ import {
   ArrowLeft, ArrowRight, Loader2, AlertCircle, Check, Search, ChevronDown, Lock, CreditCard, ClipboardEdit, MousePointerClick,
 } from 'lucide-react';
 import { TRADE_CATEGORIES, requiresLicenceNumber } from '../data/sponsoredVendors';
-import { guessTradeCategoryFromTitle } from '../data/guideAdCategoryGuess';
+import { rankArticlesForTrade } from '../data/guideAdRelevance';
 import { useAuth } from '../context/AuthContext';
 import { GuideAdVendorCard } from './GuideAdSlot';
 
@@ -195,20 +195,19 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
     setSelectedCluster((prev) => (prev === key ? null : key));
   };
 
-  // Articles for the chosen trade come first; the rest sit behind a toggle unless the vendor is
-  // searching (search overrides grouping) or hasn't picked a trade (one browsable list).
+  // Once a business type is picked: articles about its own subject first, then the next-best
+  // articles (neighbouring trades' subjects, see src/data/guideAdRelevance.ts), both shown open; the
+  // rest sit behind a toggle. Owner, 2026-11-22: the old one-trade-per-title match left most trades
+  // with an empty-looking list. Searching overrides the grouping; no business type = one list.
   const isSearching = search.trim().length > 0;
-  const { matchedGuides, otherGuides } = useMemo(() => {
+  const { bestGuides, relatedGuides, otherGuides } = useMemo(() => {
     const query = search.trim().toLowerCase();
     const filtered = guides ? guides.filter((g) => !query || g.title.toLowerCase().includes(query)) : [];
-    if (!tradeCategory) return { matchedGuides: [] as GuideRow[], otherGuides: filtered };
-    const matched: GuideRow[] = [];
-    const rest: GuideRow[] = [];
-    for (const g of filtered) {
-      (guessTradeCategoryFromTitle(g.title) === tradeCategory ? matched : rest).push(g);
-    }
-    return { matchedGuides: matched, otherGuides: rest };
+    if (!tradeCategory) return { bestGuides: [] as GuideRow[], relatedGuides: [] as GuideRow[], otherGuides: filtered };
+    const ranked = rankArticlesForTrade(filtered, tradeCategory);
+    return { bestGuides: ranked.best, relatedGuides: ranked.related, otherGuides: ranked.rest };
   }, [guides, search, tradeCategory]);
+  const matchedGuides = useMemo(() => [...bestGuides, ...relatedGuides], [bestGuides, relatedGuides]);
 
   // Topics follow the trade filter when one is set; otherwise every topic on offer shows. A chosen
   // topic always stays visible, so the cart never holds something the vendor can't see.
@@ -477,12 +476,28 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
 
             {guides && guides.length > 0 && !isSearching && tradeCategory && (
               <>
-                <p className="px-1 pb-1 text-xs font-bold text-home-moss">For {tradeCategory} ({matchedGuides.length})</p>
-                {matchedGuides.length > 0 ? (
-                  <div className="-mx-1">{matchedGuides.map(renderGuideRow)}</div>
-                ) : (
-                  <p className="text-xs text-slate-500 py-2 px-1">No article titles matched {tradeCategory}. Browse the rest below.</p>
-                )}
+                <div className="max-h-[32rem] overflow-y-auto -mx-1">
+                  {bestGuides.length > 0 && (
+                    <>
+                      <p className="px-2 pt-1 pb-1 text-xs font-bold text-home-moss">Best for {tradeCategory} ({bestGuides.length})</p>
+                      {bestGuides.map(renderGuideRow)}
+                    </>
+                  )}
+                  {relatedGuides.length > 0 && (
+                    <>
+                      <p className="px-2 pt-3 pb-1 text-xs font-bold text-home-moss">
+                        {bestGuides.length > 0 ? `Also a good fit for ${tradeCategory}` : `Closest matches for ${tradeCategory}`} ({relatedGuides.length})
+                      </p>
+                      {bestGuides.length === 0 && (
+                        <p className="px-2 pb-1 text-[11px] text-slate-500 leading-snug">No open article is about {tradeCategory} by name yet, so these are the closest topics.</p>
+                      )}
+                      {relatedGuides.map(renderGuideRow)}
+                    </>
+                  )}
+                  {matchedGuides.length === 0 && (
+                    <p className="text-xs text-slate-500 py-2 px-2">No open article is close to {tradeCategory} yet. Every open article is below.</p>
+                  )}
+                </div>
                 {otherGuides.length > 0 && (
                   <>
                     <button
@@ -493,7 +508,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
                       <span>{showAllGuides ? 'Hide' : 'Show'} {otherGuides.length} other article{otherGuides.length === 1 ? '' : 's'}</span>
                       <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showAllGuides ? 'rotate-180' : ''}`} aria-hidden="true" />
                     </button>
-                    {showAllGuides && <div className="max-h-[24rem] overflow-y-auto -mx-1">{otherGuides.map(renderGuideRow)}</div>}
+                    {(showAllGuides || matchedGuides.length === 0) && <div className="max-h-[24rem] overflow-y-auto -mx-1">{otherGuides.map(renderGuideRow)}</div>}
                   </>
                 )}
               </>

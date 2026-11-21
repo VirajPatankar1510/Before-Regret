@@ -187,3 +187,18 @@ license number must find out before paying, not after.
   products). TERMS_VERSION 2026-11-22.4.
 - Checked in the no-database preview: Electrician shows the license field, Chimney Sweep hides it.
   tsc clean, full build exit 0.
+
+## 2026-11-22 -- /topic-ads/: relevant articles after picking a business type (built, not yet published)
+
+Owner: "the list of articles disappear after selecting business type ... if there are no relevant
+articles, choose the next best options." Cause: the sort used guessTradeCategoryFromTitle(), which
+gives each title ONE trade, so most trades matched 0-2 articles and the rest were folded away.
+
+New src/data/guideAdRelevance.ts: per-trade keywords (many-to-many, a sewer guide fits Sewer Scope
+AND Plumber) plus a closest-first RELATED_TRADES list ('Home Inspector', the broad catch-all, last).
+The checkout shows "Best for X", then "Also a good fit for X" (or "Closest matches for X" with a
+one-line note when nothing names the trade), both open in one scroll box; the rest stay behind
+"Show N other articles". Display order only; any business can still buy any open article.
+Against the 148 open articles on 2026-11-22 every trade gets 17+ visible articles (e.g. Painter &
+Flooring 1 best + 57 closest; Electrician 24 + 83). Checked in a local preview against the real
+article list; tsc clean, build exit 0.
