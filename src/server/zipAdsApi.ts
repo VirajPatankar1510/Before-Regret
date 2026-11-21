@@ -167,7 +167,8 @@ export function registerZipAdsRoutes(app: Express) {
       businessName = '';
       phone = '';
       website = undefined;
-      licenceNumber = '';
+      // licenceNumber is NOT cleared: since 2026-11-22 (owner) the quick checkout asks for it before
+      // payment for trades that need one, so a business can't pay and then be stuck without it.
     }
     const errors: string[] = [];
     if (!quick && (typeof businessName !== 'string' || !businessName.trim())) errors.push('Business name is required.');
@@ -193,7 +194,7 @@ export function registerZipAdsRoutes(app: Express) {
     // reject real numbers. This value is published verbatim, never verified -- see the column
     // comment in db.ts.
     const trimmedLicence = typeof licenceNumber === 'string' ? licenceNumber.trim() : '';
-    if (!quick && typeof tradeCategory === 'string' && requiresLicenceNumber(tradeCategory)) {
+    if (typeof tradeCategory === 'string' && requiresLicenceNumber(tradeCategory)) {
       if (trimmedLicence.length < 3) {
         errors.push('A license, registration, or certification number is required for this trade category.');
       } else if (trimmedLicence.length > 60) {

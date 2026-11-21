@@ -93,7 +93,7 @@ export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Can I edit my listing after I’ve paid?',
-    a: 'Yes, once. From My Ads you can change your phone, website and license number one time per placement, so check them before you save. Business name and trade category are locked once purchased, since those define what was sold. The optional Report Ad extras (your visit price, phone hours and whether buyers can text) can be changed any time.',
+    a: 'Yes, once. From My Ads you can change your phone, website and license number one time per placement, so check them before you save. Business name and trade category are locked once purchased, since those define what was sold. The optional Report Ad extras (your price, phone hours and whether buyers can text) can be changed any time.',
   },
 ];
 

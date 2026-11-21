@@ -12,11 +12,11 @@ interface VendorsProps {
 const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
     q: 'What do I fill in after paying?',
-    a: 'Your business name, a phone number readers can call, your website if you have one, and your license number if your trade needs one. You add them in My Ads right after PayPal. Your ad goes live as soon as you save them.',
+    a: 'Your business name, a phone number readers can call, and your website if you have one. You add them in My Ads right after PayPal, and your ad goes live as soon as you save them. If your trade needs a license number, we ask for it before you pay, so you can finish without getting stuck.',
   },
   {
-    q: 'Can my ad show the price of my pre-closing visit?',
-    a: "Yes, if you want it to. Trades that do a check before closing can show the price of that visit, so buyers know before they call that it isn't a free quote, and whether it is credited toward the work. Any Report Ad can also show the days and hours someone answers the phone, and whether buyers can text. All of it is optional, and you can change it any time in My Ads without using up your one contact edit.",
+    q: 'Can my ad show my price?',
+    a: "Yes, if you want it to. Trades that do a check before closing can show their price for it (for example \"Electrical evaluation: $195\" or \"Home inspection from $350\"), so buyers know before they call that it isn't a free quote, and whether it is credited toward the work. Any Report Ad can also show the days and hours someone answers the phone, and whether buyers can text. All of it is optional, and you can change it any time in My Ads without using up your one contact edit.",
   },
   {
     q: 'When do my 30 days start?',

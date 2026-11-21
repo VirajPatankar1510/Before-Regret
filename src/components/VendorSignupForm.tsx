@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Loader2, CheckCircle2, XCircle, ArrowRight, AlertCircle, Lock } from 'lucide-react';
-import { REPORT_AD_TRADE_CATEGORIES } from '../data/sponsoredVendors';
+import { REPORT_AD_TRADE_CATEGORIES, requiresLicenceNumber } from '../data/sponsoredVendors';
 import { useAuth } from '../context/AuthContext';
 
 const ZIPS_PER_BUNDLE = 3;
@@ -21,7 +21,7 @@ const AUTH_STASH_KEY = 'br_pending_zip_signup';
 const RENEW_STASH_KEY = 'br_renew_zip_ad';
 const PAYPAL_STASH_KEY = 'br_paypal_return_zip_ad';
 
-type Stash = { zipCodes?: string[]; tradeCategory?: string; autoBuy?: boolean };
+type Stash = { zipCodes?: string[]; tradeCategory?: string; licenceNumber?: string | null; autoBuy?: boolean };
 
 const STATE_TEXT: Record<ZipState, string> = {
   empty: '',
@@ -42,6 +42,9 @@ export const VendorSignupForm: React.FC = () => {
 
   const [tradeCategory, setTradeCategory] = useState('');
   const [zips, setZips] = useState<string[]>(['', '', '']);
+  // Asked BEFORE payment for trades that need one (owner, 2026-11-22): a business without a license
+  // number could otherwise pay and then be unable to finish the details form after PayPal.
+  const [licenceNumber, setLicenceNumber] = useState('');
   const [zipStates, setZipStates] = useState<ZipState[]>(['empty', 'empty', 'empty']);
   const [submitting, setSubmitting] = useState(false);
   // 'auth': back from sign-in, continue only if signed in. 'click': Buy now pressed while the
@@ -97,6 +100,7 @@ export const VendorSignupForm: React.FC = () => {
       const restored = [0, 1, 2].map((i) => (stash.zipCodes || [])[i] || '');
       setTradeCategory(trade);
       setZips(restored);
+      if (stash.licenceNumber) setLicenceNumber(stash.licenceNumber);
       // Re-checked, not trusted: a ZIP can be bought by someone else while the vendor was away.
       recheckAll(trade, restored);
       return stash;
@@ -130,20 +134,24 @@ export const VendorSignupForm: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const ready = Boolean(tradeCategory) && zipStates.every((s) => s === 'open');
+  const needsLicence = Boolean(tradeCategory) && requiresLicenceNumber(tradeCategory);
+  const licenceTrimmed = licenceNumber.trim();
+  const licenceOk = !needsLicence || (licenceTrimmed.length >= 3 && licenceTrimmed.length <= 60);
+  const ready = Boolean(tradeCategory) && zipStates.every((s) => s === 'open') && licenceOk;
   const stillChecking = zipStates.some((s) => s === 'checking');
 
   const buy = async () => {
     setError(null);
     setNotice(null);
     if (!tradeCategory) return setError('Choose your business type first.');
-    if (!ready) return setError(`Enter ${ZIPS_PER_BUNDLE} different ZIP codes that show as available.`);
+    if (!zipStates.every((s) => s === 'open')) return setError(`Enter ${ZIPS_PER_BUNDLE} different ZIP codes that show as available.`);
+    if (!licenceOk) return setError(`Enter your license number. It's required for ${tradeCategory}.`);
     if (authLoading) {
       setResumeBuy('click');
       return;
     }
     if (!user) {
-      sessionStorage.setItem(AUTH_STASH_KEY, JSON.stringify({ zipCodes: zips, tradeCategory, autoBuy: true } satisfies Stash));
+      sessionStorage.setItem(AUTH_STASH_KEY, JSON.stringify({ zipCodes: zips, tradeCategory, licenceNumber: licenceTrimmed, autoBuy: true } satisfies Stash));
       triggerClerkSignIn();
       return;
     }
@@ -163,6 +171,7 @@ export const VendorSignupForm: React.FC = () => {
           acceptedTerms: true,
           tradeCategory,
           zipCodes: zips,
+          licenceNumber: needsLicence ? licenceTrimmed : undefined,
           contactEmail: user.email || `${user.uid}@beforeregret.com`,
         }),
       });
@@ -174,7 +183,7 @@ export const VendorSignupForm: React.FC = () => {
         setSubmitting(false);
         return;
       }
-      sessionStorage.setItem(PAYPAL_STASH_KEY, JSON.stringify({ zipCodes: zips, tradeCategory } satisfies Stash));
+      sessionStorage.setItem(PAYPAL_STASH_KEY, JSON.stringify({ zipCodes: zips, tradeCategory, licenceNumber: licenceTrimmed } satisfies Stash));
       window.location.href = data.approvalUrl;
     } catch {
       setError('Could not reach the server. Please try again.');
@@ -238,6 +247,26 @@ export const VendorSignupForm: React.FC = () => {
           );
         })}
       </div>
+
+      {needsLicence && (
+        <div className="mt-5">
+          <label htmlFor="report-ad-licence" className="block text-sm font-bold">3. Your license number</label>
+          <input
+            id="report-ad-licence"
+            type="text"
+            value={licenceNumber}
+            onChange={(e) => { setLicenceNumber(e.target.value); setError(null); }}
+            maxLength={60}
+            placeholder="License or registration number"
+            className="mt-2 w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-base sm:text-sm"
+          />
+          <p className="mt-1.5 text-[11px] text-slate-500 leading-snug">
+            Required for {tradeCategory} before you can buy. It appears in your ad exactly as typed.
+            {tradeCategory === 'Moving Company' ? ' Movers may enter a USDOT or MC number.' : ''}
+            {tradeCategory === 'Real Estate Agent' ? ' Agents, your real estate license number.' : ''}
+          </p>
+        </div>
+      )}
 
       {notice && <p role="status" className="mt-3 text-xs text-home-navy bg-home-sage/40 rounded-xl p-3">{notice}</p>}
       {error && (

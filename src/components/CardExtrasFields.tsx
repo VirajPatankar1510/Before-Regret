@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   CardExtras, EVAL_FEE_MAX_USD, EVAL_FEE_MIN_USD, PHONE_TIME_OPTIONS, WEEK_DAYS, WeekDay,
-  formatTime, offersEvaluation,
+  formatTime, offersEvaluation, offersFeeCredit, evalFeeLabel,
 } from '../data/vendorCardExtras';
 
 interface CardExtrasFieldsProps {
@@ -42,7 +42,7 @@ export const CardExtrasFields: React.FC<CardExtrasFieldsProps> = ({ trade, value
       {evaluation && (
         <div className="space-y-2">
           <label className="block">
-            <span className="text-xs font-bold text-slate-700">Price of your pre-closing visit</span>
+            <span className="text-xs font-bold text-slate-700">Price for your {evalFeeLabel(trade).toLowerCase()}</span>
             <div className="mt-1 flex items-center gap-2">
               <span className="text-sm font-semibold text-slate-600">$</span>
               <input
@@ -54,7 +54,7 @@ export const CardExtrasFields: React.FC<CardExtrasFieldsProps> = ({ trade, value
                 value={value.evalFeeUsd ?? ''}
                 onChange={(e) => {
                   const n = e.target.value === '' ? undefined : Math.round(Number(e.target.value));
-                  set({ evalFeeUsd: n, evalFeeCredited: n ? value.evalFeeCredited : undefined });
+                  set({ evalFeeUsd: n, evalFeeFrom: n ? value.evalFeeFrom : undefined, evalFeeCredited: n ? value.evalFeeCredited : undefined });
                 }}
                 className={`${field} max-w-[10rem]`}
               />
@@ -65,6 +65,17 @@ export const CardExtrasFields: React.FC<CardExtrasFieldsProps> = ({ trade, value
             </span>
           </label>
           {value.evalFeeUsd ? (
+            <label className="flex items-start gap-2 text-xs text-slate-700 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={Boolean(value.evalFeeFrom)}
+                onChange={(e) => set({ evalFeeFrom: e.target.checked || undefined })}
+                className="mt-0.5 w-4 h-4 shrink-0 accent-home-navy cursor-pointer"
+              />
+              <span>My price depends on the house (it shows as &quot;from ${value.evalFeeUsd}&quot;, so ${value.evalFeeUsd} is your lowest price)</span>
+            </label>
+          ) : null}
+          {value.evalFeeUsd && offersFeeCredit(trade) ? (
             <label className="flex items-start gap-2 text-xs text-slate-700 cursor-pointer">
               <input
                 type="checkbox"

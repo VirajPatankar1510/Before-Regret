@@ -2,8 +2,9 @@ import { canBuyReportAd, FIXED_REPORT_SLOT_CATEGORIES } from './sponsoredVendors
 
 // Optional extras on a Report Ad card. Plan and history: docs/plans/paid-evaluation-fee-2026-11.md.
 //
-//   - The price of the pre-closing visit, so buyers know before they call that it isn't a free
-//     quote, optionally credited toward the work if they hire the business.
+//   - The price of their evaluation, inspection or test (labelled per trade, EVAL_FEE_LABELS), exact
+//     or "from", so buyers know before they call that it isn't a free quote; optionally credited
+//     toward the work if they hire the business (not for home inspectors).
 //   - When someone answers the phone: the business picks its own days and hours.
 //   - Whether buyers can text the number.
 //
@@ -24,6 +25,37 @@ import { canBuyReportAd, FIXED_REPORT_SLOT_CATEGORIES } from './sponsoredVendors
 
 export const EVAL_FEE_MIN_USD = 25;
 export const EVAL_FEE_MAX_USD = 2000;
+
+// What the price is FOR, worded per trade (owner, 2026-11-22: "pre-closing visit" didn't fit every
+// vendor -- a radon tester or home inspector sells the test or inspection itself). Our wording, fixed;
+// the business only enters the number.
+export const EVAL_FEE_LABELS: Record<string, string> = {
+  'Electrician': 'Electrical evaluation',
+  'Plumber': 'Plumbing evaluation',
+  'Foundation Repair': 'Foundation evaluation',
+  'Sewer Scope': 'Sewer camera inspection',
+  'Roof Inspection': 'Roof inspection',
+  'HVAC Inspection': 'HVAC inspection',
+  'Radon Testing': 'Radon test',
+  'Chimney Sweep': 'Chimney inspection',
+  'Pest/Termite Control': 'Termite inspection',
+  'Asbestos/Mold Abatement': 'Testing visit',
+  'Stucco & EIFS': 'Moisture inspection',
+  'Well & Septic Services': 'Septic inspection',
+  'Home Inspector': 'Home inspection',
+};
+export function evalFeeLabel(trade: string): string {
+  return EVAL_FEE_LABELS[trade] || 'Evaluation';
+}
+
+/**
+ * Whether "credited toward the work if you hire them" is offered. Not for home inspectors: they
+ * generally don't do the repairs they find, and some states bar an inspector from repairing a home
+ * they inspected.
+ */
+export function offersFeeCredit(trade: string): boolean {
+  return offersEvaluation(trade) && trade !== 'Home Inspector';
+}
 
 /** Monday first, the way a business owner reads a week. */
 export const WEEK_DAYS = [
@@ -58,6 +90,8 @@ export interface PhoneHours {
 
 export interface CardExtras {
   evalFeeUsd?: number;
+  /** "My price depends on the house": printed as "from $X". $X is then the lowest price they charge. */
+  evalFeeFrom?: boolean;
   evalFeeCredited?: boolean;
   phoneHours?: PhoneHours;
   textsOk?: boolean;
@@ -107,7 +141,8 @@ export function sanitizeCardExtras(raw: unknown, trade: string): SanitizeResult 
       return { ok: false, extras: null, error: `Enter the visit price in whole dollars, from $${EVAL_FEE_MIN_USD} to $${EVAL_FEE_MAX_USD.toLocaleString('en-US')}, or leave it empty.` };
     }
     out.evalFeeUsd = fee;
-    if (r.evalFeeCredited === true) out.evalFeeCredited = true;
+    if (r.evalFeeFrom === true) out.evalFeeFrom = true;
+    if (r.evalFeeCredited === true && offersFeeCredit(trade)) out.evalFeeCredited = true;
   }
 
   const hours = checkPhoneHours(r.phoneHours);
@@ -134,7 +169,7 @@ export function parseStoredCardExtras(json: string | null | undefined, trade: st
     return undefined;
   }
   const parts: Array<Record<string, unknown>> = [
-    { evalFeeUsd: raw.evalFeeUsd, evalFeeCredited: raw.evalFeeCredited },
+    { evalFeeUsd: raw.evalFeeUsd, evalFeeFrom: raw.evalFeeFrom, evalFeeCredited: raw.evalFeeCredited },
     { phoneHours: raw.phoneHours },
     { textsOk: raw.textsOk },
   ];
@@ -167,12 +202,14 @@ export interface CardExtrasLines {
   meta: string[];
 }
 
-/** The exact text a card prints. */
-export function cardExtrasLines(extras: CardExtras | undefined): CardExtrasLines {
+/** The exact text a card prints, e.g. "Electrical evaluation: $195" or "Home inspection from $350". */
+export function cardExtrasLines(extras: CardExtras | undefined, trade: string): CardExtrasLines {
   const lines: CardExtrasLines = { meta: [] };
   if (!extras) return lines;
   if (extras.evalFeeUsd) {
-    lines.fee = `Pre-closing visit: $${extras.evalFeeUsd.toLocaleString('en-US')}${extras.evalFeeCredited ? ', credited toward the work if you hire them' : ''}`;
+    const price = `$${extras.evalFeeUsd.toLocaleString('en-US')}`;
+    const credited = extras.evalFeeCredited && offersFeeCredit(trade) ? ', credited toward the work if you hire them' : '';
+    lines.fee = `${evalFeeLabel(trade)}${extras.evalFeeFrom ? ` from ${price}` : `: ${price}`}${credited}`;
   }
   if (extras.phoneHours) {
     const h = extras.phoneHours;

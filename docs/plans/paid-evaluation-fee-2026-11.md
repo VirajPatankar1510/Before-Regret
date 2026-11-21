@@ -157,3 +157,13 @@ Owner: "remove all the services options and Jobs you do. keep only Price of the 
 **Leftovers:**
 - The `vendor_service_suggestions` table was already created on the live DB by the earlier deploy. It's empty and nothing reads or writes it now; it can be dropped by hand.
 - Earlier sections of this doc describe the removed options as history.
+
+---
+
+## 2026-11-22, later still: per-trade price labels + license before payment (owner: "build it and publish")
+
+- **Price labels:** the card no longer says "Pre-closing visit". Each trade has a fixed label (`EVAL_FEE_LABELS`), e.g. "Electrical evaluation: $195", "Radon test: $150", "Home inspection from $350".
+- **"My price depends on the house":** prints "from $X", meaning $X is the lowest price they charge.
+- **Home inspectors:** no "credited toward the work" option.
+- **Terms:** 4.6 updated to match, `TERMS_VERSION` 2026-11-22.3.
+- **License before payment on Report Ads** (owner): the /report-ads/ checkout asks for the license number before PayPal for trades that need one, and the server refuses a quick checkout without it. It's stored on the order and pre-filled on the details form. Topic Ads still ask for it after payment (open question to the owner).

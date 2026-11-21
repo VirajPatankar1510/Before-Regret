@@ -227,7 +227,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
   // Paid orders still waiting for business details, one card (and one form) per order. Shown first,
   // because a paid ad that isn't live yet is the one thing on this page that needs doing.
   const pendingOrders = useMemo(() => {
-    const out: Array<{ kind: 'guide' | 'zip'; orderId: number; label: string; items: string[]; fixedTrade?: string; holdUntil: string }> = [];
+    const out: Array<{ kind: 'guide' | 'zip'; orderId: number; label: string; items: string[]; fixedTrade?: string; holdUntil: string; licenceNumber?: string | null }> = [];
     const guideGroups = new Map<number, GuidePlacement[]>();
     for (const p of guidePlacements || []) {
       if (!p.detailsPending || !p.active || p.orderId === undefined) continue;
@@ -249,6 +249,8 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
         items: [`ZIP ${group.map((p) => p.zipCode).join(', ')}`],
         fixedTrade: group[0].tradeCategory,
         holdUntil: group[0].paidThrough,
+        // Entered at checkout (asked before payment since 2026-11-22), so it's pre-filled here.
+        licenceNumber: group[0].licenceNumber,
       });
     }
     return out;
@@ -671,7 +673,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                       kind={o.kind}
                       orderId={o.orderId}
                       fixedTrade={o.fixedTrade}
-                      defaults={detailDefaults}
+                      defaults={o.licenceNumber ? { ...(detailDefaults || {}), licenceNumber: o.licenceNumber } : detailDefaults}
                       getToken={getToken}
                       onSaved={(paidThrough) => {
                         setRenewBanner({ type: 'success', message: `Your ad is live until ${expiryLabel(paidThrough)}.` });

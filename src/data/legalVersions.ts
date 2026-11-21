@@ -79,4 +79,7 @@
 // 2026-11-22 (second revision that day): 4.6 narrowed to what a Report Ad can still show after the
 // owner removed jobs, visit wait and languages: the visit price (+ credited), phone days and hours,
 // and texts OK. Changes what a vendor warrants, hence a new string.
-export const TERMS_VERSION = '2026-11-22.2';
+// 2026-11-22 (third revision that day): 4.6 describes the price as the vendor's evaluation,
+// inspection or test (labelled per trade), exact or "from"; a "from" price is the least the vendor
+// charges; no "credited" option for home inspectors. Changes what a vendor warrants, hence a new string.
+export const TERMS_VERSION = '2026-11-22.3';

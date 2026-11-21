@@ -23,7 +23,7 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
   if (!vendor) return null;
   // Optional extras (owner, 2026-11-22; src/data/vendorCardExtras.ts). All wording is ours and fixed;
   // the advertiser only picks. Nothing set = nothing printed, so most cards are unchanged.
-  const extras = cardExtrasLines(vendor.cardExtras);
+  const extras = cardExtrasLines(vendor.cardExtras, vendor.tradeCategory);
 
   return (
     <aside

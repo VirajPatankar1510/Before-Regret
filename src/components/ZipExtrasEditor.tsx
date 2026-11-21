@@ -20,7 +20,7 @@ export const ZipExtrasEditor: React.FC<ZipExtrasEditorProps> = ({ orderId, trade
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const lines = cardExtrasLines(current || undefined);
+  const lines = cardExtrasLines(current || undefined, trade);
   const summary = [lines.fee, ...lines.meta].filter(Boolean);
 
   const save = async () => {
