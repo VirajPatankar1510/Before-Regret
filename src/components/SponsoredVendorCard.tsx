@@ -6,8 +6,6 @@ import { cardExtrasLines } from '../data/vendorCardExtras';
 
 interface SponsoredVendorCardProps {
   vendor: SponsoredVendor | null | undefined;
-  /** The report item this card sits beside, so only the jobs that belong to it print. */
-  itemKey?: string;
 }
 
 // Renders only when a real, paying vendor exists for this ZIP -- vendor acquisition (the
@@ -21,11 +19,11 @@ interface SponsoredVendorCardProps {
 // checking their placement) or mistaken for a finding (by a buyer). It is now unmistakably an ad:
 // amber tint and border, a solid SPONSORED pill, and the trade named in the label. Amber is reserved
 // for ads in the report -- the insurance red-flag box moved to rose so the two never look alike.
-export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor, itemKey }) => {
+export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor }) => {
   if (!vendor) return null;
   // Optional extras (owner, 2026-11-22; src/data/vendorCardExtras.ts). All wording is ours and fixed;
   // the advertiser only picks. Nothing set = nothing printed, so most cards are unchanged.
-  const extras = cardExtrasLines(vendor.cardExtras, vendor.tradeCategory, itemKey);
+  const extras = cardExtrasLines(vendor.cardExtras);
 
   return (
     <aside
@@ -54,11 +52,6 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
             Do not remove the SPONSORED pill: it is now the card's only ad label. */}
         {extras.fee && (
           <p className="text-sm font-semibold text-slate-800">{extras.fee}</p>
-        )}
-        {extras.jobs.length > 0 && (
-          <p className="text-xs text-slate-700">
-            <span className="font-semibold">Does: </span>{extras.jobs.join(' · ')}
-          </p>
         )}
         {extras.meta.length > 0 && (
           <p className="text-xs text-slate-600">{extras.meta.join(' · ')}</p>
@@ -104,18 +97,17 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
 
 interface SponsoredVendorCardsProps {
   vendors: SponsoredVendor[] | null | undefined;
-  itemKey?: string;
 }
 
 // Up to MAX_SLOTS_PER_ZIP_TRADE vendors (1 since 2026-11-01) can be attached to one spot -- see
 // CanonicalFinding.sponsoredVendors in types.ts for why. Renders nothing for an empty or missing
 // list, same principle as SponsoredVendorCard itself.
-export const SponsoredVendorCards: React.FC<SponsoredVendorCardsProps> = ({ vendors, itemKey }) => {
+export const SponsoredVendorCards: React.FC<SponsoredVendorCardsProps> = ({ vendors }) => {
   if (!vendors || vendors.length === 0) return null;
   return (
     <div className="space-y-2">
       {vendors.map((vendor) => (
-        <SponsoredVendorCard key={vendor.id} vendor={vendor} itemKey={itemKey} />
+        <SponsoredVendorCard key={vendor.id} vendor={vendor} />
       ))}
     </div>
   );

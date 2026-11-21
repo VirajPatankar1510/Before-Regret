@@ -2,7 +2,7 @@ import type { Express, Request, Response } from 'express';
 import { withDb, isDbConfigured } from './db.js';
 import { requireVerifiedUser } from './clerkAuth.js';
 import { checkVendorWebsite } from '../data/vendorWebsite.js';
-import { sanitizeCardExtras, parseStoredCardExtras, checkServiceSuggestions } from '../data/vendorCardExtras.js';
+import { sanitizeCardExtras, parseStoredCardExtras } from '../data/vendorCardExtras.js';
 import { requiresLicenceNumber, requiresBrokerageName, brokerageNameError, composeAdvertiserName, TRADE_CATEGORIES } from '../data/sponsoredVendors.js';
 import { PRICE_PER_SLOT_USD as GUIDE_PRICE_USD, SLOT_DURATION_DAYS as RENEWAL_DAYS } from './guideAdsApi.js';
 import { PRICE_PER_BUNDLE_USD as ZIP_PRICE_USD, ZIPS_PER_BUNDLE } from './zipAdsApi.js';
@@ -432,7 +432,7 @@ export function registerMyAdsRoutes(app: Express) {
 
   // --- Change the optional card extras on a Report Ad (all 3 ZIPs of one order) ----------------
   //
-  // Visit price, jobs, visit wait, phone window, languages (src/data/vendorCardExtras.ts). Kept
+  // Visit price, phone hours, texts OK (src/data/vendorCardExtras.ts). Kept
   // OUTSIDE the one-time contact edit on purpose (owner, 2026-11-22): the one-edit rule exists so a
   // placement can't turn into a different business, and none of these fields can do that. Name,
   // trade, phone, website and license stay where they were. Every change is logged with a timestamp
@@ -474,55 +474,6 @@ export function registerMyAdsRoutes(app: Express) {
     } catch (err: any) {
       console.error('[my-ads] extras save failed:', err);
       res.status(500).json({ success: false, error: 'Could not save your changes.' });
-    }
-  });
-
-  // --- Suggest a service that isn't on the jobs list ----------------------------------------------
-  // Stored for the owner to review; NEVER printed on an ad (see the note above checkServiceSuggestions
-  // in src/data/vendorCardExtras.ts). Only for a business with a live Report Ad, and capped at 10
-  // unreviewed suggestions per order so the box can't be used to flood the table.
-  app.post('/api/my-ads/zip-order/:orderId/suggest-service', requireVerifiedUser, async (req: Request, res: Response) => {
-    if (!isDbConfigured()) return dbUnavailable(res);
-    const orderId = parseInt(req.params.orderId, 10);
-    const clerkUserId = req.verifiedUserId as string;
-    if (!Number.isFinite(orderId)) {
-      res.status(400).json({ success: false, error: 'Invalid request.' });
-      return;
-    }
-    const check = checkServiceSuggestions(req.body?.suggestions);
-    if (!check.ok) {
-      res.status(400).json({ success: false, error: check.error });
-      return;
-    }
-    try {
-      const owned = await withDb((sql) => sql`
-        SELECT o.trade_category,
-               (SELECT COUNT(*)::int FROM vendor_service_suggestions s WHERE s.order_id = o.id AND s.status = 'pending') AS pending
-        FROM zip_ad_orders o
-        WHERE o.id = ${orderId} AND o.clerk_user_id = ${clerkUserId} AND o.status = 'completed'
-          AND EXISTS (SELECT 1 FROM zip_ad_purchases p WHERE p.order_id = o.id AND p.active = true AND p.paid_through > now())
-        LIMIT 1
-      `);
-      const row = (owned as unknown as Array<{ trade_category: string; pending: number }>)[0];
-      if (!row) {
-        res.status(404).json({ success: false, error: 'No live placement found for this order.' });
-        return;
-      }
-      if (row.pending + check.suggestions.length > 10) {
-        res.status(429).json({ success: false, error: "You have suggestions waiting for us to read. We'll get to them soon." });
-        return;
-      }
-      for (const suggestion of check.suggestions) {
-        await withDb((sql) => sql`
-          INSERT INTO vendor_service_suggestions (order_id, clerk_user_id, trade_category, suggestion)
-          VALUES (${orderId}, ${clerkUserId}, ${row.trade_category}, ${suggestion})
-        `);
-      }
-      console.log(`[my-ads] ${check.suggestions.length} service suggestion(s) for ${row.trade_category} (order ${orderId})`);
-      res.json({ success: true, received: check.suggestions.length });
-    } catch (err: any) {
-      console.error('[my-ads] suggestion save failed:', err);
-      res.status(500).json({ success: false, error: 'Could not send your suggestion.' });
     }
   });
 

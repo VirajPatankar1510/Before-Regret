@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  CardExtras, CALL_WINDOW_OPTIONS, EVAL_FEE_MAX_USD, EVAL_FEE_MIN_USD, LANGUAGE_OPTIONS, Language,
-  VISIT_WAIT_OPTIONS, jobsForTrade, offersEvaluation,
+  CardExtras, EVAL_FEE_MAX_USD, EVAL_FEE_MIN_USD, PHONE_TIME_OPTIONS, WEEK_DAYS, WeekDay,
+  formatTime, offersEvaluation,
 } from '../data/vendorCardExtras';
 
 interface CardExtrasFieldsProps {
@@ -10,21 +10,33 @@ interface CardExtrasFieldsProps {
   onChange: (next: CardExtras) => void;
 }
 
-// The optional extras a Report Ad can carry (src/data/vendorCardExtras.ts). Every input is a number,
-// a switch, or a pick from our own list -- no free text, for the reason the tagline field was retired.
-// Used on the details form after checkout and on My Placements for later changes.
+const DEFAULT_FROM = 8 * 60;
+const DEFAULT_TO = 17 * 60;
+
+// The optional extras a Report Ad can carry (src/data/vendorCardExtras.ts): visit price (+ credited),
+// phone days and hours, texts OK. Every input is a number, a switch, or a pick from our own list -- no
+// free text, for the reason the tagline field was retired. Used on the details form after checkout and
+// on My Placements for later changes.
 export const CardExtrasFields: React.FC<CardExtrasFieldsProps> = ({ trade, value, onChange }) => {
   const evaluation = offersEvaluation(trade);
-  const jobs = jobsForTrade(trade);
   const field = 'w-full px-3.5 py-3 border border-slate-300 rounded-xl text-base sm:text-sm bg-white';
   const set = (patch: Partial<CardExtras>) => onChange({ ...value, ...patch });
-  const toggle = <T extends string>(list: T[] | undefined, item: T): T[] =>
-    (list || []).includes(item) ? (list || []).filter((x) => x !== item) : [...(list || []), item];
+  const hours = value.phoneHours;
+  const days = hours?.days || [];
+
+  const toggleDay = (d: WeekDay) => {
+    const next = days.includes(d) ? days.filter((x) => x !== d) : [...days, d];
+    set({ phoneHours: next.length ? { days: next, from: hours?.from ?? DEFAULT_FROM, to: hours?.to ?? DEFAULT_TO } : undefined });
+  };
+  const setTime = (key: 'from' | 'to', minutes: number) => {
+    if (!hours) return;
+    set({ phoneHours: { ...hours, [key]: minutes } });
+  };
 
   return (
     <fieldset className="space-y-4 px-3.5 py-4 bg-amber-50/60 border border-amber-200 rounded-xl">
       <legend className="px-1 text-xs font-bold text-slate-800">
-        Optional extras <span className="font-normal text-slate-500">(all optional; leave empty to skip)</span>
+        Optional extras <span className="font-normal text-slate-500">(leave empty to skip)</span>
       </legend>
 
       {evaluation && (
@@ -48,7 +60,7 @@ export const CardExtrasFields: React.FC<CardExtrasFieldsProps> = ({ trade, value
               />
             </div>
             <span className="mt-1 block text-[11px] text-slate-500 leading-snug">
-              Shown to buyers right under your name, so they know before they call that this visit is paid.
+              Shown to buyers right under your name, so they know before they call that it isn&apos;t a free quote.
               Whole dollars, ${EVAL_FEE_MIN_USD} to ${EVAL_FEE_MAX_USD.toLocaleString('en-US')}. You must honor the price you show.
             </span>
           </label>
@@ -66,53 +78,41 @@ export const CardExtrasFields: React.FC<CardExtrasFieldsProps> = ({ trade, value
         </div>
       )}
 
-      {evaluation && jobs.length > 0 && (
-        <div>
-          <span className="text-xs font-bold text-slate-700">Jobs you do</span>
-          <span className="block text-[11px] text-slate-500 leading-snug">
-            Each one prints only beside the report check it belongs to (up to 3 per card).
-          </span>
-          <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-            {jobs.map((j) => (
-              <label key={j.id} className="flex items-start gap-2 text-xs text-slate-700 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={(value.jobs || []).includes(j.id)}
-                  onChange={() => set({ jobs: toggle(value.jobs, j.id) })}
-                  className="mt-0.5 w-4 h-4 shrink-0 accent-home-navy cursor-pointer"
-                />
-                <span>{j.label}</span>
-              </label>
-            ))}
-          </div>
+      <div>
+        <span className="text-xs font-bold text-slate-700">When someone answers the phone</span>
+        <span className="block text-[11px] text-slate-500 leading-snug">Tick the days, then pick the hours. Leave all days unticked to skip.</span>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {WEEK_DAYS.map((d) => {
+            const on = days.includes(d.key);
+            return (
+              <button
+                key={d.key}
+                type="button"
+                aria-pressed={on}
+                onClick={() => toggleDay(d.key)}
+                className={`px-3 py-2 rounded-lg border text-xs font-bold cursor-pointer ${on ? 'bg-home-navy border-home-navy text-white' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'}`}
+              >
+                {d.short}
+              </button>
+            );
+          })}
         </div>
-      )}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {evaluation && (
-          <label className="block">
-            <span className="text-xs font-bold text-slate-700">How soon you can usually come out</span>
-            <select
-              value={value.visitWait || ''}
-              onChange={(e) => set({ visitWait: (e.target.value || undefined) as CardExtras['visitWait'] })}
-              className={`mt-1 ${field}`}
-            >
-              <option value="">Don&apos;t show</option>
-              {Object.entries(VISIT_WAIT_OPTIONS).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
-            </select>
-          </label>
+        {hours && (
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-700">
+            <label className="inline-flex items-center gap-1.5">
+              <span>From</span>
+              <select value={hours.from} onChange={(e) => setTime('from', Number(e.target.value))} className="px-3 py-2.5 border border-slate-300 rounded-lg text-base sm:text-xs bg-white">
+                {PHONE_TIME_OPTIONS.map((m) => <option key={m} value={m}>{formatTime(m)}</option>)}
+              </select>
+            </label>
+            <label className="inline-flex items-center gap-1.5">
+              <span>to</span>
+              <select value={hours.to} onChange={(e) => setTime('to', Number(e.target.value))} className="px-3 py-2.5 border border-slate-300 rounded-lg text-base sm:text-xs bg-white">
+                {PHONE_TIME_OPTIONS.map((m) => <option key={m} value={m}>{formatTime(m)}</option>)}
+              </select>
+            </label>
+          </div>
         )}
-        <label className="block">
-          <span className="text-xs font-bold text-slate-700">When someone answers the phone</span>
-          <select
-            value={value.callWindow || ''}
-            onChange={(e) => set({ callWindow: (e.target.value || undefined) as CardExtras['callWindow'] })}
-            className={`mt-1 ${field}`}
-          >
-            <option value="">Don&apos;t show</option>
-            {Object.entries(CALL_WINDOW_OPTIONS).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
-          </select>
-        </label>
       </div>
 
       <label className="flex items-start gap-2 text-xs text-slate-700 cursor-pointer">
@@ -124,23 +124,6 @@ export const CardExtrasFields: React.FC<CardExtrasFieldsProps> = ({ trade, value
         />
         <span>Buyers can text this number</span>
       </label>
-
-      <div>
-        <span className="text-xs font-bold text-slate-700">Other languages you speak with customers</span>
-        <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-          {(Object.entries(LANGUAGE_OPTIONS) as Array<[Language, string]>).map(([k, label]) => (
-            <label key={k} className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={(value.languages || []).includes(k)}
-                onChange={() => set({ languages: toggle(value.languages, k) })}
-                className="w-4 h-4 shrink-0 accent-home-navy cursor-pointer"
-              />
-              <span>{label}</span>
-            </label>
-          ))}
-        </div>
-      </div>
     </fieldset>
   );
 };

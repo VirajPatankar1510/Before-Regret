@@ -76,4 +76,7 @@
 // Same revision: 4.2 now says one active vendor per trade per ZIP (the cap has been 1 since 2026-11-01;
 // the text still said two), and 4.4 no longer says every ad carries an "unverified" line on its face
 // (removed from the card 2026-11-14); it now points to the Sponsored label and the report's own notice.
-export const TERMS_VERSION = '2026-11-22';
+// 2026-11-22 (second revision that day): 4.6 narrowed to what a Report Ad can still show after the
+// owner removed jobs, visit wait and languages: the visit price (+ credited), phone days and hours,
+// and texts OK. Changes what a vendor warrants, hence a new string.
+export const TERMS_VERSION = '2026-11-22.2';

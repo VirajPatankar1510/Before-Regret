@@ -16,7 +16,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Can my ad show the price of my pre-closing visit?',
-    a: "Yes, if you want it to. Trades that do a check before closing can show the price of that visit and whether it is credited toward the work, tick the jobs they do, and say how soon they can usually come out. Any Report Ad can also say when someone answers the phone, whether buyers can text, and other languages you speak. All of it is optional, each job prints only beside the report check it belongs to, and you can change these any time in My Ads without using up your one contact edit. If a job you do isn't on the list, you can suggest it there and we'll add it if it's a service.",
+    a: "Yes, if you want it to. Trades that do a check before closing can show the price of that visit, so buyers know before they call that it isn't a free quote, and whether it is credited toward the work. Any Report Ad can also show the days and hours someone answers the phone, and whether buyers can text. All of it is optional, and you can change it any time in My Ads without using up your one contact edit.",
   },
   {
     q: 'When do my 30 days start?',
@@ -57,11 +57,8 @@ const EXAMPLE_VENDOR = {
   cardExtras: {
     evalFeeUsd: 175,
     evalFeeCredited: true,
-    jobs: ['repipe', 'plumb_written'],
-    visitWait: 'this_week' as const,
-    callWindow: 'business_hours' as const,
+    phoneHours: { days: ['mon', 'tue', 'wed', 'thu', 'fri'] as Array<'mon' | 'tue' | 'wed' | 'thu' | 'fri'>, from: 7 * 60, to: 18 * 60 },
     textsOk: true,
-    languages: ['spanish' as const],
   },
 };
 
@@ -135,9 +132,9 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
               <div className="h-2 rounded-full bg-home-linen w-full" />
               <div className="h-2 rounded-full bg-home-linen w-4/5" />
             </div>
-            <div className="mt-4 pointer-events-none select-none" role="img" aria-label="Example Report Ad: a plumber's listing with a visit price, jobs and a phone number inside a property report">
+            <div className="mt-4 pointer-events-none select-none" role="img" aria-label="Example Report Ad: a plumber's listing with a visit price, phone hours and a phone number inside a property report">
               <div aria-hidden="true" inert>
-                <SponsoredVendorCard vendor={EXAMPLE_VENDOR} itemKey="galvanized_supply" />
+                <SponsoredVendorCard vendor={EXAMPLE_VENDOR} />
               </div>
             </div>
           </div>

@@ -138,3 +138,22 @@ Adding it means bumping `TERMS_VERSION` in `src/data/legalVersions.ts`, as every
   - 4.2 now says one active vendor per trade per ZIP;
   - 4.4 points to the Sponsored label and the report's notice instead of a per-card "unverified" line (removed 2026-11-14);
   - the Report Ads FAQ was corrected the same way.
+
+---
+
+## 2026-11-22, later: cut back to three extras (owner)
+
+Owner: "remove all the services options and Jobs you do. keep only Price of the pre-closing visit … with I credit it toward the work if they hire me checkbox. keep When someone answers the phone with customisable options, with Buyers can text this number checkbox."
+
+**Removed:** the jobs lists, "Suggest a service" (route, script and table creation), the visit wait and languages. No business had used any of them.
+
+**Kept:**
+- the visit price, plus the "credited" checkbox;
+- phone hours, now customisable: the business ticks days (Mon–Sun) and picks a from/to time, every half hour from 5 AM to 11 PM. The card prints e.g. "Answers Mon–Fri, 7 AM–6 PM";
+- texts OK.
+
+**Terms:** 4.6 narrowed to match, `TERMS_VERSION` 2026-11-22.2.
+
+**Leftovers:**
+- The `vendor_service_suggestions` table was already created on the live DB by the earlier deploy. It's empty and nothing reads or writes it now; it can be dropped by hand.
+- Earlier sections of this doc describe the removed options as history.
