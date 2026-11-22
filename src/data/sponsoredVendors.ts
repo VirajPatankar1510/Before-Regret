@@ -189,9 +189,10 @@ export const PRIORITY_TRADE_CATEGORY: Partial<Record<string, typeof TRADE_CATEGO
   // grouping it with the same trade keeps the foundation family coherent. It is pure code, so it
   // renders for every report: Foundation Repair has a placement on every report.
   foundation_type_general: 'Foundation Repair',
-  pier_and_beam: 'Home Inspector',
-  // Was Home Inspector until 2026-10-12, when Stucco & EIFS became its own business type. No Report
-  // Ad had been sold, so no placement moved; Home Inspector keeps pier_and_beam above.
+  // pier_and_beam pointed at Home Inspector until 2026-11-22, when Home Inspector got its own fixed box on
+  // every report (FIXED_REPORT_SLOT_CATEGORIES below). The item now carries no ad, so a report never shows
+  // the same inspector twice. No Home Inspector Report Ad had been sold, so no placement moved.
+  // eifs_stucco was Home Inspector until 2026-10-12, when Stucco & EIFS became its own business type.
   eifs_stucco: 'Stucco & EIFS',
   // roof_age / hvac_age (see the split rationale on the rule itself in
   // engine/inspectionPriorities.ts) give Roof Inspection and HVAC Inspection their first real
@@ -227,12 +228,35 @@ export const SELLER_QUESTION_TRADE_CATEGORY: Partial<Record<string, typeof TRADE
 // doesn't have.
 
 // Trades with a fixed box on every report in the vendor's ZIPs, whatever the report finds (see the
-// movingCompanyVendors / realEstateAgentVendors / interiorDesignerVendors fields in types.ts).
+// movingCompanyVendors / realEstateAgentVendors / interiorDesignerVendors / homeInspectorVendors fields
+// in types.ts).
+//
+// Home Inspector added 2026-11-22 (owner). Before, an inspector's Report Ad sat only beside the
+// pier_and_beam item, which appears only on pre-1966 houses in 13 Texas counties, so an inspector
+// anywhere else would have paid and almost never been shown. Every buyer needs an inspection, so the
+// inspector gets a box right after the report's "what to check" list on every report in their ZIPs.
 export const FIXED_REPORT_SLOT_CATEGORIES: ReadonlySet<string> = new Set<string>([
   'Moving Company',
   'Real Estate Agent',
   'Interior Designer',
+  'Home Inspector',
 ]);
+
+/** Where a trade's Report Ad shows, in the words a business reads before buying. */
+export function reportAdPlacement(tradeCategory: string): string {
+  switch (tradeCategory) {
+    case 'Home Inspector':
+      return 'Your own box on every report for an address in your ZIP codes, right after the list of what to check.';
+    case 'Moving Company':
+      return 'Your own box on every report for an address in your ZIP codes, right below the address.';
+    case 'Real Estate Agent':
+      return 'Your own box on every report for an address in your ZIP codes, right after the questions to ask the seller.';
+    case 'Interior Designer':
+      return 'Your own box on every report for an address in your ZIP codes, after the records to pull.';
+    default:
+      return 'Beside the report item that matches your trade, on reports for addresses in your ZIP codes that include that item.';
+  }
+}
 
 // The trades a Report Ad can actually be shown for: a fixed box, or at least one report item mapped to the
 // trade above. A trade outside this list would pay for a ZIP ad that never renders, so the Report Ads

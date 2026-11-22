@@ -188,7 +188,7 @@ license number must find out before paying, not after.
 - Checked in the no-database preview: Electrician shows the license field, Chimney Sweep hides it.
   tsc clean, full build exit 0.
 
-## 2026-11-22 -- /topic-ads/: relevant articles after picking a business type (built, not yet published)
+## 2026-11-22 -- /topic-ads/: relevant articles after picking a business type (LIVE a52e8d4)
 
 Owner: "the list of articles disappear after selecting business type ... if there are no relevant
 articles, choose the next best options." Cause: the sort used guessTradeCategoryFromTitle(), which
@@ -202,3 +202,24 @@ one-line note when nothing names the trade), both open in one scroll box; the re
 Against the 148 open articles on 2026-11-22 every trade gets 17+ visible articles (e.g. Painter &
 Flooring 1 best + 57 closest; Electrician 24 + 83). Checked in a local preview against the real
 article list; tsc clean, build exit 0.
+
+## 2026-11-22 -- Home inspector box on every report (built, not yet published)
+
+Owner: "yes, build it", before an Instagram post selling one-inspector-per-ZIP. Before this, a Home
+Inspector Report Ad sat only beside the pier_and_beam item (pre-1966 houses in 13 Texas counties), so
+an inspector anywhere else would have paid and almost never been shown. Database checked first: no
+Home Inspector order or purchase existed (the only Report Ad order was one unpaid Plumber order).
+
+- Home Inspector joins FIXED_REPORT_SLOT_CATEGORIES; new PropertyReport.homeInspectorVendors, set in
+  server.ts and kept by CLIENT_REPORT_FIELDS; rendered right after the inspection priorities.
+- pier_and_beam no longer maps to a trade, so a report never shows the same inspector twice.
+- offersEvaluation keeps the price for Home Inspector despite the fixed box ("Home inspection from
+  $350"); still no "credited" option.
+- Report Ads checkout shows "Where it shows:" for the chosen trade (reportAdPlacement()); the
+  placement FAQs on /report-ads/ and /advertise/ now name the four fixed-box trades.
+- Checked with a temporary sample vendor on a 1955 Austin report (removed before commit): one card,
+  after "what to check", price + hours + texts + license. tsc clean, build exit 0.
+
+Same session, owner: /advertise/ drops "Your license number prints on the listing...", the "Pay in a
+minute, no sales call" heading and the trades paragraph; "Questions before you buy" is now
+"Frequently asked questions". The how-it-works steps were corrected (license before paying).

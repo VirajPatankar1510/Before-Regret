@@ -329,6 +329,11 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
           </section>
         )}
 
+        {/* Home Inspector: a fixed slot on every report in the inspector's ZIPs (2026-11-22, see
+            PropertyReport.homeInspectorVendors in types.ts), right after "what to check", where the buyer
+            is about to book the inspection. Renders nothing when unsold. */}
+        <SponsoredVendorCards vendors={report.homeInspectorVendors} />
+
         {report.sellerQuestionsScript && (
           <section id="section-seller-questions" className="scroll-mt-20">
             <SellerQuestions precomputed={report.sellerQuestionsScript} />

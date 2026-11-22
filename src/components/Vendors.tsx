@@ -24,7 +24,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Where does my ad appear?',
-    a: 'Inside the property report someone runs for an address in one of your ZIP codes, beside the report item that matches your trade. Where it lands depends on what the report covers for that house.',
+    a: 'Inside the property report someone runs for an address in one of your ZIP codes, beside the report item that matches your trade, so where it lands depends on what the report covers for that house. Home inspectors, movers, real estate agents and interior designers get their own box on every report in their ZIP codes instead. A home inspector\'s sits right after the list of what to check.',
   },
   {
     q: MAX_SLOTS_PER_ZIP_TRADE === 1 ? 'Why only one business per ZIP and trade?' : `Why only ${MAX_SLOTS_PER_ZIP_TRADE} businesses per ZIP and trade?`,

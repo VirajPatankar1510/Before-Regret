@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Loader2, CheckCircle2, XCircle, ArrowRight, AlertCircle, Lock } from 'lucide-react';
-import { REPORT_AD_TRADE_CATEGORIES, requiresLicenceNumber } from '../data/sponsoredVendors';
+import { REPORT_AD_TRADE_CATEGORIES, requiresLicenceNumber, reportAdPlacement } from '../data/sponsoredVendors';
 import { useAuth } from '../context/AuthContext';
 
 const ZIPS_PER_BUNDLE = 3;
@@ -215,6 +215,11 @@ export const VendorSignupForm: React.FC = () => {
           <option key={cat} value={cat}>{cat}</option>
         ))}
       </select>
+      {tradeCategory && (
+        <p className="mt-1.5 px-1 text-xs text-slate-600 leading-snug">
+          <span className="font-semibold">Where it shows:</span> {reportAdPlacement(tradeCategory)}
+        </p>
+      )}
 
       <p className="mt-5 text-sm font-bold">2. Your {ZIPS_PER_BUNDLE} ZIP codes</p>
       <div className="mt-2 grid grid-cols-3 gap-2 sm:gap-3">

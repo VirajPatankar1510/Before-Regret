@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { ArrowRight, ChevronRight, CreditCard, MapPin, Newspaper, Check, ClipboardList, ClipboardEdit, MousePointerClick } from 'lucide-react';
-import { MAX_SLOTS_PER_ZIP_TRADE, TRADE_CATEGORIES, LICENCE_EXEMPT_CATEGORIES, canBuyReportAd, slotsPerZipPhrase } from '../data/sponsoredVendors';
+import { MAX_SLOTS_PER_ZIP_TRADE, TRADE_CATEGORIES, canBuyReportAd, slotsPerZipPhrase } from '../data/sponsoredVendors';
 import { ContentLink } from './home/ContentLink';
 import { SponsoredVendorCard } from './SponsoredVendorCard';
 import { GuideAdVendorCard } from './GuideAdSlot';
@@ -53,7 +53,7 @@ export const ADVERTISE_FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Where exactly does a Report Ad appear?',
-    a: `Beside the item in the report that matches your trade. A plumber's listing, for example, sits beside the report's water supply pipe checks, and those checks appear on reports for houses built ${PLUMBER_ERAS}, so that is where a plumber is shown. Moving companies are the exception: their listing has a fixed spot right below the address, on reports for addresses in their ZIP codes. ${MAX_SLOTS_PER_ZIP_TRADE === 1 ? 'Only one business per trade is shown in each ZIP code, first come, first served.' : `Up to ${MAX_SLOTS_PER_ZIP_TRADE} businesses can hold the same ZIP code and trade at once.`}`,
+    a: `Beside the item in the report that matches your trade. A plumber's listing, for example, sits beside the report's water supply pipe checks, and those checks appear on reports for houses built ${PLUMBER_ERAS}, so that is where a plumber is shown. Home inspectors, movers, real estate agents and interior designers are the exception: each gets its own box on every report for an address in their ZIP codes. A home inspector's sits right after the report's list of what to check. ${MAX_SLOTS_PER_ZIP_TRADE === 1 ? 'Only one business per trade is shown in each ZIP code, first come, first served.' : `Up to ${MAX_SLOTS_PER_ZIP_TRADE} businesses can hold the same ZIP code and trade at once.`}`,
   },
   {
     q: 'Do I need to be licensed or verified to advertise?',
@@ -235,8 +235,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             <ul className="mt-6 space-y-3 text-[15px] text-slate-700 leading-relaxed">
               <Bullet>Choose any 3 US ZIP codes and one trade per bundle.</Bullet>
               <Bullet>{slotsPerZipPhrase()}, first come, first served.</Bullet>
-              <Bullet>Shown beside the report item for your trade, so placement depends on what the report covers for that house.</Bullet>
-              <Bullet>Your license number prints on the listing, with a line telling readers it is advertiser-supplied.</Bullet>
+              <Bullet>Shown beside the report item for your trade. Home inspectors, movers, agents and interior designers get their own box on every report.</Bullet>
             </ul>
             <ContentLink
               href="/report-ads/"
@@ -326,12 +325,11 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
       <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <Eyebrow>How it works</Eyebrow>
-          <h2 className="mt-3 font-serif text-3xl sm:text-4xl font-semibold tracking-tight">Pay in a minute, no sales call</h2>
-          <ol className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <ol className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { t: 'Choose', b: 'Your trade and 3 ZIP codes for a Report Ad, or the articles you want for Topic Ads.' },
+              { t: 'Choose', b: 'Your trade and 3 ZIP codes for a Report Ad, or the articles you want for Topic Ads, plus your license number if your trade needs one.' },
               { t: 'Pay with PayPal', b: 'Sign in with your email and pay once. No subscription, nothing renews automatically.' },
-              { t: 'Add your details', b: 'Business name, phone and license number, in My Ads. Your ad goes live, and your 30 days start.' },
+              { t: 'Add your details', b: 'Business name and phone, in My Ads. Your ad goes live, and your 30 days start.' },
             ].map((s, i) => (
               <li key={s.t} className="rounded-3xl bg-white border border-home-linen p-6 shadow-sm">
                 <div className="w-9 h-9 rounded-full bg-home-navy text-white font-bold text-sm flex items-center justify-center">{i + 1}</div>
@@ -348,12 +346,6 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
         <div className="max-w-6xl mx-auto">
           <Eyebrow>Who can advertise</Eyebrow>
           <h2 className="mt-3 font-serif text-3xl sm:text-4xl font-semibold tracking-tight">Trades we list</h2>
-          <p className="mt-4 max-w-2xl text-base text-slate-700 leading-relaxed">
-            Both ad types are open to businesses in these trades, except those marked Topic Ads only:
-            no report section covers them yet, so a Report Ad would have nowhere to show. Every trade
-            except {[...LICENCE_EXEMPT_CATEGORIES].map((c) => c.toLowerCase()).join(' and ')} asks for a
-            license, registration or certification number when you add your details.
-          </p>
           <ul className="mt-8 flex flex-wrap gap-2.5">
             {TRADE_CATEGORIES.map((c) => (
               <li key={c} className="rounded-full bg-white border border-home-linen px-4 py-2 text-sm font-semibold text-home-ink">
@@ -368,7 +360,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
       {/* FAQ, open: the honest answers a business wants before paying. */}
       <section className="pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto rounded-3xl bg-white border border-home-linen shadow-sm p-6 sm:p-10">
-          <h2 className="font-serif text-3xl sm:text-4xl font-semibold tracking-tight">Questions before you buy</h2>
+          <h2 className="font-serif text-3xl sm:text-4xl font-semibold tracking-tight">Frequently asked questions</h2>
           <div className="mt-6 divide-y divide-home-linen">
             {ADVERTISE_FAQ_ITEMS.map((item) => (
               <div key={item.q} className="py-5 first:pt-0 last:pb-0">

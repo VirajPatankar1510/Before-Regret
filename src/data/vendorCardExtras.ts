@@ -100,9 +100,10 @@ export interface CardExtras {
 /**
  * Trades that do a paid check before closing. Only these get the visit price. The fixed-box trades
  * (movers, agents, interior designers) have no evaluation to price; they still get phone hours and texts.
+ * Home Inspector has a fixed box too (since 2026-11-22) but sells an inspection, so it keeps its price.
  */
 export function offersEvaluation(trade: string): boolean {
-  return canBuyReportAd(trade) && !FIXED_REPORT_SLOT_CATEGORIES.has(trade);
+  return canBuyReportAd(trade) && (trade === 'Home Inspector' || !FIXED_REPORT_SLOT_CATEGORIES.has(trade));
 }
 
 // One flat shape (not a discriminated union) because this repo compiles without strictNullChecks,

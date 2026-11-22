@@ -1020,6 +1020,7 @@ export async function createApp() {
     cleanedReport.movingCompanyVendors = zipVendorMap.get('Moving Company') ?? [];
     cleanedReport.realEstateAgentVendors = zipVendorMap.get('Real Estate Agent') ?? [];
     cleanedReport.interiorDesignerVendors = zipVendorMap.get('Interior Designer') ?? [];
+    cleanedReport.homeInspectorVendors = zipVendorMap.get('Home Inspector') ?? [];
 
     if (!cleanedReport.id) {
       cleanedReport.id = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -1931,6 +1932,7 @@ const CLIENT_REPORT_FIELDS = [
   'movingCompanyVendors',
   'realEstateAgentVendors',
   'interiorDesignerVendors',
+  'homeInspectorVendors',
   // The three fields the blocked/non-residential path returns instead of a real report.
   'isNonResidential',
   'rejectionReason',

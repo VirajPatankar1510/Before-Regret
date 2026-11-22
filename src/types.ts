@@ -422,6 +422,11 @@ export interface PropertyReport {
   // living in it. Empty or absent renders nothing.
   interiorDesignerVendors?: SponsoredVendor[];
 
+  // Fixed slot for Home Inspector vendors (2026-11-22, owner). Every buyer needs an inspection, so every
+  // report in the inspector's ZIPs carries it, right after the inspection priorities ("what to check"),
+  // where the buyer has just read what to look into. Empty or absent renders nothing.
+  homeInspectorVendors?: SponsoredVendor[];
+
   // Bottom Line Synthesis. Optional since 2026-10-05: no report generator writes it any more (see the
   // REMOVED note in server.ts's generateStructuredPropertyReport); older stored reports may have it.
   bottomLine?: {
