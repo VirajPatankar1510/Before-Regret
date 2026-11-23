@@ -1,0 +1,27 @@
+{
+  "source": "bing",
+  "endpoint": "bing webmaster GetQueryStats (metric=site: this site's impressions) + GetKeyword/GetRelatedKeywords (metric=market: all of Bing, 90 days, thin sample -- relative only, zero means unknown)",
+  "captured_at": "2026-11-23T15:22:54.793Z",
+  "location_name": "United States",
+  "language_code": "en",
+  "cost_usd": 0,
+  "seeds": [
+    "phoenix permit search"
+  ],
+  "keywords": [
+    {
+      "keyword": "phoenix permit search",
+      "search_volume": null,
+      "metric": "market",
+      "broad_impressions": 381,
+      "kind": "seed"
+    },
+    {
+      "keyword": "city of phoenix permit search",
+      "search_volume": 381,
+      "metric": "market",
+      "broad_impressions": 381,
+      "kind": "related"
+    }
+  ]
+}

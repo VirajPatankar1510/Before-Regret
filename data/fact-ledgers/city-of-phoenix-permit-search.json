@@ -1,0 +1,99 @@
+{
+  "slug": "city-of-phoenix-permit-search",
+  "question": "Where are a City of Phoenix house's permits, and how do I search them without missing records or misreading a status?",
+  "officialLookupUrl": "https://apps-secure.phoenix.gov/PDD/Search/Permits",
+  "verdictConfirmed": "2026-11-23 browser: both PDD Online and the SHAPE PHX Data/Reports search return records for an address with no account.",
+  "demand": "Bing market counts, capture 2026-11-23-demand-phoenix-permit-search-bing (relative only): 'city of phoenix permit search' recorded; this site has no Phoenix page and no Phoenix impressions. No volume is stated on the page.",
+  "ourWork": {
+    "date": "2026-11-23",
+    "census": {
+      "source": "docs/data/phoenix-permit-era-shares.json (ACS 2020-2024 5-year B25034 + B25035), built by scripts/build-phoenix-permit-era-shares.ts",
+      "cityHousingUnits": "653,065",
+      "countyHousingUnits": "1,884,334",
+      "cityShareOfCountyUnits": "34.7%",
+      "medianYearBuilt": "1985",
+      "builtBefore1980Pct": "41.6%",
+      "built1980sPct": "17.3%",
+      "built1990sPct": "13.3%",
+      "built2000sPct": "16.3%",
+      "built2010sPct": "9.5%",
+      "built2020OrLaterPct": "2%",
+      "builtBefore2000Pct": "72.2%",
+      "tables": "B25034, B25035; ACS 2020-2024"
+    },
+    "observations": [
+      "PDD Online Permit Information Search (apps-secure.phoenix.gov/PDD/Search/Permits), 2026-11-23, no account: By Address with number 200, direction W, street WASHINGTON, type ST (City Hall, 200 W Washington St).",
+      "The Start Date and End Date boxes sit inside the 'By Solar\\Green\\Adaptive Re-use' section and arrived pre-filled 10/24/2026 to 11/23/2026 (30 days). Left as they were, the address search still returned 1 - 10 of 915 items, so the dates did not limit an address search.",
+      "Sorted by issued date, the oldest record was OSME-93023180, issued 12/06/1993, status EXPR.",
+      "Status values seen on the first page: EXPR, DONE, VOID.",
+      "OE-94023192 (issued 11/07/1994, status EXPR, electrical contractor named) Inspection History: 399 FINAL/ELECTRICAL NO ACCESS 08/06/1996; FAIL 09/19/1996; 311 RESEARCH NON-INSP ACTIVITY CONCLUDED 09/23/1996; 399 FINAL/ELECTRICAL PASS 10/09/1996. An EXPR status sat on a permit whose final inspection passed.",
+      "ELEC-94011014 (EXPR) Inspection History showed no items, so an empty history is possible too.",
+      "'Show temps?' defaults to No; Yes adds temporary/unissued permits.",
+      "SHAPE PHX (shapephx.phoenix.gov) DATA / REPORTS, category Permit, no login: address number 200, street WASHINGTON returned 647 Results Returned. Results included 2002 W WASHINGTON ST, so the number box matched a longer house number. Records with issued dates 2019-11-25, 2019-11-20, 2020-01-14 were present, with status 'Permit Expired'. Several City Hall results were 'New Standard Home from Standard Plan' records, which is a feature of using City Hall as the test address, not of a house.",
+      "Screenshot public/images/phoenix-pdd-expired-permit-passed-final.webp: OE-94023192's inspection history, inspector and data-entry names removed by us."
+    ],
+    "computations": [
+      "Phoenix city holds 653,065 of Maricopa County's 1,884,334 housing units = 34.7%.",
+      "Built before 2000 = before 1980 41.6% + 1980s 17.3% + 1990s 13.3% = 72.2%."
+    ]
+  },
+  "facts": [
+    {
+      "id": "p1",
+      "claim": "PDD Online permit search allows wildcard and address search; no log on is needed to search.",
+      "source": "apps-secure.phoenix.gov/PDD/Search/Permits, read 2026-11-23",
+      "quote": "A wildcard search character (*) may be used to replace any character in the search field. By Address (can use wildcard in number and street)",
+      "verified": "2026-11-23 browser"
+    },
+    {
+      "id": "p2",
+      "claim": "Show temps adds unissued permits.",
+      "source": "apps-secure.phoenix.gov/PDD/Search/Permits, read 2026-11-23",
+      "quote": "Clicking 'Yes' will include temporary/unissued permits in the results along with the issued permits.",
+      "verified": "2026-11-23 browser"
+    },
+    {
+      "id": "p3",
+      "claim": "SHAPE PHX search holds records entered from June 6, 2022; older records are in PDD Online.",
+      "source": "shapephx.phoenix.gov/s/advanced-search (DATA / REPORTS, Permit), read 2026-11-23",
+      "quote": "The search is limited to Shape PHX records entered as of June 6, 2022. If you need to search older records, please go to PDD Online",
+      "verified": "2026-11-23 browser"
+    },
+    {
+      "id": "p4",
+      "claim": "SHAPE PHX search shows at most 50,000 records.",
+      "source": "shapephx.phoenix.gov/s/advanced-search, read 2026-11-23",
+      "quote": "Search results will show the first 50,000 records.",
+      "verified": "2026-11-23 browser"
+    },
+    {
+      "id": "p5",
+      "claim": "From April 27, 2026, new single-family residential permits and inspections are in SHAPE PHX.",
+      "source": "phoenix.gov/administration/departments/pdd/tools-resources/shape-phx.html, read 2026-11-23",
+      "quote": "Effective April 27, 2026 - You can now visit the SHAPE PHX portal for access to NEW Commercial Plan Review and Inspections permits: Commercial Plan Review Commercial Permitting and Inspections Single-family Residential Permits and Inspections",
+      "verified": "2026-11-23 browser"
+    },
+    {
+      "id": "p6",
+      "claim": "PDD Records contact.",
+      "source": "phoenix.gov/administration/departments/pdd/contact-us.html, read 2026-11-23",
+      "quote": "Records 602-262-7800 pdd.records@phoenix.gov",
+      "verified": "2026-11-23 browser"
+    },
+    {
+      "id": "p7",
+      "claim": "Arizona law opens public records to inspection by any person during office hours.",
+      "source": "Arizona Revised Statutes § 39-121, azleg.gov/ars/39/00121.htm, read 2026-11-23",
+      "quote": "Public records and other matters in the custody of any officer shall be open to inspection by any person at all times during office hours.",
+      "verified": "2026-11-23 browser"
+    }
+  ],
+  "cut": [
+    "Any claim about Phoenix mailing addresses outside city limits: no primary source read today, so the page only says the city search holds City of Phoenix permits and points to the county guide.",
+    "Any statement that PDD Online starts in a given year: the 1993 record is the oldest at one test address, not a system start date.",
+    "Meaning of EXPR/DONE/VOID: no city legend found; the page reports what the records show, not a definition."
+  ],
+  "blockedSources": [
+    "maricopa.gov/3604/Permit-Search returned 404 on 2026-11-23 (not blocked, moved)."
+  ]
+}
