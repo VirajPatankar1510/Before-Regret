@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ClipboardCheck, ShieldAlert, ChevronDown, CheckSquare, Square } from 'lucide-react';
+import { Check, ChevronRight } from 'lucide-react';
 import { getInspectionPriorities, PriorityLevel } from '../engine/inspectionPriorities';
 import { InspectionPrioritiesReportData, InspectionPriorityWithVendor } from '../types';
 import { SponsoredVendorCards } from './SponsoredVendorCard';
@@ -21,19 +21,33 @@ interface InspectionPrioritiesProps {
 // PRINT: a collapsed "Why it matters" body is still in the DOM with `hidden print:block`, so the
 // exported PDF always carries it. The toggle button itself is hidden in print by index.css; the
 // checkbox carries .print-keep so it survives as a box to tick on paper.
-const PRIORITY_STYLES: Record<PriorityLevel, { label: string; dot: string; text: string }> = {
-  high: { label: 'Check first', dot: 'bg-blue-600', text: 'text-blue-700' },
-  medium: { label: 'Worth checking', dot: 'bg-slate-400', text: 'text-slate-600' },
-  lower: { label: 'Lower priority', dot: 'bg-slate-300', text: 'text-slate-500' },
+// 2026-11-23 (Apple-style report, owner "go" on docs/mockups/apple-report-mockup-2026-11.html): the items are
+// grouped by priority into Settings-style lists. Each row shows a round tick, the title and a short "To check"
+// line; tapping the row opens the action, the two costs and "Why it matters". Every word is still the engine's.
+// Collapsed text stays in the DOM (`hidden print:block`), so the PDF always carries all of it. Sponsored cards
+// sit under their row and are never folded away.
+const PRIORITY_STYLES: Record<PriorityLevel, { label: string; dot: string }> = {
+  high: { label: 'Check first', dot: 'bg-blue-600' },
+  medium: { label: 'Worth checking', dot: 'bg-slate-400' },
+  lower: { label: 'Lower priority', dot: 'bg-slate-300' },
 };
+const PRIORITY_ORDER: PriorityLevel[] = ['high', 'medium', 'lower'];
+
+// The row's one-liner: the "To check" text up to its first dash, and a price range without its "for a ..." tail.
+// "$300 – $500 for a camera scope" -> "$300 – $500"; "Free — required for most pre-1978 homes" -> "Free".
+function shortCost(cost: string): string {
+  let c = cost.split(' — ')[0].split(' -- ')[0].trim();
+  if (/^\$/.test(c)) c = c.replace(/\s+for\s.*$/i, '');
+  return c.replace(/\.$/, '');
+}
 
 export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ yearBuilt, county, state, precomputed }) => {
   const result = precomputed !== undefined ? precomputed : getInspectionPriorities(yearBuilt, county, state);
   const [done, setDone] = useState<Record<string, boolean>>({});
   const [open, setOpen] = useState<Record<string, boolean>>({});
 
-  // Expand every "Why it matters" before the browser lays out the PDF, so the printed copy matches
-  // the CSS fallback even in browsers that snapshot the live layout.
+  // Expand every row before the browser lays out the PDF, so the printed copy matches the CSS fallback even in
+  // browsers that snapshot the live layout.
   useEffect(() => {
     const expandAll = () => setOpen(Object.fromEntries((result?.priorities || []).map((p) => [p.id, true])));
     window.addEventListener('beforeprint', expandAll);
@@ -43,70 +57,63 @@ export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ year
   if (!result) return null;
 
   const renderPriorityItem = (item: (typeof result.priorities)[number]) => {
-    const styles = PRIORITY_STYLES[item.priority];
     const isDone = Boolean(done[item.id]);
     const isOpen = Boolean(open[item.id]);
     const vendors = (item as InspectionPriorityWithVendor).sponsoredVendors;
+    const panelId = `priority-panel-${item.id}`;
     return (
-      <li key={item.id} data-print-block className="py-5 first:pt-0 last:pb-0">
-        <div className="flex gap-3">
+      <li key={item.id} data-print-block>
+        <div className="flex items-start gap-3 px-4 sm:px-5 py-3.5">
           <button
             type="button"
             onClick={() => setDone((d) => ({ ...d, [item.id]: !d[item.id] }))}
             aria-pressed={isDone}
             aria-label={isDone ? `Mark "${item.title}" as not done` : `Mark "${item.title}" as done`}
-            className="print-keep self-start mt-0.5 shrink-0 cursor-pointer"
+            className={`print-keep mt-0.5 shrink-0 w-6 h-6 rounded-full border-[1.5px] flex items-center justify-center cursor-pointer transition-colors ${isDone ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-300 hover:border-slate-400'}`}
           >
-            {isDone ? <CheckSquare className="w-5 h-5 text-emerald-600" /> : <Square className="w-5 h-5 text-slate-300 hover:text-slate-500" />}
+            {isDone && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
           </button>
-          <div className="min-w-0 flex-1 space-y-2">
-            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <h3 className={`font-semibold text-[15px] leading-snug ${isDone ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
+          <button
+            type="button"
+            onClick={() => setOpen((o) => ({ ...o, [item.id]: !o[item.id] }))}
+            aria-expanded={isOpen}
+            aria-controls={panelId}
+            className="print-row min-w-0 flex-1 flex items-start gap-3 text-left cursor-pointer"
+          >
+            <span className="min-w-0 flex-1">
+              <span className={`block text-[17px] font-semibold leading-snug ${isDone ? 'text-slate-400 line-through decoration-slate-300' : 'text-slate-900'}`}>
                 {item.title}
-              </h3>
-              <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold ${styles.text}`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${styles.dot}`} aria-hidden="true" />
-                {styles.label}
               </span>
-            </div>
-
-            <p className="text-sm text-slate-700 leading-relaxed">{item.howToCheck}</p>
-
-            <div className="space-y-0.5 text-xs leading-relaxed">
-              <p>
-                <span className="text-slate-500">To check: </span>
-                <span className="font-semibold text-slate-800">{item.costToCheck}</span>
-              </p>
-              {item.typicalRepairCost && (
-                <p>
-                  <span className="text-slate-500">If found: </span>
-                  <span className="font-semibold text-slate-800">{item.typicalRepairCost}</span>
-                </p>
-              )}
-            </div>
-
-            <div>
-              <button
-                type="button"
-                onClick={() => setOpen((o) => ({ ...o, [item.id]: !o[item.id] }))}
-                aria-expanded={isOpen}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-800 cursor-pointer"
-              >
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-                <span>Why it matters</span>
-              </button>
-              <p className={`${isOpen ? 'block' : 'hidden print:block'} mt-1.5 text-xs text-slate-600 leading-relaxed`}>
-                {item.eraBasis}
-              </p>
-            </div>
-          </div>
+              <span className="block mt-0.5 text-[15px] text-slate-500 leading-snug">To check: {shortCost(item.costToCheck)}</span>
+            </span>
+            <ChevronRight aria-hidden="true" className={`print:hidden mt-1 w-4 h-4 shrink-0 text-slate-400 transition-transform ${isOpen ? 'rotate-90' : ''}`} />
+          </button>
         </div>
 
-        {/* Contextual vendor match(es) for this item's trade category, if a real vendor has paid
-            for it in this ZIP -- present only on the server-precomputed path. Set apart from the
-            item by indent and the ad card's own amber treatment. */}
+        <div id={panelId} className={`${isOpen ? 'block' : 'hidden print:block'} pl-[52px] sm:pl-14 pr-4 sm:pr-6 pb-5 space-y-4`}>
+          <p className="text-[17px] text-slate-800 leading-relaxed">{item.howToCheck}</p>
+          <dl className="border-t border-slate-200/70 text-[15px]">
+            <div className="grid grid-cols-[76px_1fr] gap-3 py-2.5 border-b border-slate-200/70">
+              <dt className="text-slate-500">To check</dt>
+              <dd className="text-slate-900 tabular-nums">{item.costToCheck}</dd>
+            </div>
+            {item.typicalRepairCost && (
+              <div className="grid grid-cols-[76px_1fr] gap-3 py-2.5 border-b border-slate-200/70">
+                <dt className="text-slate-500">If found</dt>
+                <dd className="text-slate-900 tabular-nums">{item.typicalRepairCost}</dd>
+              </div>
+            )}
+          </dl>
+          <p className="text-[15px] text-slate-600 leading-relaxed">
+            <span className="font-semibold text-slate-900">Why it matters. </span>
+            {item.eraBasis}
+          </p>
+        </div>
+
+        {/* Contextual vendor match(es) for this item's trade category, if a real vendor has paid for it in this ZIP --
+            present only on the server-precomputed path. Always visible, under its row, in the ad card's own treatment. */}
         {vendors && vendors.length > 0 && (
-          <div className="mt-3 sm:pl-8">
+          <div className="px-4 sm:pl-14 sm:pr-6 pb-4">
             <SponsoredVendorCards vendors={vendors} />
           </div>
         )}
@@ -114,44 +121,50 @@ export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ year
     );
   };
 
+  const groups = PRIORITY_ORDER
+    .map((level) => ({ level, items: result.priorities.filter((p) => p.priority === level) }))
+    .filter((g) => g.items.length > 0);
+
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-7">
-      <div className="space-y-1.5 mb-6">
-        <div className="flex items-center gap-2 text-slate-900">
-          <ClipboardCheck className="w-5 h-5 text-blue-600 shrink-0" />
-          <h2 className="text-xl font-serif font-bold tracking-tight">Inspection priorities</h2>
-        </div>
-        <p className="text-sm text-slate-500 leading-relaxed">
-          What tends to matter most for a home built in <strong className="text-slate-800 font-semibold">{result.yearBuilt}</strong> in
+    <div>
+      <div data-print-block className="mb-2">
+        <h2 className="font-serif text-[28px] sm:text-[32px] font-bold leading-tight tracking-[-0.025em] text-slate-900">Inspection priorities</h2>
+        <p className="mt-2 text-[17px] text-slate-500 leading-relaxed">
+          What tends to matter most for a home built in <span className="text-slate-900 font-semibold">{result.yearBuilt}</span> in
           this area. Tick each one off as you go.
         </p>
       </div>
 
-      <ol className="divide-y divide-slate-100">
-        {result.priorities.map(renderPriorityItem)}
-      </ol>
+      {groups.map((g) => (
+        <div key={g.level}>
+          <p className="mt-6 mb-2 ml-4 flex items-center gap-2 text-[13px] text-slate-500 [break-after:avoid]">
+            <span aria-hidden="true" className={`w-2 h-2 rounded-full ${PRIORITY_STYLES[g.level].dot}`} />
+            {PRIORITY_STYLES[g.level].label} · {g.items.length}
+          </p>
+          <ol className="rounded-3xl bg-white divide-y divide-slate-200/70 overflow-hidden">
+            {g.items.map(renderPriorityItem)}
+          </ol>
+        </div>
+      ))}
 
-      {/* Cross-cutting view of items above that already carry a documented insurance impact -- no
-          new facts, pulled out of individual eraBasis paragraphs. Rose, not amber: amber is
-          reserved for sponsored placements in the report. */}
+      {/* Cross-cutting view of items above that already carry a documented insurance impact -- no new facts, pulled
+          out of individual eraBasis paragraphs. Neutral, not red: the Apple-style report keeps colour for actions,
+          and amber stays reserved for sponsored placements. */}
       {result.insuranceRedFlags.length > 0 && (
-        <div data-print-block className="mt-6 bg-rose-50 border border-rose-200 rounded-xl p-4 space-y-2">
-          <div className="flex items-center gap-2 text-rose-800">
-            <ShieldAlert className="w-4 h-4 shrink-0" />
-            <h3 className="text-sm font-bold">Insurance red flags for a {result.eraLabel} home</h3>
-          </div>
-          <ul className="space-y-1 text-sm text-rose-950/80 leading-relaxed list-disc pl-5">
+        <div data-print-block className="mt-4 rounded-3xl bg-white p-5 sm:p-6 space-y-2">
+          <h3 className="text-[17px] font-semibold text-slate-900">Insurance red flags for a {result.eraLabel} home</h3>
+          <ul className="space-y-1 text-[15px] text-slate-700 leading-relaxed list-disc pl-5">
             {result.insuranceRedFlags.map((flag, i) => (
               <li key={i}>{flag}</li>
             ))}
           </ul>
-          <p className="text-xs text-rose-800/80 leading-relaxed">
+          <p className="text-[13px] text-slate-500 leading-relaxed">
             Call an insurance agent for a quote before you remove contingencies — not after. Carrier rules vary and this is not a determination that any of the above is actually present in this home.
           </p>
         </div>
       )}
 
-      <p className="text-[11px] text-slate-400 leading-relaxed border-t border-slate-100 pt-4 mt-6">
+      <p className="mt-4 mx-4 text-xs text-slate-500 leading-relaxed">
         A budgeting guide built from published building-science norms for this construction era and region — not a home
         inspection, a condition assessment, or an opinion of value. The year built is the one you gave us; we haven't
         verified it. Costs are typical ranges and vary by contractor and scope; confirm every item with an

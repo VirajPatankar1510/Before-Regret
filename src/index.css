@@ -237,6 +237,12 @@ html, body {
     color: #334155 !important;
   }
 
+  /* The report's priority rows are buttons (tap to open), but their text is the content: the title and the
+     short "To check" line must print (2026-11-23, Apple-style report). */
+  button.print-row {
+    display: flex !important;
+  }
+
   /* Full-width print layout */
   .max-w-3xl, .max-w-4xl, .max-w-5xl {
     max-width: 100% !important;

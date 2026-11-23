@@ -1004,7 +1004,7 @@ export function App() {
   const activeReport = report || createFallbackReport(selectedProperty, activeSummaryData);
 
   return (
-    <div className="min-h-screen bg-home-mist font-sans text-slate-900 flex flex-col relative">
+    <div className="min-h-screen bg-home-mist print:bg-white font-sans text-slate-900 flex flex-col relative">
       <Navbar
         onNewSearch={handleNewSearch}
         currentStep={currentStep}
