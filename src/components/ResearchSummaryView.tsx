@@ -34,7 +34,7 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
       {/* Property Badge Header */}
       <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full">
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full">
             <MapPin className="w-3.5 h-3.5" />
             <span>Your property</span>
           </div>
@@ -53,10 +53,9 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
       </div>
 
       {/* Main Research Complete Hero Box */}
-      <div className="bg-slate-900 text-white border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden space-y-8">
+      <div className="bg-white text-home-ink rounded-3xl p-6 sm:p-10 relative overflow-hidden space-y-8">
         
         {/* Decorative ambient gradient */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* Headed "This report covers", not "This report includes". The old wording implied the
             product supplies these findings; what it actually supplies is a checklist pointing at
@@ -67,21 +66,21 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
             report will cover, not results. A neutral marker says the same thing without the
             implied claim. */}
         <div className="space-y-4">
-          <div className="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-            <FileText className="w-4 h-4 text-blue-400" />
+          <div className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+            <FileText className="w-4 h-4 text-blue-600" />
             <span>This report covers:</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {categories.map((item, idx) => (
-              <div key={idx} className="flex items-center gap-2.5 text-sm text-slate-200">
+              <div key={idx} className="flex items-center gap-2.5 text-sm text-slate-700">
                 <div className="w-1.5 h-1.5 rounded-full bg-blue-400/70 shrink-0" />
                 <span className="font-medium">{item}</span>
               </div>
             ))}
           </div>
 
-          <p className="text-xs text-slate-400 pt-1">
+          <p className="text-xs text-slate-500 pt-1">
             The Census neighborhood profile is checked live for this address. The
             rest is guidance for a home of its age and area, with links to the records worth pulling
             yourself.
@@ -95,7 +94,7 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-slate-200 pb-6">
           <div className="space-y-1">
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-500">
+            <div className="text-xs font-semibold text-slate-500">
               Your Report
             </div>
             <div className="text-2xl sm:text-3xl font-black text-emerald-600 tracking-tight flex items-baseline gap-2 flex-wrap">
@@ -108,7 +107,7 @@ export const ResearchSummaryView: React.FC<ResearchSummaryViewProps> = ({
 
           <button
             onClick={onGenerateReport}
-            className="px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-lg rounded-2xl transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 cursor-pointer shrink-0"
+            className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-lg rounded-full transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 cursor-pointer shrink-0"
           >
             <span>View Report</span>
             <ArrowRight className="w-5 h-5" />

@@ -1004,7 +1004,7 @@ export function App() {
   const activeReport = report || createFallbackReport(selectedProperty, activeSummaryData);
 
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-900 flex flex-col relative">
+    <div className="min-h-screen bg-home-mist font-sans text-slate-900 flex flex-col relative">
       <Navbar
         onNewSearch={handleNewSearch}
         currentStep={currentStep}
@@ -1160,7 +1160,7 @@ export function App() {
                 )}
                 <button
                   onClick={() => handleNavigate('/')}
-                  className="inline-flex items-center px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
+                  className="inline-flex items-center px-6 py-3 rounded-full bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
                 >
                   Research an address
                 </button>
@@ -1174,7 +1174,7 @@ export function App() {
                 </p>
                 <button
                   onClick={() => handleNavigate('/')}
-                  className="inline-flex items-center px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
+                  className="inline-flex items-center px-6 py-3 rounded-full bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
                 >
                   Back to Home
                 </button>

@@ -138,11 +138,11 @@ export const GuidesIndexView: React.FC<GuidesIndexViewProps> = ({ onNavigate }) 
       onTopicChange={setTopic}
       status={
         loadError ? (
-          <div className="mt-6 rounded-3xl bg-white border border-home-linen p-8 text-center text-sm text-slate-500">{loadError}</div>
+          <div className="mt-6 rounded-3xl bg-white p-8 text-center text-sm text-slate-500">{loadError}</div>
         ) : !guides ? (
           <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 text-slate-400 animate-spin" /></div>
         ) : guides.length === 0 ? (
-          <div className="mt-6 rounded-3xl bg-white border border-home-linen p-8 text-center text-sm text-slate-500">No guides published yet -- check back soon.</div>
+          <div className="mt-6 rounded-3xl bg-white p-8 text-center text-sm text-slate-500">No guides published yet -- check back soon.</div>
         ) : null
       }
     />

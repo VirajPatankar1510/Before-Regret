@@ -96,7 +96,7 @@ export const AdDetailsReminder: React.FC<AdDetailsReminderProps> = ({ pathname, 
         <a
           href="/my-ads/"
           onClick={(e) => { e.preventDefault(); onNavigate('/my-ads/'); }}
-          className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 bg-home-navy hover:bg-home-ink text-white text-xs font-bold rounded-lg transition-colors"
+          className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-full transition-colors"
         >
           {action} <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
         </a>

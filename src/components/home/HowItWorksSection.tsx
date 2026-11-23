@@ -23,24 +23,24 @@ const IN_THE_REPORT = [
 ];
 
 export const HowItWorksSection: React.FC = () => (
-  <section className="bg-home-stone border-y border-home-linen py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+  <section className="bg-white py-20 sm:py-32 px-4 sm:px-6 lg:px-8">
     <div className="max-w-6xl mx-auto home-reveal">
-      <div className="max-w-2xl">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-home-brass">Three steps</p>
-        <h2 className="mt-3 font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">Here&rsquo;s how it works</h2>
+      <div className="max-w-3xl mx-auto text-center">
+        <p className="text-base sm:text-lg font-semibold text-slate-500">Three steps</p>
+        <h2 className="mt-3 font-serif text-4xl sm:text-6xl font-semibold text-home-ink tracking-[-0.025em] [text-wrap:balance]">Here&rsquo;s how it works</h2>
       </div>
 
-      <ol className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5 relative">
-        <div aria-hidden="true" className="hidden md:block absolute top-9 left-[16%] right-[16%] h-px bg-gradient-to-r from-home-oak/0 via-home-oak/60 to-home-oak/0" />
+      <ol className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-5 relative">
+        <div aria-hidden="true" className="hidden md:block absolute top-9 left-[16%] right-[16%] h-px bg-gradient-to-r from-slate-300/0 via-slate-300 to-slate-300/0" />
         {STEPS.map((step, i) => {
           const Icon = ICONS[i];
           return (
-            <li key={step.title} className="relative rounded-3xl bg-white border border-home-linen p-6 sm:p-7 shadow-sm">
+            <li key={step.title} className="relative rounded-3xl bg-home-mist p-6 sm:p-7">
               <div className="flex items-center gap-3">
-                <span className="w-12 h-12 rounded-2xl bg-home-navy text-white flex items-center justify-center shadow-md">
+                <span className="w-12 h-12 rounded-2xl bg-white text-blue-600 flex items-center justify-center">
                   <Icon className="w-5 h-5" />
                 </span>
-                <span className="font-serif text-4xl font-semibold text-home-oak/70 tabular-nums">{i + 1}</span>
+                <span className="font-serif text-4xl font-semibold text-slate-300 tabular-nums">{i + 1}</span>
               </div>
               <h3 className="mt-5 font-serif text-xl font-semibold text-home-ink leading-snug">{step.title}</h3>
               <p className="mt-2 text-sm text-slate-600 leading-relaxed">{step.body}</p>
@@ -49,15 +49,15 @@ export const HowItWorksSection: React.FC = () => (
         })}
       </ol>
 
-      <div className="mt-10 rounded-3xl bg-white border border-home-linen p-6 sm:p-8 shadow-sm">
+      <div className="mt-10 rounded-3xl bg-home-mist p-6 sm:p-8">
         <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
           <h3 className="font-serif text-2xl sm:text-3xl font-semibold text-home-ink">What&rsquo;s in your report</h3>
-          <p className="text-sm font-semibold text-home-moss">$0. No sign-up required.</p>
+          <p className="text-sm font-semibold text-slate-500">$0. No sign-up required.</p>
         </div>
         <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
           {IN_THE_REPORT.map((item) => (
             <li key={item.title} className="flex gap-3">
-              <Check className="w-5 h-5 text-home-moss shrink-0 mt-0.5" aria-hidden="true" />
+              <Check className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" aria-hidden="true" />
               <div>
                 <p className="font-semibold text-home-ink">{item.title}</p>
                 <p className="mt-1 text-sm text-slate-600 leading-relaxed">{item.body}</p>
@@ -68,8 +68,8 @@ export const HowItWorksSection: React.FC = () => (
         <p className="mt-6 text-sm text-slate-600">Use it for every house you&rsquo;re considering.</p>
       </div>
 
-      <div className="mt-8 mx-auto max-w-3xl rounded-2xl bg-white/70 border border-home-linen px-5 py-4 flex gap-3 items-start">
-        <ShieldCheck className="w-5 h-5 text-home-moss shrink-0 mt-0.5" />
+      <div className="mt-8 mx-auto max-w-3xl rounded-2xl bg-home-mist px-5 py-4 flex gap-3 items-start">
+        <ShieldCheck className="w-5 h-5 text-slate-500 shrink-0 mt-0.5" />
         <p className="text-sm leading-relaxed text-slate-700">
           <span className="font-bold text-home-ink">Good information makes everyone better prepared. </span>
           We&rsquo;re not here to knock builders, agents or sellers. We&rsquo;re here to help you ask better questions and make more informed decisions.

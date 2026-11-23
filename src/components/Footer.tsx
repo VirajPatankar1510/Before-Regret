@@ -102,20 +102,20 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
   }, []);
 
   return (
-    <footer ref={footerRef} className="bg-slate-950 text-white border-t border-slate-900 py-12 px-4 sm:px-6 lg:px-8">
+    <footer ref={footerRef} className="bg-home-mist text-slate-600 border-t border-slate-300 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-8">
         
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-slate-900">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-slate-300">
           
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Logo className="w-8 h-8 shrink-0" />
               <div>
-                <span className="font-extrabold text-lg text-white tracking-tight block">Before Regret</span>
-                <span className="text-[10px] font-medium text-slate-400">Check it before you sign it.</span>
+                <span className="font-extrabold text-lg text-slate-900 tracking-tight block">Before Regret</span>
+                <span className="text-[10px] font-medium text-slate-500">Check it before you sign it.</span>
               </div>
             </div>
-            <p className="text-xs text-slate-400 max-w-md">
+            <p className="text-xs text-slate-500 max-w-md">
               Property research guides for US home buyers, built from public records.
             </p>
           </div>
@@ -124,7 +124,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
             <button
               type="button"
               onClick={onNewSearch}
-              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-md"
+              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-full transition-all flex items-center gap-2 cursor-pointer shadow-md"
             >
               <span>Research a Property</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -135,33 +135,33 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
 
         {/* Directory Links for pSEO & Legal */}
         {onNavigate && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs text-slate-400 pb-6 border-b border-slate-900">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs text-slate-500 pb-6 border-b border-slate-300">
             {guides.length > 0 && (
               <div className="space-y-2">
-                <div className="font-bold text-white flex items-center gap-1.5">
-                  <BookOpen className="w-3.5 h-3.5 text-blue-400" />
+                <div className="font-semibold text-slate-900 flex items-center gap-1.5">
+                  <BookOpen className="w-3.5 h-3.5 text-slate-400" />
                   <span>Editorial Guides</span>
                 </div>
                 <ul className="space-y-2">
                   {guides.map((guide) => (
                     <li key={guide.slug}>
-                      <ContentLink href={`/guides/${guide.slug}/`} onNavigate={onNavigate} className="hover:text-white cursor-pointer block py-1.5">{guide.title}</ContentLink>
+                      <ContentLink href={`/guides/${guide.slug}/`} onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer block py-1.5">{guide.title}</ContentLink>
                     </li>
                   ))}
                   <li>
-                    <ContentLink href="/guides/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">View all guides →</ContentLink>
+                    <ContentLink href="/guides/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-700 block py-1.5">View all guides →</ContentLink>
                   </li>
                 </ul>
               </div>
             )}
 
             <div className="space-y-2">
-              <div className="font-bold text-white flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+              <div className="font-semibold text-slate-900 flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
                 <span>Legal & Support Policies</span>
               </div>
               <ul className="space-y-2">
-                <li><ContentLink href="/about/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">About & Methodology</ContentLink></li>
+                <li><ContentLink href="/about/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-700 block py-1.5">About & Methodology</ContentLink></li>
                 {/* Plain <a>, NOT ContentLink: /research/ and /sunlight/ are standalone static
                     documents (prerender-research.tsx, prerender-sunlight.tsx), not SPA routes.
                     ContentLink would preventDefault and hand the path to onNavigate, which has
@@ -177,7 +177,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                 <li>
                   <a
                     href="/research/"
-                    className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5"
+                    className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-700 block py-1.5"
                   >
                     Research &amp; Data
                   </a>
@@ -185,15 +185,15 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                 <li>
                   <a
                     href="/sunlight/"
-                    className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5"
+                    className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-700 block py-1.5"
                   >
                     Sunlight by Room
                   </a>
                 </li>
-                <li><ContentLink href="/advertise/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-bold text-blue-300 block py-1.5">Advertise With Us</ContentLink></li>
+                <li><ContentLink href="/advertise/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-700 block py-1.5">Advertise With Us</ContentLink></li>
                 {/* Vendors' sign-in door since the navbar's button stopped opening sign-in (2026-10-05). */}
-                <li><ContentLink href="/my-ads/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-medium text-slate-300 block py-1.5">Manage My Ads</ContentLink></li>
-                <li><ContentLink href="/support/" onNavigate={onNavigate} className="hover:text-white cursor-pointer font-medium text-slate-300 block py-1.5">Customer Support</ContentLink></li>
+                <li><ContentLink href="/my-ads/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-700 block py-1.5">Manage My Ads</ContentLink></li>
+                <li><ContentLink href="/support/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-700 block py-1.5">Customer Support</ContentLink></li>
                 {/* External, so a plain <a> rather than ContentLink -- there is no SPA route to
                     intercept. See src/data/preferredSource.ts for why this is a link and not
                     Google's JavaScript button, and why the deeplink form matters. */}
@@ -202,22 +202,22 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
                     href={PREFERRED_SOURCE_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-white cursor-pointer font-medium text-slate-300 block py-1.5"
+                    className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-700 block py-1.5"
                   >
                     {PREFERRED_SOURCE_LABEL}
                   </a>
                 </li>
-                <li><ContentLink href="/terms/" onNavigate={onNavigate} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Terms of Service</ContentLink></li>
-                <li><ContentLink href="/privacy/" onNavigate={onNavigate} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Privacy Policy</ContentLink></li>
-                <li><ContentLink href="/refunds/" onNavigate={onNavigate} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Refund & Cancellation</ContentLink></li>
-                <li><ContentLink href="/disclaimer/" onNavigate={onNavigate} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Disclaimer</ContentLink></li>
-                <li><ContentLink href="/accessibility/" onNavigate={onNavigate} className="hover:text-white cursor-pointer text-slate-400 block py-1.5">Accessibility</ContentLink></li>
+                <li><ContentLink href="/terms/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-500 block py-1.5">Terms of Service</ContentLink></li>
+                <li><ContentLink href="/privacy/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-500 block py-1.5">Privacy Policy</ContentLink></li>
+                <li><ContentLink href="/refunds/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-500 block py-1.5">Refund & Cancellation</ContentLink></li>
+                <li><ContentLink href="/disclaimer/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-500 block py-1.5">Disclaimer</ContentLink></li>
+                <li><ContentLink href="/accessibility/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-500 block py-1.5">Accessibility</ContentLink></li>
               </ul>
             </div>
           </div>
         )}
 
-        <div className="text-xs text-slate-400 space-y-1.5">
+        <div className="text-xs text-slate-500 space-y-1.5">
           <p>© {new Date().getFullYear()} Before Regret. All rights reserved.</p>
           {/* Required verbatim by the Census Bureau API's Terms of Service (Attribution section,
               census.gov/data/developers/about/terms-of-service.html): "should display the
@@ -225,7 +225,7 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
               already draw on this API (county housing-age/insurance-cost comparisons, the era x
               defect reference library) -- this is the one, site-wide place that notice lives,
               rather than repeating it on every page that happens to use Census data. */}
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-slate-500">
             This product uses the Census Bureau Data API but is not endorsed or certified by the Census Bureau.
           </p>
         </div>

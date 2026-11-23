@@ -78,7 +78,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
-                  <h3 className="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                  <h3 className="font-semibold text-slate-900 text-xs flex items-center gap-1.5">
                     <Eye className="w-4 h-4 text-blue-600" />
                     <span>A. Consumer Users</span>
                   </h3>
@@ -91,7 +91,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBackToHome, onNa
                 </div>
 
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
-                  <h3 className="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                  <h3 className="font-semibold text-slate-900 text-xs flex items-center gap-1.5">
                     <Database className="w-4 h-4 text-indigo-600" />
                     <span>B. Local Business Vendors (Subscribers)</span>
                   </h3>

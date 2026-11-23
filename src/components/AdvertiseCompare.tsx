@@ -129,8 +129,8 @@ const Inert: React.FC<{ label: string; children: React.ReactNode }> = ({ label, 
   </div>
 );
 
-const Eyebrow: React.FC<{ children: React.ReactNode; tone?: string }> = ({ children, tone = 'text-home-brass' }) => (
-  <p className={`text-xs font-bold uppercase tracking-[0.2em] ${tone}`}>{children}</p>
+const Eyebrow: React.FC<{ children: React.ReactNode; tone?: string }> = ({ children, tone = 'text-slate-500' }) => (
+  <p className={`text-base sm:text-lg font-semibold ${tone}`}>{children}</p>
 );
 
 const Bullet: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -157,33 +157,32 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
       </div>
 
       {/* Hero: the vendor's question first -- which of the two fits my business. */}
-      <section className="relative overflow-hidden bg-home-navy text-white">
-        <div aria-hidden="true" className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
+      <section className="relative overflow-hidden bg-white text-home-ink">
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-10 lg:gap-14 items-center">
           <div>
-            <Eyebrow tone="text-home-oak">Advertise with Before Regret</Eyebrow>
+            <Eyebrow>Advertise with Before Regret</Eyebrow>
             <h1 className="mt-4 font-serif text-[2.3rem] leading-[1.08] sm:text-5xl lg:text-[3.4rem] font-semibold tracking-[-0.01em] [text-wrap:balance]">
               Put your business where home buyers do their research
             </h1>
-            <p className="mt-5 text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl">
+            <p className="mt-5 text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl">
               Pick a placement and pay with PayPal in about a minute. Add your business details
               after, and your ad goes live. 30 days, no subscription.
             </p>
             {/* A vendor who has never heard of the site needs to know what it is before anything
                 else, and the honest proof we can offer is the report itself, not a traffic figure. */}
-            <p className="mt-4 text-sm sm:text-base text-slate-300 leading-relaxed max-w-xl">
+            <p className="mt-4 text-sm sm:text-base text-slate-600 leading-relaxed max-w-xl">
               Before Regret is a free research site for home buyers. They type in an address and get a
               report on what to check, ask and verify before they buy.
             </p>
-            <ol className="mt-7 flex flex-wrap gap-2.5 text-xs font-semibold text-slate-200">
+            <ol className="mt-7 flex flex-wrap gap-2.5 text-xs font-semibold text-slate-700">
               {[
                 { icon: MousePointerClick, t: 'Choose' },
                 { icon: CreditCard, t: 'Pay with PayPal' },
                 { icon: ClipboardEdit, t: 'Add your details. You’re live.' },
               ].map(({ icon: Icon, t }, i) => (
-                <li key={t} className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5">
-                  <span className="w-4 h-4 rounded-full bg-home-oak text-home-navy text-[10px] font-black flex items-center justify-center">{i + 1}</span>
-                  <Icon className="w-3.5 h-3.5 text-home-oak" aria-hidden="true" />
+                <li key={t} className="inline-flex items-center gap-1.5 rounded-full bg-home-mist px-3 py-1.5">
+                  <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">{i + 1}</span>
+                  <Icon className="w-3.5 h-3.5 text-blue-600" aria-hidden="true" />
                   {t}
                 </li>
               ))}
@@ -193,27 +192,27 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
           {/* The fork. Each card goes straight to its checkout (owner, 2026-11-15: read the banner,
               click, buy). The sections below still explain both for anyone who scrolls. */}
           <div className="grid grid-cols-1 gap-4">
-            <ContentLink href="/report-ads/" onNavigate={onNavigate} className="group block rounded-3xl bg-white text-home-ink p-6 sm:p-7 shadow-xl hover:-translate-y-0.5 transition-transform">
+            <ContentLink href="/report-ads/" onNavigate={onNavigate} className="group block rounded-3xl bg-home-mist text-home-ink p-6 sm:p-7 hover:-translate-y-0.5 transition-transform">
               <div className="flex items-center justify-between gap-3">
-                <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-home-moss">
+                <span className="inline-flex items-center gap-2 text-xs font-semibold text-home-moss">
                   <MapPin className="w-4 h-4" aria-hidden="true" /> I serve specific ZIP codes
                 </span>
                 <ArrowRight className="w-5 h-5 text-home-oak transition-transform group-hover:translate-x-1" aria-hidden="true" />
               </div>
               <div className="mt-3 font-serif text-2xl font-semibold">Report Ads</div>
               <div className="mt-1 text-sm text-slate-600">$29 for 3 ZIP codes, 30 days</div>
-              <div className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-home-navy px-4 py-2.5 text-sm font-bold text-white">Buy now</div>
+              <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-blue-600 px-4 py-2.5 text-sm font-bold text-white">Buy now</div>
             </ContentLink>
-            <ContentLink href="/topic-ads/" onNavigate={onNavigate} className="group block rounded-3xl bg-white/10 border border-white/15 text-white p-6 sm:p-7 hover:bg-white/15 transition-colors">
+            <ContentLink href="/topic-ads/" onNavigate={onNavigate} className="group block rounded-3xl bg-home-mist text-home-ink p-6 sm:p-7 hover:-translate-y-0.5 transition-transform">
               <div className="flex items-center justify-between gap-3">
-                <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-home-oak">
+                <span className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500">
                   <Newspaper className="w-4 h-4" aria-hidden="true" /> I serve a wide area
                 </span>
                 <ArrowRight className="w-5 h-5 text-home-oak transition-transform group-hover:translate-x-1" aria-hidden="true" />
               </div>
               <div className="mt-3 font-serif text-2xl font-semibold">Topic Ads</div>
-              <div className="mt-1 text-sm text-slate-300">$9.99 per article, 30 days</div>
-              <div className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-home-navy">Buy now</div>
+              <div className="mt-1 text-sm text-slate-600">$9.99 per article, 30 days</div>
+              <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-blue-600 px-4 py-2.5 text-sm font-bold text-white">Buy now</div>
             </ContentLink>
           </div>
         </div>
@@ -223,13 +222,13 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
       <section id="report-ads" className="scroll-mt-24 py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div>
-            <Eyebrow tone="text-home-moss">For local trades</Eyebrow>
-            <h2 className="mt-3 font-serif text-3xl sm:text-5xl font-semibold tracking-tight">Report Ads</h2>
+            <Eyebrow>For local trades</Eyebrow>
+            <h2 className="mt-3 font-serif text-4xl sm:text-6xl font-semibold tracking-[-0.025em]">Report Ads</h2>
             <p className="mt-4 text-base sm:text-lg text-slate-700 leading-relaxed">
               When someone runs a property report for an address in one of your ZIP codes, your
               listing appears inside it, beside the item that matches your trade.
             </p>
-            <div className="mt-6 font-serif text-4xl font-semibold text-home-navy">
+            <div className="mt-6 font-serif text-4xl font-semibold text-home-ink">
               $29 <span className="font-sans text-base font-medium text-slate-500">for 3 ZIP codes, 30 days</span>
             </div>
             <ul className="mt-6 space-y-3 text-[15px] text-slate-700 leading-relaxed">
@@ -240,17 +239,17 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             <ContentLink
               href="/report-ads/"
               onNavigate={onNavigate}
-              className="mt-8 inline-flex items-center gap-2 px-6 py-3.5 bg-home-navy hover:bg-home-ink text-white text-sm font-bold rounded-xl shadow-lg transition-colors"
+              className="mt-8 inline-flex items-center gap-2 px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-full shadow-lg transition-colors"
             >
               Buy now: choose ZIP codes <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </ContentLink>
           </div>
 
           {/* A slice of a report, with the real Report Ad card in it. */}
-          <figure className="rounded-3xl bg-white border border-home-linen shadow-sm p-5 sm:p-7">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Inside a property report</div>
+          <figure className="rounded-3xl bg-white p-5 sm:p-7">
+            <div className="text-xs font-semibold text-slate-400">Inside a property report</div>
             <div className="mt-3 rounded-2xl border border-home-linen bg-home-stone/60 p-4 sm:p-5">
-              <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-home-brass">
+              <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-home-brass">
                 <ClipboardList className="w-3.5 h-3.5" aria-hidden="true" /> Inspection priority
               </div>
               <div className="mt-1.5 text-base font-bold text-home-ink">{GALV?.title}</div>
@@ -272,12 +271,12 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
       </section>
 
       {/* Topic Ads -- the wide-area product. */}
-      <section id="topic-ads" className="scroll-mt-24 bg-white border-y border-home-linen py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+      <section id="topic-ads" className="scroll-mt-24 bg-home-mist border-y border-home-linen py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <figure className="order-2 lg:order-1 rounded-3xl bg-home-stone border border-home-linen p-5 sm:p-7">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">On a guide article</div>
+            <div className="text-xs font-semibold text-slate-400">On a guide article</div>
             <div className="mt-3 rounded-2xl bg-white border border-home-linen p-4 sm:p-5">
-              <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-home-brass">Guide</div>
+              <div className="text-xs font-semibold text-home-brass">Guide</div>
               <div className="mt-1.5 font-serif text-xl font-semibold text-home-ink leading-snug">Should You Buy a House With EIFS? What to Check First</div>
               <div aria-hidden="true" className="mt-3 rounded-xl border border-home-linen p-3 space-y-2">
                 <div className="h-2 rounded-full bg-home-sage w-24" />
@@ -297,12 +296,12 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
 
           <div className="order-1 lg:order-2">
             <Eyebrow>For businesses that serve a wide area</Eyebrow>
-            <h2 className="mt-3 font-serif text-3xl sm:text-5xl font-semibold tracking-tight">Topic Ads</h2>
+            <h2 className="mt-3 font-serif text-4xl sm:text-6xl font-semibold tracking-[-0.025em]">Topic Ads</h2>
             <p className="mt-4 text-base sm:text-lg text-slate-700 leading-relaxed">
               Your listing on an article about the problem your business solves, directly under the
               article's quick answer. Everyone who reads that article sees it, wherever they are.
             </p>
-            <div className="mt-6 font-serif text-4xl font-semibold text-home-navy">
+            <div className="mt-6 font-serif text-4xl font-semibold text-home-ink">
               $9.99 <span className="font-sans text-base font-medium text-slate-500">per article, 30 days</span>
             </div>
             <ul className="mt-6 space-y-3 text-[15px] text-slate-700 leading-relaxed">
@@ -313,7 +312,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             <ContentLink
               href="/topic-ads/"
               onNavigate={onNavigate}
-              className="mt-8 inline-flex items-center gap-2 px-6 py-3.5 bg-white border border-home-navy text-home-navy hover:bg-home-stone text-sm font-bold rounded-xl transition-colors"
+              className="mt-8 inline-flex items-center gap-2 px-6 py-3.5 bg-white border border-blue-600 text-blue-600 hover:bg-blue-50 text-sm font-bold rounded-full transition-colors"
             >
               Buy now: choose articles <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </ContentLink>
@@ -322,7 +321,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
       </section>
 
       {/* How buying works -- a real sequence, so the numbers mean something. */}
-      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+      <section className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <Eyebrow>How it works</Eyebrow>
           <ol className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -331,8 +330,8 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               { t: 'Pay with PayPal', b: 'Sign in with your email and pay once. No subscription, nothing renews automatically.' },
               { t: 'Add your details', b: 'Business name and phone, in My Ads. Your ad goes live, and your 30 days start.' },
             ].map((s, i) => (
-              <li key={s.t} className="rounded-3xl bg-white border border-home-linen p-6 shadow-sm">
-                <div className="w-9 h-9 rounded-full bg-home-navy text-white font-bold text-sm flex items-center justify-center">{i + 1}</div>
+              <li key={s.t} className="rounded-3xl bg-white p-6">
+                <div className="w-9 h-9 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center">{i + 1}</div>
                 <div className="mt-4 text-base font-bold text-home-ink">{s.t}</div>
                 <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">{s.b}</p>
               </li>
@@ -345,7 +344,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
       <section className="pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <Eyebrow>Who can advertise</Eyebrow>
-          <h2 className="mt-3 font-serif text-3xl sm:text-4xl font-semibold tracking-tight">Trades we list</h2>
+          <h2 className="mt-3 font-serif text-3xl sm:text-5xl font-semibold tracking-[-0.025em]">Trades we list</h2>
           <ul className="mt-8 flex flex-wrap gap-2.5">
             {TRADE_CATEGORIES.map((c) => (
               <li key={c} className="rounded-full bg-white border border-home-linen px-4 py-2 text-sm font-semibold text-home-ink">
@@ -359,8 +358,8 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
 
       {/* FAQ, open: the honest answers a business wants before paying. */}
       <section className="pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto rounded-3xl bg-white border border-home-linen shadow-sm p-6 sm:p-10">
-          <h2 className="font-serif text-3xl sm:text-4xl font-semibold tracking-tight">Frequently asked questions</h2>
+        <div className="max-w-4xl mx-auto rounded-3xl bg-white p-6 sm:p-10">
+          <h2 className="font-serif text-3xl sm:text-5xl font-semibold tracking-[-0.025em]">Frequently asked questions</h2>
           <div className="mt-6 divide-y divide-home-linen">
             {ADVERTISE_FAQ_ITEMS.map((item) => (
               <div key={item.q} className="py-5 first:pt-0 last:pb-0">
@@ -374,20 +373,19 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
 
       {/* Closing: both doors again, and the real mailbox. */}
       <section className="pb-20 sm:pb-28 px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden max-w-6xl mx-auto rounded-[2rem] bg-home-navy text-white p-8 sm:p-14 shadow-2xl">
-          <div aria-hidden="true" className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
+        <div className="relative overflow-hidden max-w-6xl mx-auto rounded-[2rem] bg-white text-home-ink p-8 sm:p-14">
           <div className="relative grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-8 items-center">
             <div>
-              <h2 className="font-serif text-3xl sm:text-4xl font-semibold tracking-tight">Ready when you are</h2>
-              <p className="mt-3 text-slate-300 leading-relaxed">
-                Questions first? Email <a href="mailto:hello@beforeregret.com" className="text-home-oak underline underline-offset-2 hover:text-white">hello@beforeregret.com</a>.
+              <h2 className="font-serif text-3xl sm:text-5xl font-semibold tracking-[-0.025em]">Ready when you are</h2>
+              <p className="mt-3 text-slate-600 leading-relaxed">
+                Questions first? Email <a href="mailto:hello@beforeregret.com" className="text-blue-600 underline underline-offset-2 hover:text-blue-700">hello@beforeregret.com</a>.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row md:flex-col gap-3">
-              <ContentLink href="/report-ads/" onNavigate={onNavigate} className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white text-home-navy font-bold text-sm rounded-xl hover:bg-home-stone transition-colors">
+              <ContentLink href="/report-ads/" onNavigate={onNavigate} className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-blue-600 text-white font-bold text-sm rounded-full hover:bg-blue-700 transition-colors">
                 Report Ads: choose ZIP codes <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </ContentLink>
-              <ContentLink href="/topic-ads/" onNavigate={onNavigate} className="inline-flex items-center justify-center gap-2 px-6 py-3.5 border border-white/30 text-white font-bold text-sm rounded-xl hover:bg-white/10 transition-colors">
+              <ContentLink href="/topic-ads/" onNavigate={onNavigate} className="inline-flex items-center justify-center gap-2 px-6 py-3.5 border border-blue-600 text-blue-600 font-bold text-sm rounded-full hover:bg-blue-50 transition-colors">
                 Topic Ads: choose articles <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </ContentLink>
             </div>

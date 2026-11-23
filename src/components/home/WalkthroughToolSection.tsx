@@ -1,5 +1,5 @@
 import React from 'react';
-import { ClipboardCheck, Sunrise, ArrowRight, BarChart3 } from 'lucide-react';
+import { ClipboardCheck, Sunrise, ChevronRight, BarChart3 } from 'lucide-react';
 import { ContentLink } from './ContentLink';
 import stats from '../../data/homeStats.json';
 
@@ -47,20 +47,20 @@ interface WalkthroughToolSectionProps {
 }
 
 const CARD =
-  'flex flex-col rounded-xl bg-white border border-blue-200 p-5 shadow-sm';
+  'flex flex-col rounded-3xl bg-white p-6';
 const CTA =
-  'mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-blue-700 hover:text-blue-900 transition-colors';
+  'mt-4 inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:underline underline-offset-2';
 
 export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ onNavigate }) => (
-  <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+  <section className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 bg-home-mist">
     <div className="max-w-6xl mx-auto">
 
-      <div className="inline-flex items-center gap-2 rounded-full bg-home-sage text-home-moss px-3 py-1 mb-4">
-        <span className="text-[11px] font-bold uppercase tracking-wider">Free · No sign-up required</span>
+      <div className="max-w-3xl mx-auto text-center mb-14">
+        <p className="text-base sm:text-lg font-semibold text-slate-500">Free. No sign-up required.</p>
+        <h2 className="mt-3 font-serif text-4xl sm:text-6xl font-semibold text-home-ink tracking-[-0.025em] [text-wrap:balance]">
+          More ways to check before you buy
+        </h2>
       </div>
-      <h2 className="font-serif text-3xl sm:text-4xl font-semibold text-home-ink tracking-tight mb-6">
-        More ways to check before you buy
-      </h2>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 
@@ -75,7 +75,7 @@ export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ 
           </p>
           <ContentLink href="/walkthrough/" onNavigate={onNavigate} className={CTA}>
             Open the checklist
-            <ArrowRight className="w-4 h-4" aria-hidden="true" />
+            <ChevronRight className="w-4 h-4" aria-hidden="true" />
           </ContentLink>
         </div>
 
@@ -90,7 +90,7 @@ export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ 
           </p>
           <a href="/sunlight/" className={CTA}>
             Check a room
-            <ArrowRight className="w-4 h-4" aria-hidden="true" />
+            <ChevronRight className="w-4 h-4" aria-hidden="true" />
           </a>
         </div>
         <div className={CARD}>
@@ -108,7 +108,7 @@ export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ 
           </p>
           <ContentLink href="/research/" onNavigate={onNavigate} className={CTA}>
             All research
-            <ArrowRight className="w-4 h-4" aria-hidden="true" />
+            <ChevronRight className="w-4 h-4" aria-hidden="true" />
           </ContentLink>
         </div>
 

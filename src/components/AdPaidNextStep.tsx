@@ -26,7 +26,7 @@ export const AdPaidNextStep: React.FC<AdPaidNextStepProps> = ({ what, captureId,
       <p className="mt-1 text-sm text-slate-600">{what}</p>
     </div>
     <div className="bg-home-stone border border-home-linen rounded-2xl p-5 text-left">
-      <p className="text-xs font-bold uppercase tracking-wider text-home-brass">One step left</p>
+      <p className="text-xs font-semibold text-home-brass">One step left</p>
       <p className="mt-1.5 text-base font-bold text-slate-900">Add your business name and phone number</p>
       <p className="mt-1 text-sm text-slate-600">
         Your ad goes live as soon as you save them, and your 30 days start then. Your spot is held for you until you do.
@@ -34,7 +34,7 @@ export const AdPaidNextStep: React.FC<AdPaidNextStepProps> = ({ what, captureId,
       <button
         type="button"
         onClick={() => onNavigate('/my-ads/')}
-        className="mt-4 w-full inline-flex items-center justify-center gap-2 py-3.5 bg-home-navy hover:bg-home-ink text-white rounded-xl font-bold text-sm transition-colors cursor-pointer"
+        className="mt-4 w-full inline-flex items-center justify-center gap-2 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-bold text-sm transition-colors cursor-pointer"
       >
         Add my details <ArrowRight className="w-4 h-4" aria-hidden="true" />
       </button>

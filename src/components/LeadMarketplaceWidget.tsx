@@ -315,7 +315,7 @@ export const LeadMarketplaceWidget: React.FC<LeadMarketplaceWidgetProps> = ({ wi
                       <button
                         onClick={handleSimulateStripeUnlock}
                         disabled={isProcessingUnlock}
-                        className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-sans font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                        className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-sans font-bold text-xs rounded-full transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                       >
                         <Lock className="w-3.5 h-3.5 text-blue-200" />
                         <span>{isProcessingUnlock ? 'Unmasking via Stripe...' : `Contractor Unlock ($${createdLead.unlockFee} Stripe Unlock Fee)`}</span>

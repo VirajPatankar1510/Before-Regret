@@ -32,7 +32,7 @@ export const HOMEPAGE_DEFINITIONS: { q: string; a: string }[] = [
 export const HomepageDefinitions: React.FC = () => (
   <div className="grid gap-4 sm:grid-cols-2">
     {HOMEPAGE_DEFINITIONS.map((d) => (
-      <div key={d.q} className="bg-white border border-home-linen rounded-3xl p-6 shadow-sm">
+      <div key={d.q} className="bg-white rounded-3xl p-6">
         <h3 className="font-sans text-lg font-bold text-slate-900">{d.q}</h3>
         <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">{d.a}</p>
       </div>
@@ -67,12 +67,12 @@ export const FaqSection: React.FC = () => {
   const faqs = HOMEPAGE_FAQS;
 
   return (
-    <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-home-stone border-t border-home-linen">
+    <section className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 bg-home-stone">
       <div className="max-w-4xl mx-auto space-y-12">
         
         {/* Header */}
         <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <h2 className="font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">
+          <h2 className="font-serif text-4xl sm:text-6xl font-semibold text-home-ink tracking-[-0.025em] [text-wrap:balance]">
             Questions people ask
           </h2>
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
@@ -89,7 +89,7 @@ export const FaqSection: React.FC = () => {
             return (
               <div 
                 key={idx}
-                className="bg-white border border-home-linen rounded-2xl overflow-hidden transition-all shadow-sm"
+                className="bg-white rounded-2xl overflow-hidden transition-all"
               >
                 <button
                   onClick={() => setOpenIdx(isOpen ? null : idx)}

@@ -9,28 +9,77 @@
    font-display or font-logo utility classes those vars generate. Both vars are removed with it,
    since leaving them would keep generating utilities for a font that no longer loads. The three
    families that remain are all genuinely rendered: Inter (font-sans, the default everywhere),
-   Crimson Pro (font-serif, ~10 components), JetBrains Mono (font-mono, ~20 components). */
+   Crimson Pro (font-serif, ~10 components), JetBrains Mono (font-mono, ~20 components).
+
+   2026-11-23 (owner, Apple-style pass, step 2): headings are sans now. Every font-serif use in the repo is
+   a heading, so the token points at Inter (its optical-size axis gives large headings the tighter display
+   cut on its own) and Crimson Pro is no longer requested from Google Fonts. The class name stays so the
+   62 headings didn't need touching. */
 @import "tailwindcss";
 
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-serif: 'Crimson Pro', Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-serif: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   /* Homepage palette (2026-10-04 redesign). Chosen the way an interior designer builds a room:
      warm limestone grounds, a deep slate-navy for trust, oak and brass as the warm accents, sage
      for calm section bands. The brand blue stays the action colour so buttons read as buttons. */
-  --color-home-ink: #1c2330;
+  /* 2026-11-23 (owner: "make the theme like Apple", first pass): the warm grounds and accents went
+     cool and neutral. ink = Apple's text black, stone = the same light gray as home-mist, linen = a
+     faint cool hairline, brass labels = Apple's secondary gray (4.7:1 on #f5f5f7, passes AA).
+     Navy, oak, sage and moss are unchanged in this pass (hero, selected states, "good" tones). */
+  --color-home-ink: #1d1d1f;
   --color-home-navy: #1b2a40;
-  --color-home-stone: #f6f3ee;
-  --color-home-linen: #ece6dc;
-  --color-home-oak: #b8895c;
+  --color-home-stone: #f5f5f7;
+  --color-home-linen: #e8e8ed;
+  /* 2026-11-23 (Apple pass, all pages): oak was the warm accent; it is now the one action blue, and
+     sage/moss (selected and 'good' tints) are a pale blue and the same blue. */
+  --color-home-oak: #0066cc;
   /* brass + moss darkened 2026-11-19 (audit F20): small uppercase labels in brass were 3.7:1 on stone and the moss
      "Quick answer" label 4.36:1 on sage; WCAG AA needs 4.5:1. Now 5.3:1 and 4.8:1. Oak stays: it is mostly used on navy. */
-  --color-home-brass: #7f5f35;
-  --color-home-sage: #e2e8df;
-  --color-home-moss: #4f6957;
+  --color-home-brass: #6e6e73;
+  --color-home-sage: #e8f2fc;
+  --color-home-moss: #0066cc;
   --color-home-brick: #9b4a3a;
+  /* Owner, 2026-11-23: every white BACKGROUND (page, top bar, full-width bands) is #F5F5F7. Cards, form
+     fields and pop-ups that sit on top stay white (bg-white) so they still stand out. */
+  --color-home-mist: #f5f5f7;
+
+  /* Neutral grays instead of Tailwind's blue-tinted slate, so every gray on the site reads like
+     Apple's. 500 and up pass AA for text on white and on #f5f5f7. */
+  --color-slate-50: #fafafa;
+  --color-slate-100: #f5f5f7;
+  --color-slate-200: #e8e8ed;
+  --color-slate-300: #d2d2d7;
+  --color-slate-400: #a1a1a6;
+  --color-slate-500: #6e6e73;
+  --color-slate-600: #515154;
+  --color-slate-700: #424245;
+  --color-slate-800: #2c2c2e;
+  --color-slate-900: #1d1d1f;
+  --color-slate-950: #0b0b0c;
+
+  /* One action blue. Apple's #0066cc rather than #0071e3: white text on #0071e3 is 4.49:1, just under
+     WCAG AA, while #0066cc is 5.6:1. blue-500 is the lighter hover, blue-700 the pressed/darker one. */
+  --color-blue-500: #0071e3;
+  --color-blue-600: #0066cc;
+  --color-blue-700: #0058b0;
+
+  /* No shadows on cards and buttons: surfaces are separated by white-on-gray instead. shadow-2xl stays
+     for things that float (dialogs, drop-downs). */
+  --shadow-2xs: 0 0 #0000;
+  --shadow-xs: 0 0 #0000;
+  --shadow-sm: 0 0 #0000;
+  --shadow-md: 0 0 #0000;
+  --shadow-lg: 0 0 #0000;
+  --shadow-xl: 0 0 #0000;
+}
+
+/* The page ground behind everything, including prerendered pages that have no app shell wrapper.
+   Print keeps its own white (@media print below uses !important). */
+html, body {
+  background-color: var(--color-home-mist);
 }
 
 /* --- Homepage motion (2026-10-04) --------------------------------------------------------------

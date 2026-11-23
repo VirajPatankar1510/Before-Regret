@@ -105,7 +105,7 @@ export const ErrorReportingModal: React.FC<ErrorReportingModalProps> = ({
             </div>
             <button
               onClick={onClose}
-              className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl transition-all cursor-pointer"
+              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-full transition-all cursor-pointer"
             >
               Close
             </button>
@@ -202,7 +202,7 @@ export const ErrorReportingModal: React.FC<ErrorReportingModalProps> = ({
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-60 text-white font-bold text-xs rounded-xl flex items-center gap-2 transition-all cursor-pointer"
+                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold text-xs rounded-full flex items-center gap-2 transition-all cursor-pointer"
               >
                 {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
                 <span>{submitting ? 'Sending…' : 'Send report'}</span>

@@ -6,11 +6,11 @@ import { advance, backFrom, flowOrder, flowStep, type FlowPart, type QuestionId,
 
 export type Updater = (patch: Partial<ResearchState> | ((s: ResearchState) => Partial<ResearchState>)) => void;
 
-export const btnPrimary = 'w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-home-ink text-white font-bold text-base px-5 py-4 hover:bg-home-navy transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
-export const btnGhost = 'w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-home-linen bg-white text-home-ink font-bold text-base px-5 py-3.5 hover:border-home-oak transition-colors cursor-pointer';
-export const linkBtn = 'text-sm font-semibold text-home-brass underline underline-offset-4 hover:text-home-ink cursor-pointer';
-export const card = 'rounded-3xl bg-white border border-home-linen shadow-sm p-5 sm:p-6';
-export const eyebrow = 'text-[11px] font-bold uppercase tracking-[0.18em] text-home-brass';
+export const btnPrimary = 'w-full inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 text-white font-semibold text-base px-5 py-4 hover:bg-blue-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
+export const btnGhost = 'w-full inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 bg-white text-home-ink font-semibold text-base px-5 py-3.5 hover:bg-slate-50 transition-colors cursor-pointer';
+export const linkBtn = 'text-sm font-medium text-blue-600 hover:underline underline-offset-4 cursor-pointer';
+export const card = 'rounded-3xl bg-white p-5 sm:p-6';
+export const eyebrow = 'text-sm sm:text-base font-semibold text-slate-500';
 
 
 export const BackToPlan: React.FC<{ update: Updater; right?: string }> = ({ update, right }) => (

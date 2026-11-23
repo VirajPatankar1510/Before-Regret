@@ -165,7 +165,7 @@ export const GuideAdsCheckoutSuccess: React.FC<GuideAdsCheckoutSuccessProps> = (
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => onNavigate('/my-ads')}
-                className="flex-1 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors"
+                className="flex-1 py-3 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition-colors"
               >
                 Go to My Ads
               </button>

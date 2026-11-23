@@ -143,7 +143,7 @@ export const InspectionDecoder: React.FC<Props> = ({ onNavigate }) => {
       </div>
 
       <header className="max-w-3xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-5">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-home-brass">Free tool · Preview</p>
+        <p className="text-xs font-semibold text-home-brass">Free tool · Preview</p>
         <h1 className="mt-3 font-serif text-[2.1rem] leading-[1.1] sm:text-5xl font-semibold tracking-[-0.01em] [text-wrap:balance]">Inspection Report Decoder</h1>
         <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
           Tap a term from your home inspection report to open a plain-English explanation right under it: what it means, how serious it
@@ -152,7 +152,7 @@ export const InspectionDecoder: React.FC<Props> = ({ onNavigate }) => {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 space-y-5">
-        <section className="rounded-3xl bg-white border border-home-linen shadow-sm p-5 sm:p-6 space-y-4 print:hidden">
+        <section className="rounded-3xl bg-white p-5 sm:p-6 space-y-4 print:hidden">
           <div>
             <label htmlFor="decoder-search" className="text-sm font-bold">Search for a term</label>
             <div className="mt-2 relative">
@@ -174,7 +174,7 @@ export const InspectionDecoder: React.FC<Props> = ({ onNavigate }) => {
                 placeholder="Paste a paragraph or two. It’s scanned here in your browser and never sent anywhere."
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" />
               <div className="mt-2 flex flex-wrap items-center gap-3">
-                <button type="button" onClick={scan} disabled={!pasted.trim()} className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-xl disabled:opacity-50">
+                <button type="button" onClick={scan} disabled={!pasted.trim()} className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-full disabled:opacity-50">
                   Find terms
                 </button>
                 {scanNote && <p className="text-sm text-slate-600" role="status">{scanNote}</p>}
@@ -190,7 +190,7 @@ export const InspectionDecoder: React.FC<Props> = ({ onNavigate }) => {
             const anyOpen = inCat.some((t) => openIds.includes(t.id));
             return (
               <section key={cat} className={anyOpen ? '' : 'print:hidden'}>
-                <h2 className="text-[11px] font-bold uppercase tracking-wider text-home-brass mb-2 px-1">{cat}</h2>
+                <h2 className="text-xs font-semibold text-home-brass mb-2 px-1">{cat}</h2>
                 <div className="space-y-2">
                   {inCat.map((t) => <TermRow key={t.id} term={t} open={openIds.includes(t.id)} onToggle={() => toggle(t.id)} onNavigate={onNavigate} />)}
                 </div>
@@ -219,7 +219,7 @@ export const InspectionDecoder: React.FC<Props> = ({ onNavigate }) => {
             <button type="button" onClick={() => { reportDecoderEvent('decoder_print'); window.print(); }} className="inline-flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-300 text-slate-700 text-sm font-bold rounded-xl">
               <Printer className="w-4 h-4" aria-hidden="true" />Print
             </button>
-            <button type="button" onClick={share} className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl">
+            <button type="button" onClick={share} className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-full">
               {copied ? <Check className="w-4 h-4" aria-hidden="true" /> : <Link2 className="w-4 h-4" aria-hidden="true" />}{copied ? 'Copied' : 'Share'}
             </button>
           </div>

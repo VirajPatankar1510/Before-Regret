@@ -64,7 +64,7 @@ export const GuideAdVendorCard: React.FC<{ vendor: ActiveVendor }> = ({ vendor }
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-5">
       <div className="min-w-0">
         {/* Keep "Sponsored": it is this card's only ad disclosure (see the note above). */}
-        <p className="text-[11px] font-bold uppercase tracking-wider text-amber-800">
+        <p className="text-xs font-semibold text-amber-800">
           Sponsored · {vendor.tradeCategory}
         </p>
         <p className="mt-1 text-lg font-bold text-slate-900 leading-snug">{vendor.businessName}</p>
@@ -78,7 +78,7 @@ export const GuideAdVendorCard: React.FC<{ vendor: ActiveVendor }> = ({ vendor }
         <a
           href={`tel:${vendor.phone}`}
           onClick={() => { if (vendor.purchaseId) reportAdClick('guide', vendor.purchaseId, 'phone'); }}
-          className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-home-navy hover:bg-home-ink text-white text-sm font-bold rounded-xl whitespace-nowrap transition-colors"
+          className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-full whitespace-nowrap transition-colors"
         >
           <Phone className="w-4 h-4" aria-hidden="true" />
           <span>Call {vendor.phone}</span>
@@ -116,16 +116,16 @@ export const GuideAdVendorCard: React.FC<{ vendor: ActiveVendor }> = ({ vendor }
  *  for fiction, so it can't reach anyone even if copied. The trade matches the guide's. */
 export const GuideAdOpenSlot: React.FC<{ guideTitle: string; guideSlug?: string }> = ({ guideTitle, guideSlug }) => {
   const href = guideSlug ? `/topic-ads/?guide=${encodeURIComponent(guideSlug)}` : '/topic-ads/';
-  // ONE section, not two (owner, 2026-11-19): the demo sits inside the same navy box, under the
+  // ONE section, not two (owner, 2026-11-19): the demo sits inside the same highlighted box (navy until the 2026-11-23 Apple pass, pale blue since), under the
   // pitch row, as a preview. The box itself is a div because the demo card contains links; only the
   // pitch row is the link to /topic-ads/.
   return (
-    <div className={`${OPEN_SLOT_MIN_HEIGHT} bg-home-navy text-white rounded-2xl p-4 sm:p-5 shadow-sm`}>
+    <div className={`${OPEN_SLOT_MIN_HEIGHT} bg-blue-50 text-home-ink rounded-2xl p-4 sm:p-5`}>
       <a href={href} className="group block">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-5">
           <div className="flex items-start gap-3 min-w-0">
-            <span className="hidden sm:flex shrink-0 w-9 h-9 rounded-full bg-home-oak/20 items-center justify-center" aria-hidden="true">
-              <Megaphone className="w-4 h-4 text-home-oak" />
+            <span className="hidden sm:flex shrink-0 w-9 h-9 rounded-full bg-blue-100 items-center justify-center" aria-hidden="true">
+              <Megaphone className="w-4 h-4 text-blue-600" />
             </span>
             <span className="min-w-0">
               <span className="block text-base font-bold leading-snug group-hover:underline underline-offset-2">
@@ -133,13 +133,13 @@ export const GuideAdOpenSlot: React.FC<{ guideTitle: string; guideSlug?: string 
               </span>
             </span>
           </div>
-          <span className="shrink-0 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 sm:py-3 bg-home-oak text-home-navy text-sm font-bold rounded-xl group-hover:brightness-105">
+          <span className="shrink-0 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 sm:py-3 bg-blue-600 text-white text-sm font-bold rounded-full group-hover:bg-blue-700">
             Advertise here <ArrowDown className="w-4 h-4" aria-hidden="true" />
           </span>
         </div>
       </a>
       <div
-        className="mt-4 border-t border-white/10 pt-4 pointer-events-none select-none"
+        className="mt-4 border-t border-blue-100 pt-4 pointer-events-none select-none"
         role="img"
         aria-label="Example ad: how a business's listing appears here, with its name, trade and phone number"
       >

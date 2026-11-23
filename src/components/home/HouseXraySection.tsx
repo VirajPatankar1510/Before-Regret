@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { ContentLink } from './ContentLink';
 
 /**
@@ -29,30 +29,30 @@ const SPOTS: Spot[] = [
 ];
 
 export const HouseXraySection: React.FC<{ onNavigate?: (path: string) => void }> = ({ onNavigate }) => (
-  <section className="bg-home-stone py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+  <section className="bg-home-stone py-20 sm:py-32 px-4 sm:px-6 lg:px-8">
     <div className="max-w-6xl mx-auto home-reveal">
-      <div className="max-w-2xl">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-home-brass">Look behind the listing photos</p>
-        <h2 className="mt-3 font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">What a Listing Won&rsquo;t Tell You</h2>
+      <div className="max-w-3xl mx-auto text-center">
+        <p className="text-base sm:text-lg font-semibold text-slate-500">Look behind the listing photos</p>
+        <h2 className="mt-3 font-serif text-4xl sm:text-6xl font-semibold text-home-ink tracking-[-0.025em] [text-wrap:balance]">What a Listing Won&rsquo;t Tell You</h2>
       </div>
 
-      <ol className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <ol className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {SPOTS.map((s) => (
           <li key={s.n} className="flex">
             <ContentLink
               href={s.href}
               onNavigate={onNavigate}
-              className="group flex w-full gap-3 rounded-2xl border border-home-linen bg-white p-4 sm:p-5 shadow-sm transition-colors hover:border-home-oak"
+              className="group flex w-full gap-3 rounded-3xl bg-white p-5 sm:p-6 transition-transform hover:-translate-y-0.5"
             >
-              <span className="shrink-0 w-7 h-7 rounded-full bg-home-navy text-white text-xs font-bold flex items-center justify-center">{s.n}</span>
+              <span className="shrink-0 w-7 h-7 rounded-full bg-home-mist text-slate-500 text-xs font-semibold flex items-center justify-center">{s.n}</span>
               <span className="min-w-0 flex flex-col">
                 <span className="block text-base font-bold text-home-ink">{s.q}</span>
                 {s.tag && (
-                  <span className="mt-1.5 self-start inline-flex items-center gap-1 rounded-full bg-[#f2c98f] px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-home-navy shadow-sm ring-1 ring-home-oak/50"><span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-home-brick" />{s.tag}</span>
+                  <span className="mt-1.5 self-start inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700"><span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-blue-600" />{s.tag}</span>
                 )}
                 <span className="mt-1 block text-sm text-slate-600 leading-relaxed">{s.a}</span>
-                <span className="mt-auto pt-3 inline-flex items-center gap-1 text-xs font-semibold text-home-brass group-hover:text-home-ink">
-                  Read more <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                <span className="mt-auto pt-3 inline-flex items-center gap-1 text-sm font-medium text-blue-600 group-hover:underline underline-offset-2">
+                  Learn more <ChevronRight className="w-4 h-4" aria-hidden="true" />
                 </span>
               </span>
             </ContentLink>

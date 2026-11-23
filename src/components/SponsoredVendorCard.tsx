@@ -33,7 +33,7 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
     >
       <div className="min-w-0 space-y-1">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-white bg-amber-600 px-2 py-0.5 rounded">
+          <span className="text-xs font-semibold text-white bg-amber-600 px-2 py-0.5 rounded">
             Sponsored
           </span>
           <span className="text-[11px] font-semibold text-amber-900">Local {vendor.tradeCategory.toLowerCase()}</span>
@@ -70,7 +70,7 @@ export const SponsoredVendorCard: React.FC<SponsoredVendorCardProps> = ({ vendor
         <a
           href={`tel:${vendor.phone}`}
           onClick={() => reportAdClick('zip', Number(vendor.id), 'phone')}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-700 text-white text-xs font-bold rounded-lg transition-colors"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-full transition-colors"
         >
           <Phone className="w-3.5 h-3.5" />
           <span>{vendor.phone}</span>

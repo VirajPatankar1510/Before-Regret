@@ -470,7 +470,7 @@ export function renderArticleMarkdown(markdown: string, options: RenderArticleOp
               <div key={rowIdx} className="p-3 space-y-2">
                 {row.map((cell, cellIdx) => (
                   <div key={cellIdx}>
-                    <div className="text-[11px] font-bold uppercase tracking-wide text-home-brass">
+                    <div className="text-xs font-semibold text-home-brass">
                       {parseInline(headerCells[cellIdx] || '')}
                     </div>
                     <div className="text-[15px] text-slate-700 leading-relaxed">{parseInline(cell)}</div>
@@ -492,7 +492,7 @@ export function renderArticleMarkdown(markdown: string, options: RenderArticleOp
         i++;
       }
       blocks.push(
-        <ul key={blocks.length} className="list-disc list-outside pl-6 space-y-2 mb-5 text-slate-700 leading-[1.7] marker:text-home-oak">
+        <ul key={blocks.length} className="list-disc list-outside pl-6 space-y-2 mb-5 text-slate-700 leading-[1.7] marker:text-slate-400">
           {items.map((item, idx) => (
             <li key={idx}>{parseInline(item)}</li>
           ))}

@@ -119,7 +119,7 @@ export const GuideArticleLayout: React.FC<GuideArticleLayoutProps> = ({
       {/* Header: on the page ground, not in a card -- the title is the thing, not a box around it. */}
       <header className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-6 sm:pb-8">
         <div className="max-w-3xl">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-home-brass">
+          <p className="text-xs font-semibold text-home-brass">
             {kind}
             {topic && <span> &middot; {topic}</span>}
           </p>
@@ -148,8 +148,8 @@ export const GuideArticleLayout: React.FC<GuideArticleLayoutProps> = ({
 
           {/* Quick Answer: the short, self-contained answer for skimmers and answer engines. */}
           {article.quickAnswer && (
-            <section aria-label="Quick answer" className="rounded-3xl bg-white border border-home-linen shadow-sm p-6 sm:p-8">
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-home-sage px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-home-moss">
+            <section aria-label="Quick answer" className="rounded-3xl bg-white p-6 sm:p-8">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-home-sage px-3 py-1 text-xs font-semibold text-home-moss">
                 <MessageCircleQuestion className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>Quick answer</span>
               </div>
@@ -188,7 +188,7 @@ export const GuideArticleLayout: React.FC<GuideArticleLayoutProps> = ({
           )}
 
           {/* Article body. 17px on a white sheet, held to a reading measure. */}
-          <article className="rounded-3xl bg-white border border-home-linen shadow-sm px-5 py-7 sm:px-10 sm:py-10 text-base sm:text-[17px]">
+          <article className="rounded-3xl bg-white px-5 py-7 sm:px-10 sm:py-10 text-base sm:text-[17px]">
             {renderArticleMarkdown(article.bodyMarkdown, { pageUrl: canonicalUrl })}
           </article>
 
@@ -200,10 +200,10 @@ export const GuideArticleLayout: React.FC<GuideArticleLayoutProps> = ({
           {permitCounty && (
             <a
               href={`/county/${permitCounty.slug}/`}
-              className="flex items-center justify-between gap-3 rounded-3xl bg-white border border-home-linen hover:border-home-oak p-6 sm:p-8 transition-colors"
+              className="flex items-center justify-between gap-3 rounded-3xl bg-white hover:border-home-oak p-6 sm:p-8 transition-colors"
             >
               <span>
-                <span className="block text-[11px] font-bold uppercase tracking-wider text-home-brass mb-1">County data for this guide</span>
+                <span className="block text-xs font-semibold text-home-brass mb-1">County data for this guide</span>
                 <span className="block text-sm font-bold text-home-ink">
                   See {permitCounty.countyName} County, {permitCounty.stateAbbrev} property research →
                 </span>
@@ -212,7 +212,7 @@ export const GuideArticleLayout: React.FC<GuideArticleLayoutProps> = ({
           )}
 
           {relatedGuides.length > 0 && (
-            <section className="rounded-3xl bg-white border border-home-linen shadow-sm p-6 sm:p-8">
+            <section className="rounded-3xl bg-white p-6 sm:p-8">
               <SectionHeading>Related Guides</SectionHeading>
               <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {relatedGuides.map((g) => (
@@ -231,7 +231,7 @@ export const GuideArticleLayout: React.FC<GuideArticleLayoutProps> = ({
           )}
 
           {relevantCounties.length > 0 && (
-            <section className="rounded-3xl bg-white border border-home-linen shadow-sm p-6 sm:p-8">
+            <section className="rounded-3xl bg-white p-6 sm:p-8">
               <SectionHeading>Where This Comes Up</SectionHeading>
               <p className="mt-3 text-sm text-slate-600 leading-relaxed">
                 Real county data where this is a common issue based on housing age, not a guess:
@@ -251,7 +251,7 @@ export const GuideArticleLayout: React.FC<GuideArticleLayoutProps> = ({
           )}
 
           {article.faqItems.length > 0 && (
-            <section className="rounded-3xl bg-white border border-home-linen shadow-sm p-6 sm:p-8">
+            <section className="rounded-3xl bg-white p-6 sm:p-8">
               <SectionHeading>Frequently Asked Questions</SectionHeading>
               <div className="mt-5 divide-y divide-home-linen">
                 {article.faqItems.map((item, idx) => (

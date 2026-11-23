@@ -170,7 +170,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <div className="space-y-2.5">
               <button
                 onClick={() => triggerClerkSignIn()}
-                className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs sm:text-sm rounded-full transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Lock className="w-4 h-4 text-blue-200" />
                 <span>Sign In</span>

@@ -22,7 +22,7 @@ export const PaymentCancelled: React.FC = () => {
         <div className="space-y-2">
           <button
             onClick={() => (window.location.href = '/')}
-            className="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+            className="w-full py-3 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
             Return to Home

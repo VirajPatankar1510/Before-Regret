@@ -83,49 +83,48 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
 
   return (
     <div className="min-h-screen bg-home-stone font-sans text-home-ink">
-      <section className="relative overflow-hidden bg-home-navy text-white">
-        <div aria-hidden="true" className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
+      <section className="relative overflow-hidden bg-white text-home-ink">
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,28rem)] gap-8 lg:gap-12 items-start">
           <div>
             <button
               type="button"
               onClick={() => (onNavigate ? onNavigate('/advertise/') : onBackToHome())}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-home-ink cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" /> All ad options
             </button>
-            <p className="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-home-oak">Report Ads · for local trades</p>
+            <p className="mt-6 text-base sm:text-lg font-semibold text-slate-500">Report Ads · for local trades</p>
             <h1 className="mt-3 font-serif text-[2rem] leading-[1.1] sm:text-5xl font-semibold tracking-[-0.01em] [text-wrap:balance]">
               {/* "Own" is literal only while one business per trade per ZIP is the rule. */}
               {MAX_SLOTS_PER_ZIP_TRADE === 1
                 ? 'Own your trade in the home reports for your ZIP codes'
                 : 'Put your business in the home reports for your ZIP codes'}
             </h1>
-            <p className="mt-4 text-base sm:text-lg text-slate-300">
-              <span className="font-semibold text-white">$29 for 3 ZIP codes</span>, 30 days. No subscription.
+            <p className="mt-4 text-base sm:text-lg text-slate-600">
+              <span className="font-semibold text-home-ink">$29 for 3 ZIP codes</span>, 30 days. No subscription.
             </p>
             <ol className="mt-6 space-y-2.5">
               {steps.map(({ icon: Icon, t }, i) => (
-                <li key={t} className="flex items-center gap-3 text-sm text-slate-200">
-                  <span className="w-7 h-7 rounded-full bg-home-oak text-home-navy text-xs font-black flex items-center justify-center shrink-0">{i + 1}</span>
-                  <Icon className="w-4 h-4 text-home-oak shrink-0" aria-hidden="true" />
+                <li key={t} className="flex items-center gap-3 text-sm text-slate-700">
+                  <span className="w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shrink-0">{i + 1}</span>
+                  <Icon className="w-4 h-4 text-blue-600 shrink-0" aria-hidden="true" />
                   <span>{t}</span>
                 </li>
               ))}
             </ol>
           </div>
-          <div className="text-home-ink">
+          <div className="text-home-ink rounded-3xl bg-home-mist p-1.5">
             <VendorSignupForm />
           </div>
         </div>
       </section>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14 space-y-8">
-        <section className="rounded-3xl bg-white border border-home-linen p-5 sm:p-7">
+        <section className="rounded-3xl bg-white p-5 sm:p-7">
           <h2 className="font-serif text-xl font-semibold">How your ad looks</h2>
           <p className="mt-1 text-sm text-slate-600">Inside a property report, beside the item that matches your trade. Example business:</p>
           <div className="mt-4 rounded-2xl border border-home-linen bg-home-stone/60 p-4">
-            <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-home-brass">
+            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-home-brass">
               <ClipboardList className="w-3.5 h-3.5" aria-hidden="true" /> Inspection priority
             </div>
             <div aria-hidden="true" className="mt-2 space-y-2">
@@ -140,7 +139,7 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
           </div>
         </section>
 
-        <section className="rounded-3xl bg-white border border-home-linen p-5 sm:p-7">
+        <section className="rounded-3xl bg-white p-5 sm:p-7">
           <h2 className="font-serif text-xl font-semibold">Questions</h2>
           <div className="mt-3 divide-y divide-home-linen">
             {FAQ_ITEMS.map((item, idx) => {

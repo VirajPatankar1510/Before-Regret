@@ -49,7 +49,7 @@ function HomeStaticBody({ data }: { data: HomeData }) {
   const research = pickResearchPages(data.articles);
 
   return (
-    <div className="space-y-0 pb-16">
+    <div className="space-y-0">
       {/* Same component the client renders, so the static and mounted heroes cannot disagree
           about height. No searchBox prop: AddressSearchBox needs client state, and HeroPanel
           substitutes a non-interactive replica of identical height. */}
@@ -77,10 +77,10 @@ function HomeStaticBody({ data }: { data: HomeData }) {
 
       {/* 2026-11-18 (owner): book promo removed from the homepage -- it weakened the product's focus. */}
 
-      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-home-stone border-t border-home-linen">
+      <section className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 bg-home-stone">
         <div className="max-w-4xl mx-auto space-y-12">
           <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <h2 className="font-serif text-3xl sm:text-5xl font-semibold text-home-ink tracking-tight">
+            <h2 className="font-serif text-4xl sm:text-6xl font-semibold text-home-ink tracking-[-0.025em] [text-wrap:balance]">
               Questions people ask
             </h2>
             <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
@@ -90,7 +90,7 @@ function HomeStaticBody({ data }: { data: HomeData }) {
           <HomepageDefinitions />
           <div className="space-y-4">
             {HOMEPAGE_FAQS.map((faq, idx) => (
-              <div key={idx} className="bg-white border border-home-linen rounded-2xl overflow-hidden shadow-sm">
+              <div key={idx} className="bg-white rounded-2xl overflow-hidden">
                 <div className="w-full p-6 text-left font-sans text-lg font-bold text-slate-900">{faq.q}</div>
                 <div className="px-6 pb-6 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 font-sans">
                   {faq.a}

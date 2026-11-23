@@ -532,7 +532,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
           <button
             type="button"
             onClick={() => triggerClerkSignIn()}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl transition-all cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-full transition-all cursor-pointer"
           >
             <Lock className="w-4 h-4" />
             <span>Sign In / Sign Up</span>
@@ -570,7 +570,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
           type="button"
           onClick={onRenew}
           disabled={renewingKey === key}
-          className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg disabled:opacity-60 disabled:cursor-wait"
+          className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-full disabled:opacity-60 disabled:cursor-wait"
         >
           {renewingKey === key ? <Loader2 className="w-3 h-3 animate-spin" /> : <CreditCard className="w-3 h-3" />}
           <span>Continue to PayPal</span>
@@ -614,7 +614,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
       )}
       {editError && <p className="text-xs text-rose-600">{editError}</p>}
       <div className="flex gap-2">
-        <button type="button" onClick={onSave} disabled={savingEdit} className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg disabled:opacity-60">
+        <button type="button" onClick={onSave} disabled={savingEdit} className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-full disabled:opacity-60">
           {savingEdit ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
           <span>Save</span>
         </button>
@@ -650,15 +650,15 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
             {/* --- Paid, waiting for details: the pay-first checkout's second step ---------- */}
             {pendingOrders.length > 0 && (
               <section className="space-y-3">
-                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Finish your ad</h2>
+                <h2 className="text-sm font-semibold text-slate-900">Finish your ad</h2>
                 {pendingOrders.map((o) => (
-                  <div key={`${o.kind}-${o.orderId}`} className="bg-white border-2 border-home-navy rounded-2xl p-4 sm:p-6 shadow-sm">
+                  <div key={`${o.kind}-${o.orderId}`} className="bg-white border-2 border-blue-600 rounded-2xl p-4 sm:p-6 shadow-sm">
                     <div className="flex items-start gap-3">
-                      <span className="shrink-0 w-9 h-9 rounded-full bg-home-navy text-white flex items-center justify-center">
+                      <span className="shrink-0 w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center">
                         <ClipboardEdit className="w-4 h-4" aria-hidden="true" />
                       </span>
                       <div className="min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700">Paid ✓</p>
+                        <p className="text-xs font-semibold text-emerald-700">Paid ✓</p>
                         <p className="text-base font-bold text-slate-900">{o.label}</p>
                         {o.items.length > 0 && (
                           <ul className="mt-1 text-xs text-slate-500 space-y-0.5">
@@ -691,7 +691,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
 
             {/* --- Active placements ------------------------------------------------------- */}
             <section className="space-y-3">
-              <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Active</h2>
+              <h2 className="text-sm font-semibold text-slate-900">Active</h2>
               {activeGuides.length === 0 && activeZips.length === 0 && (
                 <p className="text-xs text-slate-500 bg-white border border-slate-200 rounded-xl p-4">No active placements right now.</p>
               )}
@@ -702,7 +702,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                   <div key={key} className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-blue-600">
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-600">
                           <BookOpen className="w-3 h-3" /><span>{p.clusterName ? 'Topic sponsorship' : 'Topic Ad'}</span>
                         </div>
                         <a href={`/guides/${p.slug}/`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-bold text-slate-900 hover:text-blue-700 mt-0.5">
@@ -753,7 +753,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                   <div key={orderKey} className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-emerald-600">
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
                           <MapPin className="w-3 h-3" />
                           <span>Report Ad{group.length > 1 ? ` · ${group.length} ZIPs` : ''}</span>
                         </div>
@@ -820,14 +820,14 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
             {/* --- Expired -- renewal is the whole point of this zone, kept visually prominent - */}
             {(expiredGuides.length > 0 || expiredZips.length > 0) && (
               <section className="space-y-3">
-                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Expired</h2>
+                <h2 className="text-sm font-semibold text-slate-900">Expired</h2>
                 {expiredGuides.map((p) => (
                   <div key={`ex-guide-${p.purchaseId}`} className="bg-slate-100 border border-slate-200 rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3 opacity-80">
                     <div className="min-w-0">
                       <p className="text-sm font-bold text-slate-600">{p.clusterName ? `Every ${p.clusterName} guide` : p.title}</p>
                       <p className="text-xs text-slate-400">Expired {expiryLabel(p.paidThrough)}</p>
                     </div>
-                    <button type="button" onClick={() => renewGuide(p)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg shrink-0">
+                    <button type="button" onClick={() => renewGuide(p)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-full shrink-0">
                       <RotateCcw className="w-3.5 h-3.5" /><span>Buy again</span>
                     </button>
                   </div>
@@ -841,7 +841,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                         <p className="text-sm font-bold text-slate-600">{first.tradeCategory} in ZIP {zipsLabel}</p>
                         <p className="text-xs text-slate-400">Expired {expiryLabel(first.paidThrough)}</p>
                       </div>
-                      <button type="button" onClick={() => renewZip(group)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg shrink-0">
+                      <button type="button" onClick={() => renewZip(group)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-full shrink-0">
                         <RotateCcw className="w-3.5 h-3.5" /><span>Buy again</span>
                       </button>
                     </div>
@@ -853,7 +853,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
             {/* --- Order history: with no email receipt sent for either product, this table is -
                 the only proof of purchase that exists anywhere. */}
             <section className="space-y-3">
-              <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
+              <h2 className="text-sm font-semibold text-slate-900 flex items-center gap-1.5">
                 <Receipt className="w-4 h-4" /><span>Order History</span>
               </h2>
               {orders.length === 0 && <p className="text-xs text-slate-500 bg-white border border-slate-200 rounded-xl p-4">No completed orders yet.</p>}
@@ -862,7 +862,7 @@ export const MyAdsPanel: React.FC<MyAdsPanelProps> = ({ onNavigate }) => {
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs">
                       <thead>
-                        <tr className="text-left text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-100">
+                        <tr className="text-left text-slate-400 text-xs border-b border-slate-100">
                           <th className="py-2.5 px-4 font-semibold">Date</th>
                           <th className="py-2.5 px-4 font-semibold">What</th>
                           <th className="py-2.5 px-4 font-semibold">Amount</th>

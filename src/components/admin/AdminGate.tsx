@@ -180,7 +180,7 @@ export const AdminGate: React.FC<AdminGateProps> = ({ children }) => {
           <button
             type="submit"
             disabled={isSubmitting || !password}
-            className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-sm rounded-full transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
             <span>{isSubmitting ? 'Signing in…' : 'Sign in'}</span>

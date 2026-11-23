@@ -88,7 +88,7 @@ export const ZipExtrasEditor: React.FC<ZipExtrasEditorProps> = ({ orderId, trade
               type="button"
               onClick={save}
               disabled={saving}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-home-navy hover:bg-home-ink disabled:opacity-60 text-white font-bold rounded-lg"
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold rounded-full"
             >
               {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />}
               <span>{saving ? 'Saving…' : 'Save extras'}</span>

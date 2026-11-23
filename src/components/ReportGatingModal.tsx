@@ -77,7 +77,7 @@ export const ReportGatingModal: React.FC<ReportGatingModalProps> = ({
           ) : (
             <button
               type="submit"
-              className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm rounded-full transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
             >
               <Sparkles className="w-4 h-4" />
               <span>Get my free report</span>

@@ -33,15 +33,15 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <>
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <header className="bg-home-mist/80 backdrop-blur-xl backdrop-saturate-150 border-b border-slate-300/50 sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
 
           {/* Brand Logo */}
           <button
             onClick={onNewSearch}
             className="flex items-center gap-2.5 text-slate-900 group text-left cursor-pointer"
           >
-            <Logo className="w-9 h-9 shrink-0 transition-transform group-hover:scale-105" />
+            <Logo className="w-8 h-8 shrink-0" />
             <div>
               <div className="font-extrabold text-base tracking-tight text-slate-900 flex items-center gap-1.5">
                 <span>Before Regret</span>
@@ -71,7 +71,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 e.preventDefault();
                 onNavigate('/advertise/');
               }}
-              className="px-1 py-2 text-sm font-semibold text-slate-700 hover:text-home-navy underline-offset-4 hover:underline transition-colors"
+              className="px-1 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors"
             >
               For Advertisers
             </a>

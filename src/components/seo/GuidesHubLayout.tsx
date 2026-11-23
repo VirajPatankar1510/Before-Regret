@@ -38,7 +38,7 @@ interface GuidesHubLayoutProps<T extends HubGuide> {
 
 const chip = (on: boolean) =>
   `px-3.5 py-1.5 text-xs font-bold rounded-full border transition-colors ${
-    on ? 'bg-home-navy text-white border-home-navy' : 'bg-white text-slate-600 border-home-linen hover:border-home-oak hover:text-home-ink'
+    on ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-home-linen hover:border-home-oak hover:text-home-ink'
   }`;
 
 export function GuidesHubLayout<T extends HubGuide>({
@@ -63,7 +63,7 @@ export function GuidesHubLayout<T extends HubGuide>({
       onNavigate={onNavigate}
       className="group flex flex-col rounded-2xl bg-white border border-home-linen p-5 hover:border-home-oak hover:shadow-md hover:-translate-y-0.5 transition-all"
     >
-      <h3 className="text-[15px] font-bold text-home-ink leading-snug group-hover:text-home-navy">{g.title}</h3>
+      <h3 className="text-[15px] font-bold text-home-ink leading-snug group-hover:text-blue-600">{g.title}</h3>
       {g.metaDescription && (
         <p className="mt-2 text-sm text-slate-600 leading-relaxed line-clamp-2">{g.metaDescription}</p>
       )}
@@ -88,7 +88,7 @@ export function GuidesHubLayout<T extends HubGuide>({
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <header className="pt-8 sm:pt-12 pb-6 max-w-3xl">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-home-brass">Editorial Guides</p>
+          <p className="text-xs font-semibold text-home-brass">Editorial Guides</p>
           <h1 className="mt-3 font-serif text-[2.2rem] leading-[1.08] sm:text-5xl font-semibold text-home-ink tracking-[-0.01em]">
             What to check before you sign
           </h1>
@@ -144,7 +144,7 @@ export function GuidesHubLayout<T extends HubGuide>({
             {isFiltering && (
               <p className="text-xs text-slate-500" role="status" aria-live="polite">
                 Showing {visibleGuides.length} of {guides.length} guides.{' '}
-                <button type="button" onClick={clear} className="font-bold text-home-navy hover:underline cursor-pointer">
+                <button type="button" onClick={clear} className="font-bold text-home-ink hover:underline cursor-pointer">
                   Clear filters
                 </button>
               </p>
@@ -155,9 +155,9 @@ export function GuidesHubLayout<T extends HubGuide>({
         {status}
 
         {guides.length > 0 && visibleGuides.length === 0 && (
-          <div className="mt-6 rounded-3xl bg-white border border-home-linen p-8 text-center space-y-2">
+          <div className="mt-6 rounded-3xl bg-white p-8 text-center space-y-2">
             <p className="text-sm text-slate-600">No guides match that search.</p>
-            <button type="button" onClick={clear} className="text-xs font-bold text-home-navy hover:underline cursor-pointer">
+            <button type="button" onClick={clear} className="text-xs font-bold text-home-ink hover:underline cursor-pointer">
               Clear filters and show all {guides.length}
             </button>
           </div>

@@ -36,29 +36,29 @@ interface StaticFooterLinksProps {
 // bundle takes over.
 export function StaticFooterLinks({ guides }: StaticFooterLinksProps) {
   return (
-    <nav aria-label="Site sections" className="bg-slate-950 text-white py-10 px-4 sm:px-6 lg:px-8 border-t border-slate-900">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs text-slate-400">
+    <nav aria-label="Site sections" className="bg-home-mist text-slate-600 py-10 px-4 sm:px-6 lg:px-8 border-t border-slate-300">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs text-slate-500">
         <div className="space-y-2">
-          <div className="font-bold text-white flex items-center gap-1.5">
-            <BookOpen className="w-3.5 h-3.5 text-blue-400" />
+          <div className="font-semibold text-slate-900 flex items-center gap-1.5">
+            <BookOpen className="w-3.5 h-3.5 text-slate-400" />
             <span>Editorial Guides</span>
           </div>
           <ul className="space-y-2">
             {guides.map((g) => (
               <li key={g.slug}>
-                <a href={`/guides/${g.slug}/`} className="hover:text-white block py-1.5">{g.title}</a>
+                <a href={`/guides/${g.slug}/`} className="hover:text-slate-900 hover:underline underline-offset-2 block py-1.5">{g.title}</a>
               </li>
             ))}
-            <li><a href="/guides/" className="hover:text-white font-bold text-blue-300 block py-1.5">View all guides →</a></li>
+            <li><a href="/guides/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-700 block py-1.5">View all guides →</a></li>
           </ul>
         </div>
         <div className="space-y-2">
-          <div className="font-bold text-white flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+          <div className="font-semibold text-slate-900 flex items-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
             <span>Legal &amp; Support</span>
           </div>
           <ul className="space-y-2">
-            <li><a href="/about/" className="hover:text-white font-bold text-blue-300 block py-1.5">About &amp; Methodology</a></li>
+            <li><a href="/about/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-700 block py-1.5">About &amp; Methodology</a></li>
             {/* The studies and /sunlight/ are standalone static documents (prerender-research.tsx,
                 prerender-sunlight.tsx), not SPA routes, so they are unreachable from the app's own
                 navigation. These links are the only crawlable path to them from the rest of the
@@ -71,19 +71,19 @@ export function StaticFooterLinks({ guides }: StaticFooterLinksProps) {
                 guarantee a crawl path had stopped providing one for the newest work. /research/
                 lists every study and is in the sitemap, so each one keeps its path and this stops
                 needing maintenance every time a study ships. */}
-            <li><a href="/research/" className="hover:text-white font-bold text-blue-300 block py-1.5">Research &amp; Data</a></li>
-            <li><a href="/sunlight/" className="hover:text-white font-bold text-blue-300 block py-1.5">Sunlight by Room</a></li>
-            <li><a href="/advertise/" className="hover:text-white font-bold text-blue-300 block py-1.5">Advertise With Us</a></li>
-            <li><a href="/my-ads/" className="hover:text-white font-medium text-slate-300 block py-1.5">Manage My Ads</a></li>
-            <li><a href="/support/" className="hover:text-white font-medium text-slate-300 block py-1.5">Customer Support</a></li>
+            <li><a href="/research/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-700 block py-1.5">Research &amp; Data</a></li>
+            <li><a href="/sunlight/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-700 block py-1.5">Sunlight by Room</a></li>
+            <li><a href="/advertise/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-700 block py-1.5">Advertise With Us</a></li>
+            <li><a href="/my-ads/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-700 block py-1.5">Manage My Ads</a></li>
+            <li><a href="/support/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-700 block py-1.5">Customer Support</a></li>
             {/* Mirrors Footer.tsx, reading the same constant so the two renderings of this link
                 cannot drift apart. See src/data/preferredSource.ts. */}
-            <li><a href={PREFERRED_SOURCE_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white font-medium text-slate-300 block py-1.5">{PREFERRED_SOURCE_LABEL}</a></li>
-            <li><a href="/terms/" className="hover:text-white text-slate-400 block py-1.5">Terms of Service</a></li>
-            <li><a href="/privacy/" className="hover:text-white text-slate-400 block py-1.5">Privacy Policy</a></li>
-            <li><a href="/refunds/" className="hover:text-white text-slate-400 block py-1.5">Refund &amp; Cancellation</a></li>
-            <li><a href="/disclaimer/" className="hover:text-white text-slate-400 block py-1.5">Disclaimer</a></li>
-            <li><a href="/accessibility/" className="hover:text-white text-slate-400 block py-1.5">Accessibility</a></li>
+            <li><a href={PREFERRED_SOURCE_URL} target="_blank" rel="noopener noreferrer" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-700 block py-1.5">{PREFERRED_SOURCE_LABEL}</a></li>
+            <li><a href="/terms/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-500 block py-1.5">Terms of Service</a></li>
+            <li><a href="/privacy/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-500 block py-1.5">Privacy Policy</a></li>
+            <li><a href="/refunds/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-500 block py-1.5">Refund &amp; Cancellation</a></li>
+            <li><a href="/disclaimer/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-500 block py-1.5">Disclaimer</a></li>
+            <li><a href="/accessibility/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-500 block py-1.5">Accessibility</a></li>
           </ul>
         </div>
       </div>

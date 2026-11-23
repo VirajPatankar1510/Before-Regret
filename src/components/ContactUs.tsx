@@ -66,26 +66,26 @@ ${message}`;
         </div>
 
         {/* Hero Banner */}
-        <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-10 shadow-xl space-y-4 relative overflow-hidden">
+        <div className="bg-white text-home-ink rounded-3xl p-6 sm:p-10 space-y-4 relative overflow-hidden">
           <div className="relative z-10 max-w-2xl space-y-3">
-            <p className="text-xs font-medium text-slate-400">
+            <p className="text-xs font-medium text-slate-500">
               Property research guides for US home buyers, built from public records.
             </p>
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
               How Can We Help You?
             </h1>
-            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
+            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
               Before Regret is a property research product owned and operated by Atmostellar. Whether you are a home buyer inquiring about a report or a business vendor managing a sponsored placement, we are here to assist.
             </p>
           </div>
           
-          <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-mono text-slate-300 border-t border-slate-800">
+          <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-mono text-slate-600 border-t border-slate-200">
             <div className="flex items-center gap-1.5">
-              <Mail className="w-4 h-4 text-blue-400" />
+              <Mail className="w-4 h-4 text-blue-600" />
               <span>Contact Channel: <strong>hello@beforeregret.com</strong></span>
             </div>
             <div className="flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-emerald-400" />
+              <Clock className="w-4 h-4 text-emerald-700" />
               <span>Expected Response Time: <strong>1–2 business days</strong></span>
             </div>
           </div>
@@ -179,7 +179,7 @@ ${message}`;
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
                       Your Name *
                     </label>
                     <input
@@ -193,7 +193,7 @@ ${message}`;
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
                       Email Address *
                     </label>
                     <input
@@ -208,7 +208,7 @@ ${message}`;
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Subject / Topic
                   </label>
                   <input
@@ -227,7 +227,7 @@ ${message}`;
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Property Address or ZIP Code (Optional)
                   </label>
                   <input
@@ -240,7 +240,7 @@ ${message}`;
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Message Details *
                   </label>
                   <textarea
@@ -260,7 +260,7 @@ ${message}`;
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+                  className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-full transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>{isSubmitting ? 'Preparing Email...' : 'Send Message to hello@beforeregret.com'}</span>

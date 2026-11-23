@@ -202,7 +202,7 @@ export const VendorSignupForm: React.FC = () => {
   }, [resumeBuy, authLoading, user, ready, stillChecking, zipStates]);
 
   return (
-    <div className="bg-white rounded-3xl border border-home-linen shadow-xl p-5 sm:p-7">
+    <div className="bg-white rounded-3xl shadow-xl p-5 sm:p-7">
       <label htmlFor="report-ad-trade" className="block text-sm font-bold">1. Your business type</label>
       <select
         id="report-ad-trade"
@@ -273,7 +273,7 @@ export const VendorSignupForm: React.FC = () => {
         </div>
       )}
 
-      {notice && <p role="status" className="mt-3 text-xs text-home-navy bg-home-sage/40 rounded-xl p-3">{notice}</p>}
+      {notice && <p role="status" className="mt-3 text-xs text-home-ink bg-home-sage/40 rounded-xl p-3">{notice}</p>}
       {error && (
         <p role="alert" className="mt-3 flex items-start gap-1.5 text-xs text-rose-700">
           <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" aria-hidden="true" /><span>{error}</span>
@@ -284,7 +284,7 @@ export const VendorSignupForm: React.FC = () => {
         type="button"
         onClick={buy}
         disabled={submitting || resumeBuy !== null || !ready}
-        className="mt-5 w-full inline-flex items-center justify-center gap-2 px-5 py-4 bg-home-navy hover:bg-home-ink disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-base font-bold rounded-xl transition-colors cursor-pointer"
+        className="mt-5 w-full inline-flex items-center justify-center gap-2 px-5 py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-base font-bold rounded-full transition-colors cursor-pointer"
       >
         {submitting || resumeBuy !== null ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : user ? <ArrowRight className="w-4 h-4" aria-hidden="true" /> : <Lock className="w-4 h-4" aria-hidden="true" />}
         <span>{submitting ? 'Opening PayPal…' : `Buy now · $${PRICE_USD}`}</span>

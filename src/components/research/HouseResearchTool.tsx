@@ -153,7 +153,7 @@ const StartView: React.FC<{ onStart: (p: PropertySearchResult) => void; onQuickR
         We’ll show you what to check, where to find it and what to do with the answer. You finish with your own report.
       </p>
     </div>
-    <div className="rounded-3xl bg-home-navy p-4 sm:p-5">
+    <div className="rounded-3xl bg-white p-4 sm:p-5">
       <AddressSearchBox onSelectProperty={onQuickReport} onStartResearch={onStart} />
     </div>
     <p className="text-sm text-slate-500 text-center">Your answers stay on this device. We don’t ask for your email.</p>

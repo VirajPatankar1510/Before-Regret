@@ -159,7 +159,7 @@ export const AdDetailsForm: React.FC<AdDetailsFormProps> = ({ kind, orderId, fix
       )}
 
       <label className="flex items-start gap-2.5 px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 cursor-pointer">
-        <input type="checkbox" checked={attested} onChange={(e) => setAttested(e.target.checked)} className="mt-0.5 w-4 h-4 shrink-0 accent-home-navy cursor-pointer" />
+        <input type="checkbox" checked={attested} onChange={(e) => setAttested(e.target.checked)} className="mt-0.5 w-4 h-4 shrink-0 accent-blue-600 cursor-pointer" />
         <span>
           These details are accurate, I&apos;m allowed to advertise this business, and it holds the licenses and
           insurance its trade requires. A false or expired license number means removal without refund{' '}
@@ -176,7 +176,7 @@ export const AdDetailsForm: React.FC<AdDetailsFormProps> = ({ kind, orderId, fix
       <button
         type="submit"
         disabled={saving}
-        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-home-navy hover:bg-home-ink disabled:opacity-60 text-white text-sm font-bold rounded-xl transition-colors cursor-pointer"
+        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-bold rounded-full transition-colors cursor-pointer"
       >
         {saving ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <Rocket className="w-4 h-4" aria-hidden="true" />}
         <span>{saving ? 'Publishing…' : 'Publish my ad'}</span>

@@ -846,7 +846,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           {!onStartResearch && <button
             type="submit"
             disabled={isSearchingMap}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl transition-all shadow-md flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-50"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-full transition-all shadow-md flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-50"
           >
             {isSearchingMap ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>Search</span>}
           </button>}
@@ -878,7 +878,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
             type="button"
             onClick={() => choose('research')}
             disabled={isSearchingMap}
-            className="px-5 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+            className="px-5 py-3.5 rounded-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
           >
             {isSearchingMap && intent === 'research' ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
             {/* Owner 2026-11-18: keep both labels, one short line under each so a first-timer can tell them apart. */}
@@ -892,7 +892,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
             type="button"
             onClick={() => choose('quick')}
             disabled={isSearchingMap}
-            className="px-5 py-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-900 font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+            className="px-5 py-3.5 rounded-full bg-white hover:bg-slate-50 border border-slate-300 text-slate-900 font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
           >
             {isSearchingMap && intent === 'quick' ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
             <span className="flex flex-col items-center text-center leading-tight">
@@ -905,8 +905,8 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
       )}
 
       {mapSearchError && (
-        <div className="bg-red-950/80 border border-red-500/30 rounded-xl p-3 text-xs text-red-300 flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-3 text-xs text-red-700 flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
           <span>{mapSearchError}</span>
         </div>
       )}
@@ -930,10 +930,10 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
       <>
       {/* Address Validation Gate Banner */}
       {gateState && gateState.status === 'blocked' && !gateState.isDismissed && (
-        <div className="bg-amber-950/90 border border-amber-500/40 rounded-2xl p-3.5 text-xs font-medium text-amber-200 shadow-2xl backdrop-blur-md animate-fade-in flex items-center justify-between gap-3">
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 text-xs font-medium text-amber-900 animate-fade-in flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
-            <div className="font-bold text-amber-300 text-sm">
+            <div className="font-bold text-amber-900 text-sm">
               {gateState.message}
             </div>
           </div>
@@ -951,14 +951,14 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
       {(selectedPinResult || isReverseGeocoding) && (
         <div className="bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-slate-900 shadow-xl space-y-3">
             <div className="min-w-0 space-y-0.5 sm:space-y-1">
-              <div className="text-[10px] font-mono font-bold text-blue-600 uppercase tracking-wider flex items-center gap-1.5">
+              <div className="text-xs font-mono font-semibold text-blue-600 flex items-center gap-1.5">
                 {isReverseGeocoding ? (
-                  <span className="flex items-center gap-1.5 text-blue-300">
+                  <span className="flex items-center gap-1.5 text-blue-600">
                     <Loader2 className="w-3 h-3 animate-spin text-blue-600 shrink-0" />
                     <span>Looking Up Address...</span>
                   </span>
                 ) : (
-                  <span className="flex items-center gap-1 text-emerald-400 font-bold">
+                  <span className="flex items-center gap-1 text-emerald-700 font-bold">
                     <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
                     <span>Address Found</span>
                   </span>
@@ -1080,7 +1080,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 space-y-1">
-                <div className="text-[10px] font-mono font-bold text-blue-600 uppercase tracking-wider">
+                <div className="text-xs font-mono font-semibold text-blue-600">
                   One more step
                 </div>
                 <h3 id="property-type-dialog-title" className="text-base sm:text-lg font-bold text-slate-900">What type of property is this?</h3>
@@ -1181,10 +1181,10 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
                     type="button"
                     disabled={mainDisabled}
                     onClick={research ? startResearch : submitReport}
-                    className={`w-full px-4 py-2.5 sm:py-3 font-black text-xs sm:text-sm rounded-lg sm:rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 tracking-tight ${
+                    className={`w-full px-4 py-2.5 sm:py-3 font-black text-xs sm:text-sm rounded-full transition-all shadow-lg flex items-center justify-center gap-2 tracking-tight ${
                       mainDisabled
                         ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-60'
-                        : 'bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer'
+                        : 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
                     }`}
                   >
                     {checking && <Loader2 className="w-3.5 h-3.5 animate-spin" />}

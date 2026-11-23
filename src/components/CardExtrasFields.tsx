@@ -70,7 +70,7 @@ export const CardExtrasFields: React.FC<CardExtrasFieldsProps> = ({ trade, value
                 type="checkbox"
                 checked={Boolean(value.evalFeeFrom)}
                 onChange={(e) => set({ evalFeeFrom: e.target.checked || undefined })}
-                className="mt-0.5 w-4 h-4 shrink-0 accent-home-navy cursor-pointer"
+                className="mt-0.5 w-4 h-4 shrink-0 accent-blue-600 cursor-pointer"
               />
               <span>My price depends on the house (it shows as &quot;from ${value.evalFeeUsd}&quot;, so ${value.evalFeeUsd} is your lowest price)</span>
             </label>
@@ -81,7 +81,7 @@ export const CardExtrasFields: React.FC<CardExtrasFieldsProps> = ({ trade, value
                 type="checkbox"
                 checked={Boolean(value.evalFeeCredited)}
                 onChange={(e) => set({ evalFeeCredited: e.target.checked || undefined })}
-                className="mt-0.5 w-4 h-4 shrink-0 accent-home-navy cursor-pointer"
+                className="mt-0.5 w-4 h-4 shrink-0 accent-blue-600 cursor-pointer"
               />
               <span>I credit it toward the work if they hire me</span>
             </label>
@@ -101,7 +101,7 @@ export const CardExtrasFields: React.FC<CardExtrasFieldsProps> = ({ trade, value
                 type="button"
                 aria-pressed={on}
                 onClick={() => toggleDay(d.key)}
-                className={`px-3 py-2 rounded-lg border text-xs font-bold cursor-pointer ${on ? 'bg-home-navy border-home-navy text-white' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'}`}
+                className={`px-3 py-2 rounded-lg border text-xs font-bold cursor-pointer ${on ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'}`}
               >
                 {d.short}
               </button>
@@ -131,7 +131,7 @@ export const CardExtrasFields: React.FC<CardExtrasFieldsProps> = ({ trade, value
           type="checkbox"
           checked={Boolean(value.textsOk)}
           onChange={(e) => set({ textsOk: e.target.checked || undefined })}
-          className="mt-0.5 w-4 h-4 shrink-0 accent-home-navy cursor-pointer"
+          className="mt-0.5 w-4 h-4 shrink-0 accent-blue-600 cursor-pointer"
         />
         <span>Buyers can text this number</span>
       </label>

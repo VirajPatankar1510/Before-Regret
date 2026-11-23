@@ -22,7 +22,7 @@ export function ErrorFallback({ resetErrorBoundary }: ErrorFallbackProps) {
         <div className="pt-2 flex justify-center gap-3">
           <button
             onClick={resetErrorBoundary}
-            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-xs"
+            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-full flex items-center gap-2 cursor-pointer shadow-xs"
           >
             <RefreshCw className="w-4 h-4" />
             <span>Reload Report</span>

@@ -69,7 +69,7 @@ export const PaymentSuccess: React.FC = () => {
             </p>
             <button
               onClick={() => (window.location.href = '/')}
-              className="w-full py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors"
+              className="w-full py-3 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition-colors"
             >
               Return to Home
             </button>
@@ -89,7 +89,7 @@ export const PaymentSuccess: React.FC = () => {
             <div className="space-y-2">
               <button
                 onClick={() => verifyPayment()}
-                className="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                className="w-full py-3 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition-colors"
               >
                 Try Again
               </button>

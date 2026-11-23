@@ -71,7 +71,7 @@ export const CountyDataSection: React.FC<{ slug: string; onNavigate?: (p: string
   const place = `${c.county}, ${c.stateAbbrev}`;
 
   return (
-    <section aria-labelledby="county-data-heading" className="rounded-3xl bg-white border border-home-linen shadow-sm p-6 sm:p-8">
+    <section aria-labelledby="county-data-heading" className="rounded-3xl bg-white p-6 sm:p-8">
       <h2 id="county-data-heading" className="font-serif text-2xl sm:text-[1.75rem] font-semibold text-home-ink tracking-tight">
         {place}: the housing in numbers
       </h2>

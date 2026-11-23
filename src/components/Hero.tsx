@@ -75,7 +75,7 @@ export const Hero: React.FC<HeroProps> = ({ onSelectProperty, onStartResearch, o
   };
 
   return (
-    <div className="space-y-0 pb-16">
+    <div className="space-y-0">
 
       {/* 1. HERO -- see src/components/home/HeroPanel.tsx. Shared with the prerender rather than
           duplicated, which is what makes the two renders the same height and keeps LCP landing on

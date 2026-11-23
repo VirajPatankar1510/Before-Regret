@@ -315,7 +315,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
         <span
           aria-hidden="true"
           className={`shrink-0 w-5 h-5 rounded-md border flex items-center justify-center ${
-            isSelected ? 'bg-home-navy border-home-navy text-white' : 'bg-white border-slate-300'
+            isSelected ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-300'
           }`}
         >
           {isSelected && <Check className="w-3.5 h-3.5" />}
@@ -337,29 +337,28 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
   return (
     <div className="min-h-screen bg-home-stone font-sans text-home-ink pb-32">
       {/* Hero: what it is, what it costs, and the three steps, in one glance. */}
-      <section className="relative overflow-hidden bg-home-navy text-white">
-        <div aria-hidden="true" className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
+      <section className="relative overflow-hidden bg-white text-home-ink">
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
           <button
             type="button"
             onClick={() => onNavigate('/advertise/')}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-home-ink cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" /> All ad options
           </button>
-          <p className="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-home-oak">Topic Ads</p>
+          <p className="mt-6 text-base sm:text-lg font-semibold text-slate-500">Topic Ads</p>
           <h1 className="mt-3 font-serif text-[2rem] leading-[1.1] sm:text-5xl font-semibold tracking-[-0.01em] [text-wrap:balance]">
             Your phone number on the articles people read before they buy
           </h1>
-          <p className="mt-4 text-base sm:text-lg text-slate-300">
-            <span className="font-semibold text-white">${pricePerSlot.toFixed(2)} per article</span> for {slotDurationDays} days.
+          <p className="mt-4 text-base sm:text-lg text-slate-600">
+            <span className="font-semibold text-home-ink">${pricePerSlot.toFixed(2)} per article</span> for {slotDurationDays} days.
             No subscription.
           </p>
-          <ol className="mt-6 flex flex-wrap gap-2 text-xs font-semibold text-slate-200">
+          <ol className="mt-6 flex flex-wrap gap-2 text-xs font-semibold text-slate-700">
             {steps.map(({ icon: Icon, t }, i) => (
-              <li key={t} className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5">
-                <span className="w-4 h-4 rounded-full bg-home-oak text-home-navy text-[10px] font-black flex items-center justify-center">{i + 1}</span>
-                <Icon className="w-3.5 h-3.5 text-home-oak" aria-hidden="true" />
+              <li key={t} className="inline-flex items-center gap-1.5 rounded-full bg-home-mist px-3 py-1.5">
+                <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">{i + 1}</span>
+                <Icon className="w-3.5 h-3.5 text-blue-600" aria-hidden="true" />
                 {t}
               </li>
             ))}
@@ -369,7 +368,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 -mt-6 relative space-y-8">
         {/* The one thing to do on this page. */}
-        <section className="bg-white rounded-3xl border border-home-linen shadow-xl p-4 sm:p-6">
+        <section className="bg-white rounded-3xl shadow-xl p-4 sm:p-6">
           <h2 className="font-serif text-2xl font-semibold px-1">Pick your articles</h2>
 
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -423,20 +422,20 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
                     onClick={() => toggleCluster(c.key)}
                     aria-pressed={isChosen}
                     className={`w-full text-left rounded-2xl border-2 p-4 transition-colors cursor-pointer ${
-                      isChosen ? 'border-home-navy bg-home-sage/40' : 'border-home-oak/60 bg-home-stone hover:border-home-oak'
+                      isChosen ? 'border-blue-600 bg-home-sage/40' : 'border-home-oak/60 bg-home-stone hover:border-home-oak'
                     }`}
                   >
                     <div className="flex items-start gap-3">
                       <span
                         aria-hidden="true"
                         className={`mt-0.5 shrink-0 w-5 h-5 rounded-md border flex items-center justify-center ${
-                          isChosen ? 'bg-home-navy border-home-navy text-white' : 'bg-white border-slate-300'
+                          isChosen ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-300'
                         }`}
                       >
                         {isChosen && <Check className="w-3.5 h-3.5" />}
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block text-[10px] font-bold uppercase tracking-wider text-home-brass">Whole topic</span>
+                        <span className="block text-xs font-semibold text-home-brass">Whole topic</span>
                         <span className="block mt-0.5 text-base font-bold">Every {c.name} article</span>
                         <span className="block mt-1 text-xs text-slate-600">
                           {c.openCount} articles now, plus every new one we add. One sponsor per topic.
@@ -522,7 +521,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
         </section>
 
         {/* What the ad looks like, so the vendor knows what they're getting before they pay. */}
-        <section className="rounded-3xl bg-white border border-home-linen p-5 sm:p-7">
+        <section className="rounded-3xl bg-white p-5 sm:p-7">
           <h2 className="font-serif text-xl font-semibold">How your ad looks</h2>
           <p className="mt-1 text-sm text-slate-600">Right under the article's quick answer. Example business:</p>
           <div className="mt-4 pointer-events-none select-none" role="img" aria-label="Example Topic Ad: a business name, trade and phone number under an article's quick answer">
@@ -532,7 +531,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
           </div>
         </section>
 
-        <section className="rounded-3xl bg-white border border-home-linen p-5 sm:p-7">
+        <section className="rounded-3xl bg-white p-5 sm:p-7">
           <h2 className="font-serif text-xl font-semibold">Questions</h2>
           <div className="mt-3 divide-y divide-home-linen">
             {FAQ_ITEMS.map((item, idx) => {
@@ -560,7 +559,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-home-linen bg-white/95 backdrop-blur shadow-[0_-8px_24px_rgba(15,23,42,0.08)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 space-y-1.5">
           {(submitError || returnNotice) && (
-            <p role="status" className={`text-xs flex items-start gap-1.5 ${submitError ? 'text-rose-700' : 'text-home-navy'}`}>
+            <p role="status" className={`text-xs flex items-start gap-1.5 ${submitError ? 'text-rose-700' : 'text-home-ink'}`}>
               {submitError && <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" aria-hidden="true" />}
               <span>{submitError || returnNotice}</span>
             </p>
@@ -582,7 +581,7 @@ export const GuideAdsCheckout: React.FC<GuideAdsCheckoutProps> = ({ onNavigate }
               type="button"
               onClick={buy}
               disabled={submitting || resumeBuy !== null || !canBuy}
-              className="shrink-0 inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 bg-home-navy hover:bg-home-ink disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition-colors cursor-pointer"
+              className="shrink-0 inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-sm rounded-full transition-colors cursor-pointer"
             >
               {submitting || resumeBuy !== null ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : user ? <ArrowRight className="w-4 h-4" aria-hidden="true" /> : <Lock className="w-4 h-4" aria-hidden="true" />}
               <span>{submitting ? 'Opening PayPal…' : 'Buy now'}</span>
