@@ -5,6 +5,7 @@ import {
 import type { PropertySearchResult } from '../../types';
 import { AddressSearchBox } from '../AddressSearchBox';
 import { ContentLink } from '../home/ContentLink';
+import { currentWording } from '../../engine/rewordedText';
 import {
   QUESTIONS, WORK, advance, openPart, setupOrder, collectFindings, flowOrder, countedQuestions, forDeadline, waitsForInspection, itemLabel, daysLeft, eraItems, formatShortDate, freshResearch, isSolved,
   loadResearch, saveResearch,
@@ -422,7 +423,7 @@ const EraRow: React.FC<{ item: EraItem; on: boolean; toggle: () => void; t: (x: 
           <div className="mt-2.5 space-y-3 text-sm">
             <div>
               <BoxLabel>Why</BoxLabel>
-              <p className="leading-relaxed">{item.eraBasis}</p>
+              <p className="leading-relaxed">{currentWording(item.eraBasis)}</p>
             </div>
             <div className="rounded-xl bg-home-sage/50 border border-home-sage p-3">
               <BoxLabel className="text-home-moss">What to do</BoxLabel>

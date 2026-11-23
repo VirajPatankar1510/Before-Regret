@@ -111,7 +111,7 @@ const QUESTION_RULES: QuestionRule[] = [
     priority: 'high',
     question: 'Do you know what material the water supply lines are, and has the home ever had a full repipe?',
     whyAsking:
-      'Homes built in this era sometimes used polybutylene supply piping, the subject of a major national class-action settlement after widespread failures. Many insurance carriers now decline or surcharge coverage on homes that still have it.',
+      'Homes built in this era sometimes used polybutylene supply piping, the subject of a major national class-action settlement after widespread failures. Whether a carrier will cover a home that still has it, and at what price, varies by carrier and state.',
     whatToListenFor:
       'Copper or PEX with documentation is reassuring. "Not sure" means your inspector should identify the material directly -- confirm before your option period ends, since it can affect insurability.',
   },

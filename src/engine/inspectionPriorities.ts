@@ -31,6 +31,7 @@
 // outside that list gets foundation_type_general instead of a geology claim we can't back.
 
 import { normalizeCountyKey } from '../utils/normalizeCounty.js';
+import { currentWording } from './rewordedText.js';
 
 export type PriorityLevel = 'high' | 'medium' | 'lower';
 
@@ -214,12 +215,12 @@ export const PRIORITY_RULES: PriorityRule[] = [
     title: 'Check for active knob-and-tube wiring',
     priority: 'high',
     eraBasis:
-      'Knob-and-tube wiring was standard in US homes built before roughly 1950. It has no ground conductor, its insulation becomes brittle with age, and it is not rated to be buried in insulation. Many insurance carriers will not write a policy on a home with knob-and-tube still energized.',
+      'Knob-and-tube wiring was standard in US homes built before roughly 1950. It has no ground conductor, its insulation becomes brittle with age, and it is not rated to be buried in insulation. Whether a carrier will write a policy while it is still energized varies by carrier and state, so ask your own.',
     costToCheck: 'Usually included in a general inspection — ask them to note it explicitly. Dedicated electrician evaluation $150 – $350.',
     typicalRepairCost: 'Partial to whole-home rewire $8,000 – $30,000+',
     howToCheck:
       'Ask your inspector to confirm in writing whether any knob-and-tube is still energized, then confirm insurability with your insurance agent before your option period ends.',
-    insuranceRedFlag: 'Knob-and-tube wiring — many insurance carriers will not write a policy while it is still energized.',
+    insuranceRedFlag: 'Knob-and-tube wiring — ask your own carrier whether they will write a policy while it is still energized. Rules vary by carrier and state.',
   },
   {
     id: 'electrical_aluminum_wiring',
@@ -288,12 +289,12 @@ export const PRIORITY_RULES: PriorityRule[] = [
     title: 'Check whether the supply lines are polybutylene',
     priority: 'high',
     eraBasis:
-      'Polybutylene supply piping was widely installed in US homes from the late 1970s through the mid-1990s. It was the subject of a major national class-action settlement after pipe and fittings were found to fail, and many insurance carriers now decline or surcharge policies on homes that still have it.',
+      'Polybutylene supply piping was widely installed in US homes from the late 1970s through the mid-1990s. It was the subject of a major national class-action settlement after pipe and fittings were found to fail. Whether a carrier will write a policy on a home that still has it, and at what price, varies by carrier and state, so ask your own.',
     costToCheck: 'Usually included in a general inspection — ask them to identify the material in writing',
     typicalRepairCost: 'Whole-home repipe $4,000 – $15,000',
     howToCheck:
       'Ask your inspector to check at the water heater and main shutoff. Polybutylene is flexible and usually gray, sometimes blue or black. If it is present, confirm insurability with your agent before your option period ends.',
-    insuranceRedFlag: 'Polybutylene supply piping — many carriers now decline or surcharge policies on homes that still have it.',
+    insuranceRedFlag: 'Polybutylene supply piping — ask your own carrier whether they will write a policy, and at what price, while it is still in the house. Rules vary by carrier and state.',
   },
 
   // --- Foundation: expansive clay soil geology, scoped to the documented Texas counties in
@@ -588,6 +589,15 @@ export function getInspectionPriorities(
     priorities,
     insuranceRedFlags,
   };
+}
+
+/**
+ * Which rule an insurance red-flag line came from, so the report can link the line to its Inspect row. Matches
+ * the current wording and, through currentWording(), the wording a report saved before a rewording still holds.
+ */
+export function insuranceFlagRuleId(flag: string): string | undefined {
+  const current = currentWording(flag);
+  return PRIORITY_RULES.find((rule) => rule.insuranceRedFlag === current)?.id;
 }
 
 /** Shared validation for the user-supplied year-built input. */

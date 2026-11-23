@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, Building, ArrowRight } from 'lucide-react';
+import { ArrowUpRight, Building, ArrowRight, TriangleAlert, ChevronRight } from 'lucide-react';
 import { PropertyReport, CanonicalFinding } from '../types';
 import { LeadMarketplaceWidget } from './LeadMarketplaceWidget';
 import { SourceRegistryModal } from './SourceRegistryModal';
@@ -139,6 +139,7 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
   const resolvedFindings = findings.filter(f => f.status !== 'NOT YET VERIFIED');
 
   const priorityCount = report.inspectionPriorities?.priorities?.length || 0;
+  const insuranceFlagCount = report.inspectionPriorities?.insuranceRedFlags?.length || 0;
   const questionCount = report.sellerQuestionsScript?.questions?.length || 0;
 
   // REDESIGN 2026-11-23 (owner: "if Apple made our report", mock-up docs/mockups/apple-report-mockup-2026-11.html,
@@ -400,6 +401,19 @@ export const PropertyReportView: React.FC<PropertyReportViewProps> = ({ report, 
                 </a>
               ))}
             </div>
+          )}
+
+          {/* 2026-11-23 (owner: "yes, do both"): the insurance lines used to sit at the very end of Inspect, where a
+              skimmer never reached them. Apple puts the one thing that needs attention at the top, as a single quiet
+              row with a coloured icon. Shown only when this report has such lines; it jumps to the card in Inspect. */}
+          {insuranceFlagCount > 0 && (
+            <a href="#insurance-flags" className="print:hidden mt-3 flex items-center gap-3 rounded-2xl bg-white px-4 sm:px-5 py-3.5 hover:bg-white/70 transition-colors">
+              <TriangleAlert aria-hidden="true" className="w-5 h-5 text-orange-600 shrink-0" strokeWidth={2.25} />
+              <span className="flex-1 text-[15px] sm:text-[17px] text-slate-900 leading-snug">
+                {insuranceFlagCount === 1 ? '1 thing here can affect your insurance' : `${insuranceFlagCount} things here can affect your insurance`}
+              </span>
+              <ChevronRight aria-hidden="true" className="w-4 h-4 shrink-0 text-slate-400" />
+            </a>
           )}
         </section>
 

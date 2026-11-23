@@ -3,6 +3,7 @@ import { Check, ChevronRight, Send } from 'lucide-react';
 import { getSellerQuestions, QuestionPriority, DeclaredPropertyType } from '../engine/sellerQuestions';
 import { SellerQuestionsReportData, SellerQuestionWithVendor } from '../types';
 import { SponsoredVendorCards } from './SponsoredVendorCard';
+import { currentWording } from '../engine/rewordedText';
 
 interface SellerQuestionsProps {
   yearBuilt?: number | null;
@@ -86,7 +87,7 @@ export const SellerQuestions: React.FC<SellerQuestionsProps> = ({
                 <ChevronRight aria-hidden="true" className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-90' : ''}`} />
               </button>
               <p className={`${isOpen ? 'block' : 'hidden print:block'} mt-1.5 text-[15px] text-slate-600 leading-relaxed`}>
-                {item.whyAsking}
+                {currentWording(item.whyAsking)}
               </p>
             </div>
           </div>

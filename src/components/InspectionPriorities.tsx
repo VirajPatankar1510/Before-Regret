@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Check, ChevronRight } from 'lucide-react';
-import { getInspectionPriorities, PriorityLevel } from '../engine/inspectionPriorities';
+import { Check, ChevronRight, TriangleAlert } from 'lucide-react';
+import { getInspectionPriorities, insuranceFlagRuleId, PriorityLevel } from '../engine/inspectionPriorities';
+import { currentWording } from '../engine/rewordedText';
 import { InspectionPrioritiesReportData, InspectionPriorityWithVendor } from '../types';
 import { SponsoredVendorCards } from './SponsoredVendorCard';
 
@@ -56,13 +57,22 @@ export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ year
 
   if (!result) return null;
 
+  // Each red-flag line with the Inspect row it came from (current wording, even on a report saved before a rewording).
+  const insuranceFlags = result.insuranceRedFlags.map((flag) => ({ text: currentWording(flag), ruleId: insuranceFlagRuleId(flag) }))
+    .map((f) => ({ ...f, ruleId: f.ruleId && result.priorities.some((p) => p.id === f.ruleId) ? f.ruleId : undefined }));
+
+  const openItem = (id: string) => {
+    setOpen((o) => ({ ...o, [id]: true }));
+    requestAnimationFrame(() => document.getElementById(`priority-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  };
+
   const renderPriorityItem = (item: (typeof result.priorities)[number]) => {
     const isDone = Boolean(done[item.id]);
     const isOpen = Boolean(open[item.id]);
     const vendors = (item as InspectionPriorityWithVendor).sponsoredVendors;
     const panelId = `priority-panel-${item.id}`;
     return (
-      <li key={item.id} data-print-block>
+      <li key={item.id} id={`priority-${item.id}`} data-print-block className="scroll-mt-32">
         <div className="flex items-start gap-3 px-4 sm:px-5 py-3.5">
           <button
             type="button"
@@ -106,7 +116,7 @@ export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ year
           </dl>
           <p className="text-[15px] text-slate-600 leading-relaxed">
             <span className="font-semibold text-slate-900">Why it matters. </span>
-            {item.eraBasis}
+            {currentWording(item.eraBasis)}
           </p>
         </div>
 
@@ -148,19 +158,53 @@ export const InspectionPriorities: React.FC<InspectionPrioritiesProps> = ({ year
       ))}
 
       {/* Cross-cutting view of items above that already carry a documented insurance impact -- no new facts, pulled
-          out of individual eraBasis paragraphs. Neutral, not red: the Apple-style report keeps colour for actions,
-          and amber stays reserved for sponsored placements. */}
-      {result.insuranceRedFlags.length > 0 && (
-        <div data-print-block className="mt-4 rounded-3xl bg-white p-5 sm:p-6 space-y-2">
-          <h3 className="text-[17px] font-semibold text-slate-900">Insurance red flags for a {result.eraLabel} home</h3>
-          <ul className="space-y-1 text-[15px] text-slate-700 leading-relaxed list-disc pl-5">
-            {result.insuranceRedFlags.map((flag, i) => (
-              <li key={i}>{flag}</li>
-            ))}
-          </ul>
-          <p className="text-[13px] text-slate-500 leading-relaxed">
-            Call an insurance agent for a quote before you remove contingencies — not after. Carrier rules vary and this is not a determination that any of the above is actually present in this home.
-          </p>
+          out of the rules' own lines. 2026-11-23 (owner: "yes, do both"): Apple-style emphasis. The card stays white
+          and only the icon carries colour (orange-600, never a tinted ground: amber backgrounds are the sponsored
+          cards' treatment, so a tinted box could read as an ad). Each line is a row that opens its Inspect item.
+          The cover links here ("N things here can affect your insurance"). */}
+      {insuranceFlags.length > 0 && (
+        <div id="insurance-flags" data-print-block className="scroll-mt-32 mt-8">
+          <div className="flex items-center gap-2 ml-4 mb-2 [break-after:avoid]">
+            <TriangleAlert aria-hidden="true" className="w-[18px] h-[18px] text-orange-600 shrink-0" strokeWidth={2.25} />
+            <h3 className="text-[17px] font-semibold text-slate-900">Ask your insurer about these</h3>
+          </div>
+          <div className="rounded-3xl bg-white overflow-hidden">
+            <ul className="divide-y divide-slate-200/70">
+              {insuranceFlags.map(({ text, ruleId }) => {
+                const [name, ...rest] = text.split(' — ');
+                const detail = rest.join(' — ');
+                const body = (
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[17px] font-semibold leading-snug text-slate-900">{name}</span>
+                    {detail && <span className="block mt-0.5 text-[15px] text-slate-500 leading-snug">{detail.charAt(0).toUpperCase() + detail.slice(1)}</span>}
+                  </span>
+                );
+                return (
+                  <li key={text}>
+                    {ruleId ? (
+                      <button
+                        type="button"
+                        onClick={() => openItem(ruleId)}
+                        className="print-row w-full flex items-start gap-3 px-4 sm:px-5 py-3.5 text-left cursor-pointer hover:bg-slate-50 transition-colors"
+                      >
+                        {body}
+                        <ChevronRight aria-hidden="true" className="print:hidden mt-1 w-4 h-4 shrink-0 text-slate-400" />
+                      </button>
+                    ) : (
+                      <div className="flex items-start gap-3 px-4 sm:px-5 py-3.5">{body}</div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+            <div className="border-t border-slate-200/70 px-4 sm:px-5 py-4 space-y-1.5">
+              {/* Dark, not blue: on an Apple page blue means "tap me", and this line is advice, not a link. */}
+              <p className="text-[15px] font-semibold text-slate-900 leading-snug">Get a quote before you remove contingencies, not after.</p>
+              <p className="text-[13px] text-slate-500 leading-relaxed">
+                Carrier rules vary, and this is not a determination that any of the above is actually present in this home.
+              </p>
+            </div>
+          </div>
         </div>
       )}
 
