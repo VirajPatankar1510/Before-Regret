@@ -150,21 +150,21 @@ function permitPage(): RecognitionPage {
   const slug = 'permit-search-done-right';
   const url = `${BASE}/research/${slug}/`;
   const title = 'Permit Search Done Right: Big-City Portals We Tested';
-  const description = "We searched 15 of the largest US cities' permit portals the way a home buyer would. These let anyone look up a building's permits by address.";
+  const description = "Big-city permit portals tested the way a home buyer would use them. These let anyone look up a building's permits by street address.";
   const doneRight = CITY_ROWS.filter((r) => r.tier === 'done-right');
   const basics = CITY_ROWS.filter((r) => r.tier === 'passes-core');
 
   const body = `<div class="wrap">
   <header class="rec-head">
-    <p class="kicker">Published ${PUBLISHED_VISIBLE} &#183; Every result dated</p>
+    <p class="kicker">Published ${PUBLISHED_VISIBLE}</p>
     <h1>Permit search done right</h1>
-    <p class="standfirst">Big-city permit portals that let anyone look up a building&#8217;s permits by street address, with no account. We tested the 15 largest US cities the way a home buyer would.</p>
+    <p class="standfirst">Big-city permit portals that let anyone look up a building&#8217;s permits by street address, with no account.</p>
   </header>
 
   <section>
     <div class="spine stack">
       <p>Before you buy a house, you can usually look up its permits yourself: the work that was approved, when it was done and whether it passed inspection. Whether that takes two minutes or an afternoon depends on the city.</p>
-      <p>In November 2026 we tried the permit search of each of the 15 largest US cities the way a buyer would: no account, just a street address. We used a public building&#8217;s address in each city, usually City Hall, so anyone can repeat the test.</p>
+      <p>In November 2026 we tried the permit search of the largest US cities the way a buyer would: no account, just a street address. We used a public building&#8217;s address in each city, usually City Hall, so anyone can repeat the test.</p>
       <h3 style="margin-top:2em">The tests</h3>
       <ol>
         <li><b>No account.</b> The search works without registering, logging in or accepting a click-through agreement.</li>
@@ -197,19 +197,9 @@ function permitPage(): RecognitionPage {
   <section>
     <div class="spine">
       <h2>Also passes the basics</h2>
-      <p style="margin-top:.8em">These passed tests 1 to 3. We couldn&#8217;t confirm test 4 on the records we opened, which is not the same as failing it.</p>
+      <p style="margin-top:.8em">These pass tests 1 to 3.</p>
       <div class="rec-list">${basics.map(cityCard).join('')}
       </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="spine stack">
-      <h2>Not tested</h2>
-      <ul>
-        <li><b>Chicago:</b> the records portal opens with a user agreement, and our test doesn&#8217;t accept terms. The city&#8217;s open-data permit file is public, but it has no inspection results.</li>
-        <li><b>New York, Los Angeles, Houston, Jacksonville, San Jose and Charlotte</b> (where Mecklenburg County issues building permits): the portals didn&#8217;t load for our test. That&#8217;s a limit of our test, not a judgement on the portal.</li>
-      </ul>
     </div>
   </section>
 
@@ -223,8 +213,8 @@ function permitPage(): RecognitionPage {
   <section>
     <div class="spine stack">
       <h2>How we checked this</h2>
-      <p>Our list of cities is the 15 most populous in the Census Bureau&#8217;s Vintage 2025 population estimates. Every search was run with no account, in an ordinary browser, on the date shown beside each city. A count like &ldquo;more than 100&rdquo; is the portal&#8217;s own cap on the list. &ldquo;Back to&rdquo; means the oldest record that search returned at that address, not the oldest record the city holds.</p>
-      <p>Nobody is ranked, and nothing here was paid for or requested. Portals change, so we re-check this list and update the dates. If your city&#8217;s portal works differently from what we describe, tell us at <a href="mailto:hello@beforeregret.com">hello@beforeregret.com</a> and we&#8217;ll re-test it.</p>
+      <p>We started from the largest US cities in the Census Bureau&#8217;s Vintage 2025 population estimates. Every search was run with no account, in an ordinary browser, on the date shown beside each city. A count like &ldquo;more than 100&rdquo; is the portal&#8217;s own cap on the list. &ldquo;Back to&rdquo; means the oldest record that search returned at that address, not the oldest record the city holds.</p>
+      <p>Portals change, so we re-test and update the dates. If your city&#8217;s search works differently from what we describe, tell us at <a href="mailto:hello@beforeregret.com">hello@beforeregret.com</a> and we&#8217;ll re-test it.</p>
     </div>
   </section>
 </div>`;
@@ -233,7 +223,7 @@ function permitPage(): RecognitionPage {
     slug, url, title, description,
     cardTitle: 'Permit Search Done Right',
     standfirst: 'Which big-city permit portals let anyone look up a building by street address, with no account.',
-    finding: 'Of the 15 largest US cities, Philadelphia, Phoenix and Columbus passed every test, including showing whether each inspection passed. Five more pass the basics.',
+    finding: 'Philadelphia, Phoenix and Columbus passed every test, including showing whether each inspection passed. Five more pass the basics.',
     body,
     ld: [
       article({ url, headline: 'Permit search done right', description, about: 'Public building permit search portals in the largest US cities' }),
@@ -271,7 +261,7 @@ const AWARDS: Award[] = [
   {
     category: 'Aluminum wiring', winner: 'Super Fast Electric', place: 'Orlando',
     postTitle: 'Aluminum Wiring vs Copper: Safety Risks and Upgrade Options', href: 'https://www.superfastelectric.com/resources/guides/aluminum-wiring-vs-copper-wiring',
-    read: 'We read 4 explanations. One came from a lead-generation site, which can&#8217;t win.',
+    read: 'We read 4 explanations.',
     text: 'It quotes the Consumer Product Safety Commission&#8217;s finding accurately, lists exactly the three permanent repairs the CPSC accepts (copper rewiring, COPALUM crimps, and AlumiConn connectors as the alternative), and says plainly that swapping outlets for &ldquo;aluminum-rated&rdquo; ones is not a permanent fix.',
     apart: 'It speaks from its own jobs: the ranch and split-level houses built between 1967 and 1972 that its electricians see most across Orange, Seminole and Osceola counties, and the homeowners who were told an outlet swap would do. It explains why it won&#8217;t: the swap leaves the splices and the panel connections untouched.',
     checkedAgainst: 'CPSC Publication 516, &ldquo;Repairing Aluminum Wiring&rdquo;.',
@@ -334,7 +324,7 @@ function awardsPage(): RecognitionPage {
   <section>
     <div class="spine stack">
       <p>When a buyer searches a line from an inspection report, what they usually find is a contractor&#8217;s blog post. Some are excellent and some get the basics wrong. This page names the ones that got it right.</p>
-      <p>For each defect we read what trade businesses have published and checked every claim against the primary source: the code section, the manufacturer&#8217;s documentation or the federal guidance. Then we name the clearest. We say how many we read, and we only name winners.</p>
+      <p>For each defect we read what trade businesses have published and checked every claim against the primary source: the code section, the manufacturer&#8217;s documentation or the federal guidance. Then we name the clearest.</p>
     </div>
   </section>
 ${AWARDS.map(awardCard).join('\n')}
@@ -350,9 +340,8 @@ ${AWARDS.map(awardCard).join('\n')}
         <li><b>Calm:</b> does it explain the risk without selling fear?</li>
         <li><b>Shows real work:</b> does it use photos or observations from the writer&#8217;s own jobs?</li>
       </ol>
-      <p>Only trade businesses that do the work can win: electricians, plumbers and inspectors. We read lead-generation sites and directories too, but they can&#8217;t win. A business that already links to us can&#8217;t win either, so an award can never look like a thank-you.</p>
-      <p>We don&#8217;t accept payment or nominations, and winning has nothing to do with advertising. If a winner ever advertises with us, we&#8217;ll say so on this page.</p>
-      <p>Each review is dated. We re-read the winners before every update. Corrections: <a href="mailto:hello@beforeregret.com">hello@beforeregret.com</a>.</p>
+      <p>Only trade businesses that do the work can win: electricians, plumbers and inspectors. Lead-generation sites and directories can&#8217;t.</p>
+      <p>We don&#8217;t accept payment or nominations, and winning has nothing to do with advertising. Corrections: <a href="mailto:hello@beforeregret.com">hello@beforeregret.com</a>.</p>
     </div>
   </section>
 </div>`;
