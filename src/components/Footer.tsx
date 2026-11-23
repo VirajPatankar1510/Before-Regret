@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ShieldCheck, ArrowRight, BookOpen } from 'lucide-react';
-import { Logo } from './Logo';
 import { ContentLink } from './home/ContentLink';
 import { PREFERRED_SOURCE_URL, PREFERRED_SOURCE_LABEL } from '../data/preferredSource';
 import { pickFooterGuides } from '../data/footerGuides';
@@ -101,133 +99,94 @@ export const Footer: React.FC<FooterProps> = ({ onNewSearch, onNavigate }) => {
     };
   }, []);
 
+  // 2026-11-23 (Apple-style pass 3): a quiet, small-type directory like apple.com's footer. The big logo,
+  // the "Research a Property" button and the shield heading went; every link stayed (they are crawl paths,
+  // see StaticFooterLinks.tsx), regrouped into four short columns with the legal links on the last line.
+  const L = 'text-slate-600 hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer block py-1';
   return (
-    <footer ref={footerRef} className="bg-home-mist text-slate-600 border-t border-slate-300 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-slate-300">
-          
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Logo className="w-8 h-8 shrink-0" />
-              <div>
-                <span className="font-extrabold text-lg text-slate-900 tracking-tight block">Before Regret</span>
-                <span className="text-[10px] font-medium text-slate-500">Check it before you sign it.</span>
-              </div>
-            </div>
-            <p className="text-xs text-slate-500 max-w-md">
-              Property research guides for US home buyers, built from public records.
-            </p>
-          </div>
+    <footer ref={footerRef} className="bg-home-mist text-[12px] leading-[1.4] text-slate-500 px-4 sm:px-6 lg:px-8 pt-8 pb-10">
+      <div className="max-w-5xl mx-auto">
 
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={onNewSearch}
-              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-full transition-all flex items-center gap-2 cursor-pointer shadow-md"
-            >
-              <span>Research a Property</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
+        {/* Required verbatim by the Census Bureau API's Terms of Service (Attribution section,
+            census.gov/data/developers/about/terms-of-service.html): "should display the
+            following notice prominently within the application." This is the one, site-wide
+            place that notice lives. */}
+        <div className="pb-4 border-b border-slate-300 space-y-2">
+          <p>Before Regret: property research guides for US home buyers, built from public records.</p>
+          <p>This product uses the Census Bureau Data API but is not endorsed or certified by the Census Bureau.</p>
         </div>
 
         {/* Directory Links for pSEO & Legal */}
         {onNavigate && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs text-slate-500 pb-6 border-b border-slate-300">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-6 py-6 border-b border-slate-300">
             {guides.length > 0 && (
-              <div className="space-y-2">
-                <div className="font-semibold text-slate-900 flex items-center gap-1.5">
-                  <BookOpen className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Editorial Guides</span>
-                </div>
-                <ul className="space-y-2">
+              <div className="col-span-2 sm:col-span-1">
+                <p className="font-semibold text-slate-900 mb-1.5">Guides</p>
+                <ul>
                   {guides.map((guide) => (
                     <li key={guide.slug}>
-                      <ContentLink href={`/guides/${guide.slug}/`} onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer block py-1.5">{guide.title}</ContentLink>
+                      <ContentLink href={`/guides/${guide.slug}/`} onNavigate={onNavigate} className={L}>{guide.title}</ContentLink>
                     </li>
                   ))}
                   <li>
-                    <ContentLink href="/guides/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-700 block py-1.5">View all guides →</ContentLink>
+                    <ContentLink href="/guides/" onNavigate={onNavigate} className={L}>View all guides</ContentLink>
                   </li>
                 </ul>
               </div>
             )}
 
-            <div className="space-y-2">
-              <div className="font-semibold text-slate-900 flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
-                <span>Legal & Support Policies</span>
-              </div>
-              <ul className="space-y-2">
-                <li><ContentLink href="/about/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-700 block py-1.5">About & Methodology</ContentLink></li>
+            <div>
+              <p className="font-semibold text-slate-900 mb-1.5">Explore</p>
+              <ul>
+                <li><button type="button" onClick={onNewSearch} className={`${L} text-left`}>Check an address</button></li>
                 {/* Plain <a>, NOT ContentLink: /research/ and /sunlight/ are standalone static
                     documents (prerender-research.tsx, prerender-sunlight.tsx), not SPA routes.
                     ContentLink would preventDefault and hand the path to onNavigate, which has
-                    nothing to render for them -- the click would change the URL and blank the page.
-                    These need a real document load.
+                    nothing to render for them. ONE HUB LINK for research, not a list of studies:
+                    /research/ lists every study and is in the sitemap. */}
+                <li><a href="/research/" className={L}>Research &amp; Data</a></li>
+                <li><a href="/sunlight/" className={L}>Sunlight by Room</a></li>
+                <li><ContentLink href="/about/" onNavigate={onNavigate} className={L}>About &amp; Methodology</ContentLink></li>
+              </ul>
+            </div>
 
-                    ONE HUB LINK, NOT A LIST. This was four hardcoded study links, added when there
-                    were four studies, and never updated. By the time there were eight it was
-                    silently omitting half of them -- so the footer that exists to guarantee a crawl
-                    path had stopped providing one for the newest work, which is the exact failure
-                    it was written to prevent. /research/ lists every study and is in the sitemap,
-                    so each keeps its path and this stops needing maintenance on every publish. */}
-                <li>
-                  <a
-                    href="/research/"
-                    className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-700 block py-1.5"
-                  >
-                    Research &amp; Data
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/sunlight/"
-                    className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-700 block py-1.5"
-                  >
-                    Sunlight by Room
-                  </a>
-                </li>
-                <li><ContentLink href="/advertise/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-700 block py-1.5">Advertise With Us</ContentLink></li>
+            <div>
+              <p className="font-semibold text-slate-900 mb-1.5">For Businesses</p>
+              <ul>
+                <li><ContentLink href="/advertise/" onNavigate={onNavigate} className={L}>Advertise With Us</ContentLink></li>
                 {/* Vendors' sign-in door since the navbar's button stopped opening sign-in (2026-10-05). */}
-                <li><ContentLink href="/my-ads/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-700 block py-1.5">Manage My Ads</ContentLink></li>
-                <li><ContentLink href="/support/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-700 block py-1.5">Customer Support</ContentLink></li>
-                {/* External, so a plain <a> rather than ContentLink -- there is no SPA route to
-                    intercept. See src/data/preferredSource.ts for why this is a link and not
-                    Google's JavaScript button, and why the deeplink form matters. */}
-                <li>
-                  <a
-                    href={PREFERRED_SOURCE_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-700 block py-1.5"
-                  >
-                    {PREFERRED_SOURCE_LABEL}
-                  </a>
-                </li>
-                <li><ContentLink href="/terms/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-500 block py-1.5">Terms of Service</ContentLink></li>
-                <li><ContentLink href="/privacy/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-500 block py-1.5">Privacy Policy</ContentLink></li>
-                <li><ContentLink href="/refunds/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-500 block py-1.5">Refund & Cancellation</ContentLink></li>
-                <li><ContentLink href="/disclaimer/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-500 block py-1.5">Disclaimer</ContentLink></li>
-                <li><ContentLink href="/accessibility/" onNavigate={onNavigate} className="hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer text-slate-500 block py-1.5">Accessibility</ContentLink></li>
+                <li><ContentLink href="/my-ads/" onNavigate={onNavigate} className={L}>Manage My Ads</ContentLink></li>
+              </ul>
+            </div>
+
+            <div>
+              <p className="font-semibold text-slate-900 mb-1.5">Support</p>
+              <ul>
+                <li><ContentLink href="/support/" onNavigate={onNavigate} className={L}>Customer Support</ContentLink></li>
+                {/* External, so a plain <a> rather than ContentLink. See src/data/preferredSource.ts. */}
+                <li><a href={PREFERRED_SOURCE_URL} target="_blank" rel="noopener noreferrer" className={L}>{PREFERRED_SOURCE_LABEL}</a></li>
               </ul>
             </div>
           </div>
         )}
 
-        <div className="text-xs text-slate-500 space-y-1.5">
+        <div className="pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <p>© {new Date().getFullYear()} Before Regret. All rights reserved.</p>
-          {/* Required verbatim by the Census Bureau API's Terms of Service (Attribution section,
-              census.gov/data/developers/about/terms-of-service.html): "should display the
-              following notice prominently within the application." Several published pages
-              already draw on this API (county housing-age/insurance-cost comparisons, the era x
-              defect reference library) -- this is the one, site-wide place that notice lives,
-              rather than repeating it on every page that happens to use Census data. */}
-          <p className="text-[11px] text-slate-500">
-            This product uses the Census Bureau Data API but is not endorsed or certified by the Census Bureau.
-          </p>
+          {onNavigate && (
+            <ul className="flex flex-wrap items-center">
+              {[
+                ['/terms/', 'Terms of Service'],
+                ['/privacy/', 'Privacy Policy'],
+                ['/refunds/', 'Refund & Cancellation'],
+                ['/disclaimer/', 'Disclaimer'],
+                ['/accessibility/', 'Accessibility'],
+              ].map(([href, label], i) => (
+                <li key={href} className={i > 0 ? 'border-l border-slate-300 pl-2.5 ml-2.5' : ''}>
+                  <ContentLink href={href} onNavigate={onNavigate} className="text-slate-600 hover:text-slate-900 hover:underline underline-offset-2 cursor-pointer block py-1">{label}</ContentLink>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
       </div>

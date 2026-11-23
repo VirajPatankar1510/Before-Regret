@@ -1,5 +1,5 @@
 import React from 'react';
-import { ClipboardCheck, Sunrise, ChevronRight, BarChart3 } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { ContentLink } from './ContentLink';
 import stats from '../../data/homeStats.json';
 
@@ -49,7 +49,7 @@ interface WalkthroughToolSectionProps {
 const CARD =
   'flex flex-col rounded-3xl bg-white p-6';
 const CTA =
-  'mt-4 inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:underline underline-offset-2';
+  'mt-4 inline-flex items-center gap-1 text-[17px] text-blue-600 hover:underline underline-offset-2';
 
 export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ onNavigate }) => (
   <section className="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 bg-home-mist">
@@ -65,11 +65,8 @@ export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 
         <div className={CARD}>
-          <div className="flex items-center gap-2 mb-2">
-            <ClipboardCheck className="w-4 h-4 text-blue-600 shrink-0" aria-hidden="true" />
-            <h3 className="font-serif text-xl font-semibold text-home-ink">Viewing checklist</h3>
-          </div>
-          <p className="text-sm text-slate-700 leading-relaxed flex-1">
+          <h3 className="mb-2 font-serif text-2xl font-semibold text-home-ink tracking-[-0.01em]">Viewing checklist</h3>
+          <p className="text-[17px] text-slate-600 leading-relaxed flex-1">
             Tell us roughly when it was built and what it sits on. Get a short list to check while
             you&rsquo;re standing there.
           </p>
@@ -80,11 +77,8 @@ export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ 
         </div>
 
         <div className={CARD}>
-          <div className="flex items-center gap-2 mb-2">
-            <Sunrise className="w-4 h-4 text-blue-600 shrink-0" aria-hidden="true" />
-            <h3 className="font-serif text-xl font-semibold text-home-ink">Sunlight by room</h3>
-          </div>
-          <p className="text-sm text-slate-700 leading-relaxed flex-1">
+          <h3 className="mb-2 font-serif text-2xl font-semibold text-home-ink tracking-[-0.01em]">Sunlight by room</h3>
+          <p className="text-[17px] text-slate-600 leading-relaxed flex-1">
             Pick a county and the way a window faces. See when direct sun actually reaches that room,
             including the mornings you&rsquo;ll never see at a midday viewing.
           </p>
@@ -94,11 +88,8 @@ export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ 
           </a>
         </div>
         <div className={CARD}>
-          <div className="flex items-center gap-2 mb-2">
-            <BarChart3 className="w-4 h-4 text-blue-600 shrink-0" aria-hidden="true" />
-            <h3 className="font-serif text-xl font-semibold text-home-ink">Our own research</h3>
-          </div>
-          <p className="text-sm text-slate-700 leading-relaxed flex-1">
+          <h3 className="mb-2 font-serif text-2xl font-semibold text-home-ink tracking-[-0.01em]">Our own research</h3>
+          <p className="text-[17px] text-slate-600 leading-relaxed flex-1">
             We dig through public federal data and publish every figure for free. One finding:{' '}
             {stats.outsideZone.sharePct}% of federal flood insurance claims were paid on homes outside
             the high-risk flood zone.{' '}

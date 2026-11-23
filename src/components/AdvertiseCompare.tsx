@@ -231,7 +231,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             <div className="mt-6 font-serif text-4xl font-semibold text-home-ink">
               $29 <span className="font-sans text-base font-medium text-slate-500">for 3 ZIP codes, 30 days</span>
             </div>
-            <ul className="mt-6 space-y-3 text-[15px] text-slate-700 leading-relaxed">
+            <ul className="mt-6 space-y-3 text-[17px] text-slate-700 leading-relaxed">
               <Bullet>Any 3 US ZIP codes. One trade.</Bullet>
               <Bullet>{slotsPerZipPhrase()}, first come, first served.</Bullet>
               <Bullet>Shown beside the report item for your trade. Home inspectors, movers, agents and interior designers get their own box on every report.</Bullet>
@@ -304,7 +304,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             <div className="mt-6 font-serif text-4xl font-semibold text-home-ink">
               $9.99 <span className="font-sans text-base font-medium text-slate-500">per article, 30 days</span>
             </div>
-            <ul className="mt-6 space-y-3 text-[15px] text-slate-700 leading-relaxed">
+            <ul className="mt-6 space-y-3 text-[17px] text-slate-700 leading-relaxed">
               <Bullet>One advertiser per article. While it&rsquo;s yours, it&rsquo;s only yours.</Bullet>
               <Bullet>No location targeting: the ad shows to every reader of the article, county guides included.</Bullet>
               <Bullet>As many articles as you like. 30 days each.</Bullet>
@@ -364,7 +364,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             {ADVERTISE_FAQ_ITEMS.map((item) => (
               <div key={item.q} className="py-5 first:pt-0 last:pb-0">
                 <h3 className="text-base font-bold text-home-ink">{item.q}</h3>
-                <p className="mt-2 text-[15px] text-slate-700 leading-relaxed">{item.a}</p>
+                <p className="mt-2 text-[17px] text-slate-700 leading-relaxed">{item.a}</p>
               </div>
             ))}
           </div>

@@ -1,5 +1,4 @@
 import React from 'react';
-import { BookOpen, ShieldCheck } from 'lucide-react';
 import { PREFERRED_SOURCE_URL, PREFERRED_SOURCE_LABEL } from '../data/preferredSource';
 
 export interface FooterGuideSummary {
@@ -34,58 +33,66 @@ interface StaticFooterLinksProps {
 // hydration mismatch to worry about and no risk of a stale duplicate footer surviving past first
 // paint; this markup only has to do its job for a crawler, or for the brief window before the JS
 // bundle takes over.
+// 2026-11-23 (Apple-style pass 3): same small-type, four-column layout as Footer.tsx, so the page does not
+// visibly change when the app replaces this markup. Same links as before, regrouped.
+const L = 'text-slate-600 hover:text-slate-900 hover:underline underline-offset-2 block py-1';
+
 export function StaticFooterLinks({ guides }: StaticFooterLinksProps) {
   return (
-    <nav aria-label="Site sections" className="bg-home-mist text-slate-600 py-10 px-4 sm:px-6 lg:px-8 border-t border-slate-300">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs text-slate-500">
-        <div className="space-y-2">
-          <div className="font-semibold text-slate-900 flex items-center gap-1.5">
-            <BookOpen className="w-3.5 h-3.5 text-slate-400" />
-            <span>Editorial Guides</span>
+    <nav aria-label="Site sections" className="bg-home-mist text-[12px] leading-[1.4] text-slate-500 px-4 sm:px-6 lg:px-8 pt-8 pb-10">
+      <div className="max-w-5xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-6 pb-6 border-b border-slate-300">
+          <div className="col-span-2 sm:col-span-1">
+            <p className="font-semibold text-slate-900 mb-1.5">Guides</p>
+            <ul>
+              {guides.map((g) => (
+                <li key={g.slug}><a href={`/guides/${g.slug}/`} className={L}>{g.title}</a></li>
+              ))}
+              <li><a href="/guides/" className={L}>View all guides</a></li>
+            </ul>
           </div>
-          <ul className="space-y-2">
-            {guides.map((g) => (
-              <li key={g.slug}>
-                <a href={`/guides/${g.slug}/`} className="hover:text-slate-900 hover:underline underline-offset-2 block py-1.5">{g.title}</a>
-              </li>
-            ))}
-            <li><a href="/guides/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-700 block py-1.5">View all guides →</a></li>
-          </ul>
-        </div>
-        <div className="space-y-2">
-          <div className="font-semibold text-slate-900 flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
-            <span>Legal &amp; Support</span>
+          <div>
+            <p className="font-semibold text-slate-900 mb-1.5">Explore</p>
+            <ul>
+              <li><a href="/" className={L}>Check an address</a></li>
+              {/* The studies and /sunlight/ are standalone static documents (prerender-research.tsx,
+                  prerender-sunlight.tsx), not SPA routes, so these links are the only crawlable path to
+                  them from the rest of the site. ONE HUB LINK for research, not a list: /research/ lists
+                  every study and is in the sitemap. */}
+              <li><a href="/research/" className={L}>Research &amp; Data</a></li>
+              <li><a href="/sunlight/" className={L}>Sunlight by Room</a></li>
+              <li><a href="/about/" className={L}>About &amp; Methodology</a></li>
+            </ul>
           </div>
-          <ul className="space-y-2">
-            <li><a href="/about/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-700 block py-1.5">About &amp; Methodology</a></li>
-            {/* The studies and /sunlight/ are standalone static documents (prerender-research.tsx,
-                prerender-sunlight.tsx), not SPA routes, so they are unreachable from the app's own
-                navigation. These links are the only crawlable path to them from the rest of the
-                site, and they render on every prerendered page -- which matters, given how much of
-                this site sits in "Discovered - currently not indexed" for want of internal links.
-
-                ONE HUB LINK, NOT A LIST. This was four hardcoded study links, added when there were
-                four studies. It was never updated. By the time there were eight it was silently
-                omitting half of them, including the most recent -- so the footer that exists to
-                guarantee a crawl path had stopped providing one for the newest work. /research/
-                lists every study and is in the sitemap, so each one keeps its path and this stops
-                needing maintenance every time a study ships. */}
-            <li><a href="/research/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-700 block py-1.5">Research &amp; Data</a></li>
-            <li><a href="/sunlight/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-700 block py-1.5">Sunlight by Room</a></li>
-            <li><a href="/advertise/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-700 block py-1.5">Advertise With Us</a></li>
-            <li><a href="/my-ads/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-700 block py-1.5">Manage My Ads</a></li>
-            <li><a href="/support/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-700 block py-1.5">Customer Support</a></li>
-            {/* Mirrors Footer.tsx, reading the same constant so the two renderings of this link
-                cannot drift apart. See src/data/preferredSource.ts. */}
-            <li><a href={PREFERRED_SOURCE_URL} target="_blank" rel="noopener noreferrer" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-700 block py-1.5">{PREFERRED_SOURCE_LABEL}</a></li>
-            <li><a href="/terms/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-500 block py-1.5">Terms of Service</a></li>
-            <li><a href="/privacy/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-500 block py-1.5">Privacy Policy</a></li>
-            <li><a href="/refunds/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-500 block py-1.5">Refund &amp; Cancellation</a></li>
-            <li><a href="/disclaimer/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-500 block py-1.5">Disclaimer</a></li>
-            <li><a href="/accessibility/" className="hover:text-slate-900 hover:underline underline-offset-2 text-slate-500 block py-1.5">Accessibility</a></li>
-          </ul>
+          <div>
+            <p className="font-semibold text-slate-900 mb-1.5">For Businesses</p>
+            <ul>
+              <li><a href="/advertise/" className={L}>Advertise With Us</a></li>
+              <li><a href="/my-ads/" className={L}>Manage My Ads</a></li>
+            </ul>
+          </div>
+          <div>
+            <p className="font-semibold text-slate-900 mb-1.5">Support</p>
+            <ul>
+              <li><a href="/support/" className={L}>Customer Support</a></li>
+              {/* Mirrors Footer.tsx, reading the same constant so the two cannot drift apart. */}
+              <li><a href={PREFERRED_SOURCE_URL} target="_blank" rel="noopener noreferrer" className={L}>{PREFERRED_SOURCE_LABEL}</a></li>
+            </ul>
+          </div>
         </div>
+        <ul className="pt-4 flex flex-wrap items-center">
+          {[
+            ['/terms/', 'Terms of Service'],
+            ['/privacy/', 'Privacy Policy'],
+            ['/refunds/', 'Refund & Cancellation'],
+            ['/disclaimer/', 'Disclaimer'],
+            ['/accessibility/', 'Accessibility'],
+          ].map(([href, label], i) => (
+            <li key={href} className={i > 0 ? 'border-l border-slate-300 pl-2.5 ml-2.5' : ''}>
+              <a href={href} className={L}>{label}</a>
+            </li>
+          ))}
+        </ul>
       </div>
     </nav>
   );

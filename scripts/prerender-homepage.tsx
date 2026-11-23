@@ -92,7 +92,7 @@ function HomeStaticBody({ data }: { data: HomeData }) {
             {HOMEPAGE_FAQS.map((faq, idx) => (
               <div key={idx} className="bg-white rounded-2xl overflow-hidden">
                 <div className="w-full p-6 text-left font-sans text-lg font-bold text-slate-900">{faq.q}</div>
-                <div className="px-6 pb-6 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 font-sans">
+                <div className="px-6 pb-6 pt-1 text-[17px] text-slate-600 leading-relaxed border-t border-slate-100 font-sans">
                   {faq.a}
                 </div>
               </div>

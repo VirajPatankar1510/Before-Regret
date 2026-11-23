@@ -46,12 +46,12 @@ export const HouseXraySection: React.FC<{ onNavigate?: (path: string) => void }>
             >
               <span className="shrink-0 w-7 h-7 rounded-full bg-home-mist text-slate-500 text-xs font-semibold flex items-center justify-center">{s.n}</span>
               <span className="min-w-0 flex flex-col">
-                <span className="block text-base font-bold text-home-ink">{s.q}</span>
+                <span className="block text-[19px] leading-snug font-semibold text-home-ink">{s.q}</span>
                 {s.tag && (
                   <span className="mt-1.5 self-start inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700"><span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-blue-600" />{s.tag}</span>
                 )}
-                <span className="mt-1 block text-sm text-slate-600 leading-relaxed">{s.a}</span>
-                <span className="mt-auto pt-3 inline-flex items-center gap-1 text-sm font-medium text-blue-600 group-hover:underline underline-offset-2">
+                <span className="mt-1.5 block text-[17px] text-slate-600 leading-relaxed">{s.a}</span>
+                <span className="mt-auto pt-3 inline-flex items-center gap-1 text-[17px] text-blue-600 group-hover:underline underline-offset-2">
                   Learn more <ChevronRight className="w-4 h-4" aria-hidden="true" />
                 </span>
               </span>

@@ -65,24 +65,27 @@ export const GuideCardsSection: React.FC<GuideCardsSectionProps> = ({
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* 2026-11-23 (Apple-style pass 3): on phones the cards are one row you swipe sideways (the next card
+            peeks in), like Apple's shelves; from 640px up it is the same grid as before. Every card and link
+            is still in the HTML, so nothing changes for crawlers. */}
+        <div className="no-scrollbar -mx-4 px-4 scroll-px-4 flex gap-4 overflow-x-auto snap-x snap-mandatory sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-5 sm:overflow-visible">
           {cards.map((card) => (
             <ContentLink
               key={card.slug}
               href={`/guides/${card.slug}/`}
               onNavigate={onNavigate}
-              className="bg-home-mist border border-transparent rounded-3xl p-6 flex flex-col gap-2.5 hover:bg-home-linen/60 hover:-translate-y-0.5 transition-all group"
+              className="w-[82%] shrink-0 snap-start sm:w-auto bg-home-mist border border-transparent rounded-3xl p-6 flex flex-col gap-2.5 hover:bg-home-linen/60 sm:hover:-translate-y-0.5 transition-all group"
             >
-              <span className="text-xs font-semibold text-slate-500">
+              <span className="text-sm font-semibold text-slate-500">
                 {card.tag}
               </span>
-              <h3 className="text-base font-bold text-slate-900 leading-snug transition-colors">
+              <h3 className="text-[19px] font-semibold text-slate-900 leading-snug transition-colors">
                 {card.title}
               </h3>
               {card.excerpt && (
-                <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">{card.excerpt}</p>
+                <p className="text-[17px] text-slate-600 leading-relaxed line-clamp-3">{card.excerpt}</p>
               )}
-              <span className="text-sm font-medium text-blue-600 group-hover:underline underline-offset-2 inline-flex items-center gap-1 mt-auto pt-1">
+              <span className="text-[17px] text-blue-600 group-hover:underline underline-offset-2 inline-flex items-center gap-1 mt-auto pt-1">
                 Read guide <ChevronRight className="w-4 h-4" />
               </span>
             </ContentLink>
@@ -93,7 +96,7 @@ export const GuideCardsSection: React.FC<GuideCardsSectionProps> = ({
           <ContentLink
             href="/guides/"
             onNavigate={onNavigate}
-            className="inline-flex items-center gap-1 text-base font-medium text-blue-600 hover:underline underline-offset-2"
+            className="inline-flex items-center gap-1 text-[17px] text-blue-600 hover:underline underline-offset-2"
           >
             Browse all {totalGuides} guides <ChevronRight className="w-4 h-4" />
           </ContentLink>

@@ -68,10 +68,9 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
       <div ref={searchBoxRef} id="address-search-box" className="mt-10 mx-auto max-w-2xl min-h-[190px] sm:min-h-[140px] text-left text-slate-900">
         {searchBox ?? (
           <div aria-hidden="true" className="space-y-4">
-            <div className="rounded-2xl bg-white border border-slate-200 shadow-lg p-3 sm:p-4">
-              <div className="rounded-xl bg-slate-50 border border-slate-300 px-3 py-2 text-slate-400 text-xs sm:text-sm">
-                Street address, city, state
-              </div>
+            <div className="flex items-center rounded-full bg-slate-100 border border-transparent px-5 py-3.5 sm:py-4 text-slate-500 text-[17px] leading-[1.5]">
+              <span className="w-5 h-5 mr-3 shrink-0" />
+              Street address, city, state
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div className="rounded-full bg-blue-600 px-5 py-3.5 text-sm font-bold text-white text-center leading-tight">Start research<span className="block mt-0.5 text-xs font-medium text-blue-100">One question at a time</span></div>

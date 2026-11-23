@@ -809,11 +809,12 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
   return (
     <div className="w-full max-w-4xl mx-auto space-y-4 text-left">
 
-      {/* Search Bar */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-3 sm:p-4 shadow-lg relative z-30">
+      {/* Search Bar. 2026-11-23 (Apple-style pass 3): one large gray field, no card around it; 17px text, so
+          an iPhone no longer zooms the page when the field is tapped. */}
+      <div className="relative z-30">
         <form onSubmit={handleMapSearch} className={`flex items-center gap-2 relative ${onStartResearch ? 'flex-wrap' : ''}`}>
-          <div className="relative flex-1 flex items-center bg-slate-50 border border-slate-300 focus-within:border-blue-500 rounded-xl px-3 py-2 transition-all">
-            <Search className="w-4 h-4 text-slate-500 mr-2 shrink-0" />
+          <div className="relative flex-1 flex items-center bg-slate-100 border border-transparent focus-within:border-blue-500 focus-within:bg-white rounded-full px-5 py-3.5 sm:py-4 transition-colors">
+            <Search className="w-5 h-5 text-slate-500 mr-3 shrink-0" />
             {/* aria-label, not a visible <label>: this is the homepage's primary conversion control
                 and its design is a placeholder-only search field, but a placeholder is not an
                 accessible name (it vanishes on input and is skipped by some screen readers), so the
@@ -838,13 +839,13 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               // 2026-11-23 (owner): was the worked example "e.g. 301 Congress Ave, Austin, TX".
               // Now the format in three words; the address suggestions show what a full one looks like.
               placeholder="Street address, city, state"
-              className="w-full text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 bg-transparent focus:outline-none"
+              className="w-full text-[17px] text-slate-900 placeholder:text-slate-500 bg-transparent focus:outline-none"
             />
           </div>
           {!onStartResearch && <button
             type="submit"
             disabled={isSearchingMap}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-full transition-all shadow-md flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-50"
+            className="px-5 py-3.5 sm:py-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-[15px] rounded-full transition-all flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-50"
           >
             {isSearchingMap ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>Search</span>}
           </button>}
@@ -853,13 +854,13 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           {showSuggestions && suggestions.length > 0 && (
             // With the two start buttons below, the list sits in the page flow and pushes them down instead of covering
             // "Start research" (walk-through 2026-11-19).
-            <div className={`${onStartResearch ? 'basis-full w-full' : 'absolute top-full left-0 right-0 mt-2 shadow-2xl z-50'} bg-white border border-slate-200 rounded-xl overflow-hidden max-h-64 overflow-y-auto divide-y divide-slate-100`}>
+            <div className={`${onStartResearch ? 'basis-full w-full' : 'absolute top-full left-0 right-0 mt-2 shadow-2xl z-50'} bg-white border border-slate-200 rounded-2xl overflow-hidden max-h-72 overflow-y-auto divide-y divide-slate-100`}>
               {suggestions.map((item, idx) => (
                 <button
                   key={item.place_id || idx}
                   type="button"
                   onClick={() => selectLocation(parseFloat(item.lat), parseFloat(item.lon), item.display_name, item)}
-                  className="w-full text-left px-3.5 py-2.5 hover:bg-blue-50 transition-colors flex items-start gap-2.5 text-xs text-slate-700 cursor-pointer"
+                  className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors flex items-start gap-2.5 text-[15px] text-slate-700 cursor-pointer"
                 >
                   <MapPin className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                   <span className={`${onStartResearch ? '' : 'truncate '}leading-relaxed font-medium`}>{suggestionLine(item)}</span>

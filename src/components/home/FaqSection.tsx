@@ -34,7 +34,7 @@ export const HomepageDefinitions: React.FC = () => (
     {HOMEPAGE_DEFINITIONS.map((d) => (
       <div key={d.q} className="bg-white rounded-3xl p-6">
         <h3 className="font-sans text-lg font-bold text-slate-900">{d.q}</h3>
-        <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">{d.a}</p>
+        <p className="mt-2 text-[17px] text-slate-600 leading-relaxed font-sans">{d.a}</p>
       </div>
     ))}
   </div>
@@ -111,7 +111,7 @@ export const FaqSection: React.FC = () => {
                   role="region"
                   aria-labelledby={`faq-trigger-${idx}`}
                   hidden={!isOpen}
-                  className="px-6 pb-6 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 font-sans"
+                  className="px-6 pb-6 pt-1 text-[17px] text-slate-600 leading-relaxed border-t border-slate-100 font-sans"
                 >
                   {faq.a}
                 </div>
