@@ -49,6 +49,16 @@ export const RECOGNITION_CSS = `
 .spine a{color:var(--ink);text-decoration-color:var(--price);text-underline-offset:3px}
 .spine ol,.spine ul{padding-left:1.3em}
 .spine li{margin:.35em 0}
+.rec-tablewrap{margin-top:1.2em;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.rec-table{border-collapse:collapse;width:100%;min-width:520px;font-size:.95rem}
+.rec-table th{text-align:left;font-weight:600;padding:10px 12px 10px 0;border-bottom:1px solid var(--rule);vertical-align:bottom}
+.rec-table td{padding:12px 12px 12px 0;border-bottom:1px solid var(--rule)}
+.rec-table td:first-child,.rec-table th:first-child{white-space:nowrap}
+.rec-pass{color:#1F7A3D;font-weight:500}
+.rec-nd{color:var(--muted)}
+.rec-caption{font-size:.88rem;color:var(--muted);margin-top:.8em}
+@media (prefers-color-scheme:dark){.rec-pass{color:#5FC27E}}
+@media (max-width:600px){.rec-table{min-width:0;font-size:.8rem}.rec-table th,.rec-table td{padding-right:6px}.rec-table th{font-size:.62rem;letter-spacing:.04em}.rec-table td:first-child{white-space:normal}}
 `;
 
 function article(p: { url: string; headline: string; description: string; about: string }) {
@@ -145,6 +155,24 @@ function cityCard(r: CityRow): string {
       </div>`;
 }
 
+// The at-a-glance table is derived from each row's tier, so it can never disagree with the cards below it
+// or with the test file (checkCityRowsAgainstTests). passes-core = tests 1-3 shown; test 4 was not shown,
+// which is not the same as failed.
+function resultsTable(rows: CityRow[]): string {
+  const pass = '<td class="rec-pass">Pass</td>';
+  const tr = (r: CityRow) =>
+    `\n          <tr><td>${r.city}</td>${pass}${pass}${pass}${r.tier === 'done-right' ? pass : '<td class="rec-nd">Not demonstrated</td>'}</tr>`;
+  return `
+      <div class="rec-tablewrap">
+        <table class="rec-table">
+          <thead><tr><th scope="col">City</th><th scope="col">No account</th><th scope="col">Address search</th><th scope="col">Building found</th><th scope="col">Inspection results</th></tr></thead>
+          <tbody>${rows.map(tr).join('')}
+          </tbody>
+        </table>
+      </div>
+      <p class="rec-caption">&ldquo;Not demonstrated&rdquo; is not a failed test. It means the inspections we opened in that city didn&#8217;t show a completed result, so we can only report tests 1 to 3 as passed.</p>`;
+}
+
 function permitPage(): RecognitionPage {
   checkCityRowsAgainstTests();
   const slug = 'permit-search-done-right';
@@ -173,6 +201,7 @@ function permitPage(): RecognitionPage {
         <li><b>Inspection results are visible.</b> A completed inspection shows whether it passed.</li>
       </ol>
       <p>Tests 1 to 3 are the basics. Test 4 is what turns a permit list into an answer: a permit that was opened is not the same as work that passed.</p>
+      <h3 style="margin-top:2em">The results at a glance</h3>${resultsTable([...doneRight, ...basics])}
     </div>
   </section>
 
@@ -215,6 +244,14 @@ function permitPage(): RecognitionPage {
       <h2>How we checked this</h2>
       <p>We started from the largest US cities in the Census Bureau&#8217;s Vintage 2025 population estimates. Every search was run with no account, in an ordinary browser, on the date shown beside each city. A count like &ldquo;more than 100&rdquo; is the portal&#8217;s own cap on the list. &ldquo;Back to&rdquo; means the oldest record that search returned at that address, not the oldest record the city holds.</p>
       <p>Portals change, so we re-test and update the dates. If your city&#8217;s search works differently from what we describe, tell us at <a href="mailto:hello@beforeregret.com">hello@beforeregret.com</a> and we&#8217;ll re-test it.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="spine stack">
+      <h2>What this test can and cannot tell you</h2>
+      <p>We tested whether each city&#8217;s public portal lets a buyer search an address without an account and access permit and inspection records. We used public-building addresses so the tests could be repeated.</p>
+      <p>This tests the portal&#8217;s accessibility and the information it displays for those addresses. It does not establish how complete the permit history is for a typical residential property, or whether every permit and inspection is available online.</p>
     </div>
   </section>
 </div>`;
