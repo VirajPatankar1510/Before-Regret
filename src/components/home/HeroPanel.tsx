@@ -70,19 +70,19 @@ export const HeroPanel: React.FC<HeroPanelProps> = ({ searchBox, searchBoxRef })
           <div aria-hidden="true" className="space-y-4">
             <div className="rounded-2xl bg-white border border-slate-200 shadow-lg p-3 sm:p-4">
               <div className="rounded-xl bg-slate-50 border border-slate-300 px-3 py-2 text-slate-400 text-xs sm:text-sm">
-                e.g. 301 Congress Ave, Austin, TX
+                Street address, city, state
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <div className="rounded-full bg-blue-600 px-5 py-3.5 text-sm font-bold text-white text-center leading-tight">Start research<span className="block mt-0.5 text-xs font-medium text-blue-100">Step by step, with what to do next</span></div>
-              <div className="rounded-full bg-white border border-slate-300 px-5 py-3.5 text-sm font-bold text-slate-900 text-center leading-tight">Generate quick report<span className="block mt-0.5 text-xs font-medium text-slate-500">Everything at once, in seconds</span></div>
+              <div className="rounded-full bg-blue-600 px-5 py-3.5 text-sm font-bold text-white text-center leading-tight">Start research<span className="block mt-0.5 text-xs font-medium text-blue-100">One question at a time</span></div>
+              <div className="rounded-full bg-white border border-slate-300 px-5 py-3.5 text-sm font-bold text-slate-900 text-center leading-tight">Get the quick report<span className="block mt-0.5 text-xs font-medium text-slate-500">Everything at once, in seconds</span></div>
             </div>
           </div>
         )}
       </div>
 
-      {/* 2026-11-18 (owner): one line, owner's words; "No email. No account..." removed. */}
-      <p className="mt-5 text-sm font-medium text-slate-500">100% Free. No Sign-Up Required.</p>
+      {/* 2026-11-23 (owner approved copy sheet H4): was "100% Free. No Sign-Up Required." */}
+      <p className="mt-5 text-sm font-medium text-slate-500">Free. No sign-up.</p>
     </div>
 
   </section>

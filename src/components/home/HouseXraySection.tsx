@@ -16,16 +16,16 @@ import { ContentLink } from './ContentLink';
 interface Spot { n: number; q: string; a: string; href: string; tag?: string }
 
 const SPOTS: Spot[] = [
-  { n: 1, q: 'How old is the roof?', a: 'Read the clues on a showing, then confirm the date with the permit or the invoice.', href: '/guides/how-to-tell-how-old-a-roof-is/' },
+  { n: 1, q: 'How old is the roof?', a: 'Spot the clues on a showing. Then confirm the date with the permit or invoice.', href: '/guides/how-to-tell-how-old-a-roof-is/' },
   // 2026-10-05, owner: worded as the search people make, matching the /sunlight/ page's own title.
-  { n: 2, q: 'Which direction should a house face?', a: 'See how much direct sun each room gets through the year, for the way the house faces.', href: '/sunlight/', tag: 'Free tool · No sign-up' },
+  { n: 2, q: 'Which direction should a house face?', a: 'See how much sun each room gets, all year, for the way the house faces.', href: '/sunlight/', tag: 'Free tool · No sign-up' },
   { n: 3, q: 'What is inside the walls?', a: 'Houses built before 1956 can still have knob-and-tube wiring behind the plaster.', href: '/guides/what-is-knob-and-tube-wiring/' },
   { n: 4, q: 'What are the water pipes made of?', a: 'Copper, PEX, galvanized or polybutylene: a magnet and a coin tell most of them apart.', href: '/guides/identify-water-pipes-pex-copper-galvanized/' },
   { n: 5, q: 'Which electrical panel is it?', a: 'The brand is on the label inside the door. A few from 1950–1989 get a closer look.', href: '/guides/identify-electrical-panel-brand/' },
-  { n: 6, q: 'Is the pipe from the street lead?', a: 'Your water utility keeps a public record of the service line, by address.', href: '/guides/lead-service-line-lookup-by-address/' },
+  { n: 6, q: 'Is the pipe from the street lead?', a: 'Your water utility has the record. Look it up by address.', href: '/guides/lead-service-line-lookup-by-address/' },
   { n: 7, q: 'Is the sewer line cast iron?', a: 'Houses built before 1974 may have cast iron sewer lines. A camera scope shows their condition.', href: '/guides/why-cast-iron-pipes-corrode/' },
-  { n: 8, q: 'Is that crack a problem?', a: 'When a foundation crack calls for a structural engineer, and when it does not.', href: '/guides/when-foundation-crack-need-structural-engineer/' },
-  { n: 9, q: 'Was the deck permitted?', a: 'Look up a property’s permit history by address, in any US county.', href: '/guides/look-up-building-permits-by-address/' },
+  { n: 8, q: 'Is that crack a problem?', a: 'When a crack needs a structural engineer. And when it doesn’t.', href: '/guides/when-foundation-crack-need-structural-engineer/' },
+  { n: 9, q: 'Was the deck permitted?', a: 'Look up permit history by address. Any US county.', href: '/guides/look-up-building-permits-by-address/' },
 ];
 
 export const HouseXraySection: React.FC<{ onNavigate?: (path: string) => void }> = ({ onNavigate }) => (
@@ -33,7 +33,7 @@ export const HouseXraySection: React.FC<{ onNavigate?: (path: string) => void }>
     <div className="max-w-6xl mx-auto home-reveal">
       <div className="max-w-3xl mx-auto text-center">
         <p className="text-base sm:text-lg font-semibold text-slate-500">Look behind the listing photos</p>
-        <h2 className="mt-3 font-serif text-4xl sm:text-6xl font-semibold text-home-ink tracking-[-0.025em] [text-wrap:balance]">What a Listing Won&rsquo;t Tell You</h2>
+        <h2 className="mt-3 font-serif text-4xl sm:text-6xl font-semibold text-home-ink tracking-[-0.025em] [text-wrap:balance]">What a listing won&rsquo;t tell you.</h2>
       </div>
 
       <ol className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

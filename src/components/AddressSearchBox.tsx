@@ -12,7 +12,7 @@ interface AddressSearchBoxProps {
   onSelectProperty: (property: PropertySearchResult) => void;
   /**
    * Guided research tool (owner, 2026-11-18; unpublished). When set, two buttons sit under the search bar:
-   * "Start research" and "Generate quick report" (owner's words, 2026-11-18). Either one looks the address up,
+   * "Start research" and "Get the quick report" (owner 2026-11-18; second label from copy sheet H3, 2026-11-23). Either one looks the address up,
    * then the same property-type step, then that path. Same checks, same property object -- only the
    * destination differs, and nobody is forced into the longer flow.
    */
@@ -835,11 +835,9 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               onFocus={() => {
                 if (suggestions.length > 0) setShowSuggestions(true);
               }}
-              // A worked example, not an instruction. "Enter your full street address..." told
-              // people the format but not what a real one looks like, so the example lived as a
-              // separate line under the box; in the field it does both jobs and removes a line of
-              // chrome from the hero.
-              placeholder="e.g. 301 Congress Ave, Austin, TX"
+              // 2026-11-23 (owner): was the worked example "e.g. 301 Congress Ave, Austin, TX".
+              // Now the format in three words; the address suggestions show what a full one looks like.
+              placeholder="Street address, city, state"
               className="w-full text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 bg-transparent focus:outline-none"
             />
           </div>
@@ -884,7 +882,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
             {/* Owner 2026-11-18: keep both labels, one short line under each so a first-timer can tell them apart. */}
             <span className="flex flex-col items-center text-center leading-tight">
               <span>Start research</span>
-              <span className="mt-0.5 text-xs font-medium text-blue-100">Step by step, with what to do next</span>
+              <span className="mt-0.5 text-xs font-medium text-blue-100">One question at a time</span>
             </span>
             <ArrowRight className="w-4 h-4 shrink-0" />
           </button>
@@ -896,7 +894,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
           >
             {isSearchingMap && intent === 'quick' ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
             <span className="flex flex-col items-center text-center leading-tight">
-              <span>Generate quick report</span>
+              <span>Get the quick report</span>
               <span className="mt-0.5 text-xs font-medium text-slate-500">Everything at once, in seconds</span>
             </span>
             <ArrowRight className="w-4 h-4 shrink-0" />
@@ -1173,7 +1171,7 @@ export const AddressSearchBox: React.FC<AddressSearchBoxProps> = ({ onSelectProp
               // Research takes a few minutes, so it starts only once the address check has passed (owner 2026-11-19); the
               // quick report doesn't wait, as before (the report route re-runs the same check).
               const checking = research && formComplete && !blockedLabel && gateState?.status !== 'passed';
-              const mainLabel = blockedLabel || (checking ? 'Checking the address…' : research ? 'Start research' : onStartResearch ? 'Generate quick report' : 'Get the free report');
+              const mainLabel = blockedLabel || (checking ? 'Checking the address…' : research ? 'Start research' : onStartResearch ? 'Get the quick report' : 'Get the free report');
               const mainDisabled = !canSubmit || checking;
               return (
                 <div className="space-y-2">

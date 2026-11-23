@@ -97,7 +97,7 @@ export const Vendors: React.FC<VendorsProps> = ({ onBackToHome, onNavigate }) =>
             <h1 className="mt-3 font-serif text-[2rem] leading-[1.1] sm:text-5xl font-semibold tracking-[-0.01em] [text-wrap:balance]">
               {/* "Own" is literal only while one business per trade per ZIP is the rule. */}
               {MAX_SLOTS_PER_ZIP_TRADE === 1
-                ? 'Own your trade in the home reports for your ZIP codes'
+                ? 'Your trade. Your ZIP codes. Just you.'
                 : 'Put your business in the home reports for your ZIP codes'}
             </h1>
             <p className="mt-4 text-base sm:text-lg text-slate-600">

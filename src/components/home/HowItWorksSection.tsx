@@ -6,9 +6,9 @@ import { ShieldCheck, Search, ScanLine, FileCheck2, Check } from 'lucide-react';
 // it's free -- the separate "What's in your report" and pricing sections were merged in here, so a visitor
 // reads how it works, what they get and what it costs in one place. Copy follows docs/brand/voice-guide.md.
 const STEPS = [
-    { title: 'Type in the address', body: "A single-family home, or a condo or multifamily unit with its unit number." },
-    { title: "We check what we can, and tell you what we couldn't", body: "We confirm the address with the U.S. Census geocoder and pull its neighborhood's Census profile. The rest is research based on the home's age and county. We'll flag what you should verify yourself using the original sources." },
-    { title: 'Get your report', body: "What to look at in person and what to ask the seller, ready before your next showing, offer or inspection." }
+    { title: 'Type an address.', body: "A single-family home, or a condo or multifamily unit with its unit number." },
+    { title: "We check what's public. And tell you what isn't.", body: "We confirm the address with the U.S. Census geocoder and pull the neighborhood's Census profile. The rest is research based on the home's age and county, and we flag what to verify yourself." },
+    { title: 'Walk in knowing what to ask.', body: "What to look at and what to ask the seller. Ready before your next showing, offer or inspection." }
 ];
 const ICONS = [Search, ScanLine, FileCheck2];
 
@@ -26,8 +26,8 @@ export const HowItWorksSection: React.FC = () => (
   <section className="bg-white py-20 sm:py-32 px-4 sm:px-6 lg:px-8">
     <div className="max-w-6xl mx-auto home-reveal">
       <div className="max-w-3xl mx-auto text-center">
-        <p className="text-base sm:text-lg font-semibold text-slate-500">Three steps</p>
-        <h2 className="mt-3 font-serif text-4xl sm:text-6xl font-semibold text-home-ink tracking-[-0.025em] [text-wrap:balance]">Here&rsquo;s how it works</h2>
+        <p className="text-base sm:text-lg font-semibold text-slate-500">How it works</p>
+        <h2 className="mt-3 font-serif text-4xl sm:text-6xl font-semibold text-home-ink tracking-[-0.025em] [text-wrap:balance]">Three steps. That&rsquo;s it.</h2>
       </div>
 
       <ol className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-5 relative">
@@ -65,14 +65,14 @@ export const HowItWorksSection: React.FC = () => (
             </li>
           ))}
         </ul>
-        <p className="mt-6 text-sm text-slate-600">Use it for every house you&rsquo;re considering.</p>
+        <p className="mt-6 text-sm text-slate-600">Run it on every house you like.</p>
       </div>
 
       <div className="mt-8 mx-auto max-w-3xl rounded-2xl bg-home-mist px-5 py-4 flex gap-3 items-start">
         <ShieldCheck className="w-5 h-5 text-slate-500 shrink-0 mt-0.5" />
         <p className="text-sm leading-relaxed text-slate-700">
-          <span className="font-bold text-home-ink">Good information makes everyone better prepared. </span>
-          We&rsquo;re not here to knock builders, agents or sellers. We&rsquo;re here to help you ask better questions and make more informed decisions.
+          <span className="font-bold text-home-ink">Better questions. Better decisions. </span>
+          We&rsquo;re not here to knock builders, agents or sellers. Just to help you ask better questions.
         </p>
       </div>
     </div>

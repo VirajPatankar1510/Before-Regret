@@ -162,11 +162,11 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
           <div>
             <Eyebrow>Advertise with Before Regret</Eyebrow>
             <h1 className="mt-4 font-serif text-[2.3rem] leading-[1.08] sm:text-5xl lg:text-[3.4rem] font-semibold tracking-[-0.01em] [text-wrap:balance]">
-              Put your business where home buyers do their research
+              Be there when buyers do their homework.
             </h1>
             <p className="mt-5 text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl">
-              Pick a placement and pay with PayPal in about a minute. Add your business details
-              after, and your ad goes live. 30 days, no subscription.
+              Pick a spot. Pay with PayPal. Add your details and you&rsquo;re live. 30 days. No
+              subscription.
             </p>
             {/* A vendor who has never heard of the site needs to know what it is before anything
                 else, and the honest proof we can offer is the report itself, not a traffic figure. */}
@@ -225,14 +225,14 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             <Eyebrow>For local trades</Eyebrow>
             <h2 className="mt-3 font-serif text-4xl sm:text-6xl font-semibold tracking-[-0.025em]">Report Ads</h2>
             <p className="mt-4 text-base sm:text-lg text-slate-700 leading-relaxed">
-              When someone runs a property report for an address in one of your ZIP codes, your
-              listing appears inside it, beside the item that matches your trade.
+              Someone runs a report for an address in your ZIP codes. Your listing shows up inside
+              it, right beside the item for your trade.
             </p>
             <div className="mt-6 font-serif text-4xl font-semibold text-home-ink">
               $29 <span className="font-sans text-base font-medium text-slate-500">for 3 ZIP codes, 30 days</span>
             </div>
             <ul className="mt-6 space-y-3 text-[15px] text-slate-700 leading-relaxed">
-              <Bullet>Choose any 3 US ZIP codes and one trade per bundle.</Bullet>
+              <Bullet>Any 3 US ZIP codes. One trade.</Bullet>
               <Bullet>{slotsPerZipPhrase()}, first come, first served.</Bullet>
               <Bullet>Shown beside the report item for your trade. Home inspectors, movers, agents and interior designers get their own box on every report.</Bullet>
             </ul>
@@ -241,7 +241,7 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
               onNavigate={onNavigate}
               className="mt-8 inline-flex items-center gap-2 px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-full shadow-lg transition-colors"
             >
-              Buy now: choose ZIP codes <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              Choose ZIP codes <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </ContentLink>
           </div>
 
@@ -298,23 +298,23 @@ export const AdvertiseCompare: React.FC<AdvertiseCompareProps> = ({ onNavigate }
             <Eyebrow>For businesses that serve a wide area</Eyebrow>
             <h2 className="mt-3 font-serif text-4xl sm:text-6xl font-semibold tracking-[-0.025em]">Topic Ads</h2>
             <p className="mt-4 text-base sm:text-lg text-slate-700 leading-relaxed">
-              Your listing on an article about the problem your business solves, directly under the
-              article's quick answer. Everyone who reads that article sees it, wherever they are.
+              Your listing, right under the quick answer, on an article about the problem you solve.
+              Everyone who reads it sees it, wherever they are.
             </p>
             <div className="mt-6 font-serif text-4xl font-semibold text-home-ink">
               $9.99 <span className="font-sans text-base font-medium text-slate-500">per article, 30 days</span>
             </div>
             <ul className="mt-6 space-y-3 text-[15px] text-slate-700 leading-relaxed">
-              <Bullet>One advertiser per article. While it is yours, nobody else appears on that page.</Bullet>
+              <Bullet>One advertiser per article. While it&rsquo;s yours, it&rsquo;s only yours.</Bullet>
               <Bullet>No location targeting: the ad shows to every reader of the article, county guides included.</Bullet>
-              <Bullet>Pick as many articles as you like in one checkout, each for 30 days.</Bullet>
+              <Bullet>As many articles as you like. 30 days each.</Bullet>
             </ul>
             <ContentLink
               href="/topic-ads/"
               onNavigate={onNavigate}
               className="mt-8 inline-flex items-center gap-2 px-6 py-3.5 bg-white border border-blue-600 text-blue-600 hover:bg-blue-50 text-sm font-bold rounded-full transition-colors"
             >
-              Buy now: choose articles <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              Choose articles <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </ContentLink>
           </div>
         </div>

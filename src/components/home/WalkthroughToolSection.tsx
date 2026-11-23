@@ -56,9 +56,9 @@ export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ 
     <div className="max-w-6xl mx-auto">
 
       <div className="max-w-3xl mx-auto text-center mb-14">
-        <p className="text-base sm:text-lg font-semibold text-slate-500">Free. No sign-up required.</p>
-        <h2 className="mt-3 font-serif text-4xl sm:text-6xl font-semibold text-home-ink tracking-[-0.025em] [text-wrap:balance]">
-          More ways to check before you buy
+        {/* Copy sheet H21 (2026-11-23): the "Free. No sign-up required." label went; the heading now says it. */}
+        <h2 className="font-serif text-4xl sm:text-6xl font-semibold text-home-ink tracking-[-0.025em] [text-wrap:balance]">
+          More ways to check. All free.
         </h2>
       </div>
 
@@ -70,8 +70,8 @@ export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ 
             <h3 className="font-serif text-xl font-semibold text-home-ink">Viewing checklist</h3>
           </div>
           <p className="text-sm text-slate-700 leading-relaxed flex-1">
-            Tell us roughly when the house was built and what it sits on. You&rsquo;ll get a short list
-            of things to check while you&rsquo;re standing there.
+            Tell us roughly when it was built and what it sits on. Get a short list to check while
+            you&rsquo;re standing there.
           </p>
           <ContentLink href="/walkthrough/" onNavigate={onNavigate} className={CTA}>
             Open the checklist
@@ -107,7 +107,7 @@ export const WalkthroughToolSection: React.FC<WalkthroughToolSectionProps> = ({ 
             </ContentLink>
           </p>
           <ContentLink href="/research/" onNavigate={onNavigate} className={CTA}>
-            All research
+            See all research
             <ChevronRight className="w-4 h-4" aria-hidden="true" />
           </ContentLink>
         </div>
