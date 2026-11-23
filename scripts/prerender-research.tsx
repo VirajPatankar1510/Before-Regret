@@ -3,7 +3,9 @@ import path from 'path';
 import {
   OG_IMAGE, SITE_NAV, SITE_NAV_INDEX, ANALYTICS_BEACON, SITE_FOOTER, EXTRA_CSS,
   escapeHtmlAttr, escapeJsonForScriptTag, readSiteEntityLd,
+  siteFooter,
 } from './lib/site-chrome.js';
+import { recognitionPages, RECOGNITION_CSS, RECOGNITION_PUBLISHED } from './lib/recognition-pages.js';
 
 // Static HTML generator for /research/risk-without-price/ -- the national homeowners-insurance
 // study.
@@ -2278,6 +2280,53 @@ ${ANALYTICS_BEACON}
   }
 
 
+  // ---- /research/permit-search-done-right/ and /research/explainer-awards/ ---------------------
+  // Recognition pages (2026-11-23), not studies: hand-written, judged, dated. Copy and checks live
+  // in scripts/lib/recognition-pages.ts. They use the study stylesheet so they read as part of
+  // /research/, and get their own footer column because "This study" (ACS, FEMA NRI) is not theirs.
+  const RECOGNITION = recognitionPages();
+  for (const rp of RECOGNITION) {
+    const rpHtml = `<!doctype html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${escapeHtmlAttr(rp.title)}</title>
+  <meta name="description" content="${escapeHtmlAttr(rp.description)}">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <link rel="canonical" href="${escapeHtmlAttr(rp.url)}">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Before Regret">
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="${escapeHtmlAttr(rp.url)}">
+  <meta property="og:title" content="${escapeHtmlAttr(rp.title)}">
+  <meta property="og:description" content="${escapeHtmlAttr(rp.description)}">
+  <meta property="og:image" content="${escapeHtmlAttr(OG_IMAGE)}">
+  <meta property="article:published_time" content="${RECOGNITION_PUBLISHED}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${escapeHtmlAttr(rp.title)}">
+  <meta name="twitter:description" content="${escapeHtmlAttr(rp.description)}">
+  <meta name="twitter:image" content="${escapeHtmlAttr(OG_IMAGE)}">
+${headParts.trim()}
+  <style>${EXTRA_CSS}
+${RECOGNITION_CSS}</style>
+${SITE_ENTITY_LD}
+  <script type="application/ld+json" data-seo="prerendered">${escapeJsonForScriptTag(rp.ld)}</script>
+</head>
+<body>
+${SITE_NAV}
+${rp.body}
+${siteFooter(rp.footer)}
+${ANALYTICS_BEACON}
+</body>
+</html>`;
+    const rpDir = path.join(process.cwd(), 'dist', 'research', rp.slug);
+    fs.mkdirSync(rpDir, { recursive: true });
+    fs.writeFileSync(path.join(rpDir, 'index.html'), rpHtml, 'utf8');
+    console.log(`[prerender-research] Wrote static HTML for /research/${rp.slug}/ (${Math.round(rpHtml.length / 1024)} KB)`);
+  }
+
   const STUDIES: Array<{ url: string; title: string; standfirst: string; finding: string; source: string; data: string[]; embed: boolean; published: string; }> = [
     {
       url: '/research/risk-without-price/',
@@ -2413,13 +2462,11 @@ ${ANALYTICS_BEACON}
       publisher: { '@id': 'https://www.beforeregret.com/#organization' },
       mainEntity: {
         '@type': 'ItemList',
-        numberOfItems: STUDIES.length,
-        itemListElement: STUDIES.map((st, i) => ({
-          '@type': 'ListItem',
-          position: i + 1,
-          url: `https://www.beforeregret.com${st.url}`,
-          name: st.title,
-        })),
+        numberOfItems: STUDIES.length + RECOGNITION.length,
+        itemListElement: [
+          ...STUDIES.map((st) => ({ url: `https://www.beforeregret.com${st.url}`, name: st.title })),
+          ...RECOGNITION.map((rp) => ({ url: rp.url, name: rp.cardTitle })),
+        ].map((it, i) => ({ '@type': 'ListItem', position: i + 1, url: it.url, name: it.name })),
       },
     },
     {
@@ -2483,6 +2530,19 @@ ${SITE_NAV_INDEX}
   </header>
   <div class="rlist">
 ${indexCards}
+  </div>
+  <section class="rnote">
+    <h3>Recognition</h3>
+    <p>Public tools and trade explanations that get it right, judged against a dated test and named only when they pass.</p>
+  </section>
+  <div class="rlist">
+${RECOGNITION.map((rp) => `
+    <article class="rcard">
+      <h2><a href="/research/${rp.slug}/">${rp.cardTitle}</a></h2>
+      <p class="rcard-stand">${rp.standfirst}</p>
+      <p class="rcard-find">${rp.finding}</p>
+      <p class="rcard-meta">Published 23 November 2026</p>
+    </article>`).join('\n')}
   </div>
   <section class="rnote">
     <h3>For journalists</h3>

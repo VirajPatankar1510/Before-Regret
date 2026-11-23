@@ -1,0 +1,183 @@
+{
+  "about": "Uniform tests of big-city permit search portals for the 'Permit search done right' recognition (owner: 'do 1 and 3', 2026-11-23). Cities = the 15 most populous US cities, Census Vintage 2025 (Table 5, release of 2026-05-14). All tests run anonymously (no account, no agreement accepted) from the in-app browser.",
+  "tests": {
+    "noAccount": "The address search works without logging in, registering or accepting a click-through agreement.",
+    "addressSearch": "You can search by street address.",
+    "publicAddressReturnsRecords": "A search for a public building's address (city hall or similar) returns that building's permits.",
+    "inspectionResultsVisible": "Extra, not required to pass: a permit's completed inspections show their result (pass/fail/approved) to an anonymous visitor.",
+    "oldestRecordAtTestAddress": "Extra, not required: the oldest record date the search returned at the test address. This is NOT the start of the city's online records."
+  },
+  "rule": "A city that passes the three core tests is listed. A city that also shows inspection results anonymously is named a 'Permit search done right' city. Nobody is ranked, and a city we could not test is never listed as failing.",
+  "results": [
+    {
+      "city": "Philadelphia",
+      "portal": "Atlas",
+      "url": "https://atlas.phila.gov/",
+      "testAddress": "1400 John F Kennedy Blvd (City Hall)",
+      "noAccount": true,
+      "addressSearch": true,
+      "publicAddressReturnsRecords": "251 permits",
+      "inspectionResultsVisible": "yes: Inspections (36) with PASSED / FAILED results, Violations (59) and Permits (251) on one screen",
+      "oldestRecordAtTestAddress": "2007 (permits sorted by date, 05/08/2007 alteration permit among the earliest)",
+      "checkedOn": "2026-11-23 (first run 2026-11-17: 250 permits)",
+      "source": "data/permit-records/pa/42101-philadelphia.json",
+      "tier": "done-right"
+    },
+    {
+      "city": "Phoenix",
+      "portal": "PDD Online Permits Search",
+      "url": "https://apps-secure.phoenix.gov/PDD/Search/Permits",
+      "testAddress": "200 W Washington St (City Hall)",
+      "noAccount": true,
+      "addressSearch": true,
+      "publicAddressReturnsRecords": "915 items with the start date set to 01/01/1950",
+      "inspectionResultsVisible": "yes: each permit's 'Inspection History' lists inspection, scheduled date, result (e.g. PASS on a 1994 electrical final) and notes",
+      "oldestRecordAtTestAddress": "1993 (OSME-93023180, issued 12/06/1993)",
+      "quirk": "Start/End date boxes pre-fill the last 30 days but sit in the Solar/Green/Adaptive Re-use section; re-tested 2026-11-23 with defaults left in place, the address search still returned 915 items, so they do not limit an address search. Records entered from June 6, 2022 are in SHAPE PHX (shapephx.phoenix.gov, Data / Reports, no login; 647 results at City Hall).",
+      "checkedOn": "2026-11-23",
+      "tier": "done-right"
+    },
+    {
+      "city": "Columbus",
+      "portal": "Columbus Online Portal (Accela Citizen Access), Building",
+      "url": "https://portal.columbus.gov/permits/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "testAddress": "90 W Broad St (City Hall)",
+      "noAccount": true,
+      "addressSearch": true,
+      "publicAddressReturnsRecords": "100+ (the list caps at 100)",
+      "inspectionResultsVisible": "yes: Completed inspections show result, e.g. 'MEP Final Approved - Complete' on EMEPC2521581",
+      "oldestRecordAtTestAddress": "not read (list capped at 100+)",
+      "quirk": "The start date defaults to 3 years back; widen it before searching.",
+      "checkedOn": "2026-11-23",
+      "tier": "done-right"
+    },
+    {
+      "city": "Dallas",
+      "portal": "DallasNow (Accela Citizen Access)",
+      "url": "https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "testAddress": "1500 Marilla St (City Hall)",
+      "noAccount": true,
+      "addressSearch": true,
+      "publicAddressReturnsRecords": "100+",
+      "inspectionResultsVisible": "not confirmed (the record opened on 2026-11-23 was a denied permit with no inspections)",
+      "oldestRecordAtTestAddress": "2009 or earlier",
+      "checkedOn": "2026-11-17 and 2026-11-23",
+      "tier": "passes-core"
+    },
+    {
+      "city": "Austin",
+      "portal": "Austin Build + Connect public search",
+      "url": "https://abc.austintexas.gov/citizenportal/app/public-search",
+      "testAddress": "301 W 2nd St (City Hall)",
+      "noAccount": true,
+      "addressSearch": true,
+      "publicAddressReturnsRecords": "661 records (1980-2026)",
+      "inspectionResultsVisible": "not confirmed",
+      "oldestRecordAtTestAddress": "1980",
+      "checkedOn": "2026-11-18",
+      "source": "data/permit-records/tx/48453-travis.json",
+      "tier": "passes-core"
+    },
+    {
+      "city": "San Antonio",
+      "portal": "Accela Citizen Access (COSA), Building",
+      "url": "https://aca-prod.accela.com/COSA/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "testAddress": "100 Military Plaza (City Hall)",
+      "noAccount": true,
+      "addressSearch": true,
+      "publicAddressReturnsRecords": "22 records",
+      "inspectionResultsVisible": "inspections tab is public and lists pending inspections; completed results not confirmed (the City Hall permits opened had none)",
+      "oldestRecordAtTestAddress": "2013",
+      "note": "Start date defaults to 1976, the widest default we saw.",
+      "checkedOn": "2026-11-23",
+      "tier": "passes-core"
+    },
+    {
+      "city": "San Diego",
+      "portal": "Accela Citizen Access (DSD)",
+      "url": "https://aca-prod.accela.com/SANDIEGO/Cap/CapHome.aspx?module=DSD&TabName=DSD",
+      "testAddress": "202 C St (City Administration Building)",
+      "noAccount": true,
+      "addressSearch": true,
+      "publicAddressReturnsRecords": "59 records",
+      "inspectionResultsVisible": "not shown on the record opened (a 2019 plumbing permit had no Inspections tab for an anonymous visitor)",
+      "oldestRecordAtTestAddress": "2019 in this system",
+      "checkedOn": "2026-11-23",
+      "tier": "passes-core"
+    },
+    {
+      "city": "Fort Worth",
+      "portal": "Accela Citizen Access (CFW), Development",
+      "url": "https://aca-prod.accela.com/CFW/Cap/CapHome.aspx?module=Development&TabName=Development",
+      "testAddress": "200 Texas St",
+      "noAccount": true,
+      "addressSearch": true,
+      "publicAddressReturnsRecords": "100+ records at the address",
+      "inspectionResultsVisible": "not confirmed",
+      "oldestRecordAtTestAddress": "not read",
+      "note": "We did not confirm whether 200 Texas St is the current City Hall, so the page must not call it that.",
+      "checkedOn": "2026-11-23",
+      "tier": "passes-core"
+    },
+    {
+      "city": "Chicago",
+      "portal": "Building Permit and Inspection Records",
+      "url": "https://webapps1.chicago.gov/buildingrecords/",
+      "noAccount": "opens with a user agreement to accept; we do not accept terms on the owner's behalf",
+      "tier": "not-tested",
+      "note": "The open-data Building Permits dataset (ydr8-5enu) returned 133 permits at 121 N LaSalle St, 2006-2026, but has no inspection results. Owner can check the portal by hand."
+    },
+    {
+      "city": "New York",
+      "tier": "not-tested",
+      "note": "DOB portals return 403 from our location."
+    },
+    {
+      "city": "Los Angeles",
+      "tier": "not-tested",
+      "note": "LADBS returns 403 from our location."
+    },
+    {
+      "city": "Houston",
+      "tier": "not-tested",
+      "note": "houstonpermittingcenter returns 403 from our location."
+    },
+    {
+      "city": "Jacksonville",
+      "tier": "not-tested",
+      "note": "JaxEPICS timed out."
+    },
+    {
+      "city": "San Jose",
+      "tier": "not-tested",
+      "note": "Portal did not load from our location."
+    },
+    {
+      "city": "Charlotte",
+      "tier": "not-tested",
+      "note": "Building permits are issued by Mecklenburg County, whose portal returns 403 from our location."
+    }
+  ],
+  "contacts": {
+    "Phoenix": {
+      "email": "pdd.records@phoenix.gov",
+      "team": "Planning & Development, Records",
+      "sourceUrl": "https://www.phoenix.gov/administration/departments/pdd/contact-us.html",
+      "checkedOn": "2026-11-23"
+    },
+    "Columbus": {
+      "email": "bzsrecords@columbus.gov",
+      "team": "Building and Zoning Services, Records",
+      "sourceUrl": "https://www.columbus.gov/Business-Development/Building-Zoning-Services/Records-Research",
+      "checkedOn": "2026-11-23",
+      "caution": "This inbox takes records requests; the subject line must make clear it is not one."
+    },
+    "Philadelphia": {
+      "email": "maps@phila.gov",
+      "team": "CityGeo, Office of Innovation and Technology (built Atlas)",
+      "sourceUrl": "https://www.phila.gov/departments/office-of-innovation-and-technology/citygeo/",
+      "authorshipSource": "https://www.phila.gov/2018-10-26-a-new-way-to-access-property-records/ ('Built by the CityGeo team, Atlas...')",
+      "checkedOn": "2026-11-23"
+    }
+  }
+}
