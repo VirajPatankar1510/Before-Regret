@@ -218,7 +218,7 @@ function permitPage(): RecognitionPage {
           <li><b>Phoenix:</b> the inspection history goes back decades, with the result of every inspection.</li>
           <li><b>Columbus:</b> the descriptions say what the work was in words a buyer can read, not just a permit code.</li>
         </ul>
-        <p class="rec-note"><b>One tip for Phoenix and Columbus:</b> the start date is pre-filled (the last 30 days in Phoenix, 3 years in Columbus). Change it to an early year before you search, or older permits won&#8217;t show.</p>
+        <p class="rec-note"><b>One tip for Columbus:</b> the start date is pre-filled 3 years back. Change it to an early year before you search, or older permits won&#8217;t show. Phoenix&#8217;s search also shows dates filled in, but they don&#8217;t limit an address search, so you can leave them alone.</p>
       </div>
     </div>
   </section>
