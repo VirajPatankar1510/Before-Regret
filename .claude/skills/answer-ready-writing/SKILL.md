@@ -163,7 +163,7 @@ gets made: run the numbers, walk the portal, take the screenshot. Every number a
 characters that the page will use must be in the ledger (`facts` quotes for quotes; `facts` or `ourWork` for numbers).
 
 **3. Draft.**
-- **Floors:** title ≤60 (unless it's the owner's exact title); meta 70–155. An owner title longer than 60 is never shortened silently: ask, with the tradeoff, and if it stays, add it to `OWNER_LONG_TITLES`.
+- **Floors:** title ≤60 (unless it's the owner's exact title); meta 70–155. An owner title longer than 60 is never shortened silently: ask, with the tradeoff, and if it stays, add it to `OWNER_LONG_TITLES` in `scripts/assert-canonical-urls.ts`.
 - **Title = H1.** The `title` column drives the `<h1>`, the `<title>` and the schema at once; there is no separate SEO title. Any table of proposed titles shown to the owner carries a column "H1 changes too: yes". If a brief says no H1 changes, raise the conflict before publishing.
 - **Use the searcher's word.** Put the exact word searchers use (from our GSC/Bing captures) in the title and in at least one H2, not only in the body. Measured on this site: "evaluation" moved the EIFS guide from position 41 to 16; "IDIS" moved LA from 17 to 9. Portal and system names (IDIS, EnerGov, SHAPE PHX) are searcher words for permit pages.
 - **No internal SEO notes on the page** (owner, 2026-11-13). Never write why we chose the topic ("our Bing data showed…", "Why this page…", AI-citation talk) in the body, the quick answer or the FAQs. Demand evidence lives only in the brief, the ledger `demand` field and the script header. `INTERNAL_SEO_NOTE` in `effortBrief.ts` fails the draft if it slips in.
@@ -203,13 +203,13 @@ npx tsx scripts/assert-article-quality.ts --draft guides/<slug>.md
 
 **6. Publish** (only when the owner says "publish"):
 1. Run the script with `APPLY=true`.
-2. **County permit guides only:** add the Permit Pulse block (`ONLY=<slug>`, see memory `beforeregret_permit_pulse`) and read every VERBOSE paragraph before applying it, because figures go stale. City pages get no Pulse block; Pulse is county-level.
+2. **County permit guides only:** add the Permit Pulse block. Dry run first with `VERBOSE=1 ONLY=<slug> npx tsx scripts/inject-permit-pulse.ts` and read every paragraph it prints (figures go stale), then rerun with `APPLY=true`. See memory `beforeregret_permit_pulse`. City pages get no Pulse block; Pulse is county-level.
 3. Add FAQs with the `article-faqs` skill. A page without a quick answer still needs them for the FAQPage schema.
 4. `npm run build`. **Check the build actually succeeded before pushing.** A retry loop's exit code is not proof.
 5. **If anything server-reachable changed** (`server.ts`, `src/server/*`, or a `src/data/*` / `src/utils/*` file they import): every relative import needs a `.js` extension. Build, `tsc` and esbuild all accept extensionless imports; only the live Vercel function doesn't, and one missing `.js` took every `/api` route down for 9 minutes on 2026-10-12.
 6. Commit only this page's files (other people's uncommitted edits stay out) and push (`git push origin HEAD:main` after `git merge-base --is-ancestor origin/main HEAD`).
 7. **Confirm a deploy was actually attempted**, not just that the URL answers: check that the newest entry from `curl -s "https://api.github.com/repos/VirajPatankar1510/Before-Regret/deployments?per_page=2"` has your commit's sha (the `gh` CLI isn't installed here; plain curl works). Vercel can reject a config before any build exists (the hourly-cron incident, 2026-08-29), and the old build keeps serving, looking healthy.
-8. Then check `/api/health`, one real API route if server code changed, the live page (title, FAQ schema) and `faq-verify-live.ts`.
+8. Then check `/api/health`, one real API route if server code changed, the live page (title, FAQ schema) and `npx tsx .claude/skills/article-faqs/scripts/faq-verify-live.ts <id>`.
 9. Notify Bing through IndexNow (`submitUrlsToIndexNow` in `src/utils/indexNowService.ts`).
 10. Optional: `suggest-inbound-links.ts`, as a report only. Existing pages are not edited to add links.
 11. Give the owner the link, and ask them to request indexing in Search Console.
