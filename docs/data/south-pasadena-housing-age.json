@@ -1,0 +1,58 @@
+{
+  "source": "ACS 2020-2024 5-year, tables B25034 and B25035, api.census.gov, built by scripts/build-south-pasadena-housing-age.ts",
+  "builtOn": "2026-11-24",
+  "city": {
+    "name": "South Pasadena city, California",
+    "housingUnits": 10817,
+    "medianYearBuilt": 1953,
+    "builtBefore1940Pct": 33,
+    "builtBefore1950Pct": 43.8,
+    "builtBefore1960Pct": 64.5,
+    "builtBefore1980Pct": 87.4
+  },
+  "county": {
+    "name": "Los Angeles County, California",
+    "housingUnits": 3650466,
+    "medianYearBuilt": 1965,
+    "builtBefore1940Pct": 14.3,
+    "builtBefore1950Pct": 23.8,
+    "builtBefore1960Pct": 42.6,
+    "builtBefore1980Pct": 70.3
+  },
+  "raw": {
+    "city": {
+      "NAME": "South Pasadena city, California",
+      "B25034_001E": "10817",
+      "B25034_002E": "0",
+      "B25034_003E": "148",
+      "B25034_004E": "251",
+      "B25034_005E": "330",
+      "B25034_006E": "634",
+      "B25034_007E": "907",
+      "B25034_008E": "1574",
+      "B25034_009E": "2237",
+      "B25034_010E": "1162",
+      "B25034_011E": "3574",
+      "B25035_001E": "1953",
+      "state": "06",
+      "place": "73220"
+    },
+    "county": {
+      "NAME": "Los Angeles County, California",
+      "B25034_001E": "3650466",
+      "B25034_002E": "34488",
+      "B25034_003E": "176168",
+      "B25034_004E": "213111",
+      "B25034_005E": "223049",
+      "B25034_006E": "436870",
+      "B25034_007E": "502852",
+      "B25034_008E": "509340",
+      "B25034_009E": "685385",
+      "B25034_010E": "346720",
+      "B25034_011E": "522483",
+      "B25035_001E": "1965",
+      "state": "06",
+      "place": "037"
+    }
+  }
+}

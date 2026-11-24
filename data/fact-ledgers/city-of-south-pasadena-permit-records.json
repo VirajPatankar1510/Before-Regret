@@ -1,0 +1,121 @@
+{
+  "slug": "city-of-south-pasadena-permit-records",
+  "question": "How does a buyer get a South Pasadena, CA house's permit history, and what will the city show or let them copy?",
+  "officialLookupUrl": "https://www.southpasadenaca.gov/Your-Government/Department-Service-Areas/Community-Development/Building-Division",
+  "verdictConfirmed": "2026-11-24 browser: no public online search of past permits by address was found. The OpenGov portal (live from August 11, 2026) is for applying; its search finds services, and its 'Search for public records' page shows a heading but no search box. Permit history has to be asked for from the Building Division or through the city's Public Records Center.",
+  "demand": "tier 3: topic-demand.ts 2026-11-24 (captures 2026-11-24-demand-south-pasadena-permit-gsc / -bing) found no Search Console or Bing signal for South Pasadena, San Marino or Pasadena permit phrases. Owner-directed experiment (2026-11-24), published with a stop condition. No volume is stated on the page.",
+  "ourWork": {
+    "date": "2026-11-24",
+    "census": {
+      "source": "docs/data/south-pasadena-housing-age.json (ACS 2020-2024 5-year B25034 + B25035), built by scripts/build-south-pasadena-housing-age.ts",
+      "cityHousingUnits": "10,817",
+      "medianYearBuilt": "1953",
+      "builtBefore1940Pct": "33%",
+      "builtBefore1950Pct": "43.8%",
+      "builtBefore1960Pct": "64.5%",
+      "builtBefore1980Pct": "87.4%",
+      "countyMedianYearBuilt": "1965",
+      "countyBuiltBefore1940Pct": "14.3%",
+      "tables": "B25034, B25035; ACS 2020-2024"
+    },
+    "observations": [
+      "OpenGov portal home (southpasadenaca.portal.opengov.com), 2026-11-24, no account: the search box placeholder offers services such as 'Accessory Dwelling Unit (ADU)'. Typing City Hall's address '1414 Mission' returned 'No results'. The home page lists Building Division services (Reroof Permit, Solar Permit + 6 more) and Login / Sign Up / Claim a Record.",
+      "southpasadenaca.portal.opengov.com/search?query=1414%20mission, 2026-11-24: the page shows the heading 'Search for public records' and the line 'Look up an address or a record to see activity and information', but no search box rendered (the only control was the menu button) and the page made no search request in the network log.",
+      "Building Division FAQ, 2026-11-24: the link under 'How can I check if a construction project has a permit?' (showpublisheddocument/25373) returned HTTP 404 when fetched from the city's own page in the browser.",
+      "Building Division FAQ, 2026-11-24: the question 'How can I research information on my house?' appears in the list of questions at the top, but the page gives no answer to it.",
+      "Public Records Center (southpasadenaca.govqa.us), 2026-11-24: Knowledge Base answer 'How can I obtain a copy of a Plan?' points to the city's Application for Duplicate Official Copy of Plans. We did not open the request form or create an account.",
+      "Hours differ between two city pages: the Building Division page says permit issuance is 'Monday through Thursday' while its contact block says 'Monday - Friday'; the FAQ contact block says 'M-Th 7:30 AM - 6:00 PM'."
+    ],
+    "computations": [
+      "Built before 1940: 33% in South Pasadena city vs 14.3% in Los Angeles County (B25034_011E / B25034_001E).",
+      "Median year built: 1953 in South Pasadena city vs 1965 in Los Angeles County (B25035_001E)."
+    ]
+  },
+  "facts": [
+    {
+      "id": "s1",
+      "claim": "South Pasadena's OpenGov permitting system went live for permit submittal; release dated August 11, 2026; City Hall address and front desk number.",
+      "source": "southpasadenaca.gov/News-articles/8-11-2026-City-of-South-Pasadena-Announces-New-Online-Permitting-System, read 2026-11-24",
+      "quote": "Published on August 11, 2026. The website is now live for permit submittal. To apply for a permit, please visit the portal at https://southpasadenaca.portal.opengov.com/ For assistance, visit South Pasadena City Hall, located at 1414 Mission Street, or contact the front desk at (626) 403-7200.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "s2",
+      "claim": "The city's FAQ points to a list of active permits, updated weekly.",
+      "source": "southpasadenaca.gov Building Division Frequently Asked Questions, read 2026-11-24",
+      "quote": "Permits for active construction projects in the City can be viewed here. Note: This list is updated on Friday afternoons, so may not reflect all current projects.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "s3",
+      "claim": "About 2,500 properties are on the Cultural Heritage Inventory (1994); most homes 50+ years old are listed; designation affects exterior changes only.",
+      "source": "southpasadenaca.gov Building Division Frequently Asked Questions, read 2026-11-24",
+      "quote": "The City has approximately 2,500 properties listed on the Cultural Heritage Inventory, which was established in 1994. Most homes that are 50 years or older are listed. Please contact the Planning and Building department to check if your house is listed. Historic designation only affects exterior changes made to the home.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "s4",
+      "claim": "Design approval is required for most exterior changes.",
+      "source": "southpasadenaca.gov Building Division Frequently Asked Questions, read 2026-11-24",
+      "quote": "The City’s regulations require design approval for most exterior changes to homes and buildings.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "s5",
+      "claim": "City FAQ permit table: permit required for re-roof (incl. same material and roof repair), water heater new or replacement, air conditioning new or replacement, insulation, retrofit and new windows, interior remodeling, foundation retrofit, retaining walls, patio covers; no permit for painting, kitchen cabinets, replacing flooring, rain gutters, fences 6' or less.",
+      "source": "southpasadenaca.gov Building Division Frequently Asked Questions, 'Do I need a permit/plan check/design approval for my project?' table, read 2026-11-24",
+      "quote": "Air Conditioning System (new or replacement [even if in exactly the same place]) Yes. Water Heater (new or replacement) Yes. Re-roof (same material as existing), including roof repair Yes. Insulation Yes. Painting (interior exterior) No. Replace Flooring No.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "s6",
+      "claim": "The city's FAQ states that state law requires sellers to disclose known unpermitted construction.",
+      "source": "southpasadenaca.gov Building Division Frequently Asked Questions, read 2026-11-24",
+      "quote": "And State law requires that the seller disclose all known unpermitted construction.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "s7",
+      "claim": "California Health and Safety Code § 19851: the building department's official copy of plans is open to inspection only on its premises; duplicating it needs written permission of the signing professional and of the original or current owner, or a court order or state agency request.",
+      "source": "leginfo.legislature.ca.gov, Health and Safety Code section 19851, read 2026-11-24",
+      "quote": "The official copy of the plans maintained by the building department of the city or county provided for under Section 19850 shall be open for inspection only on the premises of the building department as a public record. The copy may not be duplicated in whole or in part except (1) with the written permission",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "s8",
+      "claim": "Building Division contacts and permit issuance hours.",
+      "source": "southpasadenaca.gov Building Division page, read 2026-11-24",
+      "quote": "Available from 7:30 a.m. to 6:00 p.m., Monday through Thursday. Permit Technician at permittech@southpasadenaca.gov or at (626) 403-7224. Building Inspector (626) 403-7226",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "s9",
+      "claim": "Copies of plans are requested with the city's duplicate-plans application.",
+      "source": "southpasadenaca.govqa.us Knowledge Base, 'How can I obtain a copy of a Plan?', read 2026-11-24",
+      "quote": "To obtain a copy of a plan, the following application will need to be completed: APPLICATION FOR DUPLICATE OFFICIAL COPY OF PLANS",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "s10",
+      "claim": "The OpenGov portal has a public records search page whose text invites an address lookup (on 2026-11-24 it rendered no search box).",
+      "source": "southpasadenaca.portal.opengov.com/search, read 2026-11-24",
+      "quote": "Search for public records. Look up an address or a record to see activity and information",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "s11",
+      "claim": "The Building Division FAQ question list includes these two questions; the second has no answer on the page.",
+      "source": "southpasadenaca.gov Building Division Frequently Asked Questions, read 2026-11-24",
+      "quote": "How can I check if a construction project has a permit? How can I research information on my house?",
+      "verified": "2026-11-24 browser"
+    }
+  ],
+  "cut": [
+    "California Civil Code § 1102.6 (Transfer Disclosure Statement) line on work done without permits: the leginfo page's form text did not render in the browser on 2026-11-24, so the exact wording was not verified. The page uses the city's own sentence on seller disclosure (s6) instead.",
+    "Turnaround time for a records request: no city page we read states one.",
+    "Whether pre-August 2026 permits were loaded into OpenGov: not stated by the city; not tested beyond the missing public search."
+  ],
+  "blockedSources": [
+    "southpasadenaca.gov/home/showpublisheddocument/25373 (active permits list): HTTP 404 from the city's own page, 2026-11-24. Not blocked; missing."
+  ]
+}
