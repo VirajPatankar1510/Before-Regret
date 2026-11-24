@@ -1,0 +1,64 @@
+{
+  "source": "ACS 2020-2024 5-year, tables B25034 and B25035, api.census.gov, built by scripts/build-san-diego-housing-age.ts",
+  "builtOn": "2026-11-24",
+  "city": {
+    "name": "San Diego city, California",
+    "housingUnits": 568668,
+    "medianYearBuilt": 1979,
+    "builtBefore1940Pct": 6.4,
+    "builtBefore1950Pct": 9.9,
+    "builtBefore1960Pct": 20.5,
+    "builtBefore1980Pct": 52.4,
+    "builtBefore2000Pct": 80.5,
+    "builtBefore2000Units": 457818,
+    "builtBefore1950Units": 56114
+  },
+  "county": {
+    "name": "San Diego County, California",
+    "housingUnits": 1250641,
+    "medianYearBuilt": 1980,
+    "builtBefore1940Pct": 4,
+    "builtBefore1950Pct": 7.1,
+    "builtBefore1960Pct": 16.9,
+    "builtBefore1980Pct": 49.5,
+    "builtBefore2000Pct": 79.5,
+    "builtBefore2000Units": 993886,
+    "builtBefore1950Units": 88350
+  },
+  "raw": {
+    "city": {
+      "NAME": "San Diego city, California",
+      "B25034_001E": "568668",
+      "B25034_002E": "8257",
+      "B25034_003E": "43062",
+      "B25034_004E": "59531",
+      "B25034_005E": "58975",
+      "B25034_006E": "100834",
+      "B25034_007E": "114030",
+      "B25034_008E": "67414",
+      "B25034_009E": "60451",
+      "B25034_010E": "19876",
+      "B25034_011E": "36238",
+      "B25035_001E": "1979",
+      "state": "06",
+      "place": "66000"
+    },
+    "county": {
+      "NAME": "San Diego County, California",
+      "B25034_001E": "1250641",
+      "B25034_002E": "17511",
+      "B25034_003E": "86724",
+      "B25034_004E": "152520",
+      "B25034_005E": "141073",
+      "B25034_006E": "233152",
+      "B25034_007E": "268208",
+      "B25034_008E": "140544",
+      "B25034_009E": "122559",
+      "B25034_010E": "37975",
+      "B25034_011E": "50375",
+      "B25035_001E": "1980",
+      "state": "06",
+      "place": "073"
+    }
+  }
+}

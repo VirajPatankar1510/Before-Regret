@@ -1,0 +1,129 @@
+{
+  "slug": "city-of-san-diego-permit-search",
+  "question": "How does a buyer search a City of San Diego house's permit history, and what do they do for years the online systems don't cover?",
+  "officialLookupUrl": "https://www.sandiego.gov/development-services/records",
+  "verdictConfirmed": "2026-11-24 browser: the city's records page sends online searches for 2003 onward to OpenDSD, ZAPP and Accela; records 1955-2002 are at DSD (self-service stations, no appointment; plans by appointment); DSD keeps nothing before 1955 and refers callers to the County Assessor.",
+  "demand": "tier 1: own Search Console shows 'city san diego permit search' (15 impressions, position 25.7) and 'city of san diego permit search' (6, position 26.3), currently answered by guide #91. No volume is stated on the page.",
+  "ourWork": {
+    "date": "2026-11-24",
+    "census": {
+      "source": "docs/data/san-diego-housing-age.json (ACS 2020-2024 5-year B25034 + B25035), built by scripts/build-san-diego-housing-age.ts",
+      "cityHousingUnits": "568,668",
+      "countyHousingUnits": "1,250,641",
+      "cityShareOfCountyUnits": "45.5%",
+      "medianYearBuilt": "1979",
+      "countyMedianYearBuilt": "1980",
+      "builtBefore1950Pct": "9.9%",
+      "builtBefore1950Units": "56,114",
+      "builtBefore2000Pct": "80.5%",
+      "builtBefore2000Units": "457,818",
+      "tables": "B25034, B25035; ACS 2020-2024"
+    },
+    "observations": [
+      "Accela DSD module (aca-prod.accela.com/SANDIEGO), 2026-11-24, no account: General Search with Street No. 202 to 202 and Street Name 'C' returned '59 Record results'. The street name matched as a prefix: results included 202 Coast Bl and 202 Coolwater Dr as well as 202 C St. Setting Street Type to St narrows it.",
+      "Accela, same search: newest record PMT-3420070, Building Permit, 06/03/2026, 'Approved Upon Final Payment'; oldest record 04/09/2019, PMT-3033886, No-Plan Nonresidential Plumbing, Closed. Project PTS-0682137 is dated 12/22/2020.",
+      "OpenDSD (opendsd.sandiego.gov/web/approvals/), 2026-11-24, no account: redirected to sandiego.gov/outage ('Website Under Maintenance') earlier in the day; working again later the same day.",
+      "OpenDSD Address Search form, 2026-11-24: the hint beside Base Road Name reads 'To search for \"7325 W. Santa Fe St.\" Enter \"Santa Fe\" in to Base Road Name', and the form asks you to click the search icon and select the correct address from a pop-up.",
+      "OpenDSD Address Search, 2026-11-24: Street Number 202, Base Road Name 'C'. A 'Select a Road' box offered two roads, C ST and W C ST, and we picked C ST. Results came 50 to a page over 2 pages, with columns Approval ID, Approval Type, Approval Status, Street Address, Project ID, Title. Statuses seen on page 1: Completed, Issued, Created, Cancelled, Pending Invoice Payment. Project 682137 appears in both OpenDSD and Accela.",
+      "OpenDSD approval 949761 (Plumbing Permit at 202 C ST), 2026-11-24: the detail page shows Application 01/26/2012, Issuance 02/09/2012, First Inspection 03/28/2012, Complete Date 04/07/2012, the scope, the APN and the project. Its Inspections list was empty.",
+      "OpenDSD approval 10419 (Building Permit at 202 C ST), 2026-11-24: Status 'Cancelled - Abandoned', Complete Date 02/27/2003; the oldest approval at that address.",
+      "DSD Contact Us page, 2026-11-24: Customer Service Line 619-446-5000, Monday - Friday 8 a.m. - 3 p.m."
+    ],
+    "computations": [
+      "City of San Diego share of San Diego County housing units: 568,668 / 1,250,641 = 45.5% (B25034_001E).",
+      "Built before 2000 (before DSD's online data begins in 2003; decade bins make this a lower bound): 80.5% of city homes, 457,818 units.",
+      "Built before 1950 (before DSD's records begin in 1955; a lower bound): 9.9% of city homes, 56,114 units.",
+      "Median year built: 1979 in the city vs 1980 in the county (B25035_001E).",
+      "Paper-only years at DSD: 1955 (first year DSD holds, fact d3) to 2002 (last year before electronic records begin in 2003, fact d4)."
+    ]
+  },
+  "facts": [
+    {
+      "id": "d1",
+      "claim": "The city's records page: online research for 2003 to present via OpenDSD, ZAPP and Accela.",
+      "source": "sandiego.gov/development-services/records, read 2026-11-24",
+      "quote": "Conduct your own research for permits and applications from 2003 to present for any City of San Diego address using the links below: OpenDSD Zoning and Permit Portal (ZAPP) Accela",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "d2",
+      "claim": "Self-service records stations need no appointment; plans need an in-person appointment.",
+      "source": "sandiego.gov/development-services/records, read 2026-11-24",
+      "quote": "Records Self-Services Stations (No assistance or training needed) are available without an appointment during regular hours of operation to conduct permit research or view records. Requests to view or obtain building plans are not available through the self-service option and require an in-person appointment with a team member.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "d3",
+      "claim": "DSD keeps no records before 1955 and refers callers to the County Assessor.",
+      "source": "sandiego.gov/development-services/pra-requests, read 2026-11-24",
+      "quote": "DSD does not maintain any records prior to 1955. For records of properties built before 1955, please contact the County Assessor's Office at 619-236-3771 or 858-565-5920.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "d4",
+      "claim": "Ministerial permits before 2003 are paper, available to inspect and copy in person, no appointment.",
+      "source": "sandiego.gov/development-services/pra-requests, read 2026-11-24",
+      "quote": "Ministerial permits issued before 2003 are not maintained in electronic format but are available to inspect and copy. To inspect these records or to obtain copies, you may visit our office in person and utilize our self-service stations during normal business hours. No appointment is required.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "d5",
+      "claim": "Copy cost.",
+      "source": "sandiego.gov/development-services/pra-requests, read 2026-11-24",
+      "quote": "The cost to make copies is $0.25/page",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "d6",
+      "claim": "The city has no jurisdiction outside city limits.",
+      "source": "sandiego.gov/development-services/pra-requests, read 2026-11-24",
+      "quote": "the City of San Diego has no jurisdiction over properties located outside the established San Diego City Limits.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "d7",
+      "claim": "The records request process can't be used to answer questions.",
+      "source": "sandiego.gov/development-services/pra-requests, read 2026-11-24",
+      "quote": "may not be used to answer specific questions",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "d8",
+      "claim": "OpenDSD covers 2003 onward, except some permit types submitted after January 16, 2018, which are in Accela.",
+      "source": "opendsd.sandiego.gov/web/approvals/, read 2026-11-24",
+      "quote": "Customers can search DSD’s permit information for projects submitted from 2003-current, except for the following permits submitted after January 16, 2018 are located at https://aca.accela.com/SANDIEGO/Default.aspx: Code Enforcement Cases News Rack Permit Residential Rooftop-Mounted Solar Photovoltaic (PV) Permit Simple Permit -MEP Permit (No-plan Mechanical, Electrical and Plumbing permits)",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "d9",
+      "claim": "DSD customer service line and hours.",
+      "source": "sandiego.gov/development-services/contact, read 2026-11-24",
+      "quote": "Customer Service Line 619-446-5000 MONDAY - FRIDAY: 8 a.m. - 3 p.m.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "d10",
+      "claim": "California Health and Safety Code § 19851: official plans can be inspected only at the building department; copies need written permission (signer and original or current owner).",
+      "source": "leginfo.legislature.ca.gov, Health and Safety Code section 19851, read 2026-11-24",
+      "quote": "The official copy of the plans maintained by the building department of the city or county provided for under Section 19850 shall be open for inspection only on the premises of the building department as a public record. The copy may not be duplicated in whole or in part except (1) with the written permission",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "d11",
+      "claim": "Records Review appointments are for archived plans or records after 1955.",
+      "source": "sandiego.gov/development-services/records, read 2026-11-24",
+      "quote": "Building Records after 1955 To review archived building plans or records, schedule a Records Review appointment.",
+      "verified": "2026-11-24 browser"
+    }
+  ],
+  "cut": [
+    "Permit Finder (insidesandiego.org, 2023 article): its URL was not opened and tested, so it is not named on the page.",
+    "DSD office street address and counter hours: not stated on the records or contact pages we read; the page links the appointment page instead.",
+    "The date the city moved all permitting from OpenDSD to Accela: not stated on any page we read. The page says to search both.",
+    "What OpenDSD's 'Created' status means: not defined on any page we read; the page tells readers to look for an issue date and a complete date instead.",
+    "Records request turnaround time: no city page we read states one."
+  ],
+  "blockedSources": [
+    "sandiego.gov request-form-categories page: HTTP 404 on 2026-11-24. Missing, not blocked."
+  ]
+}
