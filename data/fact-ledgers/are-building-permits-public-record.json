@@ -1,0 +1,120 @@
+{
+  "slug": "are-building-permits-public-record",
+  "question": "Are building permits public record, who can see them, and what can't a buyer or neighbor get?",
+  "officialLookupUrl": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=7922.525",
+  "verdictConfirmed": "2026-11-24: California Gov Code 7922.525 and Florida Statutes 119.01 open public records to any person; 9 of the 10 permit offices we searched in November 2026 let anyone search by address with no account (South Pasadena has no public search). Plans are the exception in California (HSC 19851).",
+  "demand": "tier 1: owner's GSC question export 2026-11-24 (data/keywords/2026-11-24-gsc-question-queries-export.json): 'are building permits public record' (10 impressions, position 17.1), 'are permits public record' (10, 26.4), 'are building permits public records' (5, 79.2), 'are site plans public record' (3, 32.7), 'are certificate of occupancy public record' (2, 7.5), 'are permit applications public record' (2, 55.0), 'are building inspections public record' (1, 8.0). No page owns the question. No volume is stated on the page.",
+  "ourWork": {
+    "date": "2026-11-24",
+    "searchesTable": {
+      "officesSearched": "10",
+      "openWithNoAccount": "9",
+      "noPublicSearch": "1 (South Pasadena)",
+      "window": "2026-11-16 to 2026-11-24"
+    },
+    "rows": [
+      "City of Phoenix | PDD Online Permit Information Search | yes, no account | oldest at City Hall 1993; inspection history shown | 2026-11-23",
+      "City of San Diego | OpenDSD | yes, no account | oldest at City Hall 2003; 1955 to 2002 on paper | 2026-11-24",
+      "City of Austin | Austin Build + Connect | yes, no login | back to at least 1980 at the address tried | 2026-11-18",
+      "City of Tampa | Accela Citizen Access | yes, no login | oldest at City Hall 2015 | 2026-11-18",
+      "City of Dallas | DallasNow | yes, no login | a certificate of occupancy dated 09/12/2019 in the results | 2026-11-17",
+      "City of Philadelphia | Atlas / L&I Property History | yes, no login | online list starts in 2007 | 2026-11-17",
+      "Unincorporated Los Angeles County | EPIC-LA | yes, no account | permits, plans, inspections searchable by address | 2026-11-17",
+      "Martin County, FL | Accela Citizen Access | yes, no login | thin before 1990 | 2026-11-20",
+      "Pinellas County, FL | Access Portal | yes, no account | inspection history from 2008 shown | 2026-11-16",
+      "City of South Pasadena | OpenGov | no public search | ask the Building Division | 2026-11-24"
+    ],
+    "observations": [
+      "[check-building-permits-travis-county-tx] Yes for the City of Austin: Austin Build + Connect's Public Search needs no login and searches by street address, with records back to at least 1980 at the address we tried. Unincorporated Travis County and the other cities in the county were not researched.",
+      "[check-building-permits-tampa-fl] Yes: the City of Tampa's Accela Citizen Access Building search needs no login. Search by Address matched the street number and listed every record at the address with no date limit; the oldest at Tampa City Hall was from 2015. General Search defaults to the past 12 months and did not filter by street number.",
+      "[check-building-permits-philadelphia-county-pa] Yes for the core claim: Atlas and L&I Property History search permits, inspections and violations by address with no login, and the source is the Department of Licenses & Inspections. A finding the guide does not state: at both public buildings we searched, the online permit list starts in 2007.",
+      "[check-building-permits-los-angeles-county-ca] EPIC-LA's public search works without an account and searches permits, plans, inspections, licenses and projects by keyword or address.",
+      "[check-building-permits-martin-county-fl] Martin County's permits are searched in Accela Citizen Access with no login. One address can be stored as many separate entries, each holding different records, so every entry must be opened. The online record is thin before 1990, and 61.3% of the county's housing units were built before then, so the permit that built most houses needs a records request. A DONE status can sit beside an applied Hold condition. Work under the 2026 HB 803 exemption is approved but never inspected, and no exemption record type appears in the public search.",
+      "[check-building-permits-pinellas-county-fl] The 2007 deck permit's inspection history is visible without an account: a red tag on the deck on 07/21/2008, approved 07/24/2008, final approved in September 2008; result labels include Approved, Red tag, Red tag to yellow tag and Cancelled; one cancellation is stamped AA CONV on 10/09/2020.",
+      "[check-building-permits-dallas-county-tx] In that set the oldest record on Marilla St was 01/30/2009 (an address assignment); the oldest at 1500 Marilla itself was a Certificate of Occupancy dated 09/12/2019. Pre-2025 records carry an older numbering format (e.g. 2411213061_194396666-001), unlike DallasNow numbers such as COM-ALT-ADD-26-002184.",
+      "[check-building-permits-dallas-county-tx] DallasNow (Accela Citizen Access), Building tab, https://aca-prod.accela.com/DALLASTX/Cap/CapHome.aspx?module=Building&TabName=Building. No login used; no CAPTCHA on the search.",
+      "[city-of-phoenix-permit-search] Sorted by issued date, the oldest record was OSME-93023180, issued 12/06/1993, status EXPR.",
+      "[city-of-phoenix-permit-search] OE-94023192 (issued 11/07/1994, status EXPR, electrical contractor named) Inspection History: 399 FINAL/ELECTRICAL NO ACCESS 08/06/1996; FAIL 09/19/1996; 311 RESEARCH NON-INSP ACTIVITY CONCLUDED 09/23/1996; 399 FINAL/ELECTRICAL PASS 10/09/1996. An EXPR status sat on a permit whose final inspection passed.",
+      "[city-of-phoenix-permit-search] 'Show temps?' defaults to No; Yes adds temporary/unissued permits.",
+      "[city-of-phoenix-permit-search] ELEC-94011014 (EXPR) Inspection History showed no items, so an empty history is possible too.",
+      "[city-of-san-diego-permit-search] OpenDSD Address Search, 2026-11-24: Street Number 202, Base Road Name 'C'. A 'Select a Road' box offered two roads, C ST and W C ST, and we picked C ST. Results came 50 to a page over 2 pages, with columns Approval ID, Approval Type, Approval Status, Street Address, Project ID, Title. Statuses seen on page 1: Completed, Issued, Created, Cancelled, Pending Invoice Payment. Project 682137 appears in both OpenDSD and Accela.",
+      "[city-of-san-diego-permit-search] OpenDSD approval 949761 (Plumbing Permit at 202 C ST), 2026-11-24: the detail page shows Application 01/26/2012, Issuance 02/09/2012, First Inspection 03/28/2012, Complete Date 04/07/2012, the scope, the APN and the project. Its Inspections list was empty.",
+      "[city-of-san-diego-permit-search] OpenDSD approval 10419 (Building Permit at 202 C ST), 2026-11-24: Status 'Cancelled - Abandoned', Complete Date 02/27/2003; the oldest approval at that address.",
+      "[city-of-south-pasadena-permit-records] 2026-11-24 browser: no public online search of past permits by address was found. The OpenGov portal (live from August 11, 2026) is for applying; its search finds services, and its 'Search for public records' page shows a heading but no search box. Permit history has to be asked for from the Building Division or through the city's Public Records Center.",
+      "[check-building-permits-los-angeles-county-ca] portalWalk 2026-11-17: EPIC-LA public search (Tyler EnerGov Self Service) for Los Angeles County, test address 13650 Mindanao Way (Burton Chace Park, a county park in unincorporated Marina del Rey). No login used."
+    ]
+  },
+  "facts": [
+    {
+      "id": "p1",
+      "claim": "California: every person has a right to inspect any public record, except as otherwise provided; segregable portions after exempt parts are deleted.",
+      "source": "leginfo.legislature.ca.gov, Government Code section 7922.525, read 2026-11-24",
+      "quote": "(a) Public records are open to inspection at all times during the office hours of a state or local agency and every person has a right to inspect any public record, except as otherwise provided. (b) Any reasonably segregable portion of a record shall be available for inspection by any person requesting the record after deletion of the portions that are exempted by law.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "p2",
+      "claim": "California: an agency has 10 days to determine whether a copy request seeks disclosable records and state an estimated date; extendable by up to 14 days in unusual circumstances.",
+      "source": "leginfo.legislature.ca.gov, Government Code section 7922.535, read 2026-11-24",
+      "quote": "Each agency, upon a request for a copy of records, shall, within 10 days from receipt of the request, determine whether the request, in whole or in part, seeks copies of disclosable public records in the possession of the agency and shall promptly notify the person making the request of the determination and the reasons therefor. If the agency determines that the request seeks disclosable public records, the agency shall also state the estimated date and time when the records will be made available. The notice shall not specify a date that would result in an extension for more than 14 days.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "p3",
+      "claim": "Florida: all state, county and municipal records are open for personal inspection and copying by any person.",
+      "source": "leg.state.fl.us, Florida Statutes 119.01 (2026), read 2026-11-24",
+      "quote": "It is the policy of this state that all state, county, and municipal records are open for personal inspection and copying by any person. Providing access to public records is a duty of each agency.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "p4",
+      "claim": "Florida's building-plans exemption covers structures owned or operated by an agency.",
+      "source": "leg.state.fl.us, Florida Statutes 119.071(3)(b)1. (2026), read 2026-11-24",
+      "quote": "Building plans, blueprints, schematic drawings, and diagrams, including draft, preliminary, and final formats, which depict the internal layout and structural elements of a building, arena, stadium, water treatment facility, or other structure owned or operated by an agency are exempt",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "p5",
+      "claim": "California Health and Safety Code § 19851: the building department's official copy of plans is open to inspection only on its premises; duplicating it needs written permission of the signing professional and of the original or current owner, or a court order or state agency request.",
+      "source": "leginfo.legislature.ca.gov, Health and Safety Code section 19851, read 2026-11-24",
+      "quote": "The official copy of the plans maintained by the building department of the city or county provided for under Section 19850 shall be open for inspection only on the premises of the building department as a public record. The copy may not be duplicated in whole or in part except (1) with the written permission",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "p6",
+      "claim": "Ministerial permits before 2003 are paper, available to inspect and copy in person, no appointment.",
+      "source": "sandiego.gov/development-services/pra-requests, read 2026-11-24",
+      "quote": "Ministerial permits issued before 2003 are not maintained in electronic format but are available to inspect and copy. To inspect these records or to obtain copies, you may visit our office in person and utilize our self-service stations during normal business hours. No appointment is required.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "p7",
+      "claim": "DSD keeps no records before 1955 and refers callers to the County Assessor.",
+      "source": "sandiego.gov/development-services/pra-requests, read 2026-11-24",
+      "quote": "DSD does not maintain any records prior to 1955. For records of properties built before 1955, please contact the County Assessor's Office at 619-236-3771 or 858-565-5920.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "p8",
+      "claim": "Copy cost.",
+      "source": "sandiego.gov/development-services/pra-requests, read 2026-11-24",
+      "quote": "The cost to make copies is $0.25/page",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "p9",
+      "claim": "The records request process can't be used to answer questions.",
+      "source": "sandiego.gov/development-services/pra-requests, read 2026-11-24",
+      "quote": "may not be used to answer specific questions",
+      "verified": "2026-11-24 browser"
+    }
+  ],
+  "cut": [
+    "Texas Public Information Act (Gov Code ch. 552): statutes.capitol.texas.gov rendered no section text in the browser on 2026-11-24, so no Texas wording is used.",
+    "Copyright in architectural plans: no primary source read; not stated.",
+    "Whether permits are public in every state: only California and Florida law was read; the page says so."
+  ],
+  "blockedSources": [
+    "statutes.capitol.texas.gov GV.552: page shell loaded without statute text, 2026-11-24 (not a block; a rendering failure)."
+  ]
+}

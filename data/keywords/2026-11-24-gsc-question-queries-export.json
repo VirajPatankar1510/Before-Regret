@@ -1,0 +1,2722 @@
+{
+ "source": "gsc",
+ "endpoint": "Search Console UI export (Performance on Search, xlsx), web, last 3 months, query regex filter; this site's impressions, not market volume",
+ "captured_at": "2026-11-24T00:00:00.000Z",
+ "location_name": "all countries (export not filtered by country)",
+ "language_code": "en",
+ "cost_usd": 0,
+ "note": "owner GSC export 2026-11-24, last 3 months, web, query regex ^(who|what|where|when|why|how|was|did|do|is|are|aren't|won't|does|if)[\" \"] (exported by the owner from the Search Console UI, xlsx)",
+ "keywords": [
+  {
+   "keyword": "what does an open ground mean",
+   "search_volume": null,
+   "impressions": 13.0,
+   "clicks": 1.0,
+   "position": 10.54
+  },
+  {
+   "keyword": "what does open ground mean",
+   "search_volume": null,
+   "impressions": 119.0,
+   "clicks": 0.0,
+   "position": 16.64
+  },
+  {
+   "keyword": "what is the difference between eifs and stucco",
+   "search_volume": null,
+   "impressions": 95.0,
+   "clicks": 0.0,
+   "position": 88.72
+  },
+  {
+   "keyword": "what does open ground mean on an outlet tester",
+   "search_volume": null,
+   "impressions": 70.0,
+   "clicks": 0.0,
+   "position": 23.79
+  },
+  {
+   "keyword": "do i need gfci outlets in my garage and basement to pass inspection",
+   "search_volume": null,
+   "impressions": 61.0,
+   "clicks": 0.0,
+   "position": 3.41
+  },
+  {
+   "keyword": "what does open ground mean in electrical wiring",
+   "search_volume": null,
+   "impressions": 44.0,
+   "clicks": 0.0,
+   "position": 21.66
+  },
+  {
+   "keyword": "what is an open ground",
+   "search_volume": null,
+   "impressions": 40.0,
+   "clicks": 0.0,
+   "position": 24.77
+  },
+  {
+   "keyword": "how to determine age of roof for insurance",
+   "search_volume": null,
+   "impressions": 29.0,
+   "clicks": 0.0,
+   "position": 80.72
+  },
+  {
+   "keyword": "how to check for open permits on a home in coral gables",
+   "search_volume": null,
+   "impressions": 19.0,
+   "clicks": 0.0,
+   "position": 44.63
+  },
+  {
+   "keyword": "what is open ground",
+   "search_volume": null,
+   "impressions": 18.0,
+   "clicks": 0.0,
+   "position": 10.17
+  },
+  {
+   "keyword": "what if my house is in a flood zone",
+   "search_volume": null,
+   "impressions": 15.0,
+   "clicks": 0.0,
+   "position": 94.47
+  },
+  {
+   "keyword": "when was my house built",
+   "search_volume": null,
+   "impressions": 14.0,
+   "clicks": 0.0,
+   "position": 20.79
+  },
+  {
+   "keyword": "what if the heating system is completely blocked by personal storage items, \nmaking it inaccessible?",
+   "search_volume": null,
+   "impressions": 13.0,
+   "clicks": 0.0,
+   "position": 4.23
+  },
+  {
+   "keyword": "do i need gfci in my bathroom to pass inspection?",
+   "search_volume": null,
+   "impressions": 12.0,
+   "clicks": 0.0,
+   "position": 8.0
+  },
+  {
+   "keyword": "how to identify polybutylene pipes",
+   "search_volume": null,
+   "impressions": 12.0,
+   "clicks": 0.0,
+   "position": 74.0
+  },
+  {
+   "keyword": "does homeowners insurance cover electrical panel",
+   "search_volume": null,
+   "impressions": 12.0,
+   "clicks": 0.0,
+   "position": 85.67
+  },
+  {
+   "keyword": "what is a federal pacific electrical panel sf",
+   "search_volume": null,
+   "impressions": 11.0,
+   "clicks": 0.0,
+   "position": 21.73
+  },
+  {
+   "keyword": "does homeowners insurance cover sump pump failure",
+   "search_volume": null,
+   "impressions": 11.0,
+   "clicks": 0.0,
+   "position": 45.91
+  },
+  {
+   "keyword": "do i need flood insurance outside a high-risk flood zone",
+   "search_volume": null,
+   "impressions": 11.0,
+   "clicks": 0.0,
+   "position": 68.91
+  },
+  {
+   "keyword": "are building permits public record",
+   "search_volume": null,
+   "impressions": 10.0,
+   "clicks": 0.0,
+   "position": 17.1
+  },
+  {
+   "keyword": "are permits public record",
+   "search_volume": null,
+   "impressions": 10.0,
+   "clicks": 0.0,
+   "position": 26.4
+  },
+  {
+   "keyword": "is sump pump failure covered by insurance",
+   "search_volume": null,
+   "impressions": 10.0,
+   "clicks": 0.0,
+   "position": 57.6
+  },
+  {
+   "keyword": "do home inspections check for asbestos",
+   "search_volume": null,
+   "impressions": 9.0,
+   "clicks": 0.0,
+   "position": 45.0
+  },
+  {
+   "keyword": "is a burst pipe covered by insurance",
+   "search_volume": null,
+   "impressions": 9.0,
+   "clicks": 0.0,
+   "position": 61.0
+  },
+  {
+   "keyword": "who pays for termite inspection buyer or seller",
+   "search_volume": null,
+   "impressions": 9.0,
+   "clicks": 0.0,
+   "position": 73.56
+  },
+  {
+   "keyword": "what is knob and tube wiring",
+   "search_volume": null,
+   "impressions": 8.0,
+   "clicks": 0.0,
+   "position": 55.12
+  },
+  {
+   "keyword": "how do i know if my house has polybutylene pipes",
+   "search_volume": null,
+   "impressions": 8.0,
+   "clicks": 0.0,
+   "position": 74.0
+  },
+  {
+   "keyword": "who pays for radon mitigation buyer or seller",
+   "search_volume": null,
+   "impressions": 8.0,
+   "clicks": 0.0,
+   "position": 78.75
+  },
+  {
+   "keyword": "does homeowners insurance cover water service line",
+   "search_volume": null,
+   "impressions": 8.0,
+   "clicks": 0.0,
+   "position": 81.5
+  },
+  {
+   "keyword": "what does an open ground outlet mean",
+   "search_volume": null,
+   "impressions": 7.0,
+   "clicks": 0.0,
+   "position": 34.0
+  },
+  {
+   "keyword": "what insurance companies cover polybutylene pipe",
+   "search_volume": null,
+   "impressions": 7.0,
+   "clicks": 0.0,
+   "position": 38.0
+  },
+  {
+   "keyword": "how to look up permits on a property",
+   "search_volume": null,
+   "impressions": 7.0,
+   "clicks": 0.0,
+   "position": 39.57
+  },
+  {
+   "keyword": "what is zone a on flood map",
+   "search_volume": null,
+   "impressions": 7.0,
+   "clicks": 0.0,
+   "position": 88.14
+  },
+  {
+   "keyword": "what must be displayed on each section of a manufactured home built after \njune 15, 1976",
+   "search_volume": null,
+   "impressions": 6.0,
+   "clicks": 0.0,
+   "position": 6.17
+  },
+  {
+   "keyword": "what year was my house built by address",
+   "search_volume": null,
+   "impressions": 6.0,
+   "clicks": 0.0,
+   "position": 8.67
+  },
+  {
+   "keyword": "does va require termite inspection",
+   "search_volume": null,
+   "impressions": 6.0,
+   "clicks": 0.0,
+   "position": 17.17
+  },
+  {
+   "keyword": "what does open ground mean on an outlet",
+   "search_volume": null,
+   "impressions": 6.0,
+   "clicks": 0.0,
+   "position": 18.17
+  },
+  {
+   "keyword": "what is eifs stucco",
+   "search_volume": null,
+   "impressions": 6.0,
+   "clicks": 0.0,
+   "position": 21.5
+  },
+  {
+   "keyword": "what is dryvit",
+   "search_volume": null,
+   "impressions": 6.0,
+   "clicks": 0.0,
+   "position": 26.17
+  },
+  {
+   "keyword": "how to identify stab-lok breakers",
+   "search_volume": null,
+   "impressions": 6.0,
+   "clicks": 0.0,
+   "position": 31.83
+  },
+  {
+   "keyword": "how long after buying a house can you complain",
+   "search_volume": null,
+   "impressions": 6.0,
+   "clicks": 0.0,
+   "position": 34.0
+  },
+  {
+   "keyword": "is my house in a flood zone",
+   "search_volume": null,
+   "impressions": 6.0,
+   "clicks": 0.0,
+   "position": 99.0
+  },
+  {
+   "keyword": "do va loans require termite inspection",
+   "search_volume": null,
+   "impressions": 5.0,
+   "clicks": 0.0,
+   "position": 7.4
+  },
+  {
+   "keyword": "when was my house built by address",
+   "search_volume": null,
+   "impressions": 5.0,
+   "clicks": 0.0,
+   "position": 8.6
+  },
+  {
+   "keyword": "how to see what permits were pulled for a property",
+   "search_volume": null,
+   "impressions": 5.0,
+   "clicks": 0.0,
+   "position": 9.4
+  },
+  {
+   "keyword": "how to identify synthetic stucco",
+   "search_volume": null,
+   "impressions": 5.0,
+   "clicks": 0.0,
+   "position": 39.2
+  },
+  {
+   "keyword": "do home inspectors test for asbestos",
+   "search_volume": null,
+   "impressions": 5.0,
+   "clicks": 0.0,
+   "position": 41.4
+  },
+  {
+   "keyword": "is title insurance a waste of money",
+   "search_volume": null,
+   "impressions": 5.0,
+   "clicks": 0.0,
+   "position": 41.6
+  },
+  {
+   "keyword": "does home inspection check for asbestos",
+   "search_volume": null,
+   "impressions": 5.0,
+   "clicks": 0.0,
+   "position": 48.2
+  },
+  {
+   "keyword": "what is reverse polarity",
+   "search_volume": null,
+   "impressions": 5.0,
+   "clicks": 0.0,
+   "position": 55.0
+  },
+  {
+   "keyword": "are building permits public records",
+   "search_volume": null,
+   "impressions": 5.0,
+   "clicks": 0.0,
+   "position": 79.2
+  },
+  {
+   "keyword": "what is knob and tube",
+   "search_volume": null,
+   "impressions": 5.0,
+   "clicks": 0.0,
+   "position": 84.6
+  },
+  {
+   "keyword": "how to detect mold behind walls",
+   "search_volume": null,
+   "impressions": 5.0,
+   "clicks": 0.0,
+   "position": 91.2
+  },
+  {
+   "keyword": "does insurance cover sewer lines under the house",
+   "search_volume": null,
+   "impressions": 5.0,
+   "clicks": 0.0,
+   "position": 93.4
+  },
+  {
+   "keyword": "what does open ground mean in electrical",
+   "search_volume": null,
+   "impressions": 4.0,
+   "clicks": 0.0,
+   "position": 23.0
+  },
+  {
+   "keyword": "how to find permits for a property",
+   "search_volume": null,
+   "impressions": 4.0,
+   "clicks": 0.0,
+   "position": 26.5
+  },
+  {
+   "keyword": "what does reverse polarity mean",
+   "search_volume": null,
+   "impressions": 4.0,
+   "clicks": 0.0,
+   "position": 31.0
+  },
+  {
+   "keyword": "how to check a contractors safety record",
+   "search_volume": null,
+   "impressions": 4.0,
+   "clicks": 0.0,
+   "position": 34.75
+  },
+  {
+   "keyword": "when to walk away after home inspection",
+   "search_volume": null,
+   "impressions": 4.0,
+   "clicks": 0.0,
+   "position": 51.0
+  },
+  {
+   "keyword": "how old can a roof be for homeowners insurance in iowa",
+   "search_volume": null,
+   "impressions": 4.0,
+   "clicks": 0.0,
+   "position": 75.75
+  },
+  {
+   "keyword": "how to know if you live in a flood zone",
+   "search_volume": null,
+   "impressions": 4.0,
+   "clicks": 0.0,
+   "position": 86.25
+  },
+  {
+   "keyword": "does home insurance cover roots in pipes",
+   "search_volume": null,
+   "impressions": 4.0,
+   "clicks": 0.0,
+   "position": 90.25
+  },
+  {
+   "keyword": "what do i do if i got a non-renewal notice because of my roof in minnesota",
+   "search_volume": null,
+   "impressions": 4.0,
+   "clicks": 0.0,
+   "position": 97.25
+  },
+  {
+   "keyword": "what flood zones require flood insurance",
+   "search_volume": null,
+   "impressions": 4.0,
+   "clicks": 0.0,
+   "position": 98.75
+  },
+  {
+   "keyword": "how to find permit history for a house",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 2.33
+  },
+  {
+   "keyword": "how do i find out what permits have been pulled on my house",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 4.0
+  },
+  {
+   "keyword": "how to check if my neighbor has a building permit",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 5.33
+  },
+  {
+   "keyword": "do va loans require a termite inspection",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 8.33
+  },
+  {
+   "keyword": "how can i find out if my neighbor has a building permit",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 8.33
+  },
+  {
+   "keyword": "how to look up permits pulled on a house",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 8.67
+  },
+  {
+   "keyword": "how to find building permits for a property",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 9.33
+  },
+  {
+   "keyword": "what does open ground mean?",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 10.0
+  },
+  {
+   "keyword": "is a termite inspection required for a va loan",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 10.33
+  },
+  {
+   "keyword": "what is an open ground mean",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 13.33
+  },
+  {
+   "keyword": "what does open ground mean on outlet tester",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 16.67
+  },
+  {
+   "keyword": "how to look up building permits by address",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 25.33
+  },
+  {
+   "keyword": "how to attach pex to galvanized pipe",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 29.0
+  },
+  {
+   "keyword": "how to pull permits on a house",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 29.67
+  },
+  {
+   "keyword": "how to find permits pulled on a house",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 30.67
+  },
+  {
+   "keyword": "how to check for permits on a house",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 31.0
+  },
+  {
+   "keyword": "what is an open ground outlet",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 31.0
+  },
+  {
+   "keyword": "what are settlement cracks",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 31.33
+  },
+  {
+   "keyword": "how to see permits pulled on a house",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 32.0
+  },
+  {
+   "keyword": "are site plans public record",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 32.67
+  },
+  {
+   "keyword": "does homeowners insurance cover polybutylene pipe replacement",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 36.33
+  },
+  {
+   "keyword": "how to verify luxury property title los angeles",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 41.0
+  },
+  {
+   "keyword": "how to find permits for my house",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 46.67
+  },
+  {
+   "keyword": "does home inspection test for asbestos",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 50.0
+  },
+  {
+   "keyword": "what is knob and tube electrical wiring",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 55.67
+  },
+  {
+   "keyword": "are sump pumps covered by home warranty",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 58.33
+  },
+  {
+   "keyword": "what is flood zone b",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 73.33
+  },
+  {
+   "keyword": "what is a tpr valve",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 74.67
+  },
+  {
+   "keyword": "how to identify polybutylene pipe",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 80.0
+  },
+  {
+   "keyword": "what is tube wiring",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 83.67
+  },
+  {
+   "keyword": "how to find old permits on a house",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 84.67
+  },
+  {
+   "keyword": "how old is roof",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 88.0
+  },
+  {
+   "keyword": "how to tell if a house is in a flood zone",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 94.0
+  },
+  {
+   "keyword": "how bad is flood zone a",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 94.33
+  },
+  {
+   "keyword": "does insurance cover sewer lines in the house",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 96.33
+  },
+  {
+   "keyword": "what is flood zone v",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 96.67
+  },
+  {
+   "keyword": "does homeowners insurance cover sewer line",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 97.33
+  },
+  {
+   "keyword": "what are flood zone codes",
+   "search_volume": null,
+   "impressions": 3.0,
+   "clicks": 0.0,
+   "position": 98.67
+  },
+  {
+   "keyword": "how to check permit history on a property",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 5.0
+  },
+  {
+   "keyword": "how to get assurant home insurance to cover basement rebuild after sump \npump endorsement",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 5.0
+  },
+  {
+   "keyword": "are building permits public information",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 5.5
+  },
+  {
+   "keyword": "how to check permits on a property",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 5.5
+  },
+  {
+   "keyword": "is 100 amps enough for a house",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 6.5
+  },
+  {
+   "keyword": "why does an eifs inspection matter. my location is indianapolis, indiana, \nunited states, usa.",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 6.5
+  },
+  {
+   "keyword": "are certificate of occupancy public record",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 7.5
+  },
+  {
+   "keyword": "where to find certificate of occupancy",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 8.0
+  },
+  {
+   "keyword": "how to look up permits on a house",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 10.0
+  },
+  {
+   "keyword": "how to replace knob and tube wiring with romex",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 10.0
+  },
+  {
+   "keyword": "how to find permits on a property",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 11.0
+  },
+  {
+   "keyword": "is sump pump failure covered?",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 11.0
+  },
+  {
+   "keyword": "what does it mean when you have an open ground",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 14.5
+  },
+  {
+   "keyword": "what year was my house built",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 19.0
+  },
+  {
+   "keyword": "how to look up building permits",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 21.0
+  },
+  {
+   "keyword": "what is open ground on outlet",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 21.0
+  },
+  {
+   "keyword": "what does open ground mean on outlet",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 22.0
+  },
+  {
+   "keyword": "does homeowners insurance cover electrical panel replacement",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 24.0
+  },
+  {
+   "keyword": "how to connect non threaded galvanized pipe to pex",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 24.5
+  },
+  {
+   "keyword": "is open ground bad",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 30.0
+  },
+  {
+   "keyword": "is an open ground dangerous",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 30.5
+  },
+  {
+   "keyword": "how to find an open ground in a circuit",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 34.0
+  },
+  {
+   "keyword": "how to connect pex to galvanized pipe",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 36.5
+  },
+  {
+   "keyword": "how to find building permits online",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 36.5
+  },
+  {
+   "keyword": "how to find out if a building permit was obtained",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 38.0
+  },
+  {
+   "keyword": "is a pest inspection required for va loans",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 38.0
+  },
+  {
+   "keyword": "how to verify electrician license oregon",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 39.0
+  },
+  {
+   "keyword": "how to find out if someone has a building permit",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 44.5
+  },
+  {
+   "keyword": "what is a open ground",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 44.5
+  },
+  {
+   "keyword": "how to check for reverse polarity",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 49.5
+  },
+  {
+   "keyword": "do home inspectors check for asbestos",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 52.0
+  },
+  {
+   "keyword": "is double tapping a circuit breaker acceptable",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 52.5
+  },
+  {
+   "keyword": "are permit applications public record",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 55.0
+  },
+  {
+   "keyword": "how to check for mold behind drywall",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 59.0
+  },
+  {
+   "keyword": "when to walk away from a house after inspection",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 60.5
+  },
+  {
+   "keyword": "how do i find out when my home was built",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 64.5
+  },
+  {
+   "keyword": "what is a reverse polarity",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 64.5
+  },
+  {
+   "keyword": "what is orangeburg pipe",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 66.5
+  },
+  {
+   "keyword": "what does va pest inspection mean",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 75.5
+  },
+  {
+   "keyword": "what is a stab lok electrical panel",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 87.0
+  },
+  {
+   "keyword": "does insurance cover burst pipes",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 92.5
+  },
+  {
+   "keyword": "is my home in a flood zone",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 92.5
+  },
+  {
+   "keyword": "how much does it cost to fix a belly in a sewer line",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 93.0
+  },
+  {
+   "keyword": "what is a federal pacific electrical panel",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 96.0
+  },
+  {
+   "keyword": "how to know if my house is in a flood zone",
+   "search_volume": null,
+   "impressions": 2.0,
+   "clicks": 0.0,
+   "position": 98.0
+  },
+  {
+   "keyword": "do you have images?",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 1.0
+  },
+  {
+   "keyword": "how expensive is the first option",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 1.0
+  },
+  {
+   "keyword": "how to find out if a house has a certificate of occupancy",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 1.0
+  },
+  {
+   "keyword": "is cast iron pipe magnetic",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 1.0
+  },
+  {
+   "keyword": "what does it mean open ground",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 1.0
+  },
+  {
+   "keyword": "what side gets the most sun",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 1.0
+  },
+  {
+   "keyword": "what does it mean to reverse polarity",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 2.0
+  },
+  {
+   "keyword": "how does knob and tube wiring work",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 3.0
+  },
+  {
+   "keyword": "is knob and tube wiring illegal",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 3.0
+  },
+  {
+   "keyword": "what about title insurance",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 3.0
+  },
+  {
+   "keyword": "what should seller do during home inspection",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 3.0
+  },
+  {
+   "keyword": "what to expect from a home inspection as a seller",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 3.0
+  },
+  {
+   "keyword": "why are zinsco panels dangerous",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 3.0
+  },
+  {
+   "keyword": "why is knob and tube wiring dangerous",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 3.0
+  },
+  {
+   "keyword": "are cast iron sewer pipes bad",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 5.0
+  },
+  {
+   "keyword": "is this legal",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 5.0
+  },
+  {
+   "keyword": "how to find building permits by address",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 6.0
+  },
+  {
+   "keyword": "what does open ground mean on a tester",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 6.0
+  },
+  {
+   "keyword": "what is a wdo",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 6.0
+  },
+  {
+   "keyword": "do you have to pay for sewer",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 7.0
+  },
+  {
+   "keyword": "how to look up a certificate of occupancy",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 7.0
+  },
+  {
+   "keyword": "how to look up permits",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 7.0
+  },
+  {
+   "keyword": "is sewer line insurance worth it",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 7.0
+  },
+  {
+   "keyword": "are building inspections public record",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 8.0
+  },
+  {
+   "keyword": "does va require a termite inspection",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 8.0
+  },
+  {
+   "keyword": "how to check building permits",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 8.0
+  },
+  {
+   "keyword": "how to pull permits on a property",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 8.0
+  },
+  {
+   "keyword": "what are the different costs",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 8.0
+  },
+  {
+   "keyword": "what year was my apartment built",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 8.0
+  },
+  {
+   "keyword": "when does water line and sewer line protection coverage begin?",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 8.0
+  },
+  {
+   "keyword": "do homeowners policies cover buried water and sewer service lines?",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 9.0
+  },
+  {
+   "keyword": "does the sewer and water plan cover pre-existing problems?",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 9.0
+  },
+  {
+   "keyword": "does the va require a termite inspection",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 9.0
+  },
+  {
+   "keyword": "how to check if a permit was pulled",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 9.0
+  },
+  {
+   "keyword": "how to find certificate of occupancy",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 9.0
+  },
+  {
+   "keyword": "how to manage electrical inspection records?",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 9.0
+  },
+  {
+   "keyword": "what is open ground in electrical",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 9.0
+  },
+  {
+   "keyword": "where to find permits pulled on a house",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 9.0
+  },
+  {
+   "keyword": "do i have to pay for sewer",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 10.0
+  },
+  {
+   "keyword": "does a building inspection check for asbestos",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 10.0
+  },
+  {
+   "keyword": "does a va loan require a termite inspection",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 10.0
+  },
+  {
+   "keyword": "how do i find out if a building permit was issued",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 10.0
+  },
+  {
+   "keyword": "how to look up a permit",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 10.0
+  },
+  {
+   "keyword": "how to look up past permits on a house",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 10.0
+  },
+  {
+   "keyword": "is termite inspection required for va loan",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 10.0
+  },
+  {
+   "keyword": "what does open ground means",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 10.0
+  },
+  {
+   "keyword": "what is open ground mean",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 10.0
+  },
+  {
+   "keyword": "how do i find out if a permit was pulled for my house",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 11.0
+  },
+  {
+   "keyword": "how to check permit status",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 11.0
+  },
+  {
+   "keyword": "how to find a contractors license number",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 11.0
+  },
+  {
+   "keyword": "how to find open permits on a house",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 11.0
+  },
+  {
+   "keyword": "how to look up general contractor license",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 11.0
+  },
+  {
+   "keyword": "if a home inspector tests/inspects a receptacle, and it has reversed \npolarity, the inspector should _____",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 11.0
+  },
+  {
+   "keyword": "if termites found during inspection",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 11.0
+  },
+  {
+   "keyword": "if the inspection process finds serious problems with the house, it is best \nto do what? consider walking away from the deal because it may cost you too \nmuch in repairs go through with the deal; you have no choice at this point \nthe seller will have already told you about serious problems so the \ninspection will not give you any new information set up a time for closing \nskip to navigation",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 11.0
+  },
+  {
+   "keyword": "is eifs stucco",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 11.0
+  },
+  {
+   "keyword": "what does open ground outlet mean",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 11.0
+  },
+  {
+   "keyword": "what open ground means",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 11.0
+  },
+  {
+   "keyword": "what year is my house built",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 11.0
+  },
+  {
+   "keyword": "when was my hoise built",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 11.0
+  },
+  {
+   "keyword": "what is the process if active termites are found during a wdir inspection \nfor a property sale",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 12.0
+  },
+  {
+   "keyword": "does home insurance cover electrical wiring",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 16.0
+  },
+  {
+   "keyword": "how to check if a house has planning permission",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 17.0
+  },
+  {
+   "keyword": "is open ground dangerous",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 17.0
+  },
+  {
+   "keyword": "how do i find out if my neighbour has planning permission",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 18.0
+  },
+  {
+   "keyword": "how to connect copper to galvanized pipe",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 18.0
+  },
+  {
+   "keyword": "how to check for asbestos",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 19.0
+  },
+  {
+   "keyword": "what is dryvit stucco",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 20.0
+  },
+  {
+   "keyword": "why does an eifs inspection matter",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 20.0
+  },
+  {
+   "keyword": "is 100 amp service enough",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 22.0
+  },
+  {
+   "keyword": "how to find blueprints of my house",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 23.0
+  },
+  {
+   "keyword": "what is a double tapped breaker",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 23.0
+  },
+  {
+   "keyword": "what does open ground mean in electrical systems",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 24.0
+  },
+  {
+   "keyword": "how to find an open ground",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 26.0
+  },
+  {
+   "keyword": "what does an open ground mean on an outlet",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 27.0
+  },
+  {
+   "keyword": "how to find out when a house was built",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 28.0
+  },
+  {
+   "keyword": "what is open ground electrical",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 28.0
+  },
+  {
+   "keyword": "how to see what permits have been pulled on a house",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 29.0
+  },
+  {
+   "keyword": "what does reversed polarity mean",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 29.0
+  },
+  {
+   "keyword": "what is an open ground electrical outlet",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 29.0
+  },
+  {
+   "keyword": "how to find copper water pipes in walls",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 31.0
+  },
+  {
+   "keyword": "what does reverse polarity mean on an outlet",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 32.0
+  },
+  {
+   "keyword": "does flood zone b require insurance",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 33.0
+  },
+  {
+   "keyword": "what causes an open ground",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 34.0
+  },
+  {
+   "keyword": "what is an open ground on an outlet",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 34.0
+  },
+  {
+   "keyword": "what is open ground electrical outlet",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 35.0
+  },
+  {
+   "keyword": "why are cast iron pipes bad",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 36.0
+  },
+  {
+   "keyword": "what is an open ground circuit",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 39.0
+  },
+  {
+   "keyword": "how to go from galvanized pipe to pex",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 41.0
+  },
+  {
+   "keyword": "what does knob and tube wire look like",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 41.0
+  },
+  {
+   "keyword": "is reverse polarity dangerous",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 44.0
+  },
+  {
+   "keyword": "what causes reverse polarity",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 44.0
+  },
+  {
+   "keyword": "what direction should house face for most sunlight",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 45.0
+  },
+  {
+   "keyword": "what does hot and neutral reversed mean",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 45.0
+  },
+  {
+   "keyword": "how to find a lead",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 46.0
+  },
+  {
+   "keyword": "what is reverse polarity in electricity",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 46.0
+  },
+  {
+   "keyword": "what is tpr valve on hot water heater",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 47.0
+  },
+  {
+   "keyword": "how to test for reverse polarity",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 48.0
+  },
+  {
+   "keyword": "how to check reverse polarity",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 49.0
+  },
+  {
+   "keyword": "is my property in a flood zone",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 49.0
+  },
+  {
+   "keyword": "what are flood zones",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 50.0
+  },
+  {
+   "keyword": "do inspectors check for asbestos",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 51.0
+  },
+  {
+   "keyword": "when did they stop using orangeburg pipe",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 51.0
+  },
+  {
+   "keyword": "what is double tap wiring",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 53.0
+  },
+  {
+   "keyword": "what does wrong polarity indicator mean",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 54.0
+  },
+  {
+   "keyword": "are cast iron pipes bad",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 56.0
+  },
+  {
+   "keyword": "how did knob and tube wiring work",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 56.0
+  },
+  {
+   "keyword": "how do i know if my house has galvanized pipes",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 56.0
+  },
+  {
+   "keyword": "is an expansion tank required for a water heater",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 56.0
+  },
+  {
+   "keyword": "does a home inspection check for asbestos",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 59.0
+  },
+  {
+   "keyword": "what is reversed polarity",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 59.0
+  },
+  {
+   "keyword": "what to do before a home inspection",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 59.0
+  },
+  {
+   "keyword": "does cast iron pipe rust",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 61.0
+  },
+  {
+   "keyword": "how knob and tube wiring works",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 61.0
+  },
+  {
+   "keyword": "what are double taps on electrical panel",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 62.0
+  },
+  {
+   "keyword": "does knob and tube have a ground",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 63.0
+  },
+  {
+   "keyword": "how to find out if a house has code violations",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 63.0
+  },
+  {
+   "keyword": "how to look up a building permit",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 65.0
+  },
+  {
+   "keyword": "how serious is belly in sewer line",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 66.0
+  },
+  {
+   "keyword": "how much is it to replace knob and tube wiring",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 68.0
+  },
+  {
+   "keyword": "how to look up building permits online",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 68.0
+  },
+  {
+   "keyword": "what is orangeburg sewer pipe",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 68.0
+  },
+  {
+   "keyword": "does homeowners insurance cover pipes that burst",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 69.0
+  },
+  {
+   "keyword": "what is knob and tube wiring in a home",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 74.0
+  },
+  {
+   "keyword": "how to identify poly b piping",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 75.0
+  },
+  {
+   "keyword": "do home warranties cover sump pumps",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 76.0
+  },
+  {
+   "keyword": "how to find pex pipe in walls",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 76.0
+  },
+  {
+   "keyword": "how to get around building permits",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 77.0
+  },
+  {
+   "keyword": "where can i see projects before permits are filed",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 77.0
+  },
+  {
+   "keyword": "is flood insurance required in a 100 year flood zone",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 78.0
+  },
+  {
+   "keyword": "what direction gets the most sunlight",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 78.0
+  },
+  {
+   "keyword": "what is a flood zone",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 78.0
+  },
+  {
+   "keyword": "what is stab lok circuit breakers",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 78.0
+  },
+  {
+   "keyword": "what is a stab lok breaker",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 79.0
+  },
+  {
+   "keyword": "are building permits public",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 81.0
+  },
+  {
+   "keyword": "how to tell if you have polybutylene pipes",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 82.0
+  },
+  {
+   "keyword": "what is knob and tube wiring?",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 82.0
+  },
+  {
+   "keyword": "when was orangeburg pipe used",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 82.0
+  },
+  {
+   "keyword": "are south facing windows good",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 83.0
+  },
+  {
+   "keyword": "what is knob and tube wiring in a house",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 83.0
+  },
+  {
+   "keyword": "does homeowners insurance cover broken sewer pipes",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 84.0
+  },
+  {
+   "keyword": "how to check if house is in flood zone",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 84.0
+  },
+  {
+   "keyword": "does homeowners insurance cover sewer line replacement?",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 86.0
+  },
+  {
+   "keyword": "how to identify federal pacific electrical panel",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 87.0
+  },
+  {
+   "keyword": "how to splice romex in a junction box",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 87.0
+  },
+  {
+   "keyword": "what is sewer lateral",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 87.0
+  },
+  {
+   "keyword": "who is responsible for termite inspection seller or buyer",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 87.0
+  },
+  {
+   "keyword": "does a sewer line belly need to be replaced",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 88.0
+  },
+  {
+   "keyword": "how to search for permits on a house",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 88.0
+  },
+  {
+   "keyword": "what is zone a on a flood map",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 89.0
+  },
+  {
+   "keyword": "is stucco eifs",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 90.0
+  },
+  {
+   "keyword": "what flood zone is my house",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 90.0
+  },
+  {
+   "keyword": "how to check permits on a house",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 91.0
+  },
+  {
+   "keyword": "what is a fema flood zone",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 93.0
+  },
+  {
+   "keyword": "what is flood zone c",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 93.0
+  },
+  {
+   "keyword": "is my house in a special flood hazard area",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 94.0
+  },
+  {
+   "keyword": "is sewer line replacement covered by homeowners insurance?",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 94.0
+  },
+  {
+   "keyword": "does homeowners insurance cover burst pipes",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 97.0
+  },
+  {
+   "keyword": "how to find old building permits",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 97.0
+  },
+  {
+   "keyword": "what is a 100 year flood zone",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 97.0
+  },
+  {
+   "keyword": "does homeowners insurance cover sewer line replacement",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 99.0
+  },
+  {
+   "keyword": "what flood zone",
+   "search_volume": null,
+   "impressions": 1.0,
+   "clicks": 0.0,
+   "position": 100.0
+  }
+ ],
+ "pages": [
+  {
+   "page": "https://www.beforeregret.com/guides/open-ground-mean-electrical-inspection/",
+   "clicks": 1.0,
+   "impressions": 364.0,
+   "ctr": 0.0027,
+   "position": 20.07
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/eifs-vs-stucco-how-to-tell/",
+   "clicks": 0.0,
+   "impressions": 108.0,
+   "ctr": 0.0,
+   "position": 81.98
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/need-gfci-outlets-pass-home-inspection/",
+   "clicks": 0.0,
+   "impressions": 73.0,
+   "ctr": 0.0,
+   "position": 4.16
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/flood-zone-by-address/",
+   "clicks": 0.0,
+   "impressions": 66.0,
+   "ctr": 0.0,
+   "position": 91.47
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/check-building-permits-cook-county-il/",
+   "clicks": 0.0,
+   "impressions": 41.0,
+   "ctr": 0.0,
+   "position": 25.95
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/when-was-my-house-built-by-address/",
+   "clicks": 0.0,
+   "impressions": 33.0,
+   "ctr": 0.0,
+   "position": 18.52
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/home-insurance-water-sewer-service-line/",
+   "clicks": 0.0,
+   "impressions": 31.0,
+   "ctr": 0.0,
+   "position": 79.26
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/homeowners-insurance-cover-failed-sump-pump/",
+   "clicks": 0.0,
+   "impressions": 29.0,
+   "ctr": 0.0,
+   "position": 47.03
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/prove-roof-age-for-insurance/",
+   "clicks": 0.0,
+   "impressions": 29.0,
+   "ctr": 0.0,
+   "position": 80.72
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/standard-home-inspection-check-asbestos/",
+   "clicks": 0.0,
+   "impressions": 28.0,
+   "ctr": 0.0,
+   "position": 44.5
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/check-building-permits-los-angeles-county-ca/",
+   "clicks": 0.0,
+   "impressions": 25.0,
+   "ctr": 0.0,
+   "position": 14.68
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/va-loan-require-termite-inspection/",
+   "clicks": 0.0,
+   "impressions": 25.0,
+   "ctr": 0.0,
+   "position": 18.4
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/reverse-polarity-mean-electrical-inspection/",
+   "clicks": 0.0,
+   "impressions": 25.0,
+   "ctr": 0.0,
+   "position": 43.6
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/spot-polybutylene-pipes-before-buying-house/",
+   "clicks": 0.0,
+   "impressions": 25.0,
+   "ctr": 0.0,
+   "position": 75.08
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/federal-pacific-stab-lok-panel-inspectors-flag/",
+   "clicks": 0.0,
+   "impressions": 24.0,
+   "ctr": 0.0,
+   "position": 43.33
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/look-up-building-permits-by-address",
+   "clicks": 0.0,
+   "impressions": 21.0,
+   "ctr": 0.0,
+   "position": 71.19
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/check-building-permits-miami-dade-county-fl/",
+   "clicks": 0.0,
+   "impressions": 19.0,
+   "ctr": 0.0,
+   "position": 44.63
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring",
+   "clicks": 0.0,
+   "impressions": 16.0,
+   "ctr": 0.0,
+   "position": 81.94
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/get-home-insurance-fuse-box/",
+   "clicks": 0.0,
+   "impressions": 15.0,
+   "ctr": 0.0,
+   "position": 72.8
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/not-inspected-due-storage-mean-inspection-report/",
+   "clicks": 0.0,
+   "impressions": 13.0,
+   "ctr": 0.0,
+   "position": 4.23
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/check-building-permits-philadelphia-county-pa/",
+   "clicks": 0.0,
+   "impressions": 13.0,
+   "ctr": 0.0,
+   "position": 26.31
+  },
+  {
+   "page": "https://www.beforeregret.com/research/outside-the-zone/",
+   "clicks": 0.0,
+   "impressions": 13.0,
+   "ctr": 0.0,
+   "position": 66.85
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/burst-pipe-what-to-do-insurance/",
+   "clicks": 0.0,
+   "impressions": 13.0,
+   "ctr": 0.0,
+   "position": 69.23
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/happens-if-termite-infestation-found-during-home-inspection/",
+   "clicks": 0.0,
+   "impressions": 12.0,
+   "ctr": 0.0,
+   "position": 64.33
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/splice-romex-knob-tube-wiring/",
+   "clicks": 0.0,
+   "impressions": 10.0,
+   "ctr": 0.0,
+   "position": 13.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/polybutylene-pipes-home-insurance/",
+   "clicks": 0.0,
+   "impressions": 10.0,
+   "ctr": 0.0,
+   "position": 37.5
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/check-building-permits-brooklyn-ny/",
+   "clicks": 0.0,
+   "impressions": 9.0,
+   "ctr": 0.0,
+   "position": 7.11
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/check-building-permits-maricopa-county-az/",
+   "clicks": 0.0,
+   "impressions": 9.0,
+   "ctr": 0.0,
+   "position": 9.11
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/connect-pex-copper-to-galvanized-pipe/",
+   "clicks": 0.0,
+   "impressions": 9.0,
+   "ctr": 0.0,
+   "position": 29.78
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/look-up-building-permits-by-address/",
+   "clicks": 0.0,
+   "impressions": 8.0,
+   "ctr": 0.0,
+   "position": 65.38
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/negotiate-radon-mitigation-after-inspection/",
+   "clicks": 0.0,
+   "impressions": 8.0,
+   "ctr": 0.0,
+   "position": 78.75
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/why-cast-iron-pipes-corrode/",
+   "clicks": 0.0,
+   "impressions": 7.0,
+   "ctr": 0.0,
+   "position": 24.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/dryvit-house-what-it-means-buyer/",
+   "clicks": 0.0,
+   "impressions": 7.0,
+   "ctr": 0.0,
+   "position": 25.29
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/when-reasonable-walk-away-after-inspection/",
+   "clicks": 0.0,
+   "impressions": 7.0,
+   "ctr": 0.0,
+   "position": 48.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/what-is-knob-and-tube-wiring/",
+   "clicks": 0.0,
+   "impressions": 7.0,
+   "ctr": 0.0,
+   "position": 71.86
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/home-inspection-check-mold-behind-walls/",
+   "clicks": 0.0,
+   "impressions": 7.0,
+   "ctr": 0.0,
+   "position": 82.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/buying-a-mobile-home-what-to-check/",
+   "clicks": 0.0,
+   "impressions": 6.0,
+   "ctr": 0.0,
+   "position": 6.17
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/buyers-remorse-after-buying-a-house/",
+   "clicks": 0.0,
+   "impressions": 6.0,
+   "ctr": 0.0,
+   "position": 34.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/is-title-insurance-a-waste-of-money/",
+   "clicks": 0.0,
+   "impressions": 5.0,
+   "ctr": 0.0,
+   "position": 41.6
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/double-tapped-breaker-did-inspector-flag/",
+   "clicks": 0.0,
+   "impressions": 5.0,
+   "ctr": 0.0,
+   "position": 48.6
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/orangeburg-pipe-collapse/",
+   "clicks": 0.0,
+   "impressions": 5.0,
+   "ctr": 0.0,
+   "position": 66.8
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/check-building-permits-san-diego-county-ca/",
+   "clicks": 0.0,
+   "impressions": 4.0,
+   "ctr": 0.0,
+   "position": 10.5
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/cslb-license-check-california-contractor/",
+   "clicks": 0.0,
+   "impressions": 4.0,
+   "ctr": 0.0,
+   "position": 34.75
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/tpr-valve-inspectors-always-check/",
+   "clicks": 0.0,
+   "impressions": 4.0,
+   "ctr": 0.0,
+   "position": 67.75
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/home-insurance-roof-age-law-by-state/",
+   "clicks": 0.0,
+   "impressions": 4.0,
+   "ctr": 0.0,
+   "position": 75.75
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/sewer-line-belly-found-inspection/",
+   "clicks": 0.0,
+   "impressions": 4.0,
+   "ctr": 0.0,
+   "position": 85.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/home-insurance-nonrenewal-roof-photo/",
+   "clicks": 0.0,
+   "impressions": 4.0,
+   "ctr": 0.0,
+   "position": 97.25
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/check-building-permits-san-bernardino-county-ca/",
+   "clicks": 0.0,
+   "impressions": 3.0,
+   "ctr": 0.0,
+   "position": 5.33
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/check-building-permits-tarrant-county-tx/",
+   "clicks": 0.0,
+   "impressions": 3.0,
+   "ctr": 0.0,
+   "position": 7.67
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/buy-house-with-eifs-stucco/",
+   "clicks": 0.0,
+   "impressions": 3.0,
+   "ctr": 0.0,
+   "position": 11.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/100-amp-service-enough-house-re-buying/",
+   "clicks": 0.0,
+   "impressions": 3.0,
+   "ctr": 0.0,
+   "position": 11.67
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/typical-settlement-cracking-mean-inspection-report/",
+   "clicks": 0.0,
+   "impressions": 3.0,
+   "ctr": 0.0,
+   "position": 31.33
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/south-facing-house-sun-by-direction/",
+   "clicks": 0.0,
+   "impressions": 3.0,
+   "ctr": 0.0,
+   "position": 54.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/identify-water-pipes-pex-copper-galvanized/",
+   "clicks": 0.0,
+   "impressions": 3.0,
+   "ctr": 0.0,
+   "position": 54.33
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/how-to-tell-how-old-a-roof-is/",
+   "clicks": 0.0,
+   "impressions": 3.0,
+   "ctr": 0.0,
+   "position": 88.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/seller-back-out-after-accepting-inspection-response/",
+   "clicks": 0.0,
+   "impressions": 2.0,
+   "ctr": 0.0,
+   "position": 3.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/check-building-permits-dallas-county-tx/",
+   "clicks": 0.0,
+   "impressions": 2.0,
+   "ctr": 0.0,
+   "position": 5.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/open-ground-mean-electrical-inspection/#how-to-spot-an-open-ground-outlet",
+   "clicks": 0.0,
+   "impressions": 2.0,
+   "ctr": 0.0,
+   "position": 5.5
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/open-ground-mean-electrical-inspection/#the-anatomy-of-an-outlet-how-grounding-works",
+   "clicks": 0.0,
+   "impressions": 2.0,
+   "ctr": 0.0,
+   "position": 5.5
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/open-ground-mean-electrical-inspection/#the-risks-of-an-open-ground",
+   "clicks": 0.0,
+   "impressions": 2.0,
+   "ctr": 0.0,
+   "position": 5.5
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/open-ground-mean-electrical-inspection/#why-do-open-grounds-happen",
+   "clicks": 0.0,
+   "impressions": 2.0,
+   "ctr": 0.0,
+   "position": 5.5
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/check-harris-county-permit-history-before-buying/",
+   "clicks": 0.0,
+   "impressions": 2.0,
+   "ctr": 0.0,
+   "position": 8.5
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/city-utilities-vs-septic-water-sewer-costs/",
+   "clicks": 0.0,
+   "impressions": 2.0,
+   "ctr": 0.0,
+   "position": 8.5
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/tennessee-contractor-license-lookup/",
+   "clicks": 0.0,
+   "impressions": 2.0,
+   "ctr": 0.0,
+   "position": 11.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/oregon-contractor-license-lookup/",
+   "clicks": 0.0,
+   "impressions": 2.0,
+   "ctr": 0.0,
+   "position": 39.0
+  },
+  {
+   "page": "https://www.beforeregret.com/sunlight/",
+   "clicks": 0.0,
+   "impressions": 2.0,
+   "ctr": 0.0,
+   "position": 65.5
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/standard-home-inspection-check-eifs-stucco-moisture/",
+   "clicks": 0.0,
+   "impressions": 1.0,
+   "ctr": 0.0,
+   "position": 1.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/get-homeowners-insurance-knob-tube-wiring/",
+   "clicks": 0.0,
+   "impressions": 1.0,
+   "ctr": 0.0,
+   "position": 3.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/how-common-are-title-insurance-claims/",
+   "clicks": 0.0,
+   "impressions": 1.0,
+   "ctr": 0.0,
+   "position": 3.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/will-zinsco-panel-fail-4-point-inspection/",
+   "clicks": 0.0,
+   "impressions": 1.0,
+   "ctr": 0.0,
+   "position": 3.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/wdo-report-who-supposed-order/",
+   "clicks": 0.0,
+   "impressions": 1.0,
+   "ctr": 0.0,
+   "position": 6.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/check-building-permits-brevard-county-fl/",
+   "clicks": 0.0,
+   "impressions": 1.0,
+   "ctr": 0.0,
+   "position": 9.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/check-building-permits-pinellas-county-fl/",
+   "clicks": 0.0,
+   "impressions": 1.0,
+   "ctr": 0.0,
+   "position": 9.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/lead-service-line-lookup-by-address/",
+   "clicks": 0.0,
+   "impressions": 1.0,
+   "ctr": 0.0,
+   "position": 46.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/water-heater-expansion-tank-required/",
+   "clicks": 0.0,
+   "impressions": 1.0,
+   "ctr": 0.0,
+   "position": 56.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/needs-be-done-before-home-inspection/",
+   "clicks": 0.0,
+   "impressions": 1.0,
+   "ctr": 0.0,
+   "position": 59.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/knob-and-tube-removal-cost-permits/",
+   "clicks": 0.0,
+   "impressions": 1.0,
+   "ctr": 0.0,
+   "position": 68.0
+  },
+  {
+   "page": "https://www.beforeregret.com/guides/sewer-lateral-inspection-at-sale-cities/",
+   "clicks": 0.0,
+   "impressions": 1.0,
+   "ctr": 0.0,
+   "position": 87.0
+  }
+ ]
+}
