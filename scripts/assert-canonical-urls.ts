@@ -142,6 +142,10 @@ function main() {
     '/guides/snow-hide-winter-home-inspection/', // 74 chars
     '/guides/leaving-home-thanksgiving-checklist/', // 76 chars
     '/guides/best-time-to-buy-house-christmas-by-city/', // 67 chars
+    // The homepage (its dist/index.html resolves to "//" in the rel computation below). Owner 2026-11-24 chose
+    // "Free Home Inspection Checklist for Homebuyers | Before Regret" (61 chars): the owner's 2026-11-20 title, word for
+    // word, plus the brand, because Google showed the site for "before regret" zero times in 16 months.
+    '//',
   ]);
   for (const f of walk(DIST).filter((p) => p.endsWith('index.html'))) {
     const html = fs.readFileSync(f, 'utf8');

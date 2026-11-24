@@ -1,0 +1,292 @@
+{
+  "slug": "before-regret-home-report-checks-by-year-built",
+  "question": "What does a Before Regret home report check, and how does the year a house was built change the list?",
+  "officialLookupUrl": "/",
+  "verdictConfirmed": "2026-11-24: the report's Inspect list comes from 20 fixed rules in src/engine/inspectionPriorities.ts, each with a build-year window and, for some, a state or county list. No AI writes a report. Year built is what the visitor types and is not verified.",
+  "demand": "tier 3 for the brand: topic-demand.ts 2026-11-24 (captures 2026-11-24-demand-before-regret-gsc / -bing) found zero Google impressions for 'before regret' in 16 months; Bing showed the homepage 6 times. Owner-directed brand page (2026-11-24). No volume is stated on the page.",
+  "ourWork": {
+    "date": "2026-11-24",
+    "engineTable": {
+      "source": "docs/data/report-checks-by-year.json, built by scripts/build-report-checks-table.ts from PRIORITY_RULES",
+      "ruleCount": "20",
+      "expansiveSoilCounties": "13",
+      "termiteStates": "19",
+      "landslideStates": "15",
+      "insuranceFlagRules": "3 (knob-and-tube, panel brand, polybutylene)",
+      "rows": [
+        {
+          "id": "lead_paint_disclosure",
+          "check": "Confirm you received the federal lead-paint disclosure",
+          "priority": "high",
+          "builtYears": "1977 or earlier",
+          "where": "Everywhere in the US",
+          "costToCheck": "Free",
+          "insuranceFlag": false
+        },
+        {
+          "id": "knob_and_tube",
+          "check": "Check for active knob-and-tube wiring",
+          "priority": "high",
+          "builtYears": "1955 or earlier",
+          "where": "Everywhere in the US",
+          "costToCheck": "Usually included in a general inspection",
+          "insuranceFlag": true
+        },
+        {
+          "id": "electrical_aluminum_wiring",
+          "check": "Identify the branch circuit wiring material",
+          "priority": "high",
+          "builtYears": "1965 to 1973",
+          "where": "Everywhere in the US",
+          "costToCheck": "Usually included in a general inspection",
+          "insuranceFlag": false
+        },
+        {
+          "id": "electrical_panel_brand",
+          "check": "Record the electrical panel brand",
+          "priority": "high",
+          "builtYears": "1950 to 1989",
+          "where": "Everywhere in the US",
+          "costToCheck": "Usually included in a general inspection",
+          "insuranceFlag": true
+        },
+        {
+          "id": "sewer_cast_iron",
+          "check": "Scope the sewer line",
+          "priority": "high",
+          "builtYears": "1973 or earlier",
+          "where": "Everywhere in the US",
+          "costToCheck": "$300 – $500 for a camera scope",
+          "insuranceFlag": false
+        },
+        {
+          "id": "galvanized_supply",
+          "check": "Check the water supply pipe material",
+          "priority": "medium",
+          "builtYears": "1969 or earlier",
+          "where": "Everywhere in the US",
+          "costToCheck": "Usually included in a general inspection",
+          "insuranceFlag": false
+        },
+        {
+          "id": "polybutylene_supply",
+          "check": "Check whether the supply lines are polybutylene",
+          "priority": "high",
+          "builtYears": "1978 to 1996",
+          "where": "Everywhere in the US",
+          "costToCheck": "Usually included in a general inspection",
+          "insuranceFlag": true
+        },
+        {
+          "id": "foundation_pre_posttension",
+          "check": "Get the foundation looked at by a structural engineer",
+          "priority": "high",
+          "builtYears": "1979 or earlier",
+          "where": "Only in 13 counties with documented expansive clay soil",
+          "costToCheck": "$400 – $800 for a structural engineer evaluation",
+          "insuranceFlag": false
+        },
+        {
+          "id": "foundation_posttension",
+          "check": "Watch for signs of slab movement",
+          "priority": "medium",
+          "builtYears": "1980 or later",
+          "where": "Only in 13 counties with documented expansive clay soil",
+          "costToCheck": "Included in a general inspection; $400 – $800 for a structural engineer if signs are present",
+          "insuranceFlag": false
+        },
+        {
+          "id": "pier_and_beam",
+          "check": "Have someone physically enter the crawlspace",
+          "priority": "medium",
+          "builtYears": "1965 or earlier",
+          "where": "Only in 13 counties with documented expansive clay soil",
+          "costToCheck": "Usually included in a general inspection when the crawlspace is accessible",
+          "insuranceFlag": false
+        },
+        {
+          "id": "foundation_type_general",
+          "check": "Identify the foundation type and check for movement",
+          "priority": "medium",
+          "builtYears": "Any year",
+          "where": "Everywhere except the expansive-clay counties",
+          "costToCheck": "Included in a general inspection",
+          "insuranceFlag": false
+        },
+        {
+          "id": "asbestos_materials",
+          "check": "Test for asbestos only if you plan to renovate",
+          "priority": "medium",
+          "builtYears": "1985 or earlier",
+          "where": "Everywhere in the US",
+          "costToCheck": "$200 – $600 for sampling and lab analysis",
+          "insuranceFlag": false
+        },
+        {
+          "id": "eifs_stucco",
+          "check": "If the exterior is stucco, find out which kind",
+          "priority": "medium",
+          "builtYears": "1990 to 2005",
+          "where": "Everywhere in the US",
+          "costToCheck": "$400 – $800 for a moisture survey by an EIFS-qualified inspector",
+          "insuranceFlag": false
+        },
+        {
+          "id": "roof_age",
+          "check": "Get the age and remaining life of the roof in writing",
+          "priority": "medium",
+          "builtYears": "2014 or earlier (12+ years old)",
+          "where": "Everywhere in the US",
+          "costToCheck": "Included in a general inspection",
+          "insuranceFlag": false
+        },
+        {
+          "id": "hvac_age",
+          "check": "Get the age of the HVAC system and water heater in writing",
+          "priority": "medium",
+          "builtYears": "2014 or earlier (12+ years old)",
+          "where": "Everywhere in the US",
+          "costToCheck": "Included in a general inspection",
+          "insuranceFlag": false
+        },
+        {
+          "id": "chimney_level2",
+          "check": "If the home has a fireplace or wood-burning stove, get a Level 2 chimney inspection",
+          "priority": "medium",
+          "builtYears": "Any year",
+          "where": "Everywhere in the US",
+          "costToCheck": "$250 – $600 for a Level 2 inspection with a video flue scan",
+          "insuranceFlag": false
+        },
+        {
+          "id": "termite_wdi_inspection",
+          "check": "Get a wood-destroying insect (WDI) report",
+          "priority": "medium",
+          "builtYears": "Any year",
+          "where": "Only in 19 states (CA, AZ, NM, TX, OK, AR, LA, MS, AL, GA, FL, SC, NC, TN, KY, MO, KS, VA, WV)",
+          "costToCheck": "$75 – $150 for a standalone WDI report",
+          "insuranceFlag": false
+        },
+        {
+          "id": "pest_inspection_general",
+          "check": "Consider a general pest and wood-destroying-insect inspection",
+          "priority": "lower",
+          "builtYears": "Any year",
+          "where": "Everywhere except the 19 termite-probability states",
+          "costToCheck": "$75 – $150 for a standalone pest/WDI inspection",
+          "insuranceFlag": false
+        },
+        {
+          "id": "landslide_susceptibility",
+          "check": "Check landslide susceptibility if the home is on a slope or hillside",
+          "priority": "lower",
+          "builtYears": "Any year",
+          "where": "Only in 15 states (WA, OR, CA, ID, MT, WY, CO, UT, PA, WV, VA, NC, TN, KY, AR)",
+          "costToCheck": "Free",
+          "insuranceFlag": false
+        },
+        {
+          "id": "radon_test",
+          "check": "Radon test",
+          "priority": "lower",
+          "builtYears": "Any year",
+          "where": "Everywhere in the US",
+          "costToCheck": "$150 – $300",
+          "insuranceFlag": false
+        }
+      ]
+    },
+    "sampleCookCountyIL": [
+      {
+        "yearBuilt": 1925,
+        "items": 11,
+        "high": 3
+      },
+      {
+        "yearBuilt": 1955,
+        "items": 12,
+        "high": 4
+      },
+      {
+        "yearBuilt": 1968,
+        "items": 12,
+        "high": 4
+      },
+      {
+        "yearBuilt": 1985,
+        "items": 9,
+        "high": 2
+      },
+      {
+        "yearBuilt": 2000,
+        "items": 7,
+        "high": 0
+      },
+      {
+        "yearBuilt": 2015,
+        "items": 4,
+        "high": 0
+      },
+      {
+        "yearBuilt": 2024,
+        "items": 4,
+        "high": 0
+      }
+    ],
+    "sampleText": "Cook County, IL (no regional gating): built 1925 -> 11 items (3 check first); 1955 -> 12 (4); 1968 -> 12 (4); 1985 -> 9 (2); 2000 -> 7 (0); 2015 -> 4 (0); 2024 -> 4 (0). Roof and HVAC age items apply to homes built 2014 or earlier (12+ years old in 2026).",
+    "observations": [
+      "Live report rep_1795500810677, generated 2026-11-24 for 1414 Mission Street, South Pasadena, CA 91030 (City Hall's public address), entered as a single-family home built 1925: 12 things to inspect (3 check first, 7 worth checking, 2 lower priority), 6 questions for the seller, 5 records to pull yourself, 1960 typical year built nearby (census tract) vs 1965 county median, and 1 insurance item (knob-and-tube). Its sources list names 13 sources, 5 of them marked checked live for every address.",
+      "Same report, Records to pull yourself: Roof Replacement Permit Records, Main Electrical Service Panel, HVAC Compressor & Mechanical System, FEMA Flood Hazard Risk Zone, Municipal Code Enforcement Standing; each links to an office or record rather than a result.",
+      "Same report, The neighborhood section: Census tract figures (typical year built, median owner costs, median home value, owner-occupied share, mean commute, primary heating fuel) labelled as figures for the census tract, not measurements of the house."
+    ]
+  },
+  "facts": [
+    {
+      "id": "b1",
+      "claim": "The report states that the year built is what the visitor gave and is not verified.",
+      "source": "live report rep_1795500810677, read 2026-11-24",
+      "quote": "The year built is the one you gave us; we haven't verified it.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "b2",
+      "claim": "The report's records section says those records were not checked for the address.",
+      "source": "live report rep_1795500810677, read 2026-11-24",
+      "quote": "These 5 records were not checked for this address. Each links to the official source for this area, so you can look it up before you sign.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "b3",
+      "claim": "Neighborhood figures are tract figures, not measurements of the house.",
+      "source": "live report rep_1795500810677, read 2026-11-24",
+      "quote": "Census figures for this neighborhood (census tract), not measurements of this house.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "b4",
+      "claim": "Seller answers are not checked by Before Regret.",
+      "source": "live report rep_1795500810677, read 2026-11-24",
+      "quote": "Answers are not checked by Before Regret; get anything important in writing.",
+      "verified": "2026-11-24 browser"
+    },
+    {
+      "id": "b5",
+      "claim": "The About page says no AI writes any part of a report.",
+      "source": "beforeregret.com/about/ (src/components/AboutMethodology.tsx), read 2026-11-24",
+      "quote": "No AI writes any part of a report: everything in it comes from those lookups and fixed rules for a home's age, county and property type.",
+      "verified": "2026-11-24 source + live"
+    },
+    {
+      "id": "b6",
+      "claim": "Knob-and-tube rule insurance wording.",
+      "source": "src/engine/inspectionPriorities.ts knob_and_tube.insuranceRedFlag, read 2026-11-24",
+      "quote": "Ask your own carrier whether they will write a policy while it is still energized. Rules vary by carrier and state.",
+      "verified": "2026-11-24 source + live report"
+    }
+  ],
+  "cut": [
+    "Exact list of the 13 expansive-soil counties: not printed on the page; the count comes from EXPANSIVE_SOIL_REGIONS.",
+    "Seller-question rule count: not computed; the page gives the live example (6) only."
+  ],
+  "blockedSources": []
+}
