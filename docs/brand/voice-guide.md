@@ -88,7 +88,7 @@ Give away the useful information. The next click should add value, never reveal 
 - "Hey, buddy!" openers.
 - Jokes at contractors', inspectors' or agents' expense; anti-realtor messaging.
 - Anything implying we are a licensed inspector, contractor, lawyer or insurer.
-- The AI tells listed in the write-article skill ("delve", "it's important to note", "navigate the…", "peace of mind" and the rest).
+- The AI tells listed in the answer-ready-writing skill ("delve", "it's important to note", "navigate the…", "peace of mind" and the rest).
 
 A buyer in Boston, Phoenix, Miami or rural Tennessee should all feel spoken to, not performed at. Natural American English, with the occasional memorable phrase.
 

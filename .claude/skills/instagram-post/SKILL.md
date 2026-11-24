@@ -1,6 +1,6 @@
 ---
 name: instagram-post
-description: Turn BeforeRegret's guides, research and diagrams into Instagram posts that a US homebuyer would actually send to their spouse -- human consequence first, fact second, every number traced back to a real source before it is written. Use whenever the user wants an Instagram post, reel, carousel, caption, hook, hashtags, image prompt, content calendar or series idea for @check_before_regret, asks what to post, asks how to grow the account, or wants an article or research study turned into social content. Also use before posting anything to the account, including reusing an existing diagram or research chart. Do NOT use for LinkedIn posts, for writing guide articles (use write-guide), or for FAQs (use article-faqs).
+description: Turn BeforeRegret's guides, research and diagrams into Instagram posts that a US homebuyer would actually send to their spouse -- human consequence first, fact second, every number traced back to a real source before it is written. Use whenever the user wants an Instagram post, reel, carousel, caption, hook, hashtags, image prompt, content calendar or series idea for @check_before_regret, asks what to post, asks how to grow the account, or wants an article or research study turned into social content. Also use before posting anything to the account, including reusing an existing diagram or research chart. Do NOT use for LinkedIn posts, for writing guide articles (use answer-ready-writing), or for FAQs (use article-faqs).
 ---
 
 # Instagram for Before Regret

@@ -1,7 +1,4 @@
----
-name: write-article
-description: How BeforeRegret writes an article like a real, careful human expert -- high-effort, first-party, original work that Google and readers recognise as such, never AI filler. Answer the owner's five questions in writing BEFORE drafting (curated around the reader's goal; something unique and first-party; visible evidence of work; beyond common facts; depth only where needed), verify every fact at its primary source, write in a plain human voice, then publish through the enforced gates. Use whenever the owner asks to write, create, draft, plan, research or publish a new article or guide for BeforeRegret, gives a title to write, asks what to write next or which topic or keyword to target, or asks to rewrite or deepen an existing article. Do NOT use for FAQs on an existing page (article-faqs), Instagram posts (instagram-post) or the research studies under /research/. For the "Yes, but" strand, use yes-but-guide alongside this.
----
+> **Retired 2026-11-24 (owner).** This was the write-article skill. Its full flow now lives in ../SKILL.md (answer-ready-writing). Kept for reference only; do not follow it on its own.
 
 # Writing a BeforeRegret article
 

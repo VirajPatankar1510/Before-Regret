@@ -1,6 +1,6 @@
 // The high-effort brief: the owner's five questions (2026-10-14), answered in writing BEFORE a word of
 // the article is drafted, and checked by code so the answers cannot be skipped or faked with filler.
-// The write-article skill (.claude/skills/write-article/SKILL.md) is the flow that uses this.
+// The answer-ready-writing skill (.claude/skills/answer-ready-writing/SKILL.md; it replaced write-article 2026-11-24) is the flow that uses this.
 //
 //   1. Is the content edited and curated thoughtfully, organised around the reader's goal, with the
 //      most valuable part easy to find?
