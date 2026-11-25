@@ -1,0 +1,247 @@
+{
+  "slug": "fema-flood-zone-letters-meaning",
+  "question": "What do FEMA flood zone letters mean (A, AE, AH, AO, A99, AR, V, VE, X, B, C, D), and what does each mean for a home buyer?",
+  "verdictConfirmed": "Every A and V letter marks FEMA's Special Flood Hazard Area, where a federally regulated lender must require flood insurance; B, C and X are outside it, and D means FEMA has not studied the risk. Since Risk Rating 2.0 the letter no longer sets the NFIP price, but it still decides the lender requirement and the building rules for renovations.",
+  "demand": "Owner's Search Console regex export 2026-11-25 (last 16 months): fema flood zone d (3 impr, pos 93.67), fema flood zone b (1, 86), what is a fema flood zone (1, 93), fema flood zones (1, 100), flood zone fema (1, 37), fema flood rating (1, 45), all landing on /guides/flood-zone-by-address/. Tier 1 but tiny: an experiment.",
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "44 CFR 64.3 zone symbols and meanings",
+      "quote": "A Area of special flood hazard without water surface elevations determined A1-30, AE Area of special flood hazard with water surface elevations determined A0 Area of special flood hazards having shallow water depths and/or unpredictable flow paths between (1) and (3) ft A99 Area of special flood hazard where enough progress has been made on a protective system, such as dikes, dams, and levees, to consider it complete for insurance rating purposes AH Areas of special flood hazards having shallow water depths and/or unpredictable flow paths between (1) and (3) feet, and with water surface elevations determined AR Area of special flood hazard that results from the decertification of a previously accredited flood protection system that is determined to be in the process of being restored to provide base flood protection V Area of special flood hazards without water surface elevations determined, and with velocity, that is inundated by tidal floods (coastal high hazard area) V1-30, VE Area of special flood hazards, with water surface elevations determined and with velocity, that is inundated by tidal floods (coastal high hazard area) B, X Areas of moderate flood hazards or areas of future-conditions flood hazard. C, X Area of minimal hazards D Area of undetermined but possible, flood hazards",
+      "url": "https://www.ecfr.gov/current/title-44/chapter-I/subchapter-B/part-64/section-64.3",
+      "readOn": "2026-11-25",
+      "method": "webfetch"
+    },
+    {
+      "id": "f2",
+      "claim": "44 CFR 64.3(b): zones where purchase of insurance is mandatory (no B, C, X or D)",
+      "quote": "The mandatory purchase of insurance is required within designated Zones A, A1-30, AE, A99, AO, AH, AR, AR/A1-30, AR/AE, AR/AO, AR/AH, AR/A, V1-30, VE, V, VO, M, and E.",
+      "url": "https://www.ecfr.gov/current/title-44/chapter-I/subchapter-B/part-64/section-64.3",
+      "readOn": "2026-11-25",
+      "method": "webfetch"
+    },
+    {
+      "id": "f3",
+      "claim": "FEMA glossary: SFHA = 1-percent annual chance flood; X shaded/B = between 1% and 0.2%; X unshaded/C = above 0.2%",
+      "quote": "SFHA are defined as the area that will be inundated by the flood event having a 1-percent chance of being equaled or exceeded in any given year. The 1-percent annual chance flood is also referred to as the base flood or 100-year flood. Moderate flood hazard areas, labeled Zone B or Zone X (shaded) are also shown on the FIRM, and are the areas between the limits of the base flood and the 0.2-percent-annual-chance (or 500-year) flood. The areas of minimal flood hazard, which are the areas outside the SFHA and higher than the elevation of the 0.2-percent-annual-chance flood, are labeled Zone C or Zone X (unshaded).",
+      "url": "https://www.fema.gov/about/glossary/flood-zones",
+      "readOn": "2026-11-25",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "OpenFEMA field definition: AE, VE and X replaced A1-A30, V1-V30, B and C on new maps from January 1, 1986",
+      "quote": "AE, VE, X - New zone designations used on new maps starting January 1, 1986, in lieu of A1-A30, V1-V30, and B and C",
+      "url": "https://www.fema.gov/api/open/v1/OpenFemaDataSetFields (NfipClaims v3, ratedFloodZone)",
+      "readOn": "2026-11-25",
+      "method": "webfetch"
+    },
+    {
+      "id": "f5",
+      "claim": "42 U.S.C. 4012a(b)(1)(A): regulated lenders may not make, increase, extend or renew a loan in an SFHA without flood insurance for the loan term",
+      "quote": "not to make, increase, extend, or renew any loan secured by improved real estate or a mobile home located or to be located in an area that has been identified by the Administrator as an area having special flood hazards and in which flood insurance has been made available",
+      "url": "https://www.law.cornell.edu/uscode/text/42/4012a",
+      "readOn": "2026-11-25",
+      "method": "webfetch"
+    },
+    {
+      "id": "f6",
+      "claim": "42 U.S.C. 4104a(a)(1): lender must notify the purchaser in writing a reasonable period before signing",
+      "quote": "in writing, a reasonable period in advance of the signing of the purchase agreement, lease, or other documents involved in the transaction",
+      "url": "https://www.law.cornell.edu/uscode/text/42/4104a",
+      "readOn": "2026-11-25",
+      "method": "webfetch"
+    },
+    {
+      "id": "f7",
+      "claim": "Risk Rating 2.0 fully in place April 1, 2023; does not use flood zones to determine risk; maps still drive mandatory purchase and floodplain management",
+      "quote": "since the NFIP's pricing approach does not use flood zones to determine flood risk",
+      "url": "https://www.fema.gov/flood-insurance/risk-rating",
+      "readOn": "2026-11-25",
+      "method": "browser"
+    },
+    {
+      "id": "f7b",
+      "claim": "Risk Rating 2.0 date",
+      "quote": "As of April 1, 2023, FEMA has fully implemented the National Flood Insurance Program's (NFIP) pricing approach, Risk Rating 2.0.",
+      "url": "https://www.fema.gov/flood-insurance/risk-rating",
+      "readOn": "2026-11-25",
+      "method": "browser"
+    },
+    {
+      "id": "f8",
+      "claim": "A seller's NFIP discount can pass to the buyer by assigning the policy",
+      "quote": "Policyholders are able to transfer their discount to a new owner by assigning their flood insurance policy when their property changes ownership.",
+      "url": "https://www.fema.gov/flood-insurance/risk-rating",
+      "readOn": "2026-11-25",
+      "method": "browser"
+    },
+    {
+      "id": "f9",
+      "claim": "44 CFR 59.1 substantial improvement / damage = 50 percent of market value",
+      "quote": "the cost of which equals or exceeds 50 percent of the market value of the structure before the \"start of construction\" of the improvement",
+      "url": "https://www.ecfr.gov/current/title-44/chapter-I/subchapter-B/part-59/section-59.1",
+      "readOn": "2026-11-25",
+      "method": "webfetch"
+    },
+    {
+      "id": "f10",
+      "claim": "44 CFR 60.3(c)(2): new and substantially improved homes in A1-30, AE and AH elevate lowest floor including basement to or above base flood level",
+      "quote": "have the lowest floor (including basement) elevated to or above the base flood level",
+      "url": "https://www.ecfr.gov/current/title-44/chapter-I/subchapter-A/part-60/section-60.3",
+      "readOn": "2026-11-25",
+      "method": "webfetch"
+    },
+    {
+      "id": "f11",
+      "claim": "44 CFR 60.3(c)(7): AO zone, lowest floor above highest adjacent grade by the depth number, at least two feet if none",
+      "quote": "at least as high as the depth number specified in feet on the community's FIRM (at least two feet if no depth number is specified)",
+      "url": "https://www.ecfr.gov/current/title-44/chapter-I/subchapter-A/part-60/section-60.3",
+      "readOn": "2026-11-25",
+      "method": "webfetch"
+    },
+    {
+      "id": "f12",
+      "claim": "44 CFR 60.3(e)(4) and (e)(6): V zones, pilings and columns, no fill for structural support",
+      "quote": "are elevated on pilings and columns so that (i) the bottom of the lowest horizontal structural member of the lowest floor (excluding the pilings or columns) is elevated to or above the base flood level",
+      "url": "https://www.ecfr.gov/current/title-44/chapter-I/subchapter-A/part-60/section-60.3",
+      "readOn": "2026-11-25",
+      "method": "webfetch"
+    },
+    {
+      "id": "f13",
+      "claim": "44 CFR 60.3(d)(3): floodway encroachments prohibited unless analysis shows no increase in flood levels",
+      "quote": "Prohibit encroachments, including fill, new construction, substantial improvements, and other development within the adopted regulatory floodway",
+      "url": "https://www.ecfr.gov/current/title-44/chapter-I/subchapter-A/part-60/section-60.3",
+      "readOn": "2026-11-25",
+      "method": "webfetch"
+    },
+    {
+      "id": "f14",
+      "claim": "44 CFR 59.1 regulatory floodway definition",
+      "quote": "the channel of a river or other watercourse and the adjacent land areas that must be reserved in order to discharge the base flood",
+      "url": "https://www.ecfr.gov/current/title-44/chapter-I/subchapter-B/part-59/section-59.1",
+      "readOn": "2026-11-25",
+      "method": "webfetch"
+    },
+    {
+      "id": "f9b",
+      "claim": "term used in 44 CFR 59.1 and 60.3",
+      "quote": "Substantial improvement means any reconstruction, rehabilitation, addition, or other improvement of a structure",
+      "url": "https://www.ecfr.gov/current/title-44/chapter-I/subchapter-B/part-59/section-59.1",
+      "readOn": "2026-11-25",
+      "method": "webfetch"
+    }
+  ],
+  "ourWork": [
+    {
+      "id": "c-A",
+      "claim": "Zone A: 202,376 NFIP claims rated in the zone; 125,507 paid single-family claims averaging $16,903 on the building",
+      "source": "docs/data/flood-zone-letter-claims.json",
+      "method": "scripts/fetch-flood-zone-letter-claims.ts, pulled 2026-11-25"
+    },
+    {
+      "id": "c-AE",
+      "claim": "Zone AE: 944,993 NFIP claims rated in the zone; 611,952 paid single-family claims averaging $43,605 on the building",
+      "source": "docs/data/flood-zone-letter-claims.json",
+      "method": "scripts/fetch-flood-zone-letter-claims.ts, pulled 2026-11-25"
+    },
+    {
+      "id": "c-A1-A30",
+      "claim": "Zone A1 to A30: 579,167 NFIP claims rated in the zone; 358,163 paid single-family claims averaging $27,828 on the building",
+      "source": "docs/data/flood-zone-letter-claims.json",
+      "method": "scripts/fetch-flood-zone-letter-claims.ts, pulled 2026-11-25"
+    },
+    {
+      "id": "c-AH",
+      "claim": "Zone AH: 45,880 NFIP claims rated in the zone; 22,529 paid single-family claims averaging $17,256 on the building",
+      "source": "docs/data/flood-zone-letter-claims.json",
+      "method": "scripts/fetch-flood-zone-letter-claims.ts, pulled 2026-11-25"
+    },
+    {
+      "id": "c-AO",
+      "claim": "Zone AO: 24,934 NFIP claims rated in the zone; 13,848 paid single-family claims averaging $36,905 on the building",
+      "source": "docs/data/flood-zone-letter-claims.json",
+      "method": "scripts/fetch-flood-zone-letter-claims.ts, pulled 2026-11-25"
+    },
+    {
+      "id": "c-A99",
+      "claim": "Zone A99: 10,866 NFIP claims rated in the zone; 5,902 paid single-family claims averaging $23,375 on the building",
+      "source": "docs/data/flood-zone-letter-claims.json",
+      "method": "scripts/fetch-flood-zone-letter-claims.ts, pulled 2026-11-25"
+    },
+    {
+      "id": "c-AR",
+      "claim": "Zone AR: 93 NFIP claims rated in the zone; 23 paid single-family claims averaging $10,567 on the building",
+      "source": "docs/data/flood-zone-letter-claims.json",
+      "method": "scripts/fetch-flood-zone-letter-claims.ts, pulled 2026-11-25"
+    },
+    {
+      "id": "c-V",
+      "claim": "Zone V: 1,283 NFIP claims rated in the zone; 789 paid single-family claims averaging $12,065 on the building",
+      "source": "docs/data/flood-zone-letter-claims.json",
+      "method": "scripts/fetch-flood-zone-letter-claims.ts, pulled 2026-11-25"
+    },
+    {
+      "id": "c-VE",
+      "claim": "Zone VE: 48,159 NFIP claims rated in the zone; 26,434 paid single-family claims averaging $35,456 on the building",
+      "source": "docs/data/flood-zone-letter-claims.json",
+      "method": "scripts/fetch-flood-zone-letter-claims.ts, pulled 2026-11-25"
+    },
+    {
+      "id": "c-V1-V30",
+      "claim": "Zone V1 to V30: 41,267 NFIP claims rated in the zone; 23,904 paid single-family claims averaging $22,259 on the building",
+      "source": "docs/data/flood-zone-letter-claims.json",
+      "method": "scripts/fetch-flood-zone-letter-claims.ts, pulled 2026-11-25"
+    },
+    {
+      "id": "c-B",
+      "claim": "Zone B: 115,248 NFIP claims rated in the zone; 67,364 paid single-family claims averaging $32,683 on the building",
+      "source": "docs/data/flood-zone-letter-claims.json",
+      "method": "scripts/fetch-flood-zone-letter-claims.ts, pulled 2026-11-25"
+    },
+    {
+      "id": "c-C",
+      "claim": "Zone C: 164,276 NFIP claims rated in the zone; 93,188 paid single-family claims averaging $17,202 on the building",
+      "source": "docs/data/flood-zone-letter-claims.json",
+      "method": "scripts/fetch-flood-zone-letter-claims.ts, pulled 2026-11-25"
+    },
+    {
+      "id": "c-X",
+      "claim": "Zone X: 409,137 NFIP claims rated in the zone; 250,945 paid single-family claims averaging $34,965 on the building",
+      "source": "docs/data/flood-zone-letter-claims.json",
+      "method": "scripts/fetch-flood-zone-letter-claims.ts, pulled 2026-11-25"
+    },
+    {
+      "id": "c-D",
+      "claim": "Zone D: 4,344 NFIP claims rated in the zone; 2,468 paid single-family claims averaging $17,200 on the building",
+      "source": "docs/data/flood-zone-letter-claims.json",
+      "method": "scripts/fetch-flood-zone-letter-claims.ts, pulled 2026-11-25"
+    },
+    {
+      "id": "c-outside",
+      "claim": "688,661 of 2,592,023 zone-coded claims (26.6%) were rated in B, C or X",
+      "source": "docs/data/flood-zone-letter-claims.json",
+      "method": "sum of B, C, X over all zone-coded groups"
+    },
+    {
+      "id": "c-total",
+      "claim": "2,731,064 NFIP claim records; 139,030 with no zone; dataset refreshed 2026-08-04",
+      "source": "docs/data/flood-zone-letter-claims.json",
+      "method": "FEMA DataSets recordCount, unique ids"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "Zone X (shaded) also covers 1% floods under one foot deep, small drainage areas and levee-protected land (FIRM legend subtypes)",
+      "why": "FEMA's NFHL map service (hazards.fema.gov) did not answer from our network; no primary text read"
+    },
+    {
+      "claim": "How NFIP rates a Zone D property",
+      "why": "Flood Insurance Manual not read; not stated"
+    }
+  ],
+  "blockedSources": [
+    "hazards.fema.gov NFHL ArcGIS service: no response (connection fails), not worked around"
+  ]
+}
