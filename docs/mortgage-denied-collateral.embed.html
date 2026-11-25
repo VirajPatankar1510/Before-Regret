@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mortgages denied for collateral by county &mdash; Before Regret</title>
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="https://www.beforeregret.com/research/mortgage-denied-collateral/">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;padding:16px;background:#fbfaf7;color:#1b1a18;font:16px/1.6 Charter,Georgia,serif;-webkit-font-smoothing:antialiased}
+
+  .lookup{border:1px solid #ded9cf;background:#fbfaf7;padding:1.1rem 1.2rem;margin:0 0 2.2rem}
+  .lk-eyebrow{font:700 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#6f5a3a;margin:0 0 .7rem}
+  .lookup select{width:100%;font:400 15px/1.4 ui-sans-serif,system-ui,sans-serif;padding:.55rem .6rem;border:1px solid #c9c1b3;background:#fff;color:#1a1a1a;border-radius:2px}
+  .lk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));gap:1px;background:#ded9cf;border:1px solid #ded9cf;margin:.9rem 0 0}
+  .lk-cell{background:#fbfaf7;padding:.65rem .7rem}
+  .lk-cell b{display:block;font:700 1.3rem/1.1 ui-sans-serif,system-ui,sans-serif;letter-spacing:-.02em}
+  .lk-cell span{display:block;font:400 11px/1.35 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin-top:.25rem}
+  .lk-msg{font:400 13px/1.5 ui-sans-serif,system-ui,sans-serif;color:#4a4a4a;margin:.8rem 0 0}
+  .lk-caveat{font:400 11.5px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin:.8rem 0 0;border-top:1px solid #ece8e1;padding-top:.7rem}
+  .lookup{max-width:680px;margin:0 auto}
+  .embed-credit{max-width:680px;margin:12px auto 0;font:400 11px/1.4 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;text-align:right}
+  .embed-credit a{color:#6f5a3a}
+</style>
+</head>
+<body>
+<div class="lookup">
+    <p class="lk-eyebrow">Look up any of the 2,394 counties with 100+ home-purchase applications in 2024</p>
+    <label for="mdcpick" style="position:absolute;left:-9999px">Choose a county</label>
+    <select id="mdcpick"><option value="">Choose a county&hellip;</option></select>
+    <div id="mdcout" aria-live="polite"></div>
+    <p class="lk-caveat">2024 HMDA home-purchase applications that reached a decision (approved or denied), first-lien
+    loans on single-unit homes the buyer would live in, from the FFIEC HMDA data, pulled 2026-11-25. &ldquo;Collateral&rdquo; is
+    the lender&rsquo;s reported reason; the data doesn&rsquo;t say whether it was the appraised value, the condition or
+    the type of property. Figures describe applications in the county, not any one house.</p>
+  </div>
+<p class="embed-credit"><a href="https://www.beforeregret.com/research/mortgage-denied-collateral/" target="_blank" rel="noopener">Denied Because of the House</a> &mdash; Before Regret</p>
+<script type="application/json" id="mdc-data">{"src":"/research/data/mortgage-denied-collateral-lookup.json","nat":{"apps":3580613,"per1000":15.3,"share":10.7,"denial":14.5}}</script>
+<script>
+(function(){
+  var s=document.getElementById('mdcpick'),o=document.getElementById('mdcout'),d=[];
+  var cfg=JSON.parse(document.getElementById('mdc-data').textContent),N=cfg.nat;
+  s.disabled=true;
+  fetch(cfg.src).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
+    d=j.c; s.disabled=false;
+    d.forEach(function(c,i){var e=document.createElement('option');e.value=i;e.textContent=c[0];s.appendChild(e);});
+  }).catch(function(){o.innerHTML='<p class="lk-msg">The county list did not load. The same figures are in the county CSV below.</p>';});
+  function cell(v,l){return '<div class="lk-cell"><b>'+v+'</b><span>'+l+'</span></div>';}
+  function fmt(n){return Math.round(n).toLocaleString('en-US');}
+  s.addEventListener('change',function(){
+    var c=d[s.value]; if(!c){o.innerHTML='';return;}
+    var p=c[4]/c[1]*1000, sh=c[3]?c[4]/c[3]*100:0;
+    o.innerHTML='<div class="lk-grid">'
+      +cell(fmt(c[1]),'applications decided')
+      +cell((c[2]/c[1]*100).toFixed(1)+'%','denied (US: '+N.denial+'%)')
+      +cell(fmt(c[4]),'denials citing collateral')
+      +cell(p.toFixed(1),'per 1,000 applications (US: '+N.per1000+')')
+      +'</div>'
+      +'<p class="lk-msg">'+(c[3]?'Collateral was a reason in '+sh.toFixed(1)+'% of denials that gave reasons, against '+N.share+'% nationally.':'No denials here gave a reason.')
+      +(c[1]<1000?' With fewer than 1,000 applications, a handful of denials moves these rates a lot.':'')+'</p>';
+  });
+})();
+</script>
+<script>
+(function(){
+  function post(){
+    var h=Math.ceil(document.documentElement.getBoundingClientRect().height);
+    try{parent.postMessage({beforeRegretEmbedHeight:h},'*');}catch(e){}
+  }
+  if(window.ResizeObserver) new ResizeObserver(post).observe(document.body);
+  window.addEventListener('load',post);
+  setTimeout(post,60);
+})();
+</script>
+</body>
+</html>

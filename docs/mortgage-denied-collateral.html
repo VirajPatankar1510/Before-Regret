@@ -1,0 +1,468 @@
+<style>
+  .wrap{max-width:45rem;margin:0 auto;padding:2.5rem 1.25rem 4rem;font:16px/1.68 Charter,Georgia,'Times New Roman',serif;color:#1b1a18}
+  .wrap *{box-sizing:border-box}
+  .kicker{font:700 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#6f5a3a;margin:0 0 .9rem}
+  .wrap h1{font-size:2.4rem;line-height:1.1;margin:0 0 1rem;font-weight:600;letter-spacing:-.02em}
+  .standfirst{font-size:1.17rem;line-height:1.6;color:#3a3936;margin:0 0 2rem}
+  .wrap h2{font:700 12px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#6f5a3a;margin:2.8rem 0 .5rem;padding-top:1.5rem;border-top:1px solid #ded9cf}
+  .wrap h3{font-size:1.34rem;line-height:1.34;font-weight:600;margin:0 0 .9rem;letter-spacing:-.01em}
+  .wrap p{margin:0 0 1.1rem}
+  .figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));gap:1px;background:#ded9cf;border:1px solid #ded9cf;margin:0 0 2rem}
+  .fig{background:#fbfaf7;padding:1rem .9rem}
+  .fig b{display:block;font:700 1.7rem/1.05 ui-sans-serif,system-ui,sans-serif;letter-spacing:-.025em}
+  .fig span{display:block;font:400 12px/1.4 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin-top:.3rem}
+  table{width:100%;border-collapse:collapse;font:400 13px/1.45 ui-sans-serif,system-ui,sans-serif;margin:0 0 .6rem;font-variant-numeric:tabular-nums}
+  th{text-align:left;font-weight:700;border-bottom:2px solid #1b1a18;padding:.5rem .4rem;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#4a4a4a}
+  td{border-bottom:1px solid #ece8e1;padding:.45rem .4rem}
+  td.n,th.n{text-align:right}
+  tr.hl td{background:#f3f0e9}
+  td.bar{width:22%;padding-right:0}
+  td.bar span{display:block;height:9px;background:#6f5a3a;min-width:2px}
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 1.5rem}
+  .tall{max-height:26rem;overflow-y:auto}
+  .cap{font:400 12px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin:0 0 1.9rem}
+  blockquote{margin:0 0 1.2rem;padding:.2rem 0 .2rem 1rem;border-left:3px solid #ded9cf;color:#3a3936;font-style:italic}
+  .cite{background:#f3f0e9;border:1px solid #ded9cf;padding:1.1rem 1.2rem;font:400 13px/1.6 ui-sans-serif,system-ui,sans-serif;margin:2.4rem 0 0}
+  .cite b{display:block;font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:#6f5a3a;margin-bottom:.5rem}
+  .snippet{background:#fff;border:1px solid #ded9cf;padding:.7rem .8rem;margin:.7rem 0;overflow-x:auto;font:400 11.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#4a4a4a;white-space:pre}
+  .cite code{font:400 12px ui-monospace,SFMono-Regular,Menlo,monospace;background:#fff;padding:.1em .3em;border:1px solid #ded9cf}
+  .wrap a{color:#6f5a3a}
+  .cta{border:1px solid #d6cdbd;background:#fcfaf5;padding:1.3rem 1.4rem;margin:0 0 2.4rem}
+  .cta h2{margin-top:0;padding-top:0;border-top:0}
+  .cta p{font:400 14.5px/1.62 ui-sans-serif,system-ui,sans-serif;color:#2e2e2e;margin:0 0 .9rem}
+  .cta a.btn{display:inline-block;background:#6f5a3a;color:#fff;font:700 14px/1 ui-sans-serif,system-ui,sans-serif;padding:.75rem 1.1rem;border-radius:2px;text-decoration:none}
+  .cta a.btn:hover{background:#584628}
+  .faq h3.faq-q{font-size:1.08rem;margin:1.3rem 0 .4rem}
+  footer.spine{margin:2rem 0 0;padding-top:1.2rem;border-top:1px solid #ded9cf;font:400 12.5px/1.7 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a}
+
+  .lookup{border:1px solid #ded9cf;background:#fbfaf7;padding:1.1rem 1.2rem;margin:0 0 2.2rem}
+  .lk-eyebrow{font:700 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#6f5a3a;margin:0 0 .7rem}
+  .lookup select{width:100%;font:400 15px/1.4 ui-sans-serif,system-ui,sans-serif;padding:.55rem .6rem;border:1px solid #c9c1b3;background:#fff;color:#1a1a1a;border-radius:2px}
+  .lk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));gap:1px;background:#ded9cf;border:1px solid #ded9cf;margin:.9rem 0 0}
+  .lk-cell{background:#fbfaf7;padding:.65rem .7rem}
+  .lk-cell b{display:block;font:700 1.3rem/1.1 ui-sans-serif,system-ui,sans-serif;letter-spacing:-.02em}
+  .lk-cell span{display:block;font:400 11px/1.35 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin-top:.25rem}
+  .lk-msg{font:400 13px/1.5 ui-sans-serif,system-ui,sans-serif;color:#4a4a4a;margin:.8rem 0 0}
+  .lk-caveat{font:400 11.5px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin:.8rem 0 0;border-top:1px solid #ece8e1;padding-top:.7rem}
+  @media(max-width:560px){.wrap h1{font-size:1.9rem}td.bar,th.bar{display:none}}
+  .kf{border:1px solid #dfe5e2;background:#fbfcfb;padding:1rem 1.2rem .4rem;margin:1.6rem 0 2rem}
+  .kf h2{margin:0 0 .7rem;padding:0;border:0;font-size:1.15rem}
+  .kf ul{margin:0 0 .8rem;padding-left:1.1rem}
+  .kf li{margin:0 0 .55rem}
+  .kf .kf-src{margin:0 0 .6rem;font:400 12px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b}
+</style>
+
+<div class="wrap">
+  <p class="kicker">National analysis &middot; 2024 HMDA &middot; 4,319,109 applications &middot; 3,210 counties</p>
+  <h1>Denied Because of the House</h1>
+  <p class="standfirst">Most mortgage denials are about the buyer: debt, credit, cash. Some are about the house. Lenders
+  must report why they turn down a home loan, and in 2024 they named the property itself, the collateral, in
+  83,247 denials of home-purchase applications. We counted them by loan type, home type, neighbourhood
+  housing age, state and county.</p>
+
+  <div class="figs">
+    <div class="fig"><b>83,247</b><span>denials in 2024 naming the collateral</span></div>
+    <div class="fig"><b>10.7%</b><span>of denials with reasons, typical buyer</span></div>
+    <div class="fig"><b>15.3</b><span>collateral denials per 1,000 applications</span></div>
+    <div class="fig"><b>2.1&times;</b><span>the rate in tracts of 40&ndash;59-year-old homes vs under 20</span></div>
+  </div>
+
+  <section class="kf" id="key-findings">
+    <h2>Key findings</h2>
+    <ul>
+      <li>Of 4,319,109 home-purchase mortgage applications that lenders approved or denied in 2024, 623,942 were denied, and 83,247 of those denials named the collateral, the property itself, as a reason (HMDA 2024).</li>
+      <li>For a first-lien loan on a single-unit home the buyer would live in, collateral was a reason in 10.7% of denials that gave reasons, or 15.3 per 1,000 applications decided.</li>
+      <li>For site-built homes in census tracts where the median home was 40 to 59 years old, collateral denials ran at 19.2 per 1,000 applications, against 9.3 in tracts where it was under 20 years, while overall denial rates were within 1 percentage point of each other.</li>
+      <li>For manufactured homes, collateral was a reason in 32.8% of FHA denials and 39.8% of VA denials that gave reasons, against 2.8% for conventional loans.</li>
+      <li>Among counties with at least 3,000 applications from buyers who would live in the home, New York County (Manhattan), New York had the highest rate of collateral denials, 86.0 per 1,000 applications.</li>
+    </ul>
+    <p class="kf-src">Source: FFIEC Home Mortgage Disclosure Act (HMDA) data, 2024 nationwide loan/application records, home purchase, action taken originated, approved but not accepted or denied; pulled 2026-11-25. Analysis by Before Regret.</p>
+  </section>
+
+  <div class="lookup">
+    <p class="lk-eyebrow">Look up any of the 2,394 counties with 100+ home-purchase applications in 2024</p>
+    <label for="mdcpick" style="position:absolute;left:-9999px">Choose a county</label>
+    <select id="mdcpick"><option value="">Choose a county&hellip;</option></select>
+    <div id="mdcout" aria-live="polite"></div>
+    <p class="lk-caveat">2024 HMDA home-purchase applications that reached a decision (approved or denied), first-lien
+    loans on single-unit homes the buyer would live in, from the FFIEC HMDA data, pulled 2026-11-25. &ldquo;Collateral&rdquo; is
+    the lender&rsquo;s reported reason; the data doesn&rsquo;t say whether it was the appraised value, the condition or
+    the type of property. Figures describe applications in the county, not any one house.</p>
+  </div>
+
+  <div class="cta">
+    <h2>Check the house before the lender does</h2>
+    <p>An appraisal or a lender&rsquo;s property review comes late, after the offer and the deposit. The questions that
+    lead to a collateral problem, such as the condition of the roof and systems, unpermitted work, or a home type the
+    loan program has rules about, can be asked before you commit.</p>
+    <p>For one address, a free Before Regret report lists what to check, ask and verify for that area before you buy.
+    No sign-up required.</p>
+    <p><a class="btn" href="/">Get the free report</a></p>
+  </div>
+
+  <h2>What &ldquo;collateral&rdquo; means on a denial</h2>
+  <h3>The lender&rsquo;s reason, not the full story.</h3>
+
+  <p>Lenders covered by the Home Mortgage Disclosure Act report every home-loan application they receive. Regulation C,
+  12 CFR 1003.4(a)(16), requires them to report, for a denied application, &ldquo;the principal reason or reasons the
+  financial institution denied the application&rdquo;, up to four. The FFIEC&rsquo;s field definitions give nine codes,
+  and code 4 is simply &ldquo;Collateral&rdquo;.</p>
+
+  <p>Collateral on a home loan is the home. Regulation B&rsquo;s sample adverse-action notice words the same reason
+  &ldquo;Value or type of collateral not sufficient&rdquo;. A denial coded this way can follow an appraisal below the
+  price, a house in a condition the loan program won&rsquo;t accept, or a type of property the lender won&rsquo;t lend
+  on. HMDA doesn&rsquo;t say which, so neither does this page.</p>
+
+  <h2>How often the house is the reason</h2>
+  <h3>About 1 in 10 denials for a typical buyer.</h3>
+
+  <p>For the typical buyer, a first-lien loan on a single-unit home they would live in, lenders decided
+  3,580,613 home-purchase applications in 2024 and denied 517,470, 14.5%. Collateral was a
+  reason in 54,934 of those denials: 10.7% of the ones that gave reasons, or 15.3 for every
+  1,000 applications decided. In 90% of them, the lender listed collateral as the first reason.</p>
+
+  <p>The buyer&rsquo;s own finances come up far more. Debt-to-income ratio was a reason in 40.0% of
+  denials and credit history in 36.2%. A lender can give more than one reason, so the shares add to
+  more than 100%.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Denial reason</th><th class="n">Denials citing it</th><th class="n">Share of denials</th><th class="bar"></th></tr></thead>
+      <tbody>
+      <tr><td>Debt-to-income ratio</td><td class="n">204,524</td><td class="n"><b>40.0%</b></td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>Credit history</td><td class="n">184,991</td><td class="n"><b>36.2%</b></td><td class="bar"><span style="width:90%"></span></td></tr>
+      <tr><td>Insufficient cash (down payment, closing costs)</td><td class="n">78,163</td><td class="n"><b>15.3%</b></td><td class="bar"><span style="width:38%"></span></td></tr>
+      <tr><td>Other</td><td class="n">75,866</td><td class="n"><b>14.8%</b></td><td class="bar"><span style="width:37%"></span></td></tr>
+      <tr class="hl"><td>Collateral</td><td class="n">54,934</td><td class="n"><b>10.7%</b></td><td class="bar"><span style="width:27%"></span></td></tr>
+      <tr><td>Unverifiable information</td><td class="n">50,969</td><td class="n"><b>10.0%</b></td><td class="bar"><span style="width:25%"></span></td></tr>
+      <tr><td>Credit application incomplete</td><td class="n">35,923</td><td class="n"><b>7.0%</b></td><td class="bar"><span style="width:18%"></span></td></tr>
+      <tr><td>Employment history</td><td class="n">21,848</td><td class="n"><b>4.3%</b></td><td class="bar"><span style="width:11%"></span></td></tr>
+      <tr><td>Mortgage insurance denied</td><td class="n">639</td><td class="n"><b>0.1%</b></td><td class="bar"><span style="width:1%"></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">First-lien home-purchase applications for single-unit homes the buyer would live in, denied in 2024.
+  Share of the 511,270 denials that gave reasons; 6,200 denials came from lenders exempt from reporting
+  reasons. Reason names as in the FFIEC HMDA field definitions.</p>
+
+  <h2>Older neighbourhoods</h2>
+  <h3>Twice the rate where the typical home is 40 to 59 years old.</h3>
+
+  <p>HMDA attaches census data to every application, including the median age of the homes in its census tract. For
+  site-built homes in 2024, collateral denials ran at 19.2 per 1,000 applications in tracts where the median
+  home was 40 to 59 years old and 18.4 where it was 60 or more, against 9.3 in tracts where it
+  was under 20.</p>
+
+  <p>The overall denial rate hardly moved across those tracts, staying between 8.5%
+  and 9.3%. What changed was the reason: in older neighbourhoods more of the
+  denials were about the property. The same pattern holds for conventional and FHA loans taken separately. The tract
+  median is a neighbourhood figure; a new house can sit in an old tract.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Tract median home age</th><th class="n">Applications</th><th class="n">Denied</th><th class="n">Collateral share of denials</th><th class="n">Per 1,000, all loans</th><th class="n">Conventional</th><th class="n">FHA</th></tr></thead>
+      <tbody>
+      <tr><td>Under 20 years</td><td class="n">728,503</td><td class="n">9.3%</td><td class="n">10.1%</td><td class="n"><b>9.3</b></td><td class="n">10.6</td><td class="n">7.6</td></tr>
+      <tr><td>20 to 39 years</td><td class="n">1,189,979</td><td class="n">8.5%</td><td class="n">15.8%</td><td class="n"><b>13.2</b></td><td class="n">14.3</td><td class="n">12.9</td></tr>
+      <tr><td>40 to 59 years</td><td class="n">891,752</td><td class="n">9.0%</td><td class="n">21.8%</td><td class="n"><b>19.2</b></td><td class="n">20.3</td><td class="n">19.0</td></tr>
+      <tr><td>60 years or more</td><td class="n">367,125</td><td class="n">9.0%</td><td class="n">21.0%</td><td class="n"><b>18.4</b></td><td class="n">18.6</td><td class="n">20.0</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">First-lien home-purchase applications for site-built, single-unit homes the buyer would live in, 2024, by
+  HMDA&rsquo;s tract median age of housing units. &ldquo;Per 1,000&rdquo; is denials citing collateral per 1,000 applications
+  decided.</p>
+
+  <h2>Manufactured homes</h2>
+  <h3>For FHA and VA, the house is often the problem.</h3>
+
+  <p>Manufactured homes are a different market. Lenders denied 58.3% of 403,254 manufactured-home
+  purchase applications from buyers who would live in them, mostly for credit history. Collateral rarely
+  comes up on conventional manufactured-home loans: 2.8% of denials. On government-backed ones it&rsquo;s
+  far more common. Collateral was a reason in 32.8% of FHA denials and 39.8% of VA denials for
+  manufactured homes, or 50.2 and 55.0 per 1,000 applications, against 14.0 and
+  8.3 for site-built homes with the same loans.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Loan type</th><th class="n">Site-built apps</th><th class="n">Collateral share</th><th class="n">Per 1,000</th><th class="n">Manufactured apps</th><th class="n">Denied</th><th class="n">Collateral share</th><th class="n">Per 1,000</th></tr></thead>
+      <tbody>
+      <tr><td>Conventional</td><td class="n">2,135,617</td><td class="n">20.5%</td><td class="n">15.7</td><td class="n">359,630</td><td class="n">64%</td><td class="n">2.8%</td><td class="n"><b>17.5</b></td></tr>
+      <tr><td>FHA</td><td class="n">666,879</td><td class="n">11.4%</td><td class="n">14.0</td><td class="n">32,738</td><td class="n">15%</td><td class="n">32.8%</td><td class="n"><b>50.2</b></td></tr>
+      <tr><td>VA</td><td class="n">337,211</td><td class="n">10.3%</td><td class="n">8.3</td><td class="n">9,977</td><td class="n">14%</td><td class="n">39.8%</td><td class="n"><b>55.0</b></td></tr>
+      <tr><td>USDA</td><td class="n">37,652</td><td class="n">12.4%</td><td class="n">14.7</td><td class="n">909</td><td class="n">27%</td><td class="n">51.0%</td><td class="n"><b>134.2</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">First-lien home-purchase applications for single-unit homes the buyer would live in, 2024. Collateral share
+  is of denials that gave reasons. USDA manufactured-home figures rest on 909 applications.</p>
+
+  <h2>Second homes, rentals and multi-unit buildings</h2>
+  <h3>More than twice the rate.</h3>
+
+  <p>Collateral denials were more than twice as common for homes the buyer wouldn&rsquo;t live in, and for small
+  multi-unit buildings. For a single-unit investment property, 35.0 applications in 1,000 were denied with
+  collateral as a reason, and collateral was named in 28.4% of denials that gave reasons. For a 2-to-4-unit
+  building the buyer would live in, it was 43.2 per 1,000.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Home and use</th><th class="n">Applications</th><th class="n">Denied</th><th class="n">Collateral share</th><th class="n">Per 1,000</th></tr></thead>
+      <tbody>
+      <tr><td>Home they will live in, 1 unit</td><td class="n">3,580,613</td><td class="n">14.5%</td><td class="n">10.7%</td><td class="n"><b>15.3</b></td></tr>
+      <tr><td>Home they will live in, 2 to 4 units</td><td class="n">61,269</td><td class="n">17.0%</td><td class="n">25.8%</td><td class="n"><b>43.2</b></td></tr>
+      <tr><td>Second home, 1 unit</td><td class="n">104,891</td><td class="n">11.8%</td><td class="n">27.7%</td><td class="n"><b>32.0</b></td></tr>
+      <tr><td>Investment property, 1 unit</td><td class="n">320,947</td><td class="n">12.9%</td><td class="n">28.4%</td><td class="n"><b>35.0</b></td></tr>
+      <tr><td>Investment property, 2 to 4 units</td><td class="n">56,287</td><td class="n">11.1%</td><td class="n">33.9%</td><td class="n"><b>35.8</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">First-lien home-purchase applications, 2024, all loan types and home types. Collateral share is of denials
+  that gave reasons.</p>
+
+  <h2>By state</h2>
+  <h3>Puerto Rico stands apart; Hawaii leads the states.</h3>
+
+  <p>Puerto Rico had the highest rate of collateral denials for the typical buyer, 99.4 per 1,000 applications,
+  and collateral was a reason in 53.3% of its denials that gave reasons. Among the 50 states and
+  Washington, D.C., the rate ranged from 41.0 in Hawaii to 8.8 in Iowa. New York&rsquo;s was 29.8,
+  Florida&rsquo;s 24.9, California&rsquo;s 17.6 and Texas&rsquo;s 10.3.</p>
+
+  <div class="scroll tall">
+    <table>
+      <thead><tr><th>State</th><th class="n">Applications</th><th class="n">Denied</th><th class="n">Collateral share</th><th class="n">Per 1,000</th><th class="bar"></th></tr></thead>
+      <tbody>
+      <tr><td>Puerto Rico</td><td class="n">11,926</td><td class="n">18.6%</td><td class="n">53.3%</td><td class="n"><b>99.4</b></td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>Hawaii</td><td class="n">7,973</td><td class="n">10.7%</td><td class="n">38.3%</td><td class="n"><b>41.0</b></td><td class="bar"><span style="width:41%"></span></td></tr>
+      <tr><td>New York</td><td class="n">106,134</td><td class="n">11.8%</td><td class="n">25.6%</td><td class="n"><b>29.8</b></td><td class="bar"><span style="width:30%"></span></td></tr>
+      <tr><td>Vermont</td><td class="n">4,874</td><td class="n">10.3%</td><td class="n">25.5%</td><td class="n"><b>25.6</b></td><td class="bar"><span style="width:26%"></span></td></tr>
+      <tr><td>Florida</td><td class="n">300,181</td><td class="n">16.4%</td><td class="n">15.3%</td><td class="n"><b>24.9</b></td><td class="bar"><span style="width:25%"></span></td></tr>
+      <tr><td>District of Columbia</td><td class="n">5,192</td><td class="n">7.8%</td><td class="n">30.0%</td><td class="n"><b>23.1</b></td><td class="bar"><span style="width:23%"></span></td></tr>
+      <tr><td>Connecticut</td><td class="n">29,593</td><td class="n">8.6%</td><td class="n">27.0%</td><td class="n"><b>22.7</b></td><td class="bar"><span style="width:23%"></span></td></tr>
+      <tr><td>New Hampshire</td><td class="n">12,973</td><td class="n">9.0%</td><td class="n">25.1%</td><td class="n"><b>22.4</b></td><td class="bar"><span style="width:22%"></span></td></tr>
+      <tr><td>Maine</td><td class="n">13,651</td><td class="n">10.8%</td><td class="n">22.6%</td><td class="n"><b>22.1</b></td><td class="bar"><span style="width:22%"></span></td></tr>
+      <tr><td>West Virginia</td><td class="n">19,575</td><td class="n">22.6%</td><td class="n">8.9%</td><td class="n"><b>19.5</b></td><td class="bar"><span style="width:20%"></span></td></tr>
+      <tr><td>Michigan</td><td class="n">112,843</td><td class="n">15.2%</td><td class="n">12.6%</td><td class="n"><b>18.8</b></td><td class="bar"><span style="width:19%"></span></td></tr>
+      <tr><td>Rhode Island</td><td class="n">7,681</td><td class="n">6.7%</td><td class="n">27.9%</td><td class="n"><b>18.7</b></td><td class="bar"><span style="width:19%"></span></td></tr>
+      <tr><td>Illinois</td><td class="n">121,999</td><td class="n">10.8%</td><td class="n">17.6%</td><td class="n"><b>18.7</b></td><td class="bar"><span style="width:19%"></span></td></tr>
+      <tr><td>New Jersey</td><td class="n">70,942</td><td class="n">9.4%</td><td class="n">19.9%</td><td class="n"><b>18.4</b></td><td class="bar"><span style="width:19%"></span></td></tr>
+      <tr><td>Massachusetts</td><td class="n">50,474</td><td class="n">7.2%</td><td class="n">25.4%</td><td class="n"><b>17.6</b></td><td class="bar"><span style="width:18%"></span></td></tr>
+      <tr><td>California</td><td class="n">254,705</td><td class="n">10.9%</td><td class="n">16.2%</td><td class="n"><b>17.6</b></td><td class="bar"><span style="width:18%"></span></td></tr>
+      <tr><td>Pennsylvania</td><td class="n">112,536</td><td class="n">10.0%</td><td class="n">16.1%</td><td class="n"><b>15.9</b></td><td class="bar"><span style="width:16%"></span></td></tr>
+      <tr><td>Maryland</td><td class="n">64,239</td><td class="n">9.6%</td><td class="n">15.7%</td><td class="n"><b>15.0</b></td><td class="bar"><span style="width:15%"></span></td></tr>
+      <tr><td>Montana</td><td class="n">9,972</td><td class="n">11.4%</td><td class="n">13.7%</td><td class="n"><b>14.9</b></td><td class="bar"><span style="width:15%"></span></td></tr>
+      <tr><td>Georgia</td><td class="n">134,430</td><td class="n">15.3%</td><td class="n">9.8%</td><td class="n"><b>14.8</b></td><td class="bar"><span style="width:15%"></span></td></tr>
+      <tr><td>Mississippi</td><td class="n">35,634</td><td class="n">28.8%</td><td class="n">5.0%</td><td class="n"><b>14.2</b></td><td class="bar"><span style="width:14%"></span></td></tr>
+      <tr><td>Wisconsin</td><td class="n">57,649</td><td class="n">8.8%</td><td class="n">16.8%</td><td class="n"><b>14.2</b></td><td class="bar"><span style="width:14%"></span></td></tr>
+      <tr><td>Wyoming</td><td class="n">6,513</td><td class="n">13.5%</td><td class="n">10.7%</td><td class="n"><b>14.1</b></td><td class="bar"><span style="width:14%"></span></td></tr>
+      <tr><td>New Mexico</td><td class="n">23,948</td><td class="n">21.4%</td><td class="n">6.6%</td><td class="n"><b>14.0</b></td><td class="bar"><span style="width:14%"></span></td></tr>
+      <tr><td>Arizona</td><td class="n">92,244</td><td class="n">10.5%</td><td class="n">13.0%</td><td class="n"><b>13.6</b></td><td class="bar"><span style="width:14%"></span></td></tr>
+      <tr><td>Nevada</td><td class="n">39,729</td><td class="n">11.3%</td><td class="n">12.0%</td><td class="n"><b>13.5</b></td><td class="bar"><span style="width:14%"></span></td></tr>
+      <tr><td>Arkansas</td><td class="n">39,344</td><td class="n">21.2%</td><td class="n">6.4%</td><td class="n"><b>13.5</b></td><td class="bar"><span style="width:14%"></span></td></tr>
+      <tr><td>Ohio</td><td class="n">124,486</td><td class="n">10.2%</td><td class="n">13.3%</td><td class="n"><b>13.4</b></td><td class="bar"><span style="width:13%"></span></td></tr>
+      <tr><td>Missouri</td><td class="n">71,970</td><td class="n">10.6%</td><td class="n">13.2%</td><td class="n"><b>13.2</b></td><td class="bar"><span style="width:13%"></span></td></tr>
+      <tr><td>Oregon</td><td class="n">42,938</td><td class="n">8.9%</td><td class="n">14.6%</td><td class="n"><b>13.0</b></td><td class="bar"><span style="width:13%"></span></td></tr>
+      <tr><td>Oklahoma</td><td class="n">49,315</td><td class="n">19.2%</td><td class="n">6.9%</td><td class="n"><b>13.0</b></td><td class="bar"><span style="width:13%"></span></td></tr>
+      <tr><td>Indiana</td><td class="n">88,175</td><td class="n">11.9%</td><td class="n">10.9%</td><td class="n"><b>12.7</b></td><td class="bar"><span style="width:13%"></span></td></tr>
+      <tr><td>Louisiana</td><td class="n">49,790</td><td class="n">27.5%</td><td class="n">4.7%</td><td class="n"><b>12.7</b></td><td class="bar"><span style="width:13%"></span></td></tr>
+      <tr><td>Washington</td><td class="n">80,289</td><td class="n">7.9%</td><td class="n">16.1%</td><td class="n"><b>12.7</b></td><td class="bar"><span style="width:13%"></span></td></tr>
+      <tr><td>Kentucky</td><td class="n">54,915</td><td class="n">22.6%</td><td class="n">5.7%</td><td class="n"><b>12.6</b></td><td class="bar"><span style="width:13%"></span></td></tr>
+      <tr><td>North Dakota</td><td class="n">7,998</td><td class="n">8.5%</td><td class="n">14.9%</td><td class="n"><b>12.3</b></td><td class="bar"><span style="width:12%"></span></td></tr>
+      <tr><td>Colorado</td><td class="n">79,431</td><td class="n">10.7%</td><td class="n">11.1%</td><td class="n"><b>11.9</b></td><td class="bar"><span style="width:12%"></span></td></tr>
+      <tr><td>Tennessee</td><td class="n">91,403</td><td class="n">14.9%</td><td class="n">7.8%</td><td class="n"><b>11.5</b></td><td class="bar"><span style="width:12%"></span></td></tr>
+      <tr><td>Alaska</td><td class="n">6,701</td><td class="n">6.2%</td><td class="n">18.9%</td><td class="n"><b>11.5</b></td><td class="bar"><span style="width:12%"></span></td></tr>
+      <tr><td>Delaware</td><td class="n">13,140</td><td class="n">13.9%</td><td class="n">8.2%</td><td class="n"><b>11.3</b></td><td class="bar"><span style="width:11%"></span></td></tr>
+      <tr><td>Alabama</td><td class="n">68,873</td><td class="n">21.0%</td><td class="n">5.4%</td><td class="n"><b>11.1</b></td><td class="bar"><span style="width:11%"></span></td></tr>
+      <tr><td>Minnesota</td><td class="n">62,124</td><td class="n">8.0%</td><td class="n">13.9%</td><td class="n"><b>10.9</b></td><td class="bar"><span style="width:11%"></span></td></tr>
+      <tr><td>North Carolina</td><td class="n">145,212</td><td class="n">14.4%</td><td class="n">7.6%</td><td class="n"><b>10.8</b></td><td class="bar"><span style="width:11%"></span></td></tr>
+      <tr><td>South Carolina</td><td class="n">88,694</td><td class="n">19.6%</td><td class="n">5.6%</td><td class="n"><b>10.8</b></td><td class="bar"><span style="width:11%"></span></td></tr>
+      <tr><td>Kansas</td><td class="n">31,341</td><td class="n">10.6%</td><td class="n">10.2%</td><td class="n"><b>10.4</b></td><td class="bar"><span style="width:11%"></span></td></tr>
+      <tr><td>Nebraska</td><td class="n">20,549</td><td class="n">8.4%</td><td class="n">13.1%</td><td class="n"><b>10.3</b></td><td class="bar"><span style="width:10%"></span></td></tr>
+      <tr><td>Texas</td><td class="n">404,823</td><td class="n">18.8%</td><td class="n">5.5%</td><td class="n"><b>10.3</b></td><td class="bar"><span style="width:10%"></span></td></tr>
+      <tr><td>Virginia</td><td class="n">101,043</td><td class="n">10.3%</td><td class="n">9.7%</td><td class="n"><b>9.9</b></td><td class="bar"><span style="width:10%"></span></td></tr>
+      <tr><td>Idaho</td><td class="n">24,696</td><td class="n">7.9%</td><td class="n">12.5%</td><td class="n"><b>9.8</b></td><td class="bar"><span style="width:10%"></span></td></tr>
+      <tr><td>Utah</td><td class="n">41,004</td><td class="n">9.7%</td><td class="n">9.8%</td><td class="n"><b>9.4</b></td><td class="bar"><span style="width:9%"></span></td></tr>
+      <tr><td>South Dakota</td><td class="n">9,179</td><td class="n">9.6%</td><td class="n">9.8%</td><td class="n"><b>9.3</b></td><td class="bar"><span style="width:9%"></span></td></tr>
+      <tr><td>Iowa</td><td class="n">35,629</td><td class="n">10.4%</td><td class="n">9.0%</td><td class="n"><b>8.8</b></td><td class="bar"><span style="width:9%"></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">First-lien home-purchase applications for single-unit homes the buyer would live in, 2024, in states and
+  territories with at least 2,000, ranked by collateral denials per 1,000 applications. All are in the state CSV.</p>
+
+  <h2>By county</h2>
+  <h3>Five big urban counties stand out.</h3>
+
+  <p>Among the 297 counties with at least 3,000 applications from typical buyers, New York County (Manhattan), New York
+  had the highest rate of collateral denials, 86.0 per 1,000 applications, and collateral was a
+  reason in 57.8% of its denials that gave reasons. Miami-Dade,
+  Queens, Broward and Kings (Brooklyn) follow.
+  HMDA has no field for whether a home is a condominium or a co-op, so the data can&rsquo;t say what these counties
+  have in common.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>County</th><th class="n">Applications</th><th class="n">Denied</th><th class="n">Collateral share</th><th class="n">Per 1,000</th></tr></thead>
+      <tbody>
+      <tr><td>New York County (Manhattan), New York</td><td class="n">5,023</td><td class="n">14.9%</td><td class="n">57.8%</td><td class="n"><b>86.0</b></td></tr>
+      <tr><td>Miami-Dade County, Florida</td><td class="n">19,298</td><td class="n">20.7%</td><td class="n">35.6%</td><td class="n"><b>73.6</b></td></tr>
+      <tr><td>Queens County, New York</td><td class="n">7,506</td><td class="n">16.5%</td><td class="n">44.7%</td><td class="n"><b>73.0</b></td></tr>
+      <tr><td>Broward County, Florida</td><td class="n">19,420</td><td class="n">19.6%</td><td class="n">36.1%</td><td class="n"><b>70.3</b></td></tr>
+      <tr><td>Kings County (Brooklyn), New York</td><td class="n">5,140</td><td class="n">14.0%</td><td class="n">48.6%</td><td class="n"><b>67.9</b></td></tr>
+      <tr><td>Hudson County, New Jersey</td><td class="n">3,276</td><td class="n">11.4%</td><td class="n">45.9%</td><td class="n"><b>52.5</b></td></tr>
+      <tr><td>Honolulu County, Hawaii</td><td class="n">5,786</td><td class="n">10.7%</td><td class="n">39.2%</td><td class="n"><b>41.7</b></td></tr>
+      <tr><td>Westchester County, New York</td><td class="n">6,266</td><td class="n">9.7%</td><td class="n">42.7%</td><td class="n"><b>41.3</b></td></tr>
+      <tr><td>Palm Beach County, Florida</td><td class="n">14,656</td><td class="n">15.2%</td><td class="n">23.3%</td><td class="n"><b>35.3</b></td></tr>
+      <tr><td>Pinellas County, Florida</td><td class="n">9,675</td><td class="n">13.9%</td><td class="n">24.7%</td><td class="n"><b>34.2</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">The 10 highest of 297 counties with at least 3,000 first-lien home-purchase applications
+  for single-unit homes the buyer would live in, 2024. The five lowest:</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>County</th><th class="n">Applications</th><th class="n">Denied</th><th class="n">Collateral share</th><th class="n">Per 1,000</th></tr></thead>
+      <tbody>
+      <tr><td>Lubbock County, Texas</td><td class="n">4,302</td><td class="n">14.7%</td><td class="n">2.4%</td><td class="n"><b>3.5</b></td></tr>
+      <tr><td>Hamilton County, Indiana</td><td class="n">6,212</td><td class="n">7.1%</td><td class="n">5.3%</td><td class="n"><b>3.7</b></td></tr>
+      <tr><td>Johnson County, Indiana</td><td class="n">3,324</td><td class="n">17.5%</td><td class="n">2.2%</td><td class="n"><b>3.9</b></td></tr>
+      <tr><td>Denton County, Texas</td><td class="n">18,264</td><td class="n">9.2%</td><td class="n">4.6%</td><td class="n"><b>4.2</b></td></tr>
+      <tr><td>Hays County, Texas</td><td class="n">6,138</td><td class="n">14.6%</td><td class="n">2.9%</td><td class="n"><b>4.2</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">Every county is in the county CSV and in the lookup above.</p>
+
+  <h2>What this means if you&rsquo;re buying</h2>
+  <h3>Two rights to use if the house is the reason.</h3>
+
+  <p>A collateral denial is uncommon for a typical buyer, but it comes late, after the appraisal or the lender&rsquo;s
+  review of the property. Federal rules give you two things to work with.</p>
+  <ul>
+    <li><strong>A copy of the appraisal.</strong> Regulation B, 12 CFR 1002.14, requires the lender to give you a copy of
+    every appraisal and written valuation developed for a first-lien loan on a home, promptly after it&rsquo;s done or
+    three business days before closing, whichever is earlier. The rule attaches to the application, whether or not the
+    loan closes.</li>
+    <li><strong>The reason in writing.</strong> Regulation B, 12 CFR 1002.9, requires a notice within 30 days of a
+    completed application being denied, and the statement of reasons &ldquo;must be specific and indicate the
+    principal reason(s)&rdquo;. If the reason is the collateral, ask which part: the value, the condition, or the
+    type of property.</li>
+  </ul>
+  <p>Before an offer, the pattern in this data points at a few questions worth asking about an older house, a
+  manufactured home on an FHA or VA loan, or a two-to-four-unit building: what condition the main systems are in,
+  whether past work had permits, and whether the loan program you plan to use has rules for this kind of property.
+  Our study <a href="/research/oldest-housing/">Before 1940</a> shows where the oldest housing is, county by county.</p>
+
+  <h2>Method</h2>
+  <h3>How the figures were built.</h3>
+
+  <p>The data is the FFIEC&rsquo;s 2024 nationwide HMDA loan/application records, filtered in the HMDA data browser to
+  home-purchase loans with action taken &ldquo;loan originated&rdquo;, &ldquo;application approved but not
+  accepted&rdquo; or &ldquo;application denied&rdquo;. We streamed the full file on 2026-11-25 and counted it without
+  keeping any rows: 4,319,109 records, matching the data browser&rsquo;s own count, with no malformed rows. Withdrawn
+  and incomplete files are left out, so &ldquo;applications&rdquo; means applications a lender decided.</p>
+
+  <p>A denial counts as citing collateral if collateral is any of its up-to-four reasons. Shares are of denials that
+  gave reasons: lenders with a partial exemption may report reason code 1111, exempt, and those 9,122 denials are
+  left out of the denominator. &ldquo;Typical buyer&rdquo; means a first-lien loan on a single-unit home the buyer would
+  live in as a principal residence. Regulation C counts the dwelling units securing the loan, so a loan on one
+  condominium or co-op unit is a single unit. County names come from the Census
+  Bureau&rsquo;s 2023 county list.</p>
+
+  <h2>Limitations</h2>
+  <h3>What this does not show.</h3>
+
+  <p><strong>Not every lender reports.</strong> Regulation C, 12 CFR 1003.2(g), covers lenders above size and volume
+  thresholds, including a minimum of 25 closed-end mortgage loans in each of the two prior years, and a lender must have
+  had an office in a metropolitan area. Small lenders and some rural ones aren&rsquo;t in the data.</p>
+
+  <p><strong>Applications, not buyers or houses.</strong> A buyer turned down by one lender may apply to another, and
+  each application counts. A denied application doesn&rsquo;t mean the house didn&rsquo;t sell.</p>
+
+  <p><strong>The reason is the lender&rsquo;s.</strong> HMDA records what the lender reported, in its own categories. It
+  doesn&rsquo;t record the appraised value, the condition of the house, or why the collateral fell short. Housing age is
+  the tract median from census data, not the age of the house. 39,818 typical-buyer applications have no
+  state recorded and 51,477 have no county we could name; they are
+  in the national figures only.</p>
+
+  <h2>Questions this data answers</h2>
+  <div class="faq">
+    <h3 class="faq-q">What does it mean when a mortgage is denied for collateral?</h3>
+    <p>It means the lender reported the property itself as a reason it would not make the loan. Lenders report it under HMDA as denial reason "Collateral", and Regulation B's sample notice words it "Value or type of collateral not sufficient". The data does not say which: a low appraisal, the condition of the house, or a type of property the loan program will not accept.</p>
+    <h3 class="faq-q">How often are mortgages denied because of the appraisal or the property?</h3>
+    <p>In 2024, 83,247 of 623,942 denied home-purchase applications named collateral as a reason. For a first-lien loan on a single-unit home the buyer would live in, it was a reason in 10.7% of denials that gave reasons, or 15.3 per 1,000 applications decided. Debt-to-income ratio and credit history were cited far more often.</p>
+    <h3 class="faq-q">Are mortgages on older homes denied more often because of the house?</h3>
+    <p>In 2024 HMDA data, yes by neighbourhood: for site-built homes, collateral denials ran at 19.2 per 1,000 applications in census tracts where the median home was 40 to 59 years old, against 9.3 where it was under 20. The overall denial rate barely changed. HMDA records the tract's median housing age, not the age of the house being bought.</p>
+    <h3 class="faq-q">Can I get a copy of the appraisal if my mortgage is denied?</h3>
+    <p>Yes. Regulation B (12 CFR 1002.14) requires a lender to give you a copy of every appraisal and written valuation developed for a first-lien loan on a home, promptly after it is completed or three business days before closing, whichever is earlier, even if the loan does not close. If credit is denied, Regulation B (12 CFR 1002.9) also requires a notice within 30 days, and the statement of reasons must be specific.</p>
+    <h3 class="faq-q">Where can I download mortgage denial data by county?</h3>
+    <p>This study publishes two CSV files under a CC BY 4.0 licence: every county and every state, with 2024 home-purchase applications, denials and the count of denials citing each reason, for first-lien loans on single-unit homes the buyer would live in. The underlying data is the public FFIEC HMDA data browser, which needs no key.</p>
+  </div>
+
+  <div class="cite">
+    <b>Cite this</b>
+    Before Regret, &ldquo;Denied Because of the House: home-purchase mortgages denied for collateral, 2024 HMDA.&rdquo;
+    25 November 2026. Analysis of the FFIEC 2024 nationwide HMDA loan/application records, pulled 2026-11-25, for
+    4,319,109 decided home-purchase applications.<br>
+    <a href="https://www.beforeregret.com/research/mortgage-denied-collateral/">https://www.beforeregret.com/research/mortgage-denied-collateral/</a><br>
+    Data: <a href="https://www.beforeregret.com/research/data/mortgage-denied-collateral-by-county.csv">every county (CSV)</a> &middot;
+    <a href="https://www.beforeregret.com/research/data/mortgage-denied-collateral-by-state.csv">every state (CSV)</a> &middot;
+    <a href="https://www.beforeregret.com/research/data/mortgage-denied-collateral-figures.json">figures (JSON)</a>.
+    Questions and corrections: hello@beforeregret.com
+  </div>
+
+  <div class="cite">
+    <b>Embed the county lookup</b>
+    Free to use, no tracking, no attribution required beyond the credit line it carries.
+    <pre class="snippet">&lt;iframe src="https://www.beforeregret.com/research/mortgage-denied-collateral/embed/"
+        width="100%" height="420" style="border:1px solid #ded9cf"
+        title="Mortgages denied for collateral by county"
+        loading="lazy"&gt;&lt;/iframe&gt;</pre>
+    It posts its own height to the parent page as <code>beforeRegretEmbedHeight</code>.
+  </div>
+
+  <div class="cite">
+    <b>For newsrooms, researchers and housing counsellors</b>
+    Published under a Creative Commons Attribution 4.0 licence: republish the figures, redraw the tables, or run
+    your own cut without asking, with credit to Before Regret and a link to this page. HMDA data is published by the
+    FFIEC and the CFPB; this study is not endorsed by either. Happy to pull a specific county or check a figure before
+    it prints &mdash; hello@beforeregret.com.
+  </div>
+
+  <footer class="spine">
+    Sources: FFIEC HMDA data browser, 2024 nationwide loan/application records, retrieved 2026-11-25; FFIEC LAR data
+    field definitions; 12 CFR 1003.2(g) and 1003.4(a)(16) (Regulation C); 12 CFR 1002.9, 1002.14 and Appendix C
+    (Regulation B), read 2026-11-25; Census Bureau ACS 2023 county names.<br>
+    Analysis by Before Regret. Published 25 November 2026.<br>
+    Related: <a href="/research/oldest-housing/">Before 1940</a> &#183;
+    <a href="/research/built-to-code/">Built to Which Code?</a> &#183;
+    <a href="/research/fema-aid-gap/">What FEMA Pays Homeowners</a>
+  </footer>
+</div>
+<script type="application/json" id="mdc-data">{"src":"/research/data/mortgage-denied-collateral-lookup.json","nat":{"apps":3580613,"per1000":15.3,"share":10.7,"denial":14.5}}</script>
+<script>
+(function(){
+  var s=document.getElementById('mdcpick'),o=document.getElementById('mdcout'),d=[];
+  var cfg=JSON.parse(document.getElementById('mdc-data').textContent),N=cfg.nat;
+  s.disabled=true;
+  fetch(cfg.src).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
+    d=j.c; s.disabled=false;
+    d.forEach(function(c,i){var e=document.createElement('option');e.value=i;e.textContent=c[0];s.appendChild(e);});
+  }).catch(function(){o.innerHTML='<p class="lk-msg">The county list did not load. The same figures are in the county CSV below.</p>';});
+  function cell(v,l){return '<div class="lk-cell"><b>'+v+'</b><span>'+l+'</span></div>';}
+  function fmt(n){return Math.round(n).toLocaleString('en-US');}
+  s.addEventListener('change',function(){
+    var c=d[s.value]; if(!c){o.innerHTML='';return;}
+    var p=c[4]/c[1]*1000, sh=c[3]?c[4]/c[3]*100:0;
+    o.innerHTML='<div class="lk-grid">'
+      +cell(fmt(c[1]),'applications decided')
+      +cell((c[2]/c[1]*100).toFixed(1)+'%','denied (US: '+N.denial+'%)')
+      +cell(fmt(c[4]),'denials citing collateral')
+      +cell(p.toFixed(1),'per 1,000 applications (US: '+N.per1000+')')
+      +'</div>'
+      +'<p class="lk-msg">'+(c[3]?'Collateral was a reason in '+sh.toFixed(1)+'% of denials that gave reasons, against '+N.share+'% nationally.':'No denials here gave a reason.')
+      +(c[1]<1000?' With fewer than 1,000 applications, a handful of denials moves these rates a lot.':'')+'</p>';
+  });
+})();
+</script>

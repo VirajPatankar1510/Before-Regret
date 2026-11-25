@@ -28,3 +28,4 @@ backups/
 docs/reply-*.md
 docs/data/built-to-code-raw.json
 docs/data/fema-aid-gap-raw.json
+docs/data/hmda-collateral-raw.json

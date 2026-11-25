@@ -604,6 +604,18 @@ async function run() {
         return `Every FEMA Individuals and Households Program homeowner registration in ${g.scope.disasters} major disasters declared ${g.declarationRange.first.slice(0, 4)}-${g.declarationRange.last.slice(0, 4)} (OpenFEMA Housing Assistance Owners v2), by county and disaster. ${n(g.national.homeownerRegistrations)} registrations; ${(g.national.approvalShare * 100).toFixed(1)}% approved for any aid; $${n(g.national.avgPerApprovedUsd)} average per approved registration (repair, rental and other needs, nominal dollars); ${n(g.national.maxGrants)} (${(g.national.maxGrants / g.national.approved * 100).toFixed(1)}% of approved) got the maximum grant. Repair and replacement aid equalled ${Math.round(g.national.repairPerDollarOfDamage * 100)} cents per dollar of FEMA-recorded damage. Wildfire: $${n(fire.femaRecordedDamageUsd / fire.inspectedWithDamage)} recorded damage per damaged home, ${(fire.approvalShare * 100).toFixed(1)}% approved. FEMA aid sits behind insurance (44 CFR 206.113) and repairs only to a safe and sanitary condition (44 CFR 206.117); the data has no insurance field. Housing assistance maximum $${n(g.ihpMaximum.declaredOnOrAfter20261001)} for disasters declared on or after 2026-10-01. Embeddable county lookup: https://www.beforeregret.com/research/fema-aid-gap/embed/`;
       })(),
       data: ['fema-aid-gap-by-county.csv', 'fema-aid-gap-by-disaster.csv', 'fema-aid-gap-figures.json'] },
+    // Twelfth study (2026-11-25). Summary READ from its figures file.
+    { slug: 'mortgage-denied-collateral', title: 'Denied Because of the House',
+      summary: ((): string => {
+        const p = path.join(process.cwd(), 'docs', 'data', 'mortgage-denied-collateral-figures.json');
+        if (!fs.existsSync(p)) throw new Error('[prerender-guides] llms.txt lists mortgage-denied-collateral but docs/data/mortgage-denied-collateral-figures.json is missing -- run scripts/build-mortgage-denied-collateral-study.ts');
+        const g = JSON.parse(fs.readFileSync(p, 'utf8'));
+        const n = (v: number) => Math.round(v).toLocaleString('en-US');
+        const t = g.typicalBuyerNational;
+        const age = g.siteBuiltByTractMedianHousingAge;
+        return `Every ${g.year} HMDA home-purchase application a lender approved or denied (${n(g.records)} records, FFIEC), counted by denial reason. ${n(g.national.denied)} denied; ${n(g.national.collateralDenials)} named collateral (HMDA reason 4; Regulation B sample notice: "Value or type of collateral not sufficient"). Typical buyer (first lien, principal residence, single unit): collateral in ${(t.collateralShareOfDeniedWithReasons * 100).toFixed(1)}% of denials with reasons, ${t.collateralDenialsPer1000.toFixed(1)} per 1,000 applications. Site-built homes by census-tract median housing age: ${age.map((a: { tractMedianAge: string; all: { collateralDenialsPer1000: number } }) => `${a.tractMedianAge} ${a.all.collateralDenialsPer1000.toFixed(1)}`).join(', ')} per 1,000. HMDA does not say whether collateral meant value, condition or property type. Buyer rights: appraisal copy (12 CFR 1002.14), specific reasons within 30 days (12 CFR 1002.9). By county and state. Embeddable county lookup: https://www.beforeregret.com/research/mortgage-denied-collateral/embed/`;
+      })(),
+      data: ['mortgage-denied-collateral-by-county.csv', 'mortgage-denied-collateral-by-state.csv', 'mortgage-denied-collateral-figures.json'] },
   ];
   // Asserted against docs/ rather than dist/, because prerender-research.tsx runs AFTER this script
   // in the build, so dist/research/ does not exist yet at this point. docs/<slug>.html is the source
