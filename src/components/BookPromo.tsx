@@ -41,7 +41,7 @@ const Cover: React.FC<{ className: string }> = ({ className }) => (
 const HOOK_A = 'You feel it.';
 const HOOK_B = 'But why?';
 // Owner's wording, 2026-11-25.
-const SUBHOOK = 'A house leaves clues. Most people walk past them.';
+const SUBHOOK = 'A house leaves clues.';
 const LINE = 'A different way to think about what you’re buying.';
 const CTA = 'Get it on Amazon';
 
