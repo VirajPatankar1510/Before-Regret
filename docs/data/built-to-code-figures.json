@@ -1,0 +1,817 @@
+{
+  "title": "Built to Which Code? New US houses by the building code they were permitted under",
+  "generated": "2026-11-25",
+  "fetchedAt": "2026-11-25T04:09:54.463Z",
+  "sources": {
+    "bcat": {
+      "url": "https://services.arcgis.com/DN2fPfpggEPlLhP6/arcgis/rest/services/FEMA_BCAT_Government_Jurisdictions/FeatureServer/0",
+      "dataLastEdit": "2026-11-18T16:43:03.429Z",
+      "dataCurrency": [
+        "2026-09-30"
+      ]
+    },
+    "bpsPlace": [
+      "https://www2.census.gov/econ/bps/Place/Northeast%20Region/ne2025a.txt",
+      "https://www2.census.gov/econ/bps/Place/Midwest%20Region/mw2025a.txt",
+      "https://www2.census.gov/econ/bps/Place/South%20Region/so2025a.txt",
+      "https://www2.census.gov/econ/bps/Place/West%20Region/we2025a.txt"
+    ],
+    "bpsCounty": "https://www2.census.gov/econ/bps/County/co2025a.txt"
+  },
+  "permitYear": 2025,
+  "bcatDataAsOf": "2026-09-30",
+  "scope": {
+    "permitOffices": 20070,
+    "counties": 3030,
+    "excludedPuertoRicoOffices": 0,
+    "unit": "single-family (1-unit) housing units authorized"
+  },
+  "national": {
+    "houses": 913081,
+    "allUnits": 1433120,
+    "countyFileAllUnits": 1431616,
+    "housesRatedCurrent": 484366,
+    "housesOldWeakenedOrNone": 424067,
+    "housesNoBcatData": 1255,
+    "housesUnmatched": 3393,
+    "shareRatedCurrent": 0.5305,
+    "shareOldWeakenedOrNone": 0.4644,
+    "housesNoResidentialCode": 66407,
+    "housesCurrentEditionButNotRatedCurrent": 62249,
+    "shareDirectlyReported": 0.8983,
+    "shareMatched": 0.9963
+  },
+  "ratingLabels": {
+    "0": "No Building Code Data",
+    "1": "Old or Weakened IBC/IRC, or No IBC/IRC Adopted",
+    "2": "2021 or later IBC & IRC"
+  },
+  "byResidentialCode": [
+    {
+      "code": "2024 IRC",
+      "houses": 189391
+    },
+    {
+      "code": "2021 IRC",
+      "houses": 357224
+    },
+    {
+      "code": "2018 IRC",
+      "houses": 164499
+    },
+    {
+      "code": "2015 IRC",
+      "houses": 104549
+    },
+    {
+      "code": "2012 IRC or older",
+      "houses": 12445
+    },
+    {
+      "code": "Wisconsin's own dwelling code",
+      "houses": 13460
+    },
+    {
+      "code": "Other or pre-IRC code",
+      "houses": 218
+    },
+    {
+      "code": "No residential code",
+      "houses": 66407
+    },
+    {
+      "code": "No data",
+      "houses": 1495
+    },
+    {
+      "code": "Unmatched",
+      "houses": 3393
+    }
+  ],
+  "states": [
+    {
+      "state": "Texas",
+      "abbr": "TX",
+      "houses": 141191,
+      "ratedCurrent": 57421,
+      "oldWeakenedOrNone": 82993,
+      "noResidentialCode": 52370,
+      "shareRatedCurrent": 0.4067
+    },
+    {
+      "state": "Florida",
+      "abbr": "FL",
+      "houses": 111173,
+      "ratedCurrent": 111173,
+      "oldWeakenedOrNone": 0,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 1
+    },
+    {
+      "state": "North Carolina",
+      "abbr": "NC",
+      "houses": 65303,
+      "ratedCurrent": 0,
+      "oldWeakenedOrNone": 65303,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0
+    },
+    {
+      "state": "California",
+      "abbr": "CA",
+      "houses": 57739,
+      "ratedCurrent": 57739,
+      "oldWeakenedOrNone": 0,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 1
+    },
+    {
+      "state": "Georgia",
+      "abbr": "GA",
+      "houses": 44351,
+      "ratedCurrent": 44351,
+      "oldWeakenedOrNone": 0,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 1
+    },
+    {
+      "state": "South Carolina",
+      "abbr": "SC",
+      "houses": 39897,
+      "ratedCurrent": 39897,
+      "oldWeakenedOrNone": 0,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 1
+    },
+    {
+      "state": "Arizona",
+      "abbr": "AZ",
+      "houses": 33371,
+      "ratedCurrent": 13094,
+      "oldWeakenedOrNone": 20233,
+      "noResidentialCode": 1099,
+      "shareRatedCurrent": 0.3924
+    },
+    {
+      "state": "Tennessee",
+      "abbr": "TN",
+      "houses": 32068,
+      "ratedCurrent": 884,
+      "oldWeakenedOrNone": 31184,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0.0276
+    },
+    {
+      "state": "Virginia",
+      "abbr": "VA",
+      "houses": 20458,
+      "ratedCurrent": 0,
+      "oldWeakenedOrNone": 20458,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0
+    },
+    {
+      "state": "Indiana",
+      "abbr": "IN",
+      "houses": 19877,
+      "ratedCurrent": 0,
+      "oldWeakenedOrNone": 19877,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0
+    },
+    {
+      "state": "Washington",
+      "abbr": "WA",
+      "houses": 17780,
+      "ratedCurrent": 17780,
+      "oldWeakenedOrNone": 0,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 1
+    },
+    {
+      "state": "Colorado",
+      "abbr": "CO",
+      "houses": 17406,
+      "ratedCurrent": 7369,
+      "oldWeakenedOrNone": 9704,
+      "noResidentialCode": 1203,
+      "shareRatedCurrent": 0.4234
+    },
+    {
+      "state": "Ohio",
+      "abbr": "OH",
+      "houses": 17327,
+      "ratedCurrent": 0,
+      "oldWeakenedOrNone": 17327,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0
+    },
+    {
+      "state": "Utah",
+      "abbr": "UT",
+      "houses": 16774,
+      "ratedCurrent": 16774,
+      "oldWeakenedOrNone": 0,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 1
+    },
+    {
+      "state": "Pennsylvania",
+      "abbr": "PA",
+      "houses": 15812,
+      "ratedCurrent": 15812,
+      "oldWeakenedOrNone": 0,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 1
+    },
+    {
+      "state": "Michigan",
+      "abbr": "MI",
+      "houses": 15566,
+      "ratedCurrent": 0,
+      "oldWeakenedOrNone": 15431,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0
+    },
+    {
+      "state": "Alabama",
+      "abbr": "AL",
+      "houses": 15402,
+      "ratedCurrent": 7479,
+      "oldWeakenedOrNone": 7923,
+      "noResidentialCode": 1267,
+      "shareRatedCurrent": 0.4856
+    },
+    {
+      "state": "Idaho",
+      "abbr": "ID",
+      "houses": 14112,
+      "ratedCurrent": 0,
+      "oldWeakenedOrNone": 14112,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0
+    },
+    {
+      "state": "Wisconsin",
+      "abbr": "WI",
+      "houses": 13460,
+      "ratedCurrent": 0,
+      "oldWeakenedOrNone": 13460,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0
+    },
+    {
+      "state": "Minnesota",
+      "abbr": "MN",
+      "houses": 12886,
+      "ratedCurrent": 0,
+      "oldWeakenedOrNone": 12886,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0
+    },
+    {
+      "state": "New Jersey",
+      "abbr": "NJ",
+      "houses": 12820,
+      "ratedCurrent": 12820,
+      "oldWeakenedOrNone": 0,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 1
+    },
+    {
+      "state": "Nevada",
+      "abbr": "NV",
+      "houses": 12584,
+      "ratedCurrent": 9077,
+      "oldWeakenedOrNone": 3507,
+      "noResidentialCode": 5,
+      "shareRatedCurrent": 0.7213
+    },
+    {
+      "state": "Oklahoma",
+      "abbr": "OK",
+      "houses": 11584,
+      "ratedCurrent": 0,
+      "oldWeakenedOrNone": 11584,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0
+    },
+    {
+      "state": "New York",
+      "abbr": "NY",
+      "houses": 11499,
+      "ratedCurrent": 11330,
+      "oldWeakenedOrNone": 169,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0.9853
+    },
+    {
+      "state": "Missouri",
+      "abbr": "MO",
+      "houses": 11412,
+      "ratedCurrent": 1779,
+      "oldWeakenedOrNone": 9595,
+      "noResidentialCode": 1986,
+      "shareRatedCurrent": 0.1559
+    },
+    {
+      "state": "Louisiana",
+      "abbr": "LA",
+      "houses": 11199,
+      "ratedCurrent": 11199,
+      "oldWeakenedOrNone": 0,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 1
+    },
+    {
+      "state": "Illinois",
+      "abbr": "IL",
+      "houses": 10821,
+      "ratedCurrent": 3868,
+      "oldWeakenedOrNone": 6949,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0.3575
+    },
+    {
+      "state": "Arkansas",
+      "abbr": "AR",
+      "houses": 10353,
+      "ratedCurrent": 6076,
+      "oldWeakenedOrNone": 4277,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0.5869
+    },
+    {
+      "state": "Maryland",
+      "abbr": "MD",
+      "houses": 9345,
+      "ratedCurrent": 9345,
+      "oldWeakenedOrNone": 0,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 1
+    },
+    {
+      "state": "Oregon",
+      "abbr": "OR",
+      "houses": 9215,
+      "ratedCurrent": 0,
+      "oldWeakenedOrNone": 9046,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0
+    },
+    {
+      "state": "Kentucky",
+      "abbr": "KY",
+      "houses": 8817,
+      "ratedCurrent": 0,
+      "oldWeakenedOrNone": 8817,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0
+    },
+    {
+      "state": "Iowa",
+      "abbr": "IA",
+      "houses": 7332,
+      "ratedCurrent": 3388,
+      "oldWeakenedOrNone": 3944,
+      "noResidentialCode": 1590,
+      "shareRatedCurrent": 0.4621
+    },
+    {
+      "state": "Mississippi",
+      "abbr": "MS",
+      "houses": 7318,
+      "ratedCurrent": 1223,
+      "oldWeakenedOrNone": 6095,
+      "noResidentialCode": 1184,
+      "shareRatedCurrent": 0.1671
+    },
+    {
+      "state": "New Mexico",
+      "abbr": "NM",
+      "houses": 6296,
+      "ratedCurrent": 616,
+      "oldWeakenedOrNone": 2928,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0.0978
+    },
+    {
+      "state": "Kansas",
+      "abbr": "KS",
+      "houses": 6122,
+      "ratedCurrent": 683,
+      "oldWeakenedOrNone": 5437,
+      "noResidentialCode": 1872,
+      "shareRatedCurrent": 0.1116
+    },
+    {
+      "state": "Nebraska",
+      "abbr": "NE",
+      "houses": 5561,
+      "ratedCurrent": 1053,
+      "oldWeakenedOrNone": 4508,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0.1894
+    },
+    {
+      "state": "Delaware",
+      "abbr": "DE",
+      "houses": 5422,
+      "ratedCurrent": 4443,
+      "oldWeakenedOrNone": 979,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0.8194
+    },
+    {
+      "state": "Massachusetts",
+      "abbr": "MA",
+      "houses": 5018,
+      "ratedCurrent": 0,
+      "oldWeakenedOrNone": 5018,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0
+    },
+    {
+      "state": "Maine",
+      "abbr": "ME",
+      "houses": 4769,
+      "ratedCurrent": 4655,
+      "oldWeakenedOrNone": 0,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0.9761
+    },
+    {
+      "state": "West Virginia",
+      "abbr": "WV",
+      "houses": 3619,
+      "ratedCurrent": 431,
+      "oldWeakenedOrNone": 3148,
+      "noResidentialCode": 828,
+      "shareRatedCurrent": 0.1191
+    },
+    {
+      "state": "South Dakota",
+      "abbr": "SD",
+      "houses": 3296,
+      "ratedCurrent": 1676,
+      "oldWeakenedOrNone": 1487,
+      "noResidentialCode": 912,
+      "shareRatedCurrent": 0.5085
+    },
+    {
+      "state": "New Hampshire",
+      "abbr": "NH",
+      "houses": 3279,
+      "ratedCurrent": 3279,
+      "oldWeakenedOrNone": 0,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 1
+    },
+    {
+      "state": "Montana",
+      "abbr": "MT",
+      "houses": 2675,
+      "ratedCurrent": 2675,
+      "oldWeakenedOrNone": 0,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 1
+    },
+    {
+      "state": "Hawaii",
+      "abbr": "HI",
+      "houses": 2420,
+      "ratedCurrent": 0,
+      "oldWeakenedOrNone": 2420,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0
+    },
+    {
+      "state": "Connecticut",
+      "abbr": "CT",
+      "houses": 2080,
+      "ratedCurrent": 2080,
+      "oldWeakenedOrNone": 0,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 1
+    },
+    {
+      "state": "North Dakota",
+      "abbr": "ND",
+      "houses": 1769,
+      "ratedCurrent": 1607,
+      "oldWeakenedOrNone": 64,
+      "noResidentialCode": 64,
+      "shareRatedCurrent": 0.9084
+    },
+    {
+      "state": "Wyoming",
+      "abbr": "WY",
+      "houses": 1732,
+      "ratedCurrent": 567,
+      "oldWeakenedOrNone": 1165,
+      "noResidentialCode": 724,
+      "shareRatedCurrent": 0.3274
+    },
+    {
+      "state": "Vermont",
+      "abbr": "VT",
+      "houses": 1287,
+      "ratedCurrent": 0,
+      "oldWeakenedOrNone": 1287,
+      "noResidentialCode": 1158,
+      "shareRatedCurrent": 0
+    },
+    {
+      "state": "Rhode Island",
+      "abbr": "RI",
+      "houses": 730,
+      "ratedCurrent": 723,
+      "oldWeakenedOrNone": 7,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0.9904
+    },
+    {
+      "state": "Alaska",
+      "abbr": "AK",
+      "houses": 573,
+      "ratedCurrent": 0,
+      "oldWeakenedOrNone": 564,
+      "noResidentialCode": 145,
+      "shareRatedCurrent": 0
+    },
+    {
+      "state": "District of Columbia",
+      "abbr": "DC",
+      "houses": 181,
+      "ratedCurrent": 0,
+      "oldWeakenedOrNone": 181,
+      "noResidentialCode": 0,
+      "shareRatedCurrent": 0
+    }
+  ],
+  "topCountiesNotCurrent": [
+    {
+      "geoid": "48201",
+      "county": "Harris County",
+      "state": "TX",
+      "houses": 16940,
+      "oldWeakenedOrNone": 11624,
+      "noResidentialCode": 11014
+    },
+    {
+      "geoid": "48339",
+      "county": "Montgomery County",
+      "state": "TX",
+      "houses": 11597,
+      "oldWeakenedOrNone": 11582,
+      "noResidentialCode": 10903
+    },
+    {
+      "geoid": "48157",
+      "county": "Fort Bend County",
+      "state": "TX",
+      "houses": 9760,
+      "oldWeakenedOrNone": 9607,
+      "noResidentialCode": 9078
+    },
+    {
+      "geoid": "04013",
+      "county": "Maricopa County",
+      "state": "AZ",
+      "houses": 17244,
+      "oldWeakenedOrNone": 8582,
+      "noResidentialCode": 34
+    },
+    {
+      "geoid": "37183",
+      "county": "Wake County",
+      "state": "NC",
+      "houses": 8392,
+      "oldWeakenedOrNone": 8392,
+      "noResidentialCode": 0
+    },
+    {
+      "geoid": "04021",
+      "county": "Pinal County",
+      "state": "AZ",
+      "houses": 6511,
+      "oldWeakenedOrNone": 5413,
+      "noResidentialCode": 786
+    },
+    {
+      "geoid": "40109",
+      "county": "Oklahoma County",
+      "state": "OK",
+      "houses": 4945,
+      "oldWeakenedOrNone": 4945,
+      "noResidentialCode": 0
+    },
+    {
+      "geoid": "48121",
+      "county": "Denton County",
+      "state": "TX",
+      "houses": 6586,
+      "oldWeakenedOrNone": 4816,
+      "noResidentialCode": 3456
+    },
+    {
+      "geoid": "16001",
+      "county": "Ada County",
+      "state": "ID",
+      "houses": 4637,
+      "oldWeakenedOrNone": 4637,
+      "noResidentialCode": 0
+    },
+    {
+      "geoid": "37019",
+      "county": "Brunswick County",
+      "state": "NC",
+      "houses": 4454,
+      "oldWeakenedOrNone": 4454,
+      "noResidentialCode": 0
+    },
+    {
+      "geoid": "48029",
+      "county": "Bexar County",
+      "state": "TX",
+      "houses": 4589,
+      "oldWeakenedOrNone": 4203,
+      "noResidentialCode": 4
+    },
+    {
+      "geoid": "48215",
+      "county": "Hidalgo County",
+      "state": "TX",
+      "houses": 4523,
+      "oldWeakenedOrNone": 3900,
+      "noResidentialCode": 1646
+    },
+    {
+      "geoid": "37119",
+      "county": "Mecklenburg County",
+      "state": "NC",
+      "houses": 3747,
+      "oldWeakenedOrNone": 3747,
+      "noResidentialCode": 0
+    },
+    {
+      "geoid": "16027",
+      "county": "Canyon County",
+      "state": "ID",
+      "houses": 3045,
+      "oldWeakenedOrNone": 3045,
+      "noResidentialCode": 0
+    },
+    {
+      "geoid": "18057",
+      "county": "Hamilton County",
+      "state": "IN",
+      "houses": 2934,
+      "oldWeakenedOrNone": 2934,
+      "noResidentialCode": 0
+    },
+    {
+      "geoid": "37067",
+      "county": "Forsyth County",
+      "state": "NC",
+      "houses": 2863,
+      "oldWeakenedOrNone": 2863,
+      "noResidentialCode": 0
+    },
+    {
+      "geoid": "37063",
+      "county": "Durham County",
+      "state": "NC",
+      "houses": 2790,
+      "oldWeakenedOrNone": 2790,
+      "noResidentialCode": 0
+    },
+    {
+      "geoid": "47037",
+      "county": "Davidson County",
+      "state": "TN",
+      "houses": 2739,
+      "oldWeakenedOrNone": 2739,
+      "noResidentialCode": 0
+    },
+    {
+      "geoid": "08041",
+      "county": "El Paso County",
+      "state": "CO",
+      "houses": 2721,
+      "oldWeakenedOrNone": 2721,
+      "noResidentialCode": 0
+    },
+    {
+      "geoid": "37101",
+      "county": "Johnston County",
+      "state": "NC",
+      "houses": 2633,
+      "oldWeakenedOrNone": 2633,
+      "noResidentialCode": 0
+    },
+    {
+      "geoid": "32003",
+      "county": "Clark County",
+      "state": "NV",
+      "houses": 9422,
+      "oldWeakenedOrNone": 2582,
+      "noResidentialCode": 0
+    },
+    {
+      "geoid": "47093",
+      "county": "Knox County",
+      "state": "TN",
+      "houses": 2566,
+      "oldWeakenedOrNone": 2566,
+      "noResidentialCode": 0
+    },
+    {
+      "geoid": "47149",
+      "county": "Rutherford County",
+      "state": "TN",
+      "houses": 2533,
+      "oldWeakenedOrNone": 2533,
+      "noResidentialCode": 0
+    },
+    {
+      "geoid": "37179",
+      "county": "Union County",
+      "state": "NC",
+      "houses": 2387,
+      "oldWeakenedOrNone": 2387,
+      "noResidentialCode": 0
+    },
+    {
+      "geoid": "48453",
+      "county": "Travis County",
+      "state": "TX",
+      "houses": 4727,
+      "oldWeakenedOrNone": 2217,
+      "noResidentialCode": 9
+    }
+  ],
+  "splitCounties": 50,
+  "hazards": [
+    {
+      "hazard": "Hurricane wind",
+      "housesInExposedPlaces": 277957,
+      "housesUnderCodesCurrentForHazard": 190172,
+      "share": 0.6842
+    },
+    {
+      "hazard": "Flood",
+      "housesInExposedPlaces": 901111,
+      "housesUnderCodesCurrentForHazard": 526875,
+      "share": 0.5847
+    },
+    {
+      "hazard": "Damaging wind",
+      "housesInExposedPlaces": 630476,
+      "housesUnderCodesCurrentForHazard": 322090,
+      "share": 0.5109
+    },
+    {
+      "hazard": "Tornado",
+      "housesInExposedPlaces": 245790,
+      "housesUnderCodesCurrentForHazard": 71077,
+      "share": 0.2892
+    },
+    {
+      "hazard": "Seismic",
+      "housesInExposedPlaces": 181215,
+      "housesUnderCodesCurrentForHazard": 132046,
+      "share": 0.7287
+    }
+  ],
+  "matchMethods": {
+    "exact": 583880,
+    "county": 302858,
+    "state": 8079,
+    "prefix": 3259,
+    "uniform": 11612,
+    "unmatched": 3393
+  },
+  "faq": [
+    {
+      "q": "What percentage of new homes are built to current building codes?",
+      "a": "Of 913,081 new single-family houses permitted in the US in 2025, 53.0% were permitted by local governments that FEMA rates as having current hazard-resistant codes, meaning the 2021 or 2024 International Residential and Building Codes with no weakening amendments. 46.4% were permitted under codes FEMA rates as old or weakened, or where no code is adopted. FEMA's ratings are as of September 30, 2026; the permit counts are from the Census Building Permits Survey."
+    },
+    {
+      "q": "Which states have the most new homes built under old building codes?",
+      "a": "By count, Texas (82,993 new houses in 2025) and North Carolina (65,303), followed by Tennessee (31,184). Every permit office in North Carolina works under the state code based on the 2015 IRC; FEMA's note says the 2021 update was adopted but its effective date was delayed by S.L. 2025-2."
+    },
+    {
+      "q": "Does Texas have a statewide building code for houses?",
+      "a": "No. FEMA's tracking says Texas has no mandatory statewide building or residential code. Cities set their own, and Texas Local Government Code section 233.153 lets a county require new houses in its unincorporated area to conform to the International Residential Code published as of May 1, 2008, or the version used in the county seat, if the county adopts a resolution or order to apply it."
+    },
+    {
+      "q": "How do I find out which building code applies to my address?",
+      "a": "Find out which government issues building permits for the address: the city if it is inside city limits, otherwise usually the county. FEMA's Building Code Adoption Tracking portal lists the residential and building code edition each jurisdiction has adopted. For a house already built, the permit record shows when it was permitted, and the code in force on that date is the one that applied."
+    },
+    {
+      "q": "Where can I download building code adoption data by county?",
+      "a": "This study publishes two CSV files under a CC BY 4.0 licence: every US county with 2025 house permits split by FEMA's rating of the issuing office, and every one of the 20,070 Census permit-issuing offices with its matched FEMA jurisdiction, residential code edition, rating and weakening note. FEMA's underlying data is in its Building Code Adoption Tracking portal."
+    }
+  ]
+}

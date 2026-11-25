@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New houses by building code, by county &mdash; Before Regret</title>
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="https://www.beforeregret.com/research/built-to-code/">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;padding:16px;background:#fbfaf7;color:#1b1a18;font:16px/1.6 Charter,Georgia,serif;-webkit-font-smoothing:antialiased}
+
+  .lookup{border:1px solid #ded9cf;background:#fbfaf7;padding:1.1rem 1.2rem;margin:0 0 2.2rem}
+  .lk-eyebrow{font:700 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#6f5a3a;margin:0 0 .7rem}
+  .lookup select{width:100%;font:400 15px/1.4 ui-sans-serif,system-ui,sans-serif;padding:.55rem .6rem;border:1px solid #c9c1b3;background:#fff;color:#1a1a1a;border-radius:2px}
+  .lk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));gap:1px;background:#ded9cf;border:1px solid #ded9cf;margin:.9rem 0 0}
+  .lk-cell{background:#fbfaf7;padding:.65rem .7rem}
+  .lk-cell b{display:block;font:700 1.3rem/1.1 ui-sans-serif,system-ui,sans-serif;letter-spacing:-.02em}
+  .lk-cell span{display:block;font:400 11px/1.35 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin-top:.25rem}
+  .lk-offices{width:100%;border-collapse:collapse;font:400 12.5px/1.45 ui-sans-serif,system-ui,sans-serif;margin:.8rem 0 0}
+  .lk-offices td{border-bottom:1px solid #ece8e1;padding:.35rem .3rem}
+  .lk-offices td.n{text-align:right;font-variant-numeric:tabular-nums}
+  .lk-msg{font:400 13px/1.5 ui-sans-serif,system-ui,sans-serif;color:#4a4a4a;margin:.8rem 0 0}
+  .lk-caveat{font:400 11.5px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin:.8rem 0 0;border-top:1px solid #ece8e1;padding-top:.7rem}
+  .lookup{max-width:680px;margin:0 auto}
+  .embed-credit{max-width:680px;margin:12px auto 0;font:400 11px/1.4 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;text-align:right}
+  .embed-credit a{color:#6f5a3a}
+</style>
+</head>
+<body>
+<div class="lookup">
+    <p class="lk-eyebrow">Look up any of the 2,767 counties that permitted new houses in 2025</p>
+    <label for="btcpick" style="position:absolute;left:-9999px">Choose a county</label>
+    <select id="btcpick"><option value="">Choose a county&hellip;</option></select>
+    <div id="btcout" aria-live="polite"></div>
+    <p class="lk-caveat">New single-family houses permitted in 2025 (Census Building Permits Survey), by the permit
+    office that issued them, and the code FEMA&rsquo;s Building Code Adoption Tracking lists for that office as of
+    September 30, 2026. &ldquo;Current&rdquo; is FEMA&rsquo;s rating: the 2021 or 2024 codes with no weakening
+    amendments. A rating describes the code a government adopted, not how any one house was built.</p>
+  </div>
+<p class="embed-credit"><a href="https://www.beforeregret.com/research/built-to-code/" target="_blank" rel="noopener">Built to Which Code? New houses by building code</a> &mdash; Before Regret</p>
+<script type="application/json" id="btc-data">{"src":"/research/data/built-to-code-lookup.json"}</script>
+<script>
+(function(){
+  var s=document.getElementById('btcpick'),o=document.getElementById('btcout'),d=[];
+  var src=JSON.parse(document.getElementById('btc-data').textContent).src;
+  s.disabled=true;
+  fetch(src).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
+    d=j; s.disabled=false;
+    d.forEach(function(c,i){var e=document.createElement('option');e.value=i;e.textContent=c[0];s.appendChild(e);});
+  }).catch(function(){o.innerHTML='<p class="lk-msg">The county list did not load. The same figures are in the county CSV below.</p>';});
+  function cell(v,l){return '<div class="lk-cell"><b>'+v+'</b><span>'+l+'</span></div>';}
+  function fmt(n){return n.toLocaleString('en-US');}
+  function h(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+  var W=['no FEMA data','not current','current','not matched'];
+  s.addEventListener('change',function(){
+    var c=d[s.value]; if(!c){o.innerHTML='';return;}
+    var share=Math.round(c[2]/c[1]*1000)/10;
+    var rows=c[5].map(function(x){return '<tr><td>'+h(x[0])+'</td><td class="n">'+fmt(x[1])+'</td><td>'+(x[2]==='None'?'No residential code':(x[2]?h(x[2]):'&ndash;'))+'</td><td>'+W[x[3]]+'</td></tr>';}).join('');
+    o.innerHTML='<div class="lk-grid">'
+      +cell(fmt(c[1]),'new houses permitted in 2025')
+      +cell(share.toFixed(1)+'%','permitted by offices FEMA rates current')
+      +cell(fmt(c[3]),'permitted under an old or weakened code, or none')
+      +cell(fmt(c[4]),'where FEMA lists no residential code')
+      +'</div>'
+      +'<table class="lk-offices"><tbody>'+rows+'</tbody></table>'
+      +(c[6]?'<p class="lk-msg">Plus '+c[6]+' smaller permit office'+(c[6]>1?'s':'')+' in the data file.</p>':'');
+  });
+})();
+</script>
+<script>
+(function(){
+  function post(){
+    var h=Math.ceil(document.documentElement.getBoundingClientRect().height);
+    try{parent.postMessage({beforeRegretEmbedHeight:h},'*');}catch(e){}
+  }
+  if(window.ResizeObserver) new ResizeObserver(post).observe(document.body);
+  window.addEventListener('load',post);
+  setTimeout(post,60);
+})();
+</script>
+</body>
+</html>

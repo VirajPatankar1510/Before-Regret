@@ -26,3 +26,4 @@ backups/
 # Customer correspondence drafts: these contain real names, email addresses and home
 # addresses, and this repository is public. Never commit them.
 docs/reply-*.md
+docs/data/built-to-code-raw.json

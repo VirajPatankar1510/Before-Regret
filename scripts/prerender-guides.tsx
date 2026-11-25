@@ -582,6 +582,17 @@ async function run() {
         return `Housing units built before 1940 in every US county (50 states and DC), from Census ACS 5-year table B25034, ${g.vintage}. ${n(g.national.builtBefore1940)} of ${n(g.national.housingUnits)} units (${(g.national.shareBefore1940 * 100).toFixed(1)}%) were built before 1940; half of them are in ${g.concentration.countiesHoldingHalf} of ${n(g.scope.counties)} counties. Highest share among counties with 10,000+ units: ${top.name}, ${(top.share * 100).toFixed(1)}%. Most by count: ${cnt.name}, ${n(cnt.builtBefore1940)}. Median US year built: ${g.age.usMedianYearBuilt} (Census B25035); ${(g.age.shareBefore1980 * 100).toFixed(1)}% of units were built before 1980. Year built is self-reported and is not evidence of what is inside any house. Embeddable county lookup: https://www.beforeregret.com/research/oldest-housing/embed/`;
       })(),
       data: ['oldest-housing-by-county.csv', 'oldest-housing-figures.json'] },
+    // Tenth study (2026-11-25). Summary READ from its figures file.
+    { slug: 'built-to-code', title: 'Built to Which Code?',
+      summary: ((): string => {
+        const p = path.join(process.cwd(), 'docs', 'data', 'built-to-code-figures.json');
+        if (!fs.existsSync(p)) throw new Error('[prerender-guides] llms.txt lists built-to-code but docs/data/built-to-code-figures.json is missing -- run scripts/build-built-to-code-study.ts');
+        const g = JSON.parse(fs.readFileSync(p, 'utf8'));
+        const n = (v: number) => v.toLocaleString('en-US');
+        const tx = g.states.find((s: { abbr: string }) => s.abbr === 'TX'), nc = g.states.find((s: { abbr: string }) => s.abbr === 'NC');
+        return `Every Census permit-issuing office (${n(g.scope.permitOffices)}) matched to the FEMA Building Code Adoption Tracking rating of its own jurisdiction. Of ${n(g.national.houses)} new single-family houses permitted in ${g.permitYear}, ${(g.national.shareOldWeakenedOrNone * 100).toFixed(1)}% came from places FEMA rates (as of ${g.bcatDataAsOf}) as having an old or weakened code, or none; ${n(g.national.housesNoResidentialCode)} were permitted where FEMA lists no residential code. Texas (${n(tx.oldWeakenedOrNone)}) and North Carolina (${n(nc.oldWeakenedOrNone)}, statewide code based on the 2015 IRC) hold the most. Ratings describe adopted codes, not any house; ratings post-date the permits, so the share is a floor. Texas LGC 233.153 can require IRC compliance in opted-in county unincorporated areas. Embeddable county lookup: https://www.beforeregret.com/research/built-to-code/embed/`;
+      })(),
+      data: ['built-to-code-by-county.csv', 'built-to-code-by-permit-office.csv', 'built-to-code-figures.json'] },
   ];
   // Asserted against docs/ rather than dist/, because prerender-research.tsx runs AFTER this script
   // in the build, so dist/research/ does not exist yet at this point. docs/<slug>.html is the source

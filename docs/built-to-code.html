@@ -1,0 +1,477 @@
+<style>
+  .wrap{max-width:45rem;margin:0 auto;padding:2.5rem 1.25rem 4rem;font:16px/1.68 Charter,Georgia,'Times New Roman',serif;color:#1b1a18}
+  .wrap *{box-sizing:border-box}
+  .kicker{font:700 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#6f5a3a;margin:0 0 .9rem}
+  .wrap h1{font-size:2.4rem;line-height:1.1;margin:0 0 1rem;font-weight:600;letter-spacing:-.02em}
+  .standfirst{font-size:1.17rem;line-height:1.6;color:#3a3936;margin:0 0 2rem}
+  .wrap h2{font:700 12px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#6f5a3a;margin:2.8rem 0 .5rem;padding-top:1.5rem;border-top:1px solid #ded9cf}
+  .wrap h3{font-size:1.34rem;line-height:1.34;font-weight:600;margin:0 0 .9rem;letter-spacing:-.01em}
+  .wrap p{margin:0 0 1.1rem}
+  .figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));gap:1px;background:#ded9cf;border:1px solid #ded9cf;margin:0 0 2rem}
+  .fig{background:#fbfaf7;padding:1rem .9rem}
+  .fig b{display:block;font:700 1.7rem/1.05 ui-sans-serif,system-ui,sans-serif;letter-spacing:-.025em}
+  .fig span{display:block;font:400 12px/1.4 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin-top:.3rem}
+  .finding{background:#f6f3ec;border-left:3px solid #6f5a3a;padding:1.1rem 1.2rem;margin:0 0 1.4rem;font-size:1.02rem}
+  .finding p{margin:0}
+  table{width:100%;border-collapse:collapse;font:400 13px/1.45 ui-sans-serif,system-ui,sans-serif;margin:0 0 .6rem;font-variant-numeric:tabular-nums}
+  th{text-align:left;font-weight:700;border-bottom:2px solid #1b1a18;padding:.5rem .4rem;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#4a4a4a;white-space:nowrap}
+  td{border-bottom:1px solid #ece8e1;padding:.45rem .4rem}
+  td.n,th.n{text-align:right}
+  td.bar{width:24%;padding-right:0}
+  td.bar span{display:block;height:9px;background:#6f5a3a;min-width:2px}
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 1.5rem}
+  .tall{max-height:26rem;overflow-y:auto}
+  .cap{font:400 12px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin:0 0 1.9rem}
+  blockquote{margin:0 0 1.2rem;padding:.2rem 0 .2rem 1rem;border-left:3px solid #ded9cf;color:#3a3936;font-style:italic}
+  .cite{background:#f3f0e9;border:1px solid #ded9cf;padding:1.1rem 1.2rem;font:400 13px/1.6 ui-sans-serif,system-ui,sans-serif;margin:2.4rem 0 0}
+  .cite b{display:block;font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:#6f5a3a;margin-bottom:.5rem}
+  .snippet{background:#fff;border:1px solid #ded9cf;padding:.7rem .8rem;margin:.7rem 0;overflow-x:auto;font:400 11.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#4a4a4a;white-space:pre}
+  .cite code{font:400 12px ui-monospace,SFMono-Regular,Menlo,monospace;background:#fff;padding:.1em .3em;border:1px solid #ded9cf}
+  .wrap a{color:#6f5a3a}
+  .cta{border:1px solid #d6cdbd;background:#fcfaf5;padding:1.3rem 1.4rem;margin:0 0 2.4rem}
+  .cta h2{margin-top:0;padding-top:0;border-top:0}
+  .cta p{font:400 14.5px/1.62 ui-sans-serif,system-ui,sans-serif;color:#2e2e2e;margin:0 0 .9rem}
+  .cta a.btn{display:inline-block;background:#6f5a3a;color:#fff;font:700 14px/1 ui-sans-serif,system-ui,sans-serif;padding:.75rem 1.1rem;border-radius:2px;text-decoration:none}
+  .cta a.btn:hover{background:#584628}
+  .faq h3.faq-q{font-size:1.08rem;margin:1.3rem 0 .4rem}
+  footer.spine{margin:2rem 0 0;padding-top:1.2rem;border-top:1px solid #ded9cf;font:400 12.5px/1.7 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a}
+
+  .lookup{border:1px solid #ded9cf;background:#fbfaf7;padding:1.1rem 1.2rem;margin:0 0 2.2rem}
+  .lk-eyebrow{font:700 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#6f5a3a;margin:0 0 .7rem}
+  .lookup select{width:100%;font:400 15px/1.4 ui-sans-serif,system-ui,sans-serif;padding:.55rem .6rem;border:1px solid #c9c1b3;background:#fff;color:#1a1a1a;border-radius:2px}
+  .lk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));gap:1px;background:#ded9cf;border:1px solid #ded9cf;margin:.9rem 0 0}
+  .lk-cell{background:#fbfaf7;padding:.65rem .7rem}
+  .lk-cell b{display:block;font:700 1.3rem/1.1 ui-sans-serif,system-ui,sans-serif;letter-spacing:-.02em}
+  .lk-cell span{display:block;font:400 11px/1.35 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin-top:.25rem}
+  .lk-offices{width:100%;border-collapse:collapse;font:400 12.5px/1.45 ui-sans-serif,system-ui,sans-serif;margin:.8rem 0 0}
+  .lk-offices td{border-bottom:1px solid #ece8e1;padding:.35rem .3rem}
+  .lk-offices td.n{text-align:right;font-variant-numeric:tabular-nums}
+  .lk-msg{font:400 13px/1.5 ui-sans-serif,system-ui,sans-serif;color:#4a4a4a;margin:.8rem 0 0}
+  .lk-caveat{font:400 11.5px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin:.8rem 0 0;border-top:1px solid #ece8e1;padding-top:.7rem}
+  @media(max-width:560px){.wrap h1{font-size:1.9rem}td.bar,th.bar{display:none}}
+  .kf{border:1px solid #dfe5e2;background:#fbfcfb;padding:1rem 1.2rem .4rem;margin:1.6rem 0 2rem}
+  .kf h2{margin:0 0 .7rem;padding:0;border:0;font-size:1.15rem}
+  .kf ul{margin:0 0 .8rem;padding-left:1.1rem}
+  .kf li{margin:0 0 .55rem}
+  .kf .kf-src{margin:0 0 .6rem;font:400 12px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b}
+</style>
+
+<div class="wrap">
+  <p class="kicker">National analysis &middot; 20,070 permit offices &middot; Census permits 2025 &middot; FEMA BCAT</p>
+  <h1>Built to Which Code?</h1>
+  <p class="standfirst">Every new house is built to a code, but not the same one. We matched each of the
+  913,081 single-family houses permitted in the US in 2025 to the government that issued the
+  permit and the code FEMA says that government has adopted. Nearly half, 424,067 houses or 46.4%,
+  came from places FEMA rates as having an old or weakened code, or none.</p>
+
+  <div class="figs">
+    <div class="fig"><b>913,081</b><span>new houses permitted in 2025</span></div>
+    <div class="fig"><b>46.4%</b><span>under a code FEMA does not rate current</span></div>
+    <div class="fig"><b>66,407</b><span>where FEMA lists no residential code</span></div>
+    <div class="fig"><b>99.6%</b><span>of houses matched to a FEMA rating</span></div>
+  </div>
+
+  <section class="kf" id="key-findings">
+    <h2>Key findings</h2>
+    <ul>
+      <li>Of 913,081 new single-family houses permitted in the US in 2025, 424,067 (46.4%) were permitted by local governments that FEMA, as of September 30, 2026, rates as having an old or weakened building code, or none.</li>
+      <li>66,407 new houses, 7.3% of the total, were permitted where FEMA lists no residential code at all, most of them in the unincorporated parts of Texas counties.</li>
+      <li>Texas and North Carolina together account for 35% of the houses permitted under codes FEMA does not rate as current: 82,993 in Texas and 65,303 in North Carolina, where the statewide code is still based on the 2015 International Residential Code.</li>
+      <li>In Harris, Montgomery and Fort Bend counties, Texas, 30,995 new houses were permitted in places where FEMA lists no residential code.</li>
+      <li>Among houses permitted in places FEMA marks as tornado-prone, 28.9% were permitted under codes FEMA rates current for tornadoes, the lowest of the five hazards it tracks.</li>
+    </ul>
+    <p class="kf-src">Source: U.S. Census Bureau, Building Permits Survey, 2025 annual place files; FEMA Building Code Adoption Tracking, data as of September 30, 2026. Analysis by Before Regret. Puerto Rico is not included.</p>
+  </section>
+
+  <div class="lookup">
+    <p class="lk-eyebrow">Look up any of the 2,767 counties that permitted new houses in 2025</p>
+    <label for="btcpick" style="position:absolute;left:-9999px">Choose a county</label>
+    <select id="btcpick"><option value="">Choose a county&hellip;</option></select>
+    <div id="btcout" aria-live="polite"></div>
+    <p class="lk-caveat">New single-family houses permitted in 2025 (Census Building Permits Survey), by the permit
+    office that issued them, and the code FEMA&rsquo;s Building Code Adoption Tracking lists for that office as of
+    September 30, 2026. &ldquo;Current&rdquo; is FEMA&rsquo;s rating: the 2021 or 2024 codes with no weakening
+    amendments. A rating describes the code a government adopted, not how any one house was built.</p>
+  </div>
+
+  <div class="cta">
+    <h2>A code rating is not an inspection</h2>
+    <p>FEMA rates the code a city or county adopted. It does not look at houses, and a house permitted under
+    an older edition can be well built. What the rating tells you is which questions are worth asking about a
+    newer house: which code edition it was permitted under, and whether the inspections were signed off.</p>
+    <p>For one address, a free Before Regret report lists what to check for a house of that age in that
+    county, and where its permit records are. No sign-up required.</p>
+    <p><a class="btn" href="/">Get the free report</a></p>
+  </div>
+
+  <h2>What FEMA counts as current</h2>
+  <h3>The two newest editions, with nothing weakened.</h3>
+
+  <p>FEMA&rsquo;s Building Code Adoption Tracking, BCAT for short, follows the codes adopted by about 30,000
+  state, local, tribal and territorial governments, and updates them every quarter. Its test is narrow. In
+  FEMA&rsquo;s words, it considers a community &ldquo;hazard-resistant&rdquo; if it has &ldquo;adopted the latest
+  or second most recent codes without weakening the hazard-resistant provisions through amendments.&rdquo;
+  Today that means the 2021 or 2024 International Residential Code, and the International Building Code of
+  the same vintage. The map legend in FEMA&rsquo;s portal labels everything else &ldquo;Old or Weakened IBC/IRC, or No IBC/IRC Adopted.&rdquo;</p>
+
+  <p>FEMA reports the result two ways: as of its FY2026 fourth-quarter data, 34% of hazard-prone jurisdictions
+  have current codes, and 53% of the population lives in one. Neither number says where new houses are
+  going up. A small town with a current code and a fast-growing county without one count the same in the
+  first measure. This study weights the ratings by the houses each permit office actually approved.</p>
+
+  <p>FEMA is careful about what &ldquo;not current&rdquo; means, and so are we. Its page says the measure
+  &ldquo;does not mean communities built to the 2015 codes &ndash; for example &ndash; are suddenly
+  underprepared,&rdquo; and that &ldquo;adoption is just the first step in natural hazard resistance.
+  Enforcement is key.&rdquo;</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Residential code of the permit office</th><th class="n">New houses, 2025</th><th class="n">Share</th><th class="bar"></th></tr></thead>
+      <tbody>
+      <tr><td>2024 IRC</td><td class="n">189,391</td><td class="n">20.7%</td><td class="bar"><span style="width:53%"></span></td></tr>
+      <tr><td>2021 IRC</td><td class="n">357,224</td><td class="n">39.1%</td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>2018 IRC</td><td class="n">164,499</td><td class="n">18.0%</td><td class="bar"><span style="width:46%"></span></td></tr>
+      <tr><td>2015 IRC</td><td class="n">104,549</td><td class="n">11.5%</td><td class="bar"><span style="width:29%"></span></td></tr>
+      <tr><td>2012 IRC or older</td><td class="n">12,445</td><td class="n">1.4%</td><td class="bar"><span style="width:3%"></span></td></tr>
+      <tr><td>Wisconsin's own dwelling code</td><td class="n">13,460</td><td class="n">1.5%</td><td class="bar"><span style="width:4%"></span></td></tr>
+      <tr><td>Other or pre-IRC code</td><td class="n">218</td><td class="n">0.0%</td><td class="bar"><span style="width:1%"></span></td></tr>
+      <tr><td>No residential code</td><td class="n">66,407</td><td class="n">7.3%</td><td class="bar"><span style="width:19%"></span></td></tr>
+      <tr><td>No data</td><td class="n">1,495</td><td class="n">0.2%</td><td class="bar"><span style="width:1%"></span></td></tr>
+      <tr><td>Unmatched</td><td class="n">3,393</td><td class="n">0.4%</td><td class="bar"><span style="width:1%"></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">New single-family houses permitted in 2025, by the residential code edition FEMA lists for the
+  issuing office. Wisconsin uses its own Uniform Dwelling Code instead of the IRC. Edition alone is not FEMA&rsquo;s rating:
+  62,249 houses were permitted by offices on the 2021 or 2024 IRC that FEMA still rates not current, because of
+  weakening amendments or an older building code alongside.</p>
+
+  <h2>By state</h2>
+  <h3>Whole states sit on one side of the line or the other.</h3>
+
+  <p>Where a state sets one mandatory code for everyone, every permit office lands in the same place. In
+  Florida, California, Georgia, South Carolina, Washington, Utah, Pennsylvania, New Jersey, Louisiana, Maryland, Maine, New Hampshire, Montana and Connecticut, every new house in our data was permitted under a
+  code FEMA rates current. In North Carolina, Virginia, Indiana, Ohio, Michigan, Idaho, Wisconsin, Minnesota, Oklahoma, Oregon, Kentucky, Massachusetts, Hawaii and Vermont, none was.
+  The split states are the ones where cities and counties choose for themselves, and Texas, which permitted
+  more new houses than any other state, 141,191, is the largest of those: 41% of its new
+  houses came from offices FEMA rates current.</p>
+
+  <div class="scroll tall">
+    <table>
+      <thead><tr><th>State</th><th class="n">New houses</th><th class="n">Rated current</th><th class="n">No residential code</th><th class="bar"></th></tr></thead>
+      <tbody>
+      <tr><td>Texas</td><td class="n">141,191</td><td class="n"><b>41%</b></td><td class="n">52,370</td><td class="bar"><span style="width:41%"></span></td></tr>
+      <tr><td>Florida</td><td class="n">111,173</td><td class="n"><b>100%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>North Carolina</td><td class="n">65,303</td><td class="n"><b>0%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:1%"></span></td></tr>
+      <tr><td>California</td><td class="n">57,739</td><td class="n"><b>100%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>Georgia</td><td class="n">44,351</td><td class="n"><b>100%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>South Carolina</td><td class="n">39,897</td><td class="n"><b>100%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>Arizona</td><td class="n">33,371</td><td class="n"><b>39%</b></td><td class="n">1,099</td><td class="bar"><span style="width:39%"></span></td></tr>
+      <tr><td>Tennessee</td><td class="n">32,068</td><td class="n"><b>3%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:3%"></span></td></tr>
+      <tr><td>Virginia</td><td class="n">20,458</td><td class="n"><b>0%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:1%"></span></td></tr>
+      <tr><td>Indiana</td><td class="n">19,877</td><td class="n"><b>0%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:1%"></span></td></tr>
+      <tr><td>Washington</td><td class="n">17,780</td><td class="n"><b>100%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>Colorado</td><td class="n">17,406</td><td class="n"><b>42%</b></td><td class="n">1,203</td><td class="bar"><span style="width:42%"></span></td></tr>
+      <tr><td>Ohio</td><td class="n">17,327</td><td class="n"><b>0%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:1%"></span></td></tr>
+      <tr><td>Utah</td><td class="n">16,774</td><td class="n"><b>100%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>Pennsylvania</td><td class="n">15,812</td><td class="n"><b>100%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>Michigan</td><td class="n">15,566</td><td class="n"><b>0%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:1%"></span></td></tr>
+      <tr><td>Alabama</td><td class="n">15,402</td><td class="n"><b>49%</b></td><td class="n">1,267</td><td class="bar"><span style="width:49%"></span></td></tr>
+      <tr><td>Idaho</td><td class="n">14,112</td><td class="n"><b>0%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:1%"></span></td></tr>
+      <tr><td>Wisconsin</td><td class="n">13,460</td><td class="n"><b>0%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:1%"></span></td></tr>
+      <tr><td>Minnesota</td><td class="n">12,886</td><td class="n"><b>0%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:1%"></span></td></tr>
+      <tr><td>New Jersey</td><td class="n">12,820</td><td class="n"><b>100%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>Nevada</td><td class="n">12,584</td><td class="n"><b>72%</b></td><td class="n">5</td><td class="bar"><span style="width:72%"></span></td></tr>
+      <tr><td>Oklahoma</td><td class="n">11,584</td><td class="n"><b>0%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:1%"></span></td></tr>
+      <tr><td>New York</td><td class="n">11,499</td><td class="n"><b>99%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:99%"></span></td></tr>
+      <tr><td>Missouri</td><td class="n">11,412</td><td class="n"><b>16%</b></td><td class="n">1,986</td><td class="bar"><span style="width:16%"></span></td></tr>
+      <tr><td>Louisiana</td><td class="n">11,199</td><td class="n"><b>100%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>Illinois</td><td class="n">10,821</td><td class="n"><b>36%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:36%"></span></td></tr>
+      <tr><td>Arkansas</td><td class="n">10,353</td><td class="n"><b>59%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:59%"></span></td></tr>
+      <tr><td>Maryland</td><td class="n">9,345</td><td class="n"><b>100%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>Oregon</td><td class="n">9,215</td><td class="n"><b>0%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:1%"></span></td></tr>
+      <tr><td>Kentucky</td><td class="n">8,817</td><td class="n"><b>0%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:1%"></span></td></tr>
+      <tr><td>Iowa</td><td class="n">7,332</td><td class="n"><b>46%</b></td><td class="n">1,590</td><td class="bar"><span style="width:46%"></span></td></tr>
+      <tr><td>Mississippi</td><td class="n">7,318</td><td class="n"><b>17%</b></td><td class="n">1,184</td><td class="bar"><span style="width:17%"></span></td></tr>
+      <tr><td>New Mexico</td><td class="n">6,296</td><td class="n"><b>10%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:10%"></span></td></tr>
+      <tr><td>Kansas</td><td class="n">6,122</td><td class="n"><b>11%</b></td><td class="n">1,872</td><td class="bar"><span style="width:11%"></span></td></tr>
+      <tr><td>Nebraska</td><td class="n">5,561</td><td class="n"><b>19%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:19%"></span></td></tr>
+      <tr><td>Delaware</td><td class="n">5,422</td><td class="n"><b>82%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:82%"></span></td></tr>
+      <tr><td>Massachusetts</td><td class="n">5,018</td><td class="n"><b>0%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:1%"></span></td></tr>
+      <tr><td>Maine</td><td class="n">4,769</td><td class="n"><b>98%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:98%"></span></td></tr>
+      <tr><td>West Virginia</td><td class="n">3,619</td><td class="n"><b>12%</b></td><td class="n">828</td><td class="bar"><span style="width:12%"></span></td></tr>
+      <tr><td>South Dakota</td><td class="n">3,296</td><td class="n"><b>51%</b></td><td class="n">912</td><td class="bar"><span style="width:51%"></span></td></tr>
+      <tr><td>New Hampshire</td><td class="n">3,279</td><td class="n"><b>100%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>Montana</td><td class="n">2,675</td><td class="n"><b>100%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>Hawaii</td><td class="n">2,420</td><td class="n"><b>0%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:1%"></span></td></tr>
+      <tr><td>Connecticut</td><td class="n">2,080</td><td class="n"><b>100%</b></td><td class="n">&ndash;</td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>North Dakota</td><td class="n">1,769</td><td class="n"><b>91%</b></td><td class="n">64</td><td class="bar"><span style="width:91%"></span></td></tr>
+      <tr><td>Wyoming</td><td class="n">1,732</td><td class="n"><b>33%</b></td><td class="n">724</td><td class="bar"><span style="width:33%"></span></td></tr>
+      <tr><td>Vermont</td><td class="n">1,287</td><td class="n"><b>0%</b></td><td class="n">1,158</td><td class="bar"><span style="width:1%"></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">States with at least 1,000 new single-family houses permitted in 2025, by houses. &ldquo;Rated
+  current&rdquo; is the share permitted by offices FEMA rates current. 3 smaller states and DC
+  (Rhode Island, Alaska, District of Columbia) are in the data file.</p>
+
+  <p>Two states hold more than a third of all the houses on the not-current side between them: Texas with
+  82,993 and North Carolina with 65,303.</p>
+
+  <h2>Same county, different codes</h2>
+  <h3>The line usually runs between a city and the land around it.</h3>
+
+  <p>A county is not one building code. Maricopa County, Arizona permitted more new houses than any other
+  county in 2025, 17,244, and they split almost evenly: Phoenix is on the 2024 IRC and
+  rated current, while the unincorporated county is on the 2012 IRC. 50 counties have at
+  least 200 new houses on each side of FEMA&rsquo;s line.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Maricopa County permit office</th><th class="n">New houses</th><th>Residential code</th><th>FEMA rating</th></tr></thead>
+      <tbody>
+      <tr><td>Phoenix</td><td class="n">3,154</td><td>2024 IRC</td><td>Current</td></tr>
+      <tr><td>Surprise</td><td class="n">2,664</td><td>2024 IRC</td><td>Current</td></tr>
+      <tr><td>Buckeye</td><td class="n">2,122</td><td>2018 IRC</td><td>Not current</td></tr>
+      <tr><td>Maricopa County (unincorporated)</td><td class="n">1,879</td><td>2012 IRC</td><td>Not current</td></tr>
+      <tr><td>Queen Creek town</td><td class="n">1,504</td><td>2021 IRC</td><td>Current</td></tr>
+      <tr><td>Goodyear</td><td class="n">1,437</td><td>2018 IRC</td><td>Not current</td></tr>
+      <tr><td>Mesa</td><td class="n">1,069</td><td>2018 IRC</td><td>Not current</td></tr>
+      <tr><td>Peoria</td><td class="n">984</td><td>2018 IRC</td><td>Not current</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">The eight Maricopa County permit offices that approved the most new houses in 2025.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th class="n">#</th><th>County</th><th class="n">New houses</th><th class="n">Not current</th><th class="n">No res. code</th></tr></thead>
+      <tbody>
+      <tr><td class="n">1</td><td>Harris County, TX</td><td class="n">16,940</td><td class="n"><b>11,624</b></td><td class="n">11,014</td></tr>
+      <tr><td class="n">2</td><td>Montgomery County, TX</td><td class="n">11,597</td><td class="n"><b>11,582</b></td><td class="n">10,903</td></tr>
+      <tr><td class="n">3</td><td>Fort Bend County, TX</td><td class="n">9,760</td><td class="n"><b>9,607</b></td><td class="n">9,078</td></tr>
+      <tr><td class="n">4</td><td>Maricopa County, AZ</td><td class="n">17,244</td><td class="n"><b>8,582</b></td><td class="n">34</td></tr>
+      <tr><td class="n">5</td><td>Wake County, NC</td><td class="n">8,392</td><td class="n"><b>8,392</b></td><td class="n">&ndash;</td></tr>
+      <tr><td class="n">6</td><td>Pinal County, AZ</td><td class="n">6,511</td><td class="n"><b>5,413</b></td><td class="n">786</td></tr>
+      <tr><td class="n">7</td><td>Oklahoma County, OK</td><td class="n">4,945</td><td class="n"><b>4,945</b></td><td class="n">&ndash;</td></tr>
+      <tr><td class="n">8</td><td>Denton County, TX</td><td class="n">6,586</td><td class="n"><b>4,816</b></td><td class="n">3,456</td></tr>
+      <tr><td class="n">9</td><td>Ada County, ID</td><td class="n">4,637</td><td class="n"><b>4,637</b></td><td class="n">&ndash;</td></tr>
+      <tr><td class="n">10</td><td>Brunswick County, NC</td><td class="n">4,454</td><td class="n"><b>4,454</b></td><td class="n">&ndash;</td></tr>
+      <tr><td class="n">11</td><td>Bexar County, TX</td><td class="n">4,589</td><td class="n"><b>4,203</b></td><td class="n">4</td></tr>
+      <tr><td class="n">12</td><td>Hidalgo County, TX</td><td class="n">4,523</td><td class="n"><b>3,900</b></td><td class="n">1,646</td></tr>
+      <tr><td class="n">13</td><td>Mecklenburg County, NC</td><td class="n">3,747</td><td class="n"><b>3,747</b></td><td class="n">&ndash;</td></tr>
+      <tr><td class="n">14</td><td>Canyon County, ID</td><td class="n">3,045</td><td class="n"><b>3,045</b></td><td class="n">&ndash;</td></tr>
+      <tr><td class="n">15</td><td>Hamilton County, IN</td><td class="n">2,934</td><td class="n"><b>2,934</b></td><td class="n">&ndash;</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">The 15 counties with the most new houses permitted under codes FEMA does not rate current, 2025.</p>
+
+  <h2>Texas</h2>
+  <h3>&ldquo;No residential code&rdquo; doesn&rsquo;t always mean no rules.</h3>
+
+  <p>The top three counties on that list are all around Houston. In Harris, Montgomery and Fort Bend
+  counties, 30,995 new houses were permitted in places where FEMA lists no residential code, nearly all
+  of them in unincorporated areas. That follows from how Texas is set up. FEMA&rsquo;s note for Texas says
+  the state &ldquo;has no mandatory statewide building or residential code.&rdquo; Cities adopt their own;
+  counties mostly can&rsquo;t.</p>
+
+  <p>There is one state rule that can apply, and buyers should know about it. Under Texas Local Government
+  Code &sect; 233.153, new houses in the unincorporated area of a county that has opted in &ldquo;shall conform
+  to the version of the International Residential Code published as of May 1, 2008, or the version of the
+  International Residential Code that is applicable in the county seat of that county.&rdquo; It applies only
+  in a county &ldquo;that has adopted a resolution or order requiring the application&rdquo; of those rules
+  (&sect; 233.152). The builder, not the county, hires the inspectors, and &sect; 233.154 requires at least
+  three inspections: the foundation before the concrete is poured, framing and mechanical systems before the
+  drywall goes up, and completion.</p>
+
+  <p>So for a new house outside city limits in Texas, the useful questions are whether the county opted in,
+  which code the builder used, and whether the builder can show you the three inspection reports. If the
+  house sits in a city&rsquo;s extraterritorial jurisdiction and that city has a building code there, the
+  city&rsquo;s code controls instead (&sect; 233.153(c)).</p>
+
+  <h2>North Carolina</h2>
+  <h3>A whole state still on the 2015-based code.</h3>
+
+  <p>North Carolina permitted 65,303 new houses in 2025, and every one of them came from an office
+  working under the state&rsquo;s residential code based on the 2015 IRC. Wake County alone, Raleigh and the
+  towns around it, accounted for 8,392. FEMA&rsquo;s note for the state explains the delay: North
+  Carolina adopted the 2021 codes with an original effective date of July 1, 2025, then &ldquo;enacted S.L.
+  2025-2, which delays the effective date until 12 months after the SFM certifies that certain statutory and
+  publication and distribution requirements have been met.&rdquo; Until then, it says, the previous code
+  &ldquo;remains in effect.&rdquo;</p>
+
+  <h2>New edition, still not current</h2>
+  <h3>62,249 houses came from offices on the 2021 or 2024 IRC that FEMA still marks down.</h3>
+
+  <p>An office can adopt the newest residential code and still miss FEMA&rsquo;s bar, because the rating
+  looks at the building code too, and at amendments that weaken flood, wind, tornado or seismic
+  provisions. Virginia has the most houses in this group, 20,458: its statewide code
+  is based on the 2021 IRC, and FEMA still rates it not current for at least one hazard. Oklahoma City is
+  another case: FEMA lists it on the 2024 IRC but not current, and its note shows the timing problem every
+  reader of this data should keep in mind. The 2024 codes there took effect on 09/14/2026; the 2018
+  residential code ran until 09/13/2026, so the city&rsquo;s 2025 houses were permitted under that.</p>
+
+  <h2>By hazard</h2>
+  <h3>Tornado country has the lowest share on current codes.</h3>
+
+  <p>FEMA rates each jurisdiction separately for each hazard it faces. Counting only the new houses permitted
+  in places FEMA marks as exposed to a hazard, the share permitted under codes current for that hazard runs
+  from 72.9% for earthquakes down to 28.9% for tornadoes.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Hazard</th><th class="n">New houses in exposed places</th><th class="n">Current for that hazard</th><th class="bar"></th></tr></thead>
+      <tbody>
+      <tr><td>Hurricane wind</td><td class="n">277,957</td><td class="n"><b>68.4%</b></td><td class="bar"><span style="width:68%"></span></td></tr>
+      <tr><td>Flood</td><td class="n">901,111</td><td class="n"><b>58.5%</b></td><td class="bar"><span style="width:58%"></span></td></tr>
+      <tr><td>Damaging wind</td><td class="n">630,476</td><td class="n"><b>51.1%</b></td><td class="bar"><span style="width:51%"></span></td></tr>
+      <tr><td>Tornado</td><td class="n">245,790</td><td class="n"><b>28.9%</b></td><td class="bar"><span style="width:29%"></span></td></tr>
+      <tr><td>Seismic</td><td class="n">181,215</td><td class="n"><b>72.9%</b></td><td class="bar"><span style="width:73%"></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">New single-family houses permitted in 2025 by offices FEMA marks as exposed to each hazard. A
+  house can count under several hazards.</p>
+
+  <h2>What this means if you&rsquo;re buying a newer house</h2>
+  <h3>Ask which code it was permitted under.</h3>
+
+  <p>A house built in the last few years isn&rsquo;t automatically built to the latest code. The code that
+  applied is the one adopted by whoever issued the permit, on the date it was issued. Three things will tell
+  you more than the age of the house:</p>
+  <ul>
+    <li><strong>The permit record.</strong> It shows the issuing office and the date, and often the
+    inspections that were passed. Here is <a href="/guides/look-up-building-permits-by-address/">how to look
+    up building permits by address</a>.</li>
+    <li><strong>Final sign-off.</strong> A permit that was issued but never closed is worth a question
+    before closing. <a href="/guides/resolve-open-building-permits-before-closing/">What to do about an open
+    permit</a> explains the usual fixes.</li>
+    <li><strong>Your own inspector.</strong> A new-construction inspection can still find problems a code
+    inspection didn&rsquo;t look for. <a href="/guides/home-inspection-checklist-cost/">What a home inspection
+    covers</a> lists what to expect.</li>
+  </ul>
+
+  <h2>Method</h2>
+  <h3>How the match was made.</h3>
+
+  <p>Permit counts are from the U.S. Census Bureau&rsquo;s Building Permits Survey, 2025 annual place
+  files, which report new privately owned housing units authorized by each of 20,070 permit-issuing
+  offices in the 50 states and DC: cities, towns, townships, and counties for their unincorporated land. We
+  use single-family units, the 1-unit column, as &ldquo;new houses&rdquo;. The place files total
+  1,433,120 units of all kinds, against 1,431,616 in the Census county file for the same year.</p>
+
+  <p>Code ratings are from FEMA&rsquo;s Building Code Adoption Tracking jurisdiction layer, the data behind
+  FEMA&rsquo;s BCAT portal, pulled on 2026-11-25. Every row carries a data date of
+  September 30, 2026. We use FEMA&rsquo;s combined hazard rating and its residential code field as they are.</p>
+
+  <p>The two datasets share no ID, so each permit office was matched to a FEMA jurisdiction by state,
+  county and name, in a fixed order: same name in the same county; a county&rsquo;s unincorporated area to
+  FEMA&rsquo;s row for that county; a name found only once in the state; a FEMA name that starts with the
+  office name. Where FEMA lists jurisdictions in a county but not the office itself, the office takes the
+  county&rsquo;s rating only if every jurisdiction FEMA lists there has the same rating and code. Houses
+  matched this way cover 99.6% of the total. The rest, 3,393 houses, are mostly permits
+  issued by state agencies directly, and are counted as unmatched rather than guessed. The method used for
+  every office is in the data file.</p>
+
+  <p>Puerto Rico&rsquo;s 0 permit offices are in the Census files and are left out of every figure here.</p>
+
+  <h2>Limitations</h2>
+  <h3>What this does not show.</h3>
+
+  <p><strong>Timing.</strong> The permits are from 2025; the ratings are as of September 30, 2026. A place
+  that adopted a newer code in 2026 is rated on that newer code, though its 2025 houses were permitted under
+  the old one. Codes rarely move backward, so the 46.4% figure is more likely to understate the share
+  permitted under a not-current code than to overstate it.</p>
+
+  <p><strong>Adoption is not enforcement.</strong> A rating describes the code on a government&rsquo;s books, not
+  how well it was inspected or how any house was built. Permits are authorizations, not completed houses, and
+  manufactured homes, which follow a separate federal standard, are not in the Census count.</p>
+
+  <p><strong>Estimates.</strong> The Census Bureau imputes permits for offices that did not report every month;
+  89.8% of the houses here were directly reported, the rest imputed. A county figure covers every
+  permit office in the county, so it can blend very different codes, and it says nothing about any one house.</p>
+
+  <h2>Questions this data answers</h2>
+  <div class="faq">
+    <h3 class="faq-q">What percentage of new homes are built to current building codes?</h3>
+    <p>Of 913,081 new single-family houses permitted in the US in 2025, 53.0% were permitted by local governments that FEMA rates as having current hazard-resistant codes, meaning the 2021 or 2024 International Residential and Building Codes with no weakening amendments. 46.4% were permitted under codes FEMA rates as old or weakened, or where no code is adopted. FEMA's ratings are as of September 30, 2026; the permit counts are from the Census Building Permits Survey.</p>
+    <h3 class="faq-q">Which states have the most new homes built under old building codes?</h3>
+    <p>By count, Texas (82,993 new houses in 2025) and North Carolina (65,303), followed by Tennessee (31,184). Every permit office in North Carolina works under the state code based on the 2015 IRC; FEMA's note says the 2021 update was adopted but its effective date was delayed by S.L. 2025-2.</p>
+    <h3 class="faq-q">Does Texas have a statewide building code for houses?</h3>
+    <p>No. FEMA's tracking says Texas has no mandatory statewide building or residential code. Cities set their own, and Texas Local Government Code section 233.153 lets a county require new houses in its unincorporated area to conform to the International Residential Code published as of May 1, 2008, or the version used in the county seat, if the county adopts a resolution or order to apply it.</p>
+    <h3 class="faq-q">How do I find out which building code applies to my address?</h3>
+    <p>Find out which government issues building permits for the address: the city if it is inside city limits, otherwise usually the county. FEMA's Building Code Adoption Tracking portal lists the residential and building code edition each jurisdiction has adopted. For a house already built, the permit record shows when it was permitted, and the code in force on that date is the one that applied.</p>
+    <h3 class="faq-q">Where can I download building code adoption data by county?</h3>
+    <p>This study publishes two CSV files under a CC BY 4.0 licence: every US county with 2025 house permits split by FEMA's rating of the issuing office, and every one of the 20,070 Census permit-issuing offices with its matched FEMA jurisdiction, residential code edition, rating and weakening note. FEMA's underlying data is in its Building Code Adoption Tracking portal.</p>
+  </div>
+
+  <div class="cite">
+    <b>Cite this</b>
+    Before Regret, &ldquo;Built to Which Code? New US homes by the building code they were permitted under.&rdquo;
+    25 November 2026. Analysis of U.S. Census Bureau Building Permits Survey 2025 place files and FEMA Building
+    Code Adoption Tracking data as of September 30, 2026, for 20,070 permit offices.<br>
+    <a href="https://www.beforeregret.com/research/built-to-code/">https://www.beforeregret.com/research/built-to-code/</a><br>
+    Data: <a href="https://www.beforeregret.com/research/data/built-to-code-by-county.csv">every county (CSV)</a> &middot;
+    <a href="https://www.beforeregret.com/research/data/built-to-code-by-permit-office.csv">every permit office (CSV)</a> &middot;
+    <a href="https://www.beforeregret.com/research/data/built-to-code-figures.json">figures (JSON)</a>.
+    Questions and corrections: hello@beforeregret.com
+  </div>
+
+  <div class="cite">
+    <b>Embed the county lookup</b>
+    Free to use, no tracking, no attribution required beyond the credit line it carries.
+    <pre class="snippet">&lt;iframe src="https://www.beforeregret.com/research/built-to-code/embed/"
+        width="100%" height="460" style="border:1px solid #ded9cf"
+        title="New houses by building code, by county"
+        loading="lazy"&gt;&lt;/iframe&gt;</pre>
+    It posts its own height to the parent page as <code>beforeRegretEmbedHeight</code>.
+  </div>
+
+  <div class="cite">
+    <b>For newsrooms, builders and inspectors</b>
+    Published under a Creative Commons Attribution 4.0 licence: republish the figures, redraw the tables, or run
+    your own cut without asking, with credit to Before Regret and a link to this page. The Census and FEMA data
+    are US Government works. Happy to pull a specific county or permit office, or check a figure before it
+    prints &mdash; hello@beforeregret.com.
+  </div>
+
+  <footer class="spine">
+    Sources: U.S. Census Bureau, Building Permits Survey, 2025 annual place and county files; FEMA Building
+    Code Adoption Tracking, jurisdiction layer, data as of September 30, 2026, retrieved 2026-11-25;
+    Texas Local Government Code &sect;&sect; 233.152&ndash;233.154, read 2026-11-25.<br>
+    Analysis by Before Regret. Published 25 November 2026.<br>
+    Related: <a href="/research/permit-pulse/">Permit Pulse</a> &#183;
+    <a href="/research/oldest-housing/">Before 1940</a> &#183;
+    <a href="/research/permit-search-done-right/">Permit search done right</a>
+  </footer>
+</div>
+<script type="application/json" id="btc-data">{"src":"/research/data/built-to-code-lookup.json"}</script>
+<script>
+(function(){
+  var s=document.getElementById('btcpick'),o=document.getElementById('btcout'),d=[];
+  var src=JSON.parse(document.getElementById('btc-data').textContent).src;
+  s.disabled=true;
+  fetch(src).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
+    d=j; s.disabled=false;
+    d.forEach(function(c,i){var e=document.createElement('option');e.value=i;e.textContent=c[0];s.appendChild(e);});
+  }).catch(function(){o.innerHTML='<p class="lk-msg">The county list did not load. The same figures are in the county CSV below.</p>';});
+  function cell(v,l){return '<div class="lk-cell"><b>'+v+'</b><span>'+l+'</span></div>';}
+  function fmt(n){return n.toLocaleString('en-US');}
+  function h(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+  var W=['no FEMA data','not current','current','not matched'];
+  s.addEventListener('change',function(){
+    var c=d[s.value]; if(!c){o.innerHTML='';return;}
+    var share=Math.round(c[2]/c[1]*1000)/10;
+    var rows=c[5].map(function(x){return '<tr><td>'+h(x[0])+'</td><td class="n">'+fmt(x[1])+'</td><td>'+(x[2]==='None'?'No residential code':(x[2]?h(x[2]):'&ndash;'))+'</td><td>'+W[x[3]]+'</td></tr>';}).join('');
+    o.innerHTML='<div class="lk-grid">'
+      +cell(fmt(c[1]),'new houses permitted in 2025')
+      +cell(share.toFixed(1)+'%','permitted by offices FEMA rates current')
+      +cell(fmt(c[3]),'permitted under an old or weakened code, or none')
+      +cell(fmt(c[4]),'where FEMA lists no residential code')
+      +'</div>'
+      +'<table class="lk-offices"><tbody>'+rows+'</tbody></table>'
+      +(c[6]?'<p class="lk-msg">Plus '+c[6]+' smaller permit office'+(c[6]>1?'s':'')+' in the data file.</p>':'');
+  });
+})();
+</script>
