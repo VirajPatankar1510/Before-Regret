@@ -4,6 +4,7 @@ import { checkVendorWebsite } from '../data/vendorWebsite.js';
 import crypto from 'crypto';
 import { withDb, isDbConfigured } from './db.js';
 import { detectAiCrawler } from '../utils/detectAiCrawler.js';
+import { BOOK } from '../data/book.js';
 
 // Vendor ad click measurement. This exists to answer the one question a paying advertiser asks at
 // the end of their 30 days -- "did anything come of it?" -- which /my-ads previously could not
@@ -74,13 +75,17 @@ async function recordClick(
 }
 
 export function registerAdClickRoutes(app: Express) {
-  // --- Retired: the old book promo's click route -----------------------------------------------
+  // --- Outbound click on the site's own book: count, then forward to the Amazon listing --------
   //
-  // The book promo was removed from every page on 2026-11-19 (owner). The route stays so a stale
-  // cached page or bookmark lands on the homepage instead of a 404; it no longer counts clicks or
-  // forwards to Amazon. Two segments, so it can't collide with /out/:adKind/:purchaseId below.
-  app.get('/out/book', (_req: Request, res: Response) => {
-    res.redirect(302, '/');
+  // Brought back 2026-11-25 for The Signs of a Fruitful Home (src/data/book.ts). The destination is
+  // a compile-time constant, so nothing in the request can steer the redirect (no open redirect).
+  // purchase_id 0 is a sentinel: the book is the site's own product, not a bought placement, and
+  // reusing vendor_ad_clicks inherits the crawler filter and the one-per-visitor-per-day index.
+  // 302, not 301: a cached 301 would skip this server on every later click and stop the count.
+  // Two segments, so it can't collide with /out/:adKind/:purchaseId below.
+  app.get('/out/book', async (req: Request, res: Response) => {
+    await recordClick(req, 'book', 0, 'listing');
+    res.redirect(302, BOOK.url);
   });
 
   // --- Outbound website click: log, then redirect to the advertiser's own site ------------------
