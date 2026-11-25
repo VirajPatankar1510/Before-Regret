@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FEMA homeowner aid by county &mdash; Before Regret</title>
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="https://www.beforeregret.com/research/fema-aid-gap/">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;padding:16px;background:#fbfaf7;color:#1b1a18;font:16px/1.6 Charter,Georgia,serif;-webkit-font-smoothing:antialiased}
+
+  .lookup{border:1px solid #ded9cf;background:#fbfaf7;padding:1.1rem 1.2rem;margin:0 0 2.2rem}
+  .lk-eyebrow{font:700 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#6f5a3a;margin:0 0 .7rem}
+  .lookup select{width:100%;font:400 15px/1.4 ui-sans-serif,system-ui,sans-serif;padding:.55rem .6rem;border:1px solid #c9c1b3;background:#fff;color:#1a1a1a;border-radius:2px}
+  .lk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));gap:1px;background:#ded9cf;border:1px solid #ded9cf;margin:.9rem 0 0}
+  .lk-cell{background:#fbfaf7;padding:.65rem .7rem}
+  .lk-cell b{display:block;font:700 1.3rem/1.1 ui-sans-serif,system-ui,sans-serif;letter-spacing:-.02em}
+  .lk-cell span{display:block;font:400 11px/1.35 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin-top:.25rem}
+  .lk-offices{width:100%;border-collapse:collapse;font:400 12.5px/1.45 ui-sans-serif,system-ui,sans-serif;margin:.8rem 0 0}
+  .lk-offices th{font-size:10.5px;padding:.3rem;border-bottom:1px solid #c9c1b3}
+  .lk-offices td{border-bottom:1px solid #ece8e1;padding:.35rem .3rem}
+  .lk-offices td.n,.lk-offices th.n{text-align:right;font-variant-numeric:tabular-nums}
+  .lk-msg{font:400 13px/1.5 ui-sans-serif,system-ui,sans-serif;color:#4a4a4a;margin:.8rem 0 0}
+  .lk-caveat{font:400 11.5px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin:.8rem 0 0;border-top:1px solid #ece8e1;padding-top:.7rem}
+  .lookup{max-width:680px;margin:0 auto}
+  .embed-credit{max-width:680px;margin:12px auto 0;font:400 11px/1.4 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;text-align:right}
+  .embed-credit a{color:#6f5a3a}
+</style>
+</head>
+<body>
+<div class="lookup">
+    <p class="lk-eyebrow">Look up any of the 2,952 counties with FEMA homeowner aid since 2002</p>
+    <label for="fagpick" style="position:absolute;left:-9999px">Choose a county</label>
+    <select id="fagpick"><option value="">Choose a county&hellip;</option></select>
+    <div id="fagout" aria-live="polite"></div>
+    <p class="lk-caveat">Homeowner registrations for FEMA&rsquo;s Individuals and Households Program in major disasters
+    declared from 2002 to 2026, from OpenFEMA, data refreshed 2026-11-25. Dollars are as approved,
+    not adjusted for inflation, and include rental and other-needs aid. County is the one the applicant reported.
+    Figures describe past disasters in the county, not any one house.</p>
+  </div>
+<p class="embed-credit"><a href="https://www.beforeregret.com/research/fema-aid-gap/" target="_blank" rel="noopener">What FEMA Pays Homeowners</a> &mdash; Before Regret</p>
+<script type="application/json" id="fag-data">{"src":"/research/data/fema-aid-gap-lookup.json"}</script>
+<script>
+(function(){
+  var s=document.getElementById('fagpick'),o=document.getElementById('fagout'),d=[],L={};
+  var src=JSON.parse(document.getElementById('fag-data').textContent).src;
+  s.disabled=true;
+  fetch(src).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
+    d=j.c; L=j.d; s.disabled=false;
+    d.forEach(function(c,i){var e=document.createElement('option');e.value=i;e.textContent=c[0];s.appendChild(e);});
+  }).catch(function(){o.innerHTML='<p class="lk-msg">The county list did not load. The same figures are in the county CSV below.</p>';});
+  function cell(v,l){return '<div class="lk-cell"><b>'+v+'</b><span>'+l+'</span></div>';}
+  function fmt(n){return Math.round(n).toLocaleString('en-US');}
+  function h(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+  function avg(ihp,a){return a>=5?'$'+fmt(ihp/a):'&ndash;';}
+  s.addEventListener('change',function(){
+    var c=d[s.value]; if(!c){o.innerHTML='';return;}
+    var rows=c[9].map(function(x){return '<tr><td>'+h(L[x[0]])+'</td><td class="n">'+fmt(x[1])+'</td><td class="n">'+(x[1]?Math.round(x[2]/x[1]*100)+'%':'&ndash;')+'</td><td class="n">'+avg(x[3],x[2])+'</td></tr>';}).join('');
+    o.innerHTML='<div class="lk-grid">'
+      +cell(fmt(c[1]),'homeowner registrations, '+c[8]+' disaster'+(c[8]>1?'s':''))
+      +cell(Math.round(c[2]/c[1]*100)+'%','approved for any FEMA aid')
+      +cell(avg(c[3],c[2]),'average per approved registration')
+      +cell(fmt(c[7]),'got the maximum grant')
+      +'</div>'
+      +'<table class="lk-offices"><thead><tr><th>Largest disasters here</th><th class="n">Registered</th><th class="n">Approved</th><th class="n">Average</th></tr></thead><tbody>'+rows+'</tbody></table>'
+      +(c[8]>3?'<p class="lk-msg">The totals above include all '+c[8]+' disasters with homeowner registrations here.</p>':'')
+      +(c[2]<5?'<p class="lk-msg">Averages are left blank where fewer than five registrations were approved.</p>':'');
+  });
+})();
+</script>
+<script>
+(function(){
+  function post(){
+    var h=Math.ceil(document.documentElement.getBoundingClientRect().height);
+    try{parent.postMessage({beforeRegretEmbedHeight:h},'*');}catch(e){}
+  }
+  if(window.ResizeObserver) new ResizeObserver(post).observe(document.body);
+  window.addEventListener('load',post);
+  setTimeout(post,60);
+})();
+</script>
+</body>
+</html>

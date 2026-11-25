@@ -27,3 +27,4 @@ backups/
 # addresses, and this repository is public. Never commit them.
 docs/reply-*.md
 docs/data/built-to-code-raw.json
+docs/data/fema-aid-gap-raw.json

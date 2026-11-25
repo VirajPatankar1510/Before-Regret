@@ -593,6 +593,17 @@ async function run() {
         return `Every Census permit-issuing office (${n(g.scope.permitOffices)}) matched to the FEMA Building Code Adoption Tracking rating of its own jurisdiction. Of ${n(g.national.houses)} new single-family houses permitted in ${g.permitYear}, ${(g.national.shareOldWeakenedOrNone * 100).toFixed(1)}% came from places FEMA rates (as of ${g.bcatDataAsOf}) as having an old or weakened code, or none; ${n(g.national.housesNoResidentialCode)} were permitted where FEMA lists no residential code. Texas (${n(tx.oldWeakenedOrNone)}) and North Carolina (${n(nc.oldWeakenedOrNone)}, statewide code based on the 2015 IRC) hold the most. Ratings describe adopted codes, not any house; ratings post-date the permits, so the share is a floor. Texas LGC 233.153 can require IRC compliance in opted-in county unincorporated areas. Embeddable county lookup: https://www.beforeregret.com/research/built-to-code/embed/`;
       })(),
       data: ['built-to-code-by-county.csv', 'built-to-code-by-permit-office.csv', 'built-to-code-figures.json'] },
+    // Eleventh study (2026-11-25). Summary READ from its figures file.
+    { slug: 'fema-aid-gap', title: 'What FEMA Pays Homeowners',
+      summary: ((): string => {
+        const p = path.join(process.cwd(), 'docs', 'data', 'fema-aid-gap-figures.json');
+        if (!fs.existsSync(p)) throw new Error('[prerender-guides] llms.txt lists fema-aid-gap but docs/data/fema-aid-gap-figures.json is missing -- run scripts/build-fema-aid-gap-study.ts');
+        const g = JSON.parse(fs.readFileSync(p, 'utf8'));
+        const n = (v: number) => Math.round(v).toLocaleString('en-US');
+        const fire = g.incidentTypes.find((t: { incidentType: string }) => t.incidentType === 'Fire');
+        return `Every FEMA Individuals and Households Program homeowner registration in ${g.scope.disasters} major disasters declared ${g.declarationRange.first.slice(0, 4)}-${g.declarationRange.last.slice(0, 4)} (OpenFEMA Housing Assistance Owners v2), by county and disaster. ${n(g.national.homeownerRegistrations)} registrations; ${(g.national.approvalShare * 100).toFixed(1)}% approved for any aid; $${n(g.national.avgPerApprovedUsd)} average per approved registration (repair, rental and other needs, nominal dollars); ${n(g.national.maxGrants)} (${(g.national.maxGrants / g.national.approved * 100).toFixed(1)}% of approved) got the maximum grant. Repair and replacement aid equalled ${Math.round(g.national.repairPerDollarOfDamage * 100)} cents per dollar of FEMA-recorded damage. Wildfire: $${n(fire.femaRecordedDamageUsd / fire.inspectedWithDamage)} recorded damage per damaged home, ${(fire.approvalShare * 100).toFixed(1)}% approved. FEMA aid sits behind insurance (44 CFR 206.113) and repairs only to a safe and sanitary condition (44 CFR 206.117); the data has no insurance field. Housing assistance maximum $${n(g.ihpMaximum.declaredOnOrAfter20261001)} for disasters declared on or after 2026-10-01. Embeddable county lookup: https://www.beforeregret.com/research/fema-aid-gap/embed/`;
+      })(),
+      data: ['fema-aid-gap-by-county.csv', 'fema-aid-gap-by-disaster.csv', 'fema-aid-gap-figures.json'] },
   ];
   // Asserted against docs/ rather than dist/, because prerender-research.tsx runs AFTER this script
   // in the build, so dist/research/ does not exist yet at this point. docs/<slug>.html is the source

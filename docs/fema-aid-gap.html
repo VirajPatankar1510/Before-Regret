@@ -1,0 +1,430 @@
+<style>
+  .wrap{max-width:45rem;margin:0 auto;padding:2.5rem 1.25rem 4rem;font:16px/1.68 Charter,Georgia,'Times New Roman',serif;color:#1b1a18}
+  .wrap *{box-sizing:border-box}
+  .kicker{font:700 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#6f5a3a;margin:0 0 .9rem}
+  .wrap h1{font-size:2.4rem;line-height:1.1;margin:0 0 1rem;font-weight:600;letter-spacing:-.02em}
+  .standfirst{font-size:1.17rem;line-height:1.6;color:#3a3936;margin:0 0 2rem}
+  .wrap h2{font:700 12px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#6f5a3a;margin:2.8rem 0 .5rem;padding-top:1.5rem;border-top:1px solid #ded9cf}
+  .wrap h3{font-size:1.34rem;line-height:1.34;font-weight:600;margin:0 0 .9rem;letter-spacing:-.01em}
+  .wrap p{margin:0 0 1.1rem}
+  .figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));gap:1px;background:#ded9cf;border:1px solid #ded9cf;margin:0 0 2rem}
+  .fig{background:#fbfaf7;padding:1rem .9rem}
+  .fig b{display:block;font:700 1.7rem/1.05 ui-sans-serif,system-ui,sans-serif;letter-spacing:-.025em}
+  .fig span{display:block;font:400 12px/1.4 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin-top:.3rem}
+  table{width:100%;border-collapse:collapse;font:400 13px/1.45 ui-sans-serif,system-ui,sans-serif;margin:0 0 .6rem;font-variant-numeric:tabular-nums}
+  th{text-align:left;font-weight:700;border-bottom:2px solid #1b1a18;padding:.5rem .4rem;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#4a4a4a}
+  td{border-bottom:1px solid #ece8e1;padding:.45rem .4rem}
+  td.n,th.n{text-align:right}
+  td.bar{width:22%;padding-right:0}
+  td.bar span{display:block;height:9px;background:#6f5a3a;min-width:2px}
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 1.5rem}
+  .tall{max-height:26rem;overflow-y:auto}
+  .cap{font:400 12px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin:0 0 1.9rem}
+  blockquote{margin:0 0 1.2rem;padding:.2rem 0 .2rem 1rem;border-left:3px solid #ded9cf;color:#3a3936;font-style:italic}
+  .cite{background:#f3f0e9;border:1px solid #ded9cf;padding:1.1rem 1.2rem;font:400 13px/1.6 ui-sans-serif,system-ui,sans-serif;margin:2.4rem 0 0}
+  .cite b{display:block;font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:#6f5a3a;margin-bottom:.5rem}
+  .snippet{background:#fff;border:1px solid #ded9cf;padding:.7rem .8rem;margin:.7rem 0;overflow-x:auto;font:400 11.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#4a4a4a;white-space:pre}
+  .cite code{font:400 12px ui-monospace,SFMono-Regular,Menlo,monospace;background:#fff;padding:.1em .3em;border:1px solid #ded9cf}
+  .wrap a{color:#6f5a3a}
+  .cta{border:1px solid #d6cdbd;background:#fcfaf5;padding:1.3rem 1.4rem;margin:0 0 2.4rem}
+  .cta h2{margin-top:0;padding-top:0;border-top:0}
+  .cta p{font:400 14.5px/1.62 ui-sans-serif,system-ui,sans-serif;color:#2e2e2e;margin:0 0 .9rem}
+  .cta a.btn{display:inline-block;background:#6f5a3a;color:#fff;font:700 14px/1 ui-sans-serif,system-ui,sans-serif;padding:.75rem 1.1rem;border-radius:2px;text-decoration:none}
+  .cta a.btn:hover{background:#584628}
+  .faq h3.faq-q{font-size:1.08rem;margin:1.3rem 0 .4rem}
+  footer.spine{margin:2rem 0 0;padding-top:1.2rem;border-top:1px solid #ded9cf;font:400 12.5px/1.7 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a}
+
+  .lookup{border:1px solid #ded9cf;background:#fbfaf7;padding:1.1rem 1.2rem;margin:0 0 2.2rem}
+  .lk-eyebrow{font:700 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#6f5a3a;margin:0 0 .7rem}
+  .lookup select{width:100%;font:400 15px/1.4 ui-sans-serif,system-ui,sans-serif;padding:.55rem .6rem;border:1px solid #c9c1b3;background:#fff;color:#1a1a1a;border-radius:2px}
+  .lk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));gap:1px;background:#ded9cf;border:1px solid #ded9cf;margin:.9rem 0 0}
+  .lk-cell{background:#fbfaf7;padding:.65rem .7rem}
+  .lk-cell b{display:block;font:700 1.3rem/1.1 ui-sans-serif,system-ui,sans-serif;letter-spacing:-.02em}
+  .lk-cell span{display:block;font:400 11px/1.35 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin-top:.25rem}
+  .lk-offices{width:100%;border-collapse:collapse;font:400 12.5px/1.45 ui-sans-serif,system-ui,sans-serif;margin:.8rem 0 0}
+  .lk-offices th{font-size:10.5px;padding:.3rem;border-bottom:1px solid #c9c1b3}
+  .lk-offices td{border-bottom:1px solid #ece8e1;padding:.35rem .3rem}
+  .lk-offices td.n,.lk-offices th.n{text-align:right;font-variant-numeric:tabular-nums}
+  .lk-msg{font:400 13px/1.5 ui-sans-serif,system-ui,sans-serif;color:#4a4a4a;margin:.8rem 0 0}
+  .lk-caveat{font:400 11.5px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6a6a6a;margin:.8rem 0 0;border-top:1px solid #ece8e1;padding-top:.7rem}
+  @media(max-width:560px){.wrap h1{font-size:1.9rem}td.bar,th.bar{display:none}}
+  .kf{border:1px solid #dfe5e2;background:#fbfcfb;padding:1rem 1.2rem .4rem;margin:1.6rem 0 2rem}
+  .kf h2{margin:0 0 .7rem;padding:0;border:0;font-size:1.15rem}
+  .kf ul{margin:0 0 .8rem;padding-left:1.1rem}
+  .kf li{margin:0 0 .55rem}
+  .kf .kf-src{margin:0 0 .6rem;font:400 12px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b}
+</style>
+
+<div class="wrap">
+  <p class="kicker">National analysis &middot; 627 disasters &middot; 2,952 counties &middot; OpenFEMA</p>
+  <h1>What FEMA Pays Homeowners</h1>
+  <p class="standfirst">When a disaster declaration covers a house, its owner can apply to FEMA for help. We added up
+  every homeowner registration FEMA has published, 14,899,124 across 627 major disasters since
+  2002. Fewer than half, 47.6%, were approved for any aid, and approved owners got
+  $3,619 on average. FEMA&rsquo;s aid is built to make a home livable again, behind insurance, and the
+  numbers show it.</p>
+
+  <div class="figs">
+    <div class="fig"><b>14,899,124</b><span>homeowner registrations since 2002</span></div>
+    <div class="fig"><b>47.6%</b><span>approved for any FEMA aid</span></div>
+    <div class="fig"><b>$3,619</b><span>average per approved registration</span></div>
+    <div class="fig"><b>1.1%</b><span>of approved owners got the maximum</span></div>
+  </div>
+
+  <section class="kf" id="key-findings">
+    <h2>Key findings</h2>
+    <ul>
+      <li>FEMA recorded 14,899,124 homeowner registrations for its Individuals and Households Program in 627 major disasters declared from 2002 to 2026; 47.6% were approved for any aid.</li>
+      <li>Approved homeowner registrations received $3,619 on average, counting repair, rental and other-needs aid together. 1.1% received FEMA's maximum grant.</li>
+      <li>Of the 6,314,477 owner-occupied homes FEMA inspected and found damaged, 3.3% had FEMA-recorded damage above $30,000.</li>
+      <li>FEMA approved 35 cents of home repair and replacement aid for every dollar of damage its inspectors recorded to owners' homes and belongings.</li>
+      <li>In wildfire disasters, FEMA-recorded damage averaged $119,786 per damaged home, and 12.7% of homeowner registrations were approved for aid, the lowest share of any major disaster type.</li>
+    </ul>
+    <p class="kf-src">Source: FEMA, OpenFEMA Individuals and Households Program Housing Assistance Program Data (Owners), v2, refreshed 2026-11-25; FEMA Disaster Declarations Summaries, v2. Analysis by Before Regret. Dollars as approved, not adjusted for inflation.</p>
+  </section>
+
+  <div class="lookup">
+    <p class="lk-eyebrow">Look up any of the 2,952 counties with FEMA homeowner aid since 2002</p>
+    <label for="fagpick" style="position:absolute;left:-9999px">Choose a county</label>
+    <select id="fagpick"><option value="">Choose a county&hellip;</option></select>
+    <div id="fagout" aria-live="polite"></div>
+    <p class="lk-caveat">Homeowner registrations for FEMA&rsquo;s Individuals and Households Program in major disasters
+    declared from 2002 to 2026, from OpenFEMA, data refreshed 2026-11-25. Dollars are as approved,
+    not adjusted for inflation, and include rental and other-needs aid. County is the one the applicant reported.
+    Figures describe past disasters in the county, not any one house.</p>
+  </div>
+
+  <div class="cta">
+    <h2>Plan for the gap before you buy</h2>
+    <p>Disaster aid is a floor, not a rebuild fund. The time to find out what a home&rsquo;s area has been through,
+    and what your own policy would and wouldn&rsquo;t pay for, is before closing, while you can still ask questions
+    and compare quotes.</p>
+    <p>For one address, a free Before Regret report lists what to check for that area before you buy. No sign-up
+    required.</p>
+    <p><a class="btn" href="/">Get the free report</a></p>
+  </div>
+
+  <h2>What the program is for</h2>
+  <h3>Livable again, and behind insurance.</h3>
+
+  <p>FEMA&rsquo;s Individuals and Households Program pays homeowners in three main ways: repair or replacement
+  money for the home, rental help while it can&rsquo;t be lived in, and &ldquo;other needs&rdquo; such as
+  belongings, medical and funeral costs. Two rules in FEMA&rsquo;s regulations shape every number on this page.</p>
+
+  <p>The first is the purpose of repair money. Under 44 CFR 206.117, FEMA may pay to repair a damaged home
+  &ldquo;to a safe and sanitary living or functioning condition,&rdquo; and its help &ldquo;will be limited to
+  repairs of a quality necessary&rdquo; for that. The goal is a home that works, not the home as it was.</p>
+
+  <p>The second is insurance. Under 44 CFR 206.113, when an applicant has insurance, FEMA may help only when the
+  claim is denied, when insurance money is &ldquo;significantly delayed&rdquo; and the owner agrees to pay FEMA
+  back from it, when no housing can be had on the private market, or when insurance and all other help are not
+  enough. Section 206.117 adds that repair aid is for damage &ldquo;not covered by insurance.&rdquo; The
+  dataset doesn&rsquo;t say which applicants were insured, so we can&rsquo;t split the figures that way.</p>
+
+  <p>There is also a cap. FEMA adjusts it every year in the Federal Register. For disasters declared on or after
+  October 1, 2026, it is $46,400 for housing assistance and $46,400 for other needs; the year before,
+  $44,800 each.</p>
+
+  <h2>How much approved owners got</h2>
+  <h3>A few thousand dollars, and the cap for about 1 in 100.</h3>
+
+  <p>Counting repair, rental and other-needs money together, the average approved homeowner registration got
+  $3,619. Only 80,441 registrations, 1.1% of those approved, received FEMA&rsquo;s maximum grant.
+  Of the $25.7 billion FEMA approved for homeowners in these disasters, $14.1 billion was for repairing or replacing
+  homes, $3.9 billion for rent and $6.3 billion for other needs.</p>
+
+  <p>Part of the reason is what FEMA&rsquo;s inspectors find. Of 7,997,572 owner-occupied homes inspected, 1,683,095
+  had no damage recorded. Of the 6,314,477 with damage, most had less than $10,000 of it under FEMA&rsquo;s
+  guidelines, and 3.3% had more than $30,000. That recorded damage, $40.1 billion in total, covers the
+  home and its belongings. Against it, FEMA approved 35 cents of home repair and
+  replacement money for every dollar.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>FEMA-recorded damage</th><th class="n">Owner homes</th><th class="n">Share</th><th class="bar"></th></tr></thead>
+      <tbody>
+      <tr><td>$1 to $10,000</td><td class="n">5,459,300</td><td class="n">86.5%</td><td class="bar"><span style="width:100%"></span></td></tr>
+      <tr><td>$10,001 to $20,000</td><td class="n">468,582</td><td class="n">7.4%</td><td class="bar"><span style="width:9%"></span></td></tr>
+      <tr><td>$20,001 to $30,000</td><td class="n">178,588</td><td class="n">2.8%</td><td class="bar"><span style="width:3%"></span></td></tr>
+      <tr><td>More than $30,000</td><td class="n">208,007</td><td class="n">3.3%</td><td class="bar"><span style="width:4%"></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">Owner-occupied homes FEMA inspected and found damaged, in major disasters declared 2002 to
+  2026, by the damage FEMA recorded under its inspection guidelines.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Disasters declared</th><th class="n">Disasters</th><th class="n">Registrations</th><th class="n">Approved</th><th class="n">Avg. per approved</th><th class="n">Max grants</th></tr></thead>
+      <tbody>
+      <tr><td>2002 to 2009</td><td class="n">226</td><td class="n">4,760,469</td><td class="n">50%</td><td class="n"><b>$3,169</b></td><td class="n">31,004</td></tr>
+      <tr><td>2010 to 2014</td><td class="n">86</td><td class="n">1,358,941</td><td class="n">48%</td><td class="n"><b>$4,757</b></td><td class="n">18,329</td></tr>
+      <tr><td>2015 to 2019</td><td class="n">76</td><td class="n">3,213,325</td><td class="n">36%</td><td class="n"><b>$4,248</b></td><td class="n">14,209</td></tr>
+      <tr><td>2020 to 2023</td><td class="n">137</td><td class="n">2,730,219</td><td class="n">52%</td><td class="n"><b>$3,106</b></td><td class="n">9,815</td></tr>
+      <tr><td>2024 to 2026</td><td class="n">102</td><td class="n">2,836,170</td><td class="n">53%</td><td class="n"><b>$3,834</b></td><td class="n">7,084</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">Homeowner registrations by the year the disaster was declared. Dollars are as approved, not adjusted for
+  inflation, so the averages are not comparable across rows as a trend. Disasters declared in 2026 can still
+  be open.</p>
+
+  <h2>By disaster type</h2>
+  <h3>Wildfire stands apart.</h3>
+
+  <p>Hurricanes account for 75% of all homeowner registrations. Wildfire is the outlier. In
+  wildfire disasters, FEMA-recorded damage averaged $119,786 per damaged home, against $6,344
+  across all disasters, because a burned house is often a total loss. Yet only 12.7% of wildfire registrations
+  were approved for any aid, and repair money came to 6 cents per dollar of recorded damage.
+  The January 2025 wildfires in Los Angeles County alone drew 185,871 homeowner registrations, and 10%
+  were approved.</p>
+
+  <p>The insurance rule above is the likeliest reason, though the data can&rsquo;t show it directly: a homeowner
+  whose fire loss is covered by insurance is not eligible for FEMA repair money for the same damage.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Incident type</th><th class="n">Registrations</th><th class="n">Approved</th><th class="n">Recorded damage per damaged home</th><th class="n">Avg. per approved</th><th class="n">Repair per $1 of damage</th></tr></thead>
+      <tbody>
+      <tr><td>Hurricane</td><td class="n">11,176,526</td><td class="n">46%</td><td class="n">$6,328</td><td class="n"><b>$3,182</b></td><td class="n">30&cent;</td></tr>
+      <tr><td>Severe Storm</td><td class="n">1,691,958</td><td class="n">59%</td><td class="n">$4,129</td><td class="n"><b>$3,716</b></td><td class="n">54&cent;</td></tr>
+      <tr><td>Flood</td><td class="n">987,218</td><td class="n">59%</td><td class="n">$6,081</td><td class="n"><b>$6,221</b></td><td class="n">59&cent;</td></tr>
+      <tr><td>Fire</td><td class="n">288,962</td><td class="n">13%</td><td class="n">$119,786</td><td class="n"><b>$8,070</b></td><td class="n">6&cent;</td></tr>
+      <tr><td>Severe Ice Storm</td><td class="n">223,559</td><td class="n">18%</td><td class="n">$2,930</td><td class="n"><b>$3,440</b></td><td class="n">57&cent;</td></tr>
+      <tr><td>Tropical Storm</td><td class="n">223,075</td><td class="n">59%</td><td class="n">$7,964</td><td class="n"><b>$4,971</b></td><td class="n">76&cent;</td></tr>
+      <tr><td>Tornado</td><td class="n">85,387</td><td class="n">41%</td><td class="n">$5,485</td><td class="n"><b>$2,929</b></td><td class="n">28&cent;</td></tr>
+      <tr><td>Earthquake</td><td class="n">75,112</td><td class="n">48%</td><td class="n">$3,209</td><td class="n"><b>$4,764</b></td><td class="n">74&cent;</td></tr>
+      <tr><td>Winter Storm</td><td class="n">74,134</td><td class="n">54%</td><td class="n">$4,733</td><td class="n"><b>$6,490</b></td><td class="n">83&cent;</td></tr>
+      <tr><td>Other types</td><td class="n">73,193</td><td class="n">74%</td><td class="n">$9,859</td><td class="n"><b>$6,599</b></td><td class="n">32&cent;</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">Incident type as FEMA declared it. Types with fewer than 50,000 homeowner registrations are grouped as
+  &ldquo;Other types&rdquo;. &ldquo;Fire&rdquo; is FEMA&rsquo;s incident type; every fire disaster in the data is a wildfire declaration.</p>
+
+  <h2>The largest disasters</h2>
+  <h3>Approval rates swing widely, even between big hurricanes.</h3>
+
+  <p>Hurricane Irma in Florida drew more homeowner registrations than any other disaster in the data,
+  1,203,058, and 27% were approved. For Hurricane Katrina in Louisiana, FEMA approved
+  9 cents of repair money for every dollar of damage it recorded, the lowest
+  among these disasters.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Disaster</th><th class="n">Registrations</th><th class="n">Approved</th><th class="n">Avg. per approved</th><th class="n">Repair per $1 of damage</th></tr></thead>
+      <tbody>
+      <tr><td>Hurricane Irma (FL, 2017)</td><td class="n">1,203,058</td><td class="n">27%</td><td class="n"><b>$1,595</b></td><td class="n">48&cent;</td></tr>
+      <tr><td>Hurricane Fiona (PR, 2022)</td><td class="n">778,403</td><td class="n">60%</td><td class="n"><b>$921</b></td><td class="n">51&cent;</td></tr>
+      <tr><td>Hurricane Maria (PR, 2017)</td><td class="n">775,222</td><td class="n">42%</td><td class="n"><b>$3,415</b></td><td class="n">40&cent;</td></tr>
+      <tr><td>Hurricane Milton (FL, 2024)</td><td class="n">577,738</td><td class="n">31%</td><td class="n"><b>$3,724</b></td><td class="n">59&cent;</td></tr>
+      <tr><td>Hurricane Beryl (TX, 2024)</td><td class="n">576,988</td><td class="n">71%</td><td class="n"><b>$1,482</b></td><td class="n">69&cent;</td></tr>
+      <tr><td>Hurricane Katrina (LA, 2005)</td><td class="n">510,569</td><td class="n">69%</td><td class="n"><b>$5,902</b></td><td class="n">9&cent;</td></tr>
+      <tr><td>Hurricane Ian (FL, 2022)</td><td class="n">485,553</td><td class="n">43%</td><td class="n"><b>$4,379</b></td><td class="n">36&cent;</td></tr>
+      <tr><td>Hurricane Harvey (TX, 2017)</td><td class="n">443,258</td><td class="n">47%</td><td class="n"><b>$6,380</b></td><td class="n">41&cent;</td></tr>
+      <tr><td>Hurricane Ike (TX, 2008)</td><td class="n">427,105</td><td class="n">16%</td><td class="n"><b>$5,314</b></td><td class="n">30&cent;</td></tr>
+      <tr><td>Hurricane Ida (LA, 2021)</td><td class="n">426,207</td><td class="n">72%</td><td class="n"><b>$2,483</b></td><td class="n">56&cent;</td></tr>
+      <tr><td>Hurricane Wilma (FL, 2005)</td><td class="n">413,253</td><td class="n">41%</td><td class="n"><b>$1,474</b></td><td class="n">19&cent;</td></tr>
+      <tr><td>Hurricane Katrina (MS, 2005)</td><td class="n">322,170</td><td class="n">53%</td><td class="n"><b>$4,288</b></td><td class="n">10&cent;</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">The 12 disasters with the most homeowner registrations. One declaration covers one state, so a storm that
+  crossed several states appears once per state. Every disaster is in the disaster CSV.</p>
+
+  <h2>By state</h2>
+  <h3>Florida and Texas hold the most registrations.</h3>
+
+  <p>Florida has the most homeowner registrations in the data, 4,021,595, and Texas is next with 2,247,223.
+  Harris County, Texas has more than any other county, 915,957 across 14 disasters.</p>
+
+  <div class="scroll tall">
+    <table>
+      <thead><tr><th>State or territory</th><th class="n">Registrations</th><th class="n">Approved</th><th class="n">Avg. per approved</th><th class="n">Max grants</th><th class="bar"></th></tr></thead>
+      <tbody>
+      <tr><td>Florida</td><td class="n">4,021,595</td><td class="n">38%</td><td class="n"><b>$2,790</b></td><td class="n">5,812</td><td class="bar"><span style="width:38%"></span></td></tr>
+      <tr><td>Texas</td><td class="n">2,247,223</td><td class="n">46%</td><td class="n"><b>$3,523</b></td><td class="n">7,666</td><td class="bar"><span style="width:46%"></span></td></tr>
+      <tr><td>Puerto Rico</td><td class="n">1,825,437</td><td class="n">53%</td><td class="n"><b>$2,065</b></td><td class="n">4,599</td><td class="bar"><span style="width:53%"></span></td></tr>
+      <tr><td>Louisiana</td><td class="n">1,818,542</td><td class="n">55%</td><td class="n"><b>$4,590</b></td><td class="n">21,186</td><td class="bar"><span style="width:55%"></span></td></tr>
+      <tr><td>Mississippi</td><td class="n">483,359</td><td class="n">51%</td><td class="n"><b>$4,738</b></td><td class="n">4,263</td><td class="bar"><span style="width:51%"></span></td></tr>
+      <tr><td>South Carolina</td><td class="n">407,090</td><td class="n">49%</td><td class="n"><b>$1,926</b></td><td class="n">311</td><td class="bar"><span style="width:49%"></span></td></tr>
+      <tr><td>North Carolina</td><td class="n">392,412</td><td class="n">45%</td><td class="n"><b>$4,181</b></td><td class="n">2,600</td><td class="bar"><span style="width:45%"></span></td></tr>
+      <tr><td>Alabama</td><td class="n">343,950</td><td class="n">43%</td><td class="n"><b>$2,862</b></td><td class="n">1,317</td><td class="bar"><span style="width:43%"></span></td></tr>
+      <tr><td>Illinois</td><td class="n">336,878</td><td class="n">76%</td><td class="n"><b>$3,821</b></td><td class="n">655</td><td class="bar"><span style="width:76%"></span></td></tr>
+      <tr><td>Georgia</td><td class="n">318,919</td><td class="n">48%</td><td class="n"><b>$2,485</b></td><td class="n">783</td><td class="bar"><span style="width:48%"></span></td></tr>
+      <tr><td>California</td><td class="n">318,546</td><td class="n">17%</td><td class="n"><b>$6,275</b></td><td class="n">3,257</td><td class="bar"><span style="width:17%"></span></td></tr>
+      <tr><td>New York</td><td class="n">315,531</td><td class="n">55%</td><td class="n"><b>$6,966</b></td><td class="n">6,101</td><td class="bar"><span style="width:55%"></span></td></tr>
+      <tr><td>New Jersey</td><td class="n">309,875</td><td class="n">45%</td><td class="n"><b>$5,288</b></td><td class="n">2,411</td><td class="bar"><span style="width:45%"></span></td></tr>
+      <tr><td>Michigan</td><td class="n">296,424</td><td class="n">67%</td><td class="n"><b>$3,914</b></td><td class="n">200</td><td class="bar"><span style="width:67%"></span></td></tr>
+      <tr><td>Pennsylvania</td><td class="n">155,310</td><td class="n">60%</td><td class="n"><b>$3,474</b></td><td class="n">841</td><td class="bar"><span style="width:60%"></span></td></tr>
+      <tr><td>Tennessee</td><td class="n">126,155</td><td class="n">43%</td><td class="n"><b>$5,777</b></td><td class="n">2,135</td><td class="bar"><span style="width:43%"></span></td></tr>
+      <tr><td>Indiana</td><td class="n">110,268</td><td class="n">61%</td><td class="n"><b>$4,326</b></td><td class="n">699</td><td class="bar"><span style="width:61%"></span></td></tr>
+      <tr><td>Ohio</td><td class="n">101,718</td><td class="n">64%</td><td class="n"><b>$2,206</b></td><td class="n">161</td><td class="bar"><span style="width:64%"></span></td></tr>
+      <tr><td>Virginia</td><td class="n">95,284</td><td class="n">40%</td><td class="n"><b>$2,552</b></td><td class="n">115</td><td class="bar"><span style="width:40%"></span></td></tr>
+      <tr><td>Wisconsin</td><td class="n">87,382</td><td class="n">78%</td><td class="n"><b>$4,608</b></td><td class="n">215</td><td class="bar"><span style="width:78%"></span></td></tr>
+      <tr><td>Kentucky</td><td class="n">86,288</td><td class="n">58%</td><td class="n"><b>$7,247</b></td><td class="n">1,893</td><td class="bar"><span style="width:58%"></span></td></tr>
+      <tr><td>Iowa</td><td class="n">67,475</td><td class="n">60%</td><td class="n"><b>$6,182</b></td><td class="n">1,881</td><td class="bar"><span style="width:60%"></span></td></tr>
+      <tr><td>Missouri</td><td class="n">67,177</td><td class="n">47%</td><td class="n"><b>$5,854</b></td><td class="n">811</td><td class="bar"><span style="width:47%"></span></td></tr>
+      <tr><td>West Virginia</td><td class="n">61,372</td><td class="n">67%</td><td class="n"><b>$5,731</b></td><td class="n">821</td><td class="bar"><span style="width:67%"></span></td></tr>
+      <tr><td>Massachusetts</td><td class="n">54,740</td><td class="n">73%</td><td class="n"><b>$2,436</b></td><td class="n">175</td><td class="bar"><span style="width:73%"></span></td></tr>
+      <tr><td>Oklahoma</td><td class="n">48,237</td><td class="n">34%</td><td class="n"><b>$6,568</b></td><td class="n">860</td><td class="bar"><span style="width:34%"></span></td></tr>
+      <tr><td>Arkansas</td><td class="n">40,240</td><td class="n">39%</td><td class="n"><b>$6,102</b></td><td class="n">561</td><td class="bar"><span style="width:39%"></span></td></tr>
+      <tr><td>Guam</td><td class="n">32,169</td><td class="n">67%</td><td class="n"><b>$5,757</b></td><td class="n">199</td><td class="bar"><span style="width:67%"></span></td></tr>
+      <tr><td>Rhode Island</td><td class="n">29,094</td><td class="n">61%</td><td class="n"><b>$3,178</b></td><td class="n">44</td><td class="bar"><span style="width:61%"></span></td></tr>
+      <tr><td>American Samoa</td><td class="n">28,209</td><td class="n">75%</td><td class="n"><b>$3,615</b></td><td class="n">368</td><td class="bar"><span style="width:75%"></span></td></tr>
+      <tr><td>Connecticut</td><td class="n">26,016</td><td class="n">45%</td><td class="n"><b>$4,550</b></td><td class="n">99</td><td class="bar"><span style="width:45%"></span></td></tr>
+      <tr><td>Colorado</td><td class="n">24,681</td><td class="n">58%</td><td class="n"><b>$3,858</b></td><td class="n">261</td><td class="bar"><span style="width:58%"></span></td></tr>
+      <tr><td>U.S. Virgin Islands</td><td class="n">19,472</td><td class="n">47%</td><td class="n"><b>$6,082</b></td><td class="n">299</td><td class="bar"><span style="width:47%"></span></td></tr>
+      <tr><td>Washington</td><td class="n">17,686</td><td class="n">50%</td><td class="n"><b>$6,696</b></td><td class="n">406</td><td class="bar"><span style="width:50%"></span></td></tr>
+      <tr><td>Hawaii</td><td class="n">16,914</td><td class="n">45%</td><td class="n"><b>$8,202</b></td><td class="n">409</td><td class="bar"><span style="width:45%"></span></td></tr>
+      <tr><td>Alaska</td><td class="n">16,011</td><td class="n">55%</td><td class="n"><b>$13,824</b></td><td class="n">1,081</td><td class="bar"><span style="width:55%"></span></td></tr>
+      <tr><td>Northern Mariana Islands</td><td class="n">15,908</td><td class="n">78%</td><td class="n"><b>$7,795</b></td><td class="n">71</td><td class="bar"><span style="width:78%"></span></td></tr>
+      <tr><td>Vermont</td><td class="n">15,001</td><td class="n">59%</td><td class="n"><b>$7,310</b></td><td class="n">397</td><td class="bar"><span style="width:59%"></span></td></tr>
+      <tr><td>Maryland</td><td class="n">14,763</td><td class="n">54%</td><td class="n"><b>$3,979</b></td><td class="n">18</td><td class="bar"><span style="width:54%"></span></td></tr>
+      <tr><td>North Dakota</td><td class="n">14,114</td><td class="n">60%</td><td class="n"><b>$11,688</b></td><td class="n">2,286</td><td class="bar"><span style="width:60%"></span></td></tr>
+      <tr><td>South Dakota</td><td class="n">13,894</td><td class="n">61%</td><td class="n"><b>$3,998</b></td><td class="n">57</td><td class="bar"><span style="width:61%"></span></td></tr>
+      <tr><td>Minnesota</td><td class="n">12,512</td><td class="n">74%</td><td class="n"><b>$4,955</b></td><td class="n">255</td><td class="bar"><span style="width:74%"></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">States and territories with at least 10,000 homeowner registrations, by registrations. The bar is the
+  approved share. The rest are in the county CSV.</p>
+
+  <h2>What this means if you&rsquo;re buying</h2>
+  <h3>Count on your own coverage first.</h3>
+
+  <p>FEMA aid only starts with a federal disaster declaration that includes individual assistance for the
+  county, and even then it is designed to come after insurance and to stop at a livable home. A buyer
+  weighing a house in an area with a disaster history has three practical questions to answer before
+  closing:</p>
+  <ul>
+    <li><strong>What does the area face?</strong> Look up the flood zone and the county&rsquo;s disaster
+    history. Here is <a href="/guides/flood-zone-by-address/">how to check the flood zone for an address</a>, and
+    the lookup above shows past FEMA aid in the county.</li>
+    <li><strong>What would your own policy pay?</strong> Ask for the policy wording on the hazards the area
+    has, not only the price. About a quarter of flood insurance claims were on properties rated outside
+    the high-risk flood zone, as our study <a href="/research/outside-the-zone/">Outside the Zone</a> found.</li>
+    <li><strong>What would you cover yourself?</strong> Deductibles and limits decide how much of a repair
+    lands on you. The average FEMA grant on this page is a useful reality check against that number.</li>
+  </ul>
+
+  <h2>Method</h2>
+  <h3>How the figures were built.</h3>
+
+  <p>The data is FEMA&rsquo;s OpenFEMA dataset &ldquo;Individuals and Households Program &ndash; Housing Assistance
+  Program Data &ndash; Owners&rdquo; (version 2), pulled in full through the public API on 2026-11-25: 160,963
+  rows, one for each disaster, state, county, city and ZIP code with homeowner registrations, from DR-1439 on. Each
+  row counts valid registrations, inspections, homes by FEMA-recorded damage, approvals, and approved dollars for
+  repair or replacement, rent and other needs. We joined each disaster number to FEMA&rsquo;s Disaster Declarations
+  Summaries for its date, incident type and title.</p>
+
+  <p>10 disaster numbers in the owners data have no record in the declarations data, so they can&rsquo;t be
+  dated or typed. Their 262,703 registrations, 1.7% of the total, are left out of every figure.</p>
+
+  <p>&ldquo;Registrations&rdquo; are FEMA&rsquo;s count of valid homeowner registrations; a household that applied in two
+  disasters counts twice. &ldquo;Approved&rdquo; means approved for any program aid. &ldquo;Average per approved&rdquo;
+  divides all approved program dollars by approved registrations. &ldquo;Repair per $1 of damage&rdquo; divides approved
+  repair and replacement dollars by FEMA-recorded damage. FEMA also publishes counts of owners by approved amount
+  ($1 to $10,000, and so on); we don&rsquo;t use them, because in many rows they don&rsquo;t agree with the dollar totals
+  in the same row.</p>
+
+  <h2>Limitations</h2>
+  <h3>What this does not show.</h3>
+
+  <p><strong>Recorded damage is FEMA&rsquo;s, not a contractor&rsquo;s.</strong> FEMA describes the damage field as FEMA
+  Verified Loss for the home and personal property, recorded at the latest inspection under FEMA&rsquo;s guidelines.
+  It is tied to what FEMA can pay for, so it is not an estimate of the cost to rebuild, and the true gap between
+  loss and aid is wider than these ratios suggest.</p>
+
+  <p><strong>No insurance field.</strong> The data doesn&rsquo;t say who was insured, who was paid by insurance, or
+  who got help from other sources, such as disaster loans. A low approval share can reflect insured owners as much
+  as denied ones.</p>
+
+  <p><strong>FEMA&rsquo;s own caveats.</strong> FEMA notes that the county is self-reported, that the financial figures
+  come from its case-management system rather than official financial systems and &ldquo;may differ slightly from
+  official publication,&rdquo; and that the data is not intended for official federal financial reporting. Dollars
+  are as approved, not as paid, and not adjusted for inflation. Recent disasters may still be open.</p>
+
+  <h2>Questions this data answers</h2>
+  <div class="faq">
+    <h3 class="faq-q">How much money does FEMA give homeowners after a disaster?</h3>
+    <p>Across 627 major disasters declared from 2002 to 2026, approved homeowner registrations received $3,619 on average from FEMA's Individuals and Households Program, counting home repair, rental and other-needs aid together. 47.6% of the 14,899,124 homeowner registrations were approved for any aid. Dollars are as approved, not adjusted for inflation.</p>
+    <h3 class="faq-q">What is the maximum FEMA assistance for a homeowner?</h3>
+    <p>For disasters declared on or after October 1, 2026, FEMA's notice in the Federal Register sets the maximum at $46,400 for housing assistance and $46,400 for other needs; for disasters declared from October 1, 2025 it was $44,800 each. In FEMA's own data, 1.1% of approved homeowner registrations since 2002 received the maximum grant.</p>
+    <h3 class="faq-q">Does FEMA pay for home repairs if I have homeowners insurance?</h3>
+    <p>Generally only for what insurance does not cover. FEMA's rules (44 CFR 206.113) let it help an insured homeowner when the claim is denied, when insurance proceeds are significantly delayed and the homeowner agrees to repay FEMA from them, or when insurance and all other help are not enough. Repair aid is limited to making the home safe and sanitary to live in (44 CFR 206.117), not to restoring it as it was.</p>
+    <h3 class="faq-q">What share of FEMA applicants get approved?</h3>
+    <p>47.6% of homeowner registrations in disasters declared from 2002 to 2026 were approved for any Individuals and Households Program aid. The share varies by disaster: 27% for Hurricane Irma in Florida, the largest by registrations, and 10% for the January 2025 California wildfires.</p>
+    <h3 class="faq-q">Where can I download FEMA disaster aid data by county?</h3>
+    <p>This study publishes two CSV files under a CC BY 4.0 licence: every county with FEMA homeowner registrations since 2002, and every disaster by state, each with registrations, inspections, recorded damage, approvals and dollars. The underlying data is FEMA's OpenFEMA Housing Assistance Program Data (Owners) dataset, which is public and needs no key.</p>
+  </div>
+
+  <div class="cite">
+    <b>Cite this</b>
+    Before Regret, &ldquo;What FEMA Pays Homeowners: FEMA homeowner aid against FEMA-recorded damage, 2002&ndash;2026.&rdquo;
+    25 November 2026. Analysis of FEMA OpenFEMA Housing Assistance Program Data (Owners) v2, refreshed 2026-11-25, for
+    627 major disasters and 2,952 counties.<br>
+    <a href="https://www.beforeregret.com/research/fema-aid-gap/">https://www.beforeregret.com/research/fema-aid-gap/</a><br>
+    Data: <a href="https://www.beforeregret.com/research/data/fema-aid-gap-by-county.csv">every county (CSV)</a> &middot;
+    <a href="https://www.beforeregret.com/research/data/fema-aid-gap-by-disaster.csv">every disaster by state (CSV)</a> &middot;
+    <a href="https://www.beforeregret.com/research/data/fema-aid-gap-figures.json">figures (JSON)</a>.
+    Questions and corrections: hello@beforeregret.com
+  </div>
+
+  <div class="cite">
+    <b>Embed the county lookup</b>
+    Free to use, no tracking, no attribution required beyond the credit line it carries.
+    <pre class="snippet">&lt;iframe src="https://www.beforeregret.com/research/fema-aid-gap/embed/"
+        width="100%" height="480" style="border:1px solid #ded9cf"
+        title="FEMA homeowner aid by county"
+        loading="lazy"&gt;&lt;/iframe&gt;</pre>
+    It posts its own height to the parent page as <code>beforeRegretEmbedHeight</code>.
+  </div>
+
+  <div class="cite">
+    <b>For newsrooms, researchers and recovery groups</b>
+    Published under a Creative Commons Attribution 4.0 licence: republish the figures, redraw the tables, or run
+    your own cut without asking, with credit to Before Regret and a link to this page. FEMA&rsquo;s data is a US
+    Government work; this study is not endorsed by FEMA. Happy to pull a specific county or disaster, or check a
+    figure before it prints &mdash; hello@beforeregret.com.
+  </div>
+
+  <footer class="spine">
+    Sources: FEMA, OpenFEMA Housing Assistance Program Data &ndash; Owners (v2) and Disaster Declarations Summaries (v2),
+    retrieved 2026-11-25; 44 CFR 206.113 and 206.117 (eCFR, read 2026-11-25); Federal Register notices 2026-22693 and
+    2026-19854, maximum amount of assistance under the Individuals and Households Program.<br>
+    Analysis by Before Regret. Published 25 November 2026.<br>
+    Related: <a href="/research/outside-the-zone/">Outside the Zone</a> &#183;
+    <a href="/research/risk-without-cover/">Risk Without Cover</a> &#183;
+    <a href="/research/built-to-code/">Built to Which Code?</a>
+  </footer>
+</div>
+<script type="application/json" id="fag-data">{"src":"/research/data/fema-aid-gap-lookup.json"}</script>
+<script>
+(function(){
+  var s=document.getElementById('fagpick'),o=document.getElementById('fagout'),d=[],L={};
+  var src=JSON.parse(document.getElementById('fag-data').textContent).src;
+  s.disabled=true;
+  fetch(src).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
+    d=j.c; L=j.d; s.disabled=false;
+    d.forEach(function(c,i){var e=document.createElement('option');e.value=i;e.textContent=c[0];s.appendChild(e);});
+  }).catch(function(){o.innerHTML='<p class="lk-msg">The county list did not load. The same figures are in the county CSV below.</p>';});
+  function cell(v,l){return '<div class="lk-cell"><b>'+v+'</b><span>'+l+'</span></div>';}
+  function fmt(n){return Math.round(n).toLocaleString('en-US');}
+  function h(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+  function avg(ihp,a){return a>=5?'$'+fmt(ihp/a):'&ndash;';}
+  s.addEventListener('change',function(){
+    var c=d[s.value]; if(!c){o.innerHTML='';return;}
+    var rows=c[9].map(function(x){return '<tr><td>'+h(L[x[0]])+'</td><td class="n">'+fmt(x[1])+'</td><td class="n">'+(x[1]?Math.round(x[2]/x[1]*100)+'%':'&ndash;')+'</td><td class="n">'+avg(x[3],x[2])+'</td></tr>';}).join('');
+    o.innerHTML='<div class="lk-grid">'
+      +cell(fmt(c[1]),'homeowner registrations, '+c[8]+' disaster'+(c[8]>1?'s':''))
+      +cell(Math.round(c[2]/c[1]*100)+'%','approved for any FEMA aid')
+      +cell(avg(c[3],c[2]),'average per approved registration')
+      +cell(fmt(c[7]),'got the maximum grant')
+      +'</div>'
+      +'<table class="lk-offices"><thead><tr><th>Largest disasters here</th><th class="n">Registered</th><th class="n">Approved</th><th class="n">Average</th></tr></thead><tbody>'+rows+'</tbody></table>'
+      +(c[8]>3?'<p class="lk-msg">The totals above include all '+c[8]+' disasters with homeowner registrations here.</p>':'')
+      +(c[2]<5?'<p class="lk-msg">Averages are left blank where fewer than five registrations were approved.</p>':'');
+  });
+})();
+</script>
