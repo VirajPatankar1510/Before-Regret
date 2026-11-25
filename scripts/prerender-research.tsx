@@ -6,6 +6,7 @@ import {
   siteFooter,
 } from './lib/site-chrome.js';
 import { recognitionPages, RECOGNITION_CSS, RECOGNITION_PUBLISHED } from './lib/recognition-pages.js';
+import { RESEARCHER_META, RESEARCHER_CSS, researcherBlock } from './lib/researcher-meta.js';
 
 // Static HTML generator for /research/risk-without-price/ -- the national homeowners-insurance
 // study.
@@ -284,6 +285,10 @@ function derivedDataset(opts: {
   if (!opts.files.length) throw new Error(`[prerender-research] ${opts.name}: a Dataset with no distribution is not worth declaring`);
   // Derived from whichever distribution files have a readable source, deduped across them.
   const measured = [...new Set(opts.files.flatMap((f) => csvColumns(f.path) ?? []))];
+  // Researcher vocabulary for Google Dataset Search (scripts/lib/researcher-meta.ts).
+  const rm = RESEARCHER_META[opts.url.replace(/\/$/, '').split('/').pop() ?? ''];
+  if (!rm) throw new Error(`[prerender-research] ${opts.url}: no RESEARCHER_META entry`);
+  const keywords = [...new Set([...(opts.keywords ? opts.keywords.split(/,\s*/) : []), ...rm.keywords])];
   return {
     '@context': 'https://schema.org',
     '@type': 'Dataset',
@@ -295,7 +300,10 @@ function derivedDataset(opts: {
     creator: { '@type': 'Organization', name: 'Before Regret', url: 'https://www.beforeregret.com/' },
     ...(opts.spatialCoverage ? { spatialCoverage: { '@type': 'Place', name: opts.spatialCoverage } } : {}),
     ...(opts.temporalCoverage ? { temporalCoverage: opts.temporalCoverage } : {}),
-    ...(opts.keywords ? { keywords: opts.keywords } : {}),
+    alternateName: rm.alternateName,
+    keywords,
+    measurementTechnique: rm.measurementTechnique,
+    isBasedOn: rm.isBasedOn.map((name) => ({ '@type': 'Dataset', name })),
     ...(opts.citation ? { citation: opts.citation } : {}),
     ...(opts.dateModified ? { dateModified: opts.dateModified } : {}),
     ...(measured.length ? { variableMeasured: measured } : {}),
@@ -3028,6 +3036,24 @@ ${ANALYTICS_BEACON}
   fs.mkdirSync(indexDir, { recursive: true });
   fs.writeFileSync(path.join(indexDir, 'index.html'), indexHtml, 'utf8');
   console.log(`[prerender-research] Wrote /research/ index listing ${STUDIES.length} studies`);
+
+  // "Data at a glance" on every study (owner request 2026-11-25): unit, geography key, period, source
+  // files by their official names. Inserted before the first "Cite this" box; files are read back
+  // from the page's own Dataset distribution so the box can't list a file the page doesn't publish.
+  for (const slug of Object.keys(RESEARCHER_META)) {
+    const page = path.join(process.cwd(), 'dist', 'research', slug, 'index.html');
+    if (!fs.existsSync(page)) throw new Error(`[prerender-research] researcher block: ${slug} page missing`);
+    let html = fs.readFileSync(page, 'utf8');
+    if (html.includes('id="data-at-a-glance"')) continue;
+    const files = [...new Set([...html.matchAll(/"contentUrl":\s*"https:\/\/www\.beforeregret\.com\/research\/data\/([^"]+)"/g)].map((m) => m[1]))];
+    if (!files.length) throw new Error(`[prerender-research] researcher block: ${slug} has no Dataset files`);
+    const at = html.indexOf('<div class="cite"');
+    if (at === -1) throw new Error(`[prerender-research] researcher block: ${slug} has no cite box to sit above`);
+    html = html.slice(0, at) + researcherBlock(slug, files) + '\n  ' + html.slice(at);
+    html = html.replace('</head>', `  <style>${RESEARCHER_CSS}</style>\n</head>`);
+    fs.writeFileSync(page, html, 'utf8');
+  }
+  console.log(`[prerender-research] Added Data at a glance to ${Object.keys(RESEARCHER_META).length} studies`);
 
   verifyAdvertisedResearchUrls();
   verifyPublicationDatesAgree();
