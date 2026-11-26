@@ -88,6 +88,19 @@ const SectionHeading: React.FC<{ children: React.ReactNode }> = ({ children }) =
   <h2 className="font-serif text-2xl sm:text-[1.75rem] font-semibold text-home-ink tracking-tight">{children}</h2>
 );
 
+// Puts the phone/tablet book card in the middle of the article (owner, 2026-11-26): right before
+// the ## heading that starts the second half of the sections, so it lands between two sections and
+// never splits a paragraph, list or table. The body is rendered once and the card spliced into the
+// block list, so heading ids (and the "On this page" links to them) are exactly what they were.
+// Fewer than two ## headings means no middle: the caller keeps the card after the article.
+function withMidArticleBook(blocks: React.ReactNode[]): { blocks: React.ReactNode[]; placed: boolean } {
+  const h2At = blocks.flatMap((b, i) => (React.isValidElement(b) && b.type === 'h2' ? [i] : []));
+  if (h2At.length < 2) return { blocks, placed: false };
+  const at = h2At[Math.floor(h2At.length / 2)];
+  const card = <BookPromoCard key="book-mid" inArticle className="lg:hidden my-8" />;
+  return { blocks: [...blocks.slice(0, at), card, ...blocks.slice(at)], placed: true };
+}
+
 export const GuideArticleLayout: React.FC<GuideArticleLayoutProps> = ({
   article,
   relatedGuides,
@@ -103,6 +116,7 @@ export const GuideArticleLayout: React.FC<GuideArticleLayoutProps> = ({
   const sections = articleSections(article.bodyMarkdown);
   const topic = topicLabel(article);
   const kind = article.articleType === 'news' ? 'County update' : 'Guide';
+  const bodyWithMidBook = withMidArticleBook(renderArticleMarkdown(article.bodyMarkdown, { pageUrl: canonicalUrl }));
 
   return (
     <div className="bg-home-stone min-h-screen pb-16">
@@ -190,14 +204,16 @@ export const GuideArticleLayout: React.FC<GuideArticleLayoutProps> = ({
 
           {/* Article body. 17px on a white sheet, held to a reading measure. */}
           <article className="rounded-3xl bg-white px-5 py-7 sm:px-10 sm:py-10 text-base sm:text-[17px]">
-            {renderArticleMarkdown(article.bodyMarkdown, { pageUrl: canonicalUrl })}
+            {bodyWithMidBook.blocks}
           </article>
 
           {/* County figures, on the county permit guides only (CountyDataSection.tsx for the rules). */}
           <CountyDataSection slug={article.slug} onNavigate={onNavigate} />
 
-          {/* The book on phones and tablets; desktop carries it in the right rail instead. */}
-          <BookPromoCard className="lg:hidden" />
+          {/* The book on phones and tablets sits mid-article (owner, 2026-11-26); a guide with fewer
+              than two ## sections has no middle, so it keeps the card here instead. Desktop carries
+              the book in the right rail. */}
+          {!bodyWithMidBook.placed && <BookPromoCard className="lg:hidden" />}
 
           <ArticleClosingNote onNavigate={onNavigate} />
 
