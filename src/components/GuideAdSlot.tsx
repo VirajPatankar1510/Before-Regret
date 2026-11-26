@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Phone, ExternalLink, ArrowDown, Megaphone } from 'lucide-react';
+import { Phone, ExternalLink, ChevronRight, Megaphone } from 'lucide-react';
 import { guessBusinessPhraseFromTitle, guessTradeCategoryFromTitle } from '../data/guideAdCategoryGuess';
 import { reportAdClick } from '../utils/adClickBeacon';
 
@@ -116,28 +116,38 @@ export const GuideAdVendorCard: React.FC<{ vendor: ActiveVendor }> = ({ vendor }
  *  for fiction, so it can't reach anyone even if copied. The trade matches the guide's. */
 export const GuideAdOpenSlot: React.FC<{ guideTitle: string; guideSlug?: string }> = ({ guideTitle, guideSlug }) => {
   const href = guideSlug ? `/topic-ads/?guide=${encodeURIComponent(guideSlug)}` : '/topic-ads/';
-  // ONE section, not two (owner, 2026-11-19): the demo sits inside the same highlighted box (navy until the 2026-11-23 Apple pass, pale blue since), under the
-  // pitch row, as a preview. The box itself is a div because the demo card contains links; only the
-  // pitch row is the link to /topic-ads/.
+  // ONE section, not two (owner, 2026-11-19): the demo sits inside the same highlighted box, under
+  // the pitch row, as a preview.
+  //
+  // THE WHOLE BOX IS ONE LINK (owner, 2026-11-26: the "Advertise here" pill "looks same and feels
+  // duplicate" next to the demo's Call pill; "what would Apple do ... the entire section should be
+  // clickable"). So: one tile, one action, and the only call to action is a quiet blue text link,
+  // leaving the demo's Call pill as the one button in the box. The demo contains <a> elements, and a
+  // link inside a link is invalid HTML, so the box isn't wrapped in <a>: one link's ::after is
+  // stretched over the whole box instead (the "stretched link" pattern). The demo already has
+  // pointer-events: none, so a tap anywhere -- including on the example Call button -- lands on the
+  // stretched link and opens /topic-ads/. It never dials: the demo stays inert.
   return (
-    <div className={`${OPEN_SLOT_MIN_HEIGHT} bg-blue-50 text-home-ink rounded-2xl p-4 sm:p-5`}>
-      <a href={href} className="group block">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-5">
-          <div className="flex items-start gap-3 min-w-0">
-            <span className="hidden sm:flex shrink-0 w-9 h-9 rounded-full bg-blue-100 items-center justify-center" aria-hidden="true">
-              <Megaphone className="w-4 h-4 text-blue-600" />
-            </span>
-            <span className="min-w-0">
-              <span className="block text-base font-bold leading-snug group-hover:underline underline-offset-2">
-                Are you in the {guessBusinessPhraseFromTitle(guideTitle)} business?
-              </span>
-            </span>
-          </div>
-          <span className="shrink-0 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 sm:py-3 bg-blue-600 text-white text-sm font-bold rounded-full group-hover:bg-blue-700">
-            Advertise here <ArrowDown className="w-4 h-4" aria-hidden="true" />
+    <div
+      className={`${OPEN_SLOT_MIN_HEIGHT} group relative bg-blue-50 text-home-ink rounded-2xl p-4 sm:p-5 transition-shadow duration-300 hover:shadow-[0_10px_30px_-12px_rgba(0,0,0,0.25)] focus-within:ring-2 focus-within:ring-blue-600`}
+    >
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-5">
+        <div className="flex items-start gap-3 min-w-0">
+          <span className="hidden sm:flex shrink-0 w-9 h-9 rounded-full bg-blue-100 items-center justify-center" aria-hidden="true">
+            <Megaphone className="w-4 h-4 text-blue-600" />
+          </span>
+          <span className="block text-base font-bold leading-snug">
+            Are you in the {guessBusinessPhraseFromTitle(guideTitle)} business?
           </span>
         </div>
-      </a>
+        <a
+          href={href}
+          className="shrink-0 inline-flex items-center gap-0.5 text-[15px] font-semibold text-blue-600 group-hover:underline underline-offset-2 focus:outline-none after:absolute after:inset-0 after:rounded-2xl after:content-['']"
+        >
+          Advertise here
+          <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+        </a>
+      </div>
       <div
         className="mt-4 border-t border-blue-100 pt-4 pointer-events-none select-none"
         role="img"
