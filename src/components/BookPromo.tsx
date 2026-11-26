@@ -60,7 +60,7 @@ export const BookPromoSkyscraper: React.FC = () => (
     <p className="text-[28px] font-semibold leading-[1.08] tracking-tight">{HOOK}</p>
     <p className="mt-3 text-[15px] leading-snug text-[#424245]">{SUBHOOK}</p>
     <a href={BOOK_CLICK_PATH} target="_blank" rel={BOOK_LINK_REL} aria-hidden="true" tabIndex={-1} className="mt-6 block">
-      <Cover className="mx-auto w-[190px] h-auto rounded-[4px] shadow-[0_24px_40px_-12px_rgba(0,0,0,0.45)]" />
+      <Cover className="mx-auto w-[230px] h-auto rounded-[4px] shadow-[0_24px_40px_-12px_rgba(0,0,0,0.45)]" />
     </a>
     <p className="mt-6 text-[15px] font-semibold leading-snug">{BOOK.title}</p>
     <p className="text-[13px] text-[#6e6e73]">by {BOOK.author}</p>
@@ -80,18 +80,20 @@ export const BookPromoCard: React.FC<{ className?: string; inArticle?: boolean }
     aria-label={`Book: ${BOOK.title}`}
     className={`${inArticle ? 'rounded-3xl bg-[#f5f5f7] text-[#1d1d1f]' : surface} p-5 sm:p-7 ${className}`}
   >
-    {/* Headline across the full card first: beside the cover, a 375px phone squeezed it to three
-        words a line and wrapped the button. The cover then sits beside the title and the button. */}
+    {/* Headline across the full card first. On phones the cover then stands large and centred, with
+        the title and a full-width button under it (owner 2026-11-26: "increase the size of the book's
+        image"; beside the text it could only be ~84px wide on a 375px phone). From sm up the cover
+        sits beside the title and button again. */}
     <p className="text-[28px] sm:text-3xl font-semibold leading-[1.08] tracking-tight">{HOOK}</p>
     <p className="mt-2 text-[15px] leading-snug text-[#424245]">{SUBHOOK}</p>
-    <div className="mt-5 flex gap-4 sm:gap-7 items-center">
+    <div className="mt-5 flex flex-col items-center text-center gap-4 sm:flex-row sm:text-left sm:gap-7">
       <a href={BOOK_CLICK_PATH} target="_blank" rel={BOOK_LINK_REL} aria-hidden="true" tabIndex={-1} className="shrink-0">
-        <Cover className="w-[84px] sm:w-[130px] h-auto rounded-[3px] shadow-[0_16px_28px_-10px_rgba(0,0,0,0.45)]" />
+        <Cover className="w-[170px] sm:w-[180px] h-auto rounded-[3px] shadow-[0_16px_28px_-10px_rgba(0,0,0,0.45)]" />
       </a>
-      <div className="min-w-0">
+      <div className="min-w-0 w-full sm:w-auto">
         <p className="text-sm font-semibold leading-snug">{BOOK.title}</p>
         <p className="text-[13px] text-[#6e6e73]">by {BOOK.author}</p>
-        <a href={BOOK_CLICK_PATH} target="_blank" rel={BOOK_LINK_REL} className={`${button} mt-3 whitespace-nowrap px-4 sm:px-5 py-2.5 text-sm`}>
+        <a href={BOOK_CLICK_PATH} target="_blank" rel={BOOK_LINK_REL} className={`${button} mt-3 w-full sm:w-auto whitespace-nowrap px-5 py-2.5 text-sm`}>
           <span>{CTA}</span>
           <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
         </a>
