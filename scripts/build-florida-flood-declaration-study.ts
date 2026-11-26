@@ -128,6 +128,100 @@ const KEY_FINDINGS = keyFindingsBlock([
   `In past major disasters, FEMA approved ${Math.round(allAppr / allRegs * 100)}% of ${num(allRegs)} homeowner registrations from these seven counties and paid ${usd(allPerAppr)} on average per approved registration; the housing-assistance maximum for a disaster declared on or after 1 October 2026 is ${usd(CAP)}.`,
 ], `Sources: FEMA OpenFEMA NFIP claims and residential penetration rates; FEMA Housing Assistance (Owners) and Disaster Declarations Summaries, read ${fmtDate(READ_ON)}; analysis by Before Regret. Figures describe past claims and past disasters, not the ${fmtDate(incidentBegin)} storms.`);
 
+
+// ---- County lookup: on the page and as an embeddable widget ------------------------------------
+// Same contract as the other studies' embeds: framework-free, no network request (seven rows sit
+// inline), the caveat and the credit travel inside the iframe, and the widget reports its height.
+const lkData = rows.map((r) => ({
+  n: `${r.county} County, FL`,
+  c: r.claims, s: r.outsideShare, rk: r.flRank, t: r.takeup,
+  g: r.aidRegs, a: Math.round(r.aidApprovalShare * 100), p: r.aidPerApproved, h: r.households,
+}));
+const LK_CSS = `
+  .lookup{border:1px solid #e5e0d8;background:#fdfcfa;padding:1.1rem 1.2rem;margin:0 0 2rem}
+  .lk-eyebrow{font:700 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8a6d3b;margin:0 0 .7rem}
+  .lookup select{width:100%;font:400 15px/1.4 ui-sans-serif,system-ui,sans-serif;padding:.55rem .6rem;border:1px solid #cfc8bd;background:#fff;color:#1a1a1a;border-radius:2px}
+  .lk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(7.5rem,1fr));gap:1px;background:#e5e0d8;border:1px solid #e5e0d8;margin:.9rem 0 0}
+  .lk-cell{background:#fdfcfa;padding:.65rem .7rem}
+  .lk-cell b{display:block;font:700 1.25rem/1.1 ui-sans-serif,system-ui,sans-serif;letter-spacing:-.02em}
+  .lk-cell span{display:block;font:400 11px/1.35 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b;margin-top:.25rem}
+  .lk-note{font:400 12px/1.5 ui-sans-serif,system-ui,sans-serif;color:#4a4a4a;margin:.7rem 0 0}
+  .lk-caveat{font:400 11.5px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b;margin:.8rem 0 0;border-top:1px solid #ece8e1;padding-top:.7rem}`;
+const LK_MARKUP = `<div class="lookup">
+    <p class="lk-eyebrow">Look up a county in FEMA declaration DR-${DR}-FL</p>
+    <label for="lkpick" style="position:absolute;left:-9999px">Choose a county</label>
+    <select id="lkpick"><option value="">Choose a county&hellip;</option></select>
+    <div id="lkout" aria-live="polite"></div>
+    <p class="lk-caveat">Past records, not this flood: NFIP claims to ${fmtDate(zone.claimsThrough)},
+    take-up as of ${fmtDate(zone.penetrationAsOf)}, FEMA aid for disasters declared ${fmtDate(aidFig.declarationRange.first)}
+    to ${fmtDate(aidFig.declarationRange.last)}. Take-up counts NFIP policies only. County figures say
+    nothing about any one house.</p>
+  </div>`;
+const LK_DATA = `<script type="application/json" id="ffd-data">${JSON.stringify({ floor: RANK_FLOOR, ranked: flZoneCounties.length, fl: flState.share, rows: lkData })}</script>`;
+const LK_JS = `<script>
+(function(){
+  var D=JSON.parse(document.getElementById('ffd-data').textContent),d=D.rows;
+  var s=document.getElementById('lkpick'),o=document.getElementById('lkout');
+  d.forEach(function(c,i){var e=document.createElement('option');e.value=i;e.textContent=c.n;s.appendChild(e);});
+  function cell(v,l){return '<div class="lk-cell"><b>'+v+'</b><span>'+l+'</span></div>';}
+  function sfx(n){var t=n%100;if(t>10&&t<14)return n+'th';return n+(['th','st','nd','rd'][n%10]||'th');}
+  s.addEventListener('change',function(){
+    if(s.value===''){o.innerHTML='';return;}
+    var c=d[+s.value];
+    o.innerHTML='<div class="lk-grid">'
+      +cell(c.s.toFixed(1)+'%','of '+c.c.toLocaleString('en-US')+' flood claims were outside the mapped high-risk zone (Florida '+D.fl.toFixed(1)+'%)')
+      +cell(c.rk?sfx(c.rk)+' of '+D.ranked:'&ndash;',c.rk?'in Florida for that share':'too few claims to rank (under '+D.floor.toLocaleString('en-US')+')')
+      +cell(c.t.toFixed(1)+'%','of homes inside the mapped zone have an NFIP policy')
+      +cell('$'+c.p.toLocaleString('en-US'),'average FEMA aid per approved homeowner, past disasters')
+      +'</div><p class="lk-note">'+c.g.toLocaleString('en-US')+' past FEMA homeowner registrations, '+c.a+'% approved. '
+      +(c.h?'Household aid is declared here under DR-${DR}.':'Household aid is not declared here under DR-${DR}; check FEMA for changes.')+'</p>';
+  });
+})();
+</script>`;
+const embedHtml = `<!doctype html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flood claims outside the flood zone, DR-${DR}-FL counties &mdash; Before Regret</title>
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="${STUDY_URL}">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;padding:16px;background:#fdfcfa;color:#1a1a1a;font:16px/1.6 Charter,Georgia,serif;-webkit-font-smoothing:antialiased}
+${LK_CSS}
+  .lookup{max-width:680px;margin:0 auto}
+  .embed-credit{max-width:680px;margin:12px auto 0;font:400 11px/1.4 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b;text-align:right}
+  .embed-credit a{color:#8a6d3b}
+</style>
+</head>
+<body>
+${LK_MARKUP}
+<p class="embed-credit"><a href="${STUDY_URL}" target="_blank" rel="noopener">The flood-zone line in Florida&rsquo;s newest disaster counties</a> &mdash; Before Regret</p>
+${LK_DATA}
+${LK_JS}
+<script>
+(function(){
+  function post(){
+    var h=Math.ceil(document.documentElement.getBoundingClientRect().height);
+    try{parent.postMessage({beforeRegretEmbedHeight:h},'*');}catch(e){}
+  }
+  if(window.ResizeObserver) new ResizeObserver(post).observe(document.body);
+  window.addEventListener('load',post);
+  setTimeout(post,60);
+})();
+</script>
+</body>
+</html>
+`;
+const EMBED_BOX = `<div class="cite"><b>Embed the county lookup</b>Free to use, no tracking, no
+  attribution required beyond the credit line it carries.
+  <pre class="snippet">&lt;iframe src="${STUDY_URL}embed/"
+        width="100%" height="420" style="border:1px solid #e5e0d8"
+        title="Flood claims outside the flood zone, DR-${DR}-FL counties"
+        loading="lazy"&gt;&lt;/iframe&gt;</pre>
+  It posts its own height to the parent page as <code>beforeRegretEmbedHeight</code>.</div>`;
+
 const html = `<style>
   .wrap{max-width:46rem;margin:0 auto;padding:2.5rem 1.25rem 4rem;font:16px/1.65 Charter,Georgia,'Times New Roman',serif;color:#1a1a1a}
   .wrap *{box-sizing:border-box}
@@ -156,6 +250,9 @@ const html = `<style>
   .cite b{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8a6d3b;margin-bottom:.5rem}
   .wrap a{color:#8a6d3b}
   footer.spine{margin:2rem 0 0;padding-top:1.2rem;border-top:1px solid #e5e0d8;font:400 12.5px/1.7 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b}
+  .snippet{background:#fff;border:1px solid #e5e0d8;padding:.7rem .8rem;margin:.7rem 0;overflow-x:auto;font:400 11.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#4a4a4a;white-space:pre}
+  .cite code{font:400 12px ui-monospace,SFMono-Regular,Menlo,monospace;background:#fff;padding:.1em .3em;border:1px solid #e5e0d8}
+${LK_CSS}
   @media(max-width:560px){.wrap h1{font-size:1.85rem}}
 ${KF_CSS}
 </style>
@@ -184,6 +281,8 @@ ${KF_CSS}
   owner there can actually use.</p></div>
 
   ${KEY_FINDINGS}
+
+  ${LK_MARKUP}
 
   <h2>The declaration</h2>
   <h3>Seven counties, and help for households in ${hhCounties.length} of them.</h3>
@@ -290,6 +389,8 @@ ${aidRows}
   how many homes flooded, or what any one house&rsquo;s risk is. These are county records, not
   findings about a particular property.</p>
 
+  ${EMBED_BOX}
+
   <div class="cite"><b>Cite this</b>Before Regret, &ldquo;The flood-zone line in Florida&rsquo;s
   newest disaster counties,&rdquo; ${PUBLISHED}, ${STUDY_URL}. Free to reuse under
   <a href="https://creativecommons.org/licenses/by/4.0/" rel="license noopener">CC BY 4.0</a> with a
@@ -300,6 +401,7 @@ ${aidRows}
 </div>`;
 
 assertKeyFindingsNumbers(html, 'build-florida-flood-declaration-study');
+for (const need of ['lk-caveat', 'embed-credit', 'ffd-data', 'noindex']) if (!embedHtml.includes(need)) throw new Error(`ABORT: embed lost ${need}`);
 for (const r of rows) if (!html.includes(`<td>${r.county}`)) throw new Error(`ABORT: ${r.county} missing from a table`);
 
 const figures = {
@@ -321,7 +423,8 @@ const figures = {
 const csvHead = ['county', 'state', 'household_aid_declared_dr4956', 'classifiable_nfip_claims', 'pct_claims_outside_mapped_zone', 'paid_on_out_of_zone_claims_usd', 'florida_rank_out_of_zone_share', 'nfip_takeup_inside_mapped_zone_pct', 'nfip_policies_inside_zone', 'homes_inside_mapped_zone', 'fema_owner_registrations_since_2002', 'fema_owner_approved', 'fema_owner_aid_usd', 'fema_aid_per_approved_usd'];
 const csv = [csvHead.join(','), ...rows.map((r) => [r.county, 'FL', r.households, r.claims, r.outsideShare, r.paidOutside, r.flRank ?? '', r.takeup, r.policies, r.zoneHomes, r.aidRegs, r.aidApproved, r.aidUsd, r.aidPerApproved].join(','))].join('\n') + '\n';
 
-fs.writeFileSync(path.join(process.cwd(), 'docs', 'florida-flood-declaration.html'), html);
+fs.writeFileSync(path.join(process.cwd(), 'docs', 'florida-flood-declaration.html'), html.replace(/<\/div>\s*$/, () => `</div>\n${LK_DATA}\n${LK_JS}`));
+fs.writeFileSync(path.join(process.cwd(), 'docs', 'florida-flood-declaration.embed.html'), embedHtml);
 fs.writeFileSync(D('florida-flood-declaration-figures.json'), JSON.stringify(figures, null, 2) + '\n');
 fs.writeFileSync(D('florida-flood-declaration-by-county.csv'), csv);
 console.log(`wrote docs/florida-flood-declaration.html (${(html.length / 1024).toFixed(1)} KB); Brevard ${brevard.outsideShare}% (FL rank ${brevard.flRank}/${flZoneCounties.length}), FL ${flState.share}%; aid ${allRegs} regs, $${allPerAppr}/approved; cap $${CAP}`);

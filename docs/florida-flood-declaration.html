@@ -26,6 +26,18 @@
   .cite b{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8a6d3b;margin-bottom:.5rem}
   .wrap a{color:#8a6d3b}
   footer.spine{margin:2rem 0 0;padding-top:1.2rem;border-top:1px solid #e5e0d8;font:400 12.5px/1.7 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b}
+  .snippet{background:#fff;border:1px solid #e5e0d8;padding:.7rem .8rem;margin:.7rem 0;overflow-x:auto;font:400 11.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#4a4a4a;white-space:pre}
+  .cite code{font:400 12px ui-monospace,SFMono-Regular,Menlo,monospace;background:#fff;padding:.1em .3em;border:1px solid #e5e0d8}
+
+  .lookup{border:1px solid #e5e0d8;background:#fdfcfa;padding:1.1rem 1.2rem;margin:0 0 2rem}
+  .lk-eyebrow{font:700 11px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8a6d3b;margin:0 0 .7rem}
+  .lookup select{width:100%;font:400 15px/1.4 ui-sans-serif,system-ui,sans-serif;padding:.55rem .6rem;border:1px solid #cfc8bd;background:#fff;color:#1a1a1a;border-radius:2px}
+  .lk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(7.5rem,1fr));gap:1px;background:#e5e0d8;border:1px solid #e5e0d8;margin:.9rem 0 0}
+  .lk-cell{background:#fdfcfa;padding:.65rem .7rem}
+  .lk-cell b{display:block;font:700 1.25rem/1.1 ui-sans-serif,system-ui,sans-serif;letter-spacing:-.02em}
+  .lk-cell span{display:block;font:400 11px/1.35 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b;margin-top:.25rem}
+  .lk-note{font:400 12px/1.5 ui-sans-serif,system-ui,sans-serif;color:#4a4a4a;margin:.7rem 0 0}
+  .lk-caveat{font:400 11.5px/1.5 ui-sans-serif,system-ui,sans-serif;color:#6b6b6b;margin:.8rem 0 0;border-top:1px solid #ece8e1;padding-top:.7rem}
   @media(max-width:560px){.wrap h1{font-size:1.85rem}}
   .kf{border:1px solid #dfe5e2;background:#fbfcfb;padding:1rem 1.2rem .4rem;margin:1.6rem 0 2rem}
   .kf h2{margin:0 0 .7rem;padding:0;border:0;font-size:1.15rem}
@@ -67,6 +79,17 @@
     </ul>
     <p class="kf-src">Sources: FEMA OpenFEMA NFIP claims and residential penetration rates; FEMA Housing Assistance (Owners) and Disaster Declarations Summaries, read 27 November 2026; analysis by Before Regret. Figures describe past claims and past disasters, not the 31 October 2026 storms.</p>
   </section>
+
+  <div class="lookup">
+    <p class="lk-eyebrow">Look up a county in FEMA declaration DR-4956-FL</p>
+    <label for="lkpick" style="position:absolute;left:-9999px">Choose a county</label>
+    <select id="lkpick"><option value="">Choose a county&hellip;</option></select>
+    <div id="lkout" aria-live="polite"></div>
+    <p class="lk-caveat">Past records, not this flood: NFIP claims to 1 June 2026,
+    take-up as of 3 August 2026, FEMA aid for disasters declared 5 November 2002
+    to 27 October 2026. Take-up counts NFIP policies only. County figures say
+    nothing about any one house.</p>
+  </div>
 
   <h2>The declaration</h2>
   <h3>Seven counties, and help for households in 6 of them.</h3>
@@ -191,6 +214,14 @@
   how many homes flooded, or what any one house&rsquo;s risk is. These are county records, not
   findings about a particular property.</p>
 
+  <div class="cite"><b>Embed the county lookup</b>Free to use, no tracking, no
+  attribution required beyond the credit line it carries.
+  <pre class="snippet">&lt;iframe src="https://www.beforeregret.com/research/florida-flood-declaration/embed/"
+        width="100%" height="420" style="border:1px solid #e5e0d8"
+        title="Flood claims outside the flood zone, DR-4956-FL counties"
+        loading="lazy"&gt;&lt;/iframe&gt;</pre>
+  It posts its own height to the parent page as <code>beforeRegretEmbedHeight</code>.</div>
+
   <div class="cite"><b>Cite this</b>Before Regret, &ldquo;The flood-zone line in Florida&rsquo;s
   newest disaster counties,&rdquo; 27 November 2026, https://www.beforeregret.com/research/florida-flood-declaration/. Free to reuse under
   <a href="https://creativecommons.org/licenses/by/4.0/" rel="license noopener">CC BY 4.0</a> with a
@@ -199,3 +230,24 @@
 
   <footer class="spine">Published 27 November 2026. Part of <a href="/research/">Before Regret research</a>.</footer>
 </div>
+<script type="application/json" id="ffd-data">{"floor":500,"ranked":41,"fl":14.8,"rows":[{"n":"Brevard County, FL","c":5667,"s":61,"rk":1,"t":47,"g":131796,"a":37,"p":1776,"h":true},{"n":"Hardee County, FL","c":128,"s":44.5,"rk":null,"t":14.9,"g":12539,"a":52,"p":3831,"h":false},{"n":"Indian River County, FL","c":3336,"s":39.6,"rk":11,"t":51.7,"g":45100,"a":44,"p":1854,"h":true},{"n":"Martin County, FL","c":2583,"s":40.5,"rk":10,"t":77.8,"g":34868,"a":45,"p":1765,"h":true},{"n":"Okeechobee County, FL","c":293,"s":26.3,"rk":null,"t":21.9,"g":15903,"a":48,"p":2497,"h":true},{"n":"Palm Beach County, FL","c":10422,"s":50,"rk":5,"t":43.4,"g":272422,"a":37,"p":1600,"h":true},{"n":"St. Lucie County, FL","c":3953,"s":25,"rk":19,"t":44,"g":91840,"a":38,"p":2060,"h":true}]}</script>
+<script>
+(function(){
+  var D=JSON.parse(document.getElementById('ffd-data').textContent),d=D.rows;
+  var s=document.getElementById('lkpick'),o=document.getElementById('lkout');
+  d.forEach(function(c,i){var e=document.createElement('option');e.value=i;e.textContent=c.n;s.appendChild(e);});
+  function cell(v,l){return '<div class="lk-cell"><b>'+v+'</b><span>'+l+'</span></div>';}
+  function sfx(n){var t=n%100;if(t>10&&t<14)return n+'th';return n+(['th','st','nd','rd'][n%10]||'th');}
+  s.addEventListener('change',function(){
+    if(s.value===''){o.innerHTML='';return;}
+    var c=d[+s.value];
+    o.innerHTML='<div class="lk-grid">'
+      +cell(c.s.toFixed(1)+'%','of '+c.c.toLocaleString('en-US')+' flood claims were outside the mapped high-risk zone (Florida '+D.fl.toFixed(1)+'%)')
+      +cell(c.rk?sfx(c.rk)+' of '+D.ranked:'&ndash;',c.rk?'in Florida for that share':'too few claims to rank (under '+D.floor.toLocaleString('en-US')+')')
+      +cell(c.t.toFixed(1)+'%','of homes inside the mapped zone have an NFIP policy')
+      +cell('$'+c.p.toLocaleString('en-US'),'average FEMA aid per approved homeowner, past disasters')
+      +'</div><p class="lk-note">'+c.g.toLocaleString('en-US')+' past FEMA homeowner registrations, '+c.a+'% approved. '
+      +(c.h?'Household aid is declared here under DR-4956.':'Household aid is not declared here under DR-4956; check FEMA for changes.')+'</p>';
+  });
+})();
+</script>
