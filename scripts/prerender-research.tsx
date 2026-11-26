@@ -303,7 +303,9 @@ function derivedDataset(opts: {
     alternateName: rm.alternateName,
     keywords,
     measurementTechnique: rm.measurementTechnique,
-    isBasedOn: rm.isBasedOn.map((name) => ({ '@type': 'Dataset', name })),
+    // Source names only, so CreativeWork, not Dataset: Google's Rich Results Test validates a nested
+    // Dataset as a full one and failed each of these on a missing description (2026-11-27).
+    isBasedOn: rm.isBasedOn.map((name) => ({ '@type': 'CreativeWork', name })),
     ...(opts.citation ? { citation: opts.citation } : {}),
     ...(opts.dateModified ? { dateModified: opts.dateModified } : {}),
     ...(measured.length ? { variableMeasured: measured } : {}),
