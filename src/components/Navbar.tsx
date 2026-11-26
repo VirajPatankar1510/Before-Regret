@@ -15,8 +15,11 @@ interface NavbarProps {
 // The header, cut down 2026-11-16 at the owner's request: Guides, About & Methodology, For
 // businesses, Search Another Address and the Free Report button were all removed, and the mobile
 // menu with them. What is left is the logo (which still goes back to the homepage address search)
-// and ONE link, "For Advertisers", shown at every width -- a plain text link, not a button (owner,
-// 2026-11-16). The other destinations are still in the
+// and ONE link, shown at every width -- a plain text link, not a button (owner, 2026-11-16).
+// Its label was "For Advertisers" until 2026-11-26, when the owner agreed to "For Businesses": a
+// plumber doesn't call themselves an advertiser until after they buy, the ad slot already asks "Are
+// you in the ... business?", and "For Pros" was passed over because buyers could read it as the
+// removed Find a Pro directory. The click key stays 'nav_for_advertisers' so the count continues. The other destinations are still in the
 // footer on every page (Footer.tsx / StaticFooterLinks.tsx).
 //
 // The account pill stays for a signed-in visitor -- it is the only way to sign out or reach My Ads
@@ -73,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }}
               className="px-1 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors"
             >
-              For Advertisers
+              For Businesses
             </a>
 
             {user && (
