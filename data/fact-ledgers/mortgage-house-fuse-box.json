@@ -1,0 +1,110 @@
+{
+  "_about": "New guide 2026-11-26 (answer-ready-writing), report-4 plan #9. Every number and rule in the body traces to an entry here.",
+  "slug": "mortgage-house-fuse-box",
+  "question": "Can you get a mortgage (FHA, VA, conventional) on a house with a fuse box?",
+  "verdictConfirmed": "Usually yes: the word 'fuse' appears in none of the FHA, VA or Fannie Mae property rules we read. A fuse box stops a loan through the appraisal (visible frayed or exposed wiring; FHA also reports amperage and panel size that look inadequate; Fannie Mae won't buy a C6 loan) or through insurance (Fannie Mae requires fire coverage, and accepts a state FAIR plan only when it is the only coverage obtainable).",
+  "demand": "Tier 3 for the mortgage question itself: 'fuse box mortgage' 0 Bing broad impressions in our 2026-11-26 capture (data/keywords/2026-11-26-demand-federal-pacific-insurance-bing.json), no GSC rows. Format evidence: #338 knob-and-tube mortgage 1.11% CTR and #76 fuse-box insurance 2.40% CTR (docs/plans/report-4-articles-2026-11.md). EXPERIMENT.",
+  "ourWork": [
+    {
+      "what": "Full-text search of HUD Handbook 4000.1 (1,871 pages, last revised 08/13/2025) on 2026-11-26",
+      "detail": "'fuse' 0 hits; 'circuit breaker' 0 hits; amperage appears on two PDF pages only: page 854 (appraiser, electrical system) and page 556 (Standard 203(k) consultant item 28, 100 amp service)"
+    },
+    {
+      "what": "Full-text search of VA Pamphlet 26-7 Chapter 12 (Minimum Property Requirements) on 2026-11-26",
+      "detail": "'fuse', 'breaker', 'amp' and 'amperage' 0 hits; the electrical rules are Topic 14 a-c"
+    },
+    {
+      "what": "Text search of Fannie Mae Selling Guide B4-1.3-06 on 2026-11-26",
+      "detail": "'fuse' 0 hits"
+    },
+    {
+      "what": "Our report engine's panel replacement range",
+      "detail": "electrical_panel_brand typicalRepairCost 'Panel replacement $1,500 – $4,000' (src/engine/inspectionPriorities.ts)"
+    }
+  ],
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "HUD Handbook 4000.1, last revised 08/13/2025, 1,871 pages: our search found 'fuse' 0 times and 'circuit breaker' 0 times; amperage appears only on PDF pages 556 and 854.",
+      "quote": "Handbook 4000.1 ... Last Revised: 08/13/2025 -- full-text search of all 1,871 pages on 2026-11-26: 'fuse' 0 hits; 'circuit breaker' 0 hits; amp/amperage on PDF pages 556 and 854 only",
+      "url": "https://web.archive.org/web/20250930180250id_/https://www.hud.gov/sites/dfiles/OCHCO/documents/40001-hsgh-update16-5.pdf",
+      "readOn": "2026-11-26",
+      "method": "pdf"
+    },
+    {
+      "id": "f2",
+      "claim": "FHA appraiser, electrical system: examine for visible frayed or exposed wires including garage and basement; report if amperage and panel size appear inadequate; operate a sample of switches, fixtures and receptacles; not required to open the panel.",
+      "quote": "The Appraiser must examine the electrical system to ensure that there is no visible frayed wiring or exposed wires in the dwelling, including garage and basement areas, and report if the amperage and panel size appears inadequate for the Property. The Appraiser must operate a sample of switches, lighting fixtures, and receptacles inside the house and garage, and on the exterior walls, and report any deficiencies. The Appraiser is not required to insert any tool, probe or testing device inside the electrical panel",
+      "url": "HUD Handbook 4000.1 II.D.3, Electrical System (PDF p. 854)",
+      "readOn": "2026-11-26",
+      "method": "pdf"
+    },
+    {
+      "id": "f3",
+      "claim": "FHA: if the appraiser can't tell whether the property meets MPR, an inspection by a qualified person may be required; listed conditions include faulty or defective electrical systems. Lender may approve only after all defects reported by the appraiser are corrected.",
+      "quote": "If the Appraiser cannot determine that a Property meets HUD's MPR or MPS, an inspection by a qualified individual or entity may be required. Conditions that require an inspection ... include ... faulty or defective mechanical systems (electrical, plumbing or heating/cooling) | The Mortgagee may only approve a Property after the Mortgagee confirms that all defects reported by the Appraiser have been corrected.",
+      "url": "HUD Handbook 4000.1 II.D.3 and II.A.3.a (PDF pp. 834, 204) -- read 2026-10-17 for guide #338, same file",
+      "readOn": "2026-10-17",
+      "method": "pdf"
+    },
+    {
+      "id": "f4",
+      "claim": "FHA 203(k): Limited 203(k) total rehabilitation costs may not exceed $75,000 and include electrical systems; on the Standard 203(k) consultant write-up, item 28 Electrical requires the amp service to be upgraded to the greater of 100 amp or local code.",
+      "quote": "The total rehabilitation costs may not exceed $75,000. (1) Types of Improvements Eligible improvement types include ... repairing/replacing plumbing, heating, AC, and electrical systems | 28. Electrical ... Required Work Items: The amp service must be upgraded to the greater of 100 amp or local code.",
+      "url": "HUD Handbook 4000.1 II.A.8 (PDF pp. 426, 556)",
+      "readOn": "2026-11-26",
+      "method": "pdf"
+    },
+    {
+      "id": "f5",
+      "claim": "VA Pamphlet 26-7 Chapter 12, Topic 14 Utilities: each living unit must have electricity; the appraiser does not perform operational checks; any visible frayed or exposed electrical wires must be repaired. Topic 44: MPR waivers should not allow safety issues.",
+      "quote": "a. Electricity Each living unit must have electricity for lighting and for necessary equipment. b. Appraiser Not Conducting Operational Checks Since the appraiser does not perform any operational checks of mechanical systems or appliances, the utilities are not required to be turned on when the appraiser visits the property. c. Electrical Wires Any visible frayed or exposed electrical wires must be repaired. | VA will consider waiving MPR repairs if the following conditions are met: the request is signed by the Veteran, the lender concurs with the Veteran's request, and the property is habitable from the standpoint of safety, structural soundness, and sanitation. These requests should not allow for the Veteran to waive MPRs that could result in safety issues with the home.",
+      "url": "https://web.archive.org/web/20260206203259id_/https://www.benefits.va.gov/WARMS/docs/admin26/m26-07/M26_7_Ch12_MPRs_NEW.docx",
+      "readOn": "2026-11-26",
+      "method": "webfetch"
+    },
+    {
+      "id": "f6",
+      "claim": "Fannie Mae B4-1.3-06 (06/04/2025): if any portion of the dwelling is C6 the whole dwelling is C6; C6 loans are not eligible for sale; deficiencies must be repaired to at least C5 before sale. C6 definition: deficiencies severe enough to affect safety, soundness or structural integrity.",
+      "quote": "B4-1.3-06, Property Condition and Quality of Construction of the Improvements (06/04/2025) ... if any portion of the dwelling is rated a C6, the whole dwelling must be rated a C6. Loans secured by properties with a condition rating of C6 are not eligible for sale to Fannie Mae. Any deficiencies impacting the safety, soundness, or structural integrity of the property must be repaired with a resulting minimum condition rating of C5 prior to sale of the loan.",
+      "url": "https://selling-guide.fanniemae.com/sel/b4-1.3-06/property-condition-and-quality-construction-improvements",
+      "readOn": "2026-11-26",
+      "method": "webfetch"
+    },
+    {
+      "id": "f7",
+      "claim": "Fannie Mae B7-3-02 (08/05/2026): property insurance for 1-4 unit properties should be on a Special form; required perils start with fire or lightning; if a policy excludes or limits a required peril, the borrower must obtain an acceptable policy for it.",
+      "quote": "B7-3-02, Property Insurance Requirements for One-to Four-Unit Properties (08/05/2026) ... At a minimum, the coverage must include the perils listed in the following table. Required Perils Fire or lightning Explosion Windstorm ... If a property insurance policy excludes or limits coverage of any of the required perils, the borrower must obtain an acceptable policy",
+      "url": "https://selling-guide.fanniemae.com/sel/b7-3-02/property-insurance-requirements-one-four-unit-properties",
+      "readOn": "2026-11-26",
+      "method": "webfetch"
+    },
+    {
+      "id": "f8",
+      "claim": "Fannie Mae B7-3-01 (12/14/2022): the borrower picks the insurer; Fannie Mae accepts policies from state insurance plans, including a FAIR plan, only if they are the only coverage obtainable at closing or renewal.",
+      "quote": "B7-3-01, General Property Insurance Requirements for All Property Types (12/14/2022) ... The borrower has the right to select the insurer of their choice to provide property insurance for the subject property, provided that the insurance meets Fannie Mae's requirements. The lender or servicer must ensure that the insurer, policy, and coverage meet Fannie Mae's requirements. ... Fannie Mae also accepts the following types of property insurance policies if they are the only coverage that can be obtained at the time of the loan closing or policy renewal: policies obtained through state or territory insurance plans, including a state's Fair Access to Insurance Requirements (FAIR) plan",
+      "url": "https://selling-guide.fanniemae.com/sel/b7-3-01/general-property-insurance-requirements-all-property-types",
+      "readOn": "2026-11-26",
+      "method": "webfetch"
+    },
+    {
+      "id": "f9",
+      "claim": "Our report engine's panel replacement range is $1,500 – $4,000.",
+      "quote": "typicalRepairCost: 'Panel replacement $1,500 – $4,000'",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES electrical_panel_brand)",
+      "readOn": "2026-11-26",
+      "method": "engine"
+    }
+  ],
+  "cut": [
+    { "claim": "FHA requires at least 60 amps / will not insure a house with fuses", "why": "repeated on lending blogs; neither 'fuse' nor any minimum amperage for a purchase appears in the 1,871-page handbook" },
+    { "claim": "USDA Rural Development property rules for electrical systems", "why": "rd.usda.gov returned 403 to our request on 2026-11-26; not worked around" },
+    { "claim": "Freddie Mac condition and insurance rules", "why": "not read this session" },
+    { "claim": "FHA forward-mortgage hazard insurance requirement at origination", "why": "our search found HECM and servicing passages only; not stated" }
+  ],
+  "blockedSources": [
+    "hud.gov (Cloudflare bot check) -- read HUD's own PDF from the Internet Archive instead",
+    "benefits.va.gov / KnowVA -- read VA's own Chapter 12 file from the Internet Archive",
+    "rd.usda.gov HB-1-3555 Chapter 12 (403, 2026-11-26)"
+  ]
+}
