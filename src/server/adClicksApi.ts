@@ -63,10 +63,14 @@ async function recordClick(
   // was crawled at all -- and the first time a vendor called one of those "leads" back, the number
   // would be exposed as fiction.
   if (detectAiCrawler(String(req.headers['user-agent'] || ''))) return;
+  // Country only (owner request 2026-11-26: "are those clicks from the USA?"). Vercel sets this
+  // header on every request; anything that isn't a plain two-letter code is stored as NULL.
+  const rawCountry = String(req.headers['x-vercel-ip-country'] || '').toUpperCase();
+  const country = /^[A-Z]{2}$/.test(rawCountry) ? rawCountry : null;
   try {
     await withDb((sql) => sql`
-      INSERT INTO vendor_ad_clicks (ad_kind, purchase_id, target, click_day, visitor_hash)
-      VALUES (${adKind}, ${purchaseId}, ${target}, current_date, ${hashVisitor(req)})
+      INSERT INTO vendor_ad_clicks (ad_kind, purchase_id, target, click_day, visitor_hash, country)
+      VALUES (${adKind}, ${purchaseId}, ${target}, current_date, ${hashVisitor(req)}, ${country})
       ON CONFLICT DO NOTHING
     `);
   } catch (err) {

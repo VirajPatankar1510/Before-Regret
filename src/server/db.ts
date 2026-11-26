@@ -610,6 +610,9 @@ export async function ensureArticlesSchema(): Promise<void> {
     CREATE INDEX IF NOT EXISTS idx_vendor_ad_clicks_lookup
     ON vendor_ad_clicks(ad_kind, purchase_id, click_day)
   `;
+  // Visitor's country (two-letter code from Vercel's x-vercel-ip-country header) since 2026-11-26,
+  // so a click report can say how many came from the US. Country only; NULL on older rows.
+  await sql`ALTER TABLE vendor_ad_clicks ADD COLUMN IF NOT EXISTS country TEXT`;
 
   // Clicks on "get a report" calls to action, per page (src/server/ctaClicksApi.ts, 2026-10-14).
   // Unique per page, CTA, visitor and day; the visitor is a salted hash, never an IP.
