@@ -1,0 +1,233 @@
+{
+  "title": "The flood-zone line in Florida’s newest disaster counties",
+  "generated": "2026-11-26",
+  "declaration": {
+    "disasterNumber": 4956,
+    "state": "FL",
+    "declared": "2026-11-24",
+    "incidentBegin": "2026-10-31",
+    "title": "SEVERE STORMS AND FLOODING",
+    "source": "https://www.fema.gov/api/open/v2/DisasterDeclarationsSummaries?$filter=disasterNumber eq 4956",
+    "counties": [
+      {
+        "name": "Brevard",
+        "households": true,
+        "publicAssistance": true
+      },
+      {
+        "name": "Hardee",
+        "households": false,
+        "publicAssistance": true
+      },
+      {
+        "name": "Indian River",
+        "households": true,
+        "publicAssistance": true
+      },
+      {
+        "name": "Martin",
+        "households": true,
+        "publicAssistance": true
+      },
+      {
+        "name": "Okeechobee",
+        "households": true,
+        "publicAssistance": true
+      },
+      {
+        "name": "Palm Beach",
+        "households": true,
+        "publicAssistance": true
+      },
+      {
+        "name": "St. Lucie",
+        "households": true,
+        "publicAssistance": false
+      }
+    ]
+  },
+  "sources": {
+    "claims": "docs/data/flood-outside-zone.json (OpenFEMA FimaNfipClaims, claims through 2026-06-01)",
+    "takeup": "docs/data/flood-takeup.json (OpenFEMA NfipResidentialPenetrationRates, as of 2026-08-03)",
+    "aid": "docs/data/fema-aid-gap-lookup.json (OpenFEMA HousingAssistanceOwners, declared 2002-11-05 to 2026-10-27)"
+  },
+  "florida": {
+    "classifiableClaims": 444150,
+    "outsideShare": 14.8,
+    "takeupInsideZone": 56.8
+  },
+  "rankFloorClaims": 500,
+  "floridaCountiesRanked": 41,
+  "ihpMaximumUsd": 46400,
+  "sevenCounties": {
+    "claims": 26382,
+    "paidOutsideUsd": 123292481,
+    "aidRegistrations": 604468,
+    "aidApproved": 234144,
+    "aidUsd": 428427362,
+    "aidPerApprovedUsd": 1830
+  },
+  "counties": [
+    {
+      "county": "Brevard",
+      "households": true,
+      "claims": 5667,
+      "outsideShare": 61,
+      "paidOutside": 39854838,
+      "flRank": 1,
+      "takeup": 47,
+      "policies": 8018,
+      "zoneHomes": 17068,
+      "aidRegs": 131796,
+      "aidApproved": 48340,
+      "aidUsd": 85860696,
+      "aidDisasters": 12,
+      "aidPerApproved": 1776,
+      "aidApprovalShare": 0.3667789614252329,
+      "topDisaster": {
+        "title": "Hurricane Frances (2004)",
+        "regs": 40825,
+        "approved": 20203,
+        "usd": 24812878
+      }
+    },
+    {
+      "county": "Hardee",
+      "households": false,
+      "claims": 128,
+      "outsideShare": 44.5,
+      "paidOutside": 2469453,
+      "flRank": null,
+      "takeup": 14.9,
+      "policies": 72,
+      "zoneHomes": 484,
+      "aidRegs": 12539,
+      "aidApproved": 6577,
+      "aidUsd": 25193211,
+      "aidDisasters": 7,
+      "aidPerApproved": 3831,
+      "aidApprovalShare": 0.5245234867214291,
+      "topDisaster": {
+        "title": "Tropical Storm Bonnie and Hurricane Charley (2004)",
+        "regs": 4283,
+        "approved": 2724,
+        "usd": 7516448
+      }
+    },
+    {
+      "county": "Indian River",
+      "households": true,
+      "claims": 3336,
+      "outsideShare": 39.6,
+      "paidOutside": 20081151,
+      "flRank": 11,
+      "takeup": 51.7,
+      "policies": 4985,
+      "zoneHomes": 9634,
+      "aidRegs": 45100,
+      "aidApproved": 19901,
+      "aidUsd": 36900326,
+      "aidDisasters": 9,
+      "aidPerApproved": 1854,
+      "aidApprovalShare": 0.4412638580931264,
+      "topDisaster": {
+        "title": "Hurricane Frances (2004)",
+        "regs": 17106,
+        "approved": 8381,
+        "usd": 12767202
+      }
+    },
+    {
+      "county": "Martin",
+      "households": true,
+      "claims": 2583,
+      "outsideShare": 40.5,
+      "paidOutside": 13603594,
+      "flRank": 10,
+      "takeup": 77.8,
+      "policies": 3037,
+      "zoneHomes": 3905,
+      "aidRegs": 34868,
+      "aidApproved": 15780,
+      "aidUsd": 27847962,
+      "aidDisasters": 8,
+      "aidPerApproved": 1765,
+      "aidApprovalShare": 0.4525639554892738,
+      "topDisaster": {
+        "title": "Hurricane Frances (2004)",
+        "regs": 12677,
+        "approved": 6593,
+        "usd": 10171675
+      }
+    },
+    {
+      "county": "Okeechobee",
+      "households": true,
+      "claims": 293,
+      "outsideShare": 26.3,
+      "paidOutside": 673125,
+      "flRank": null,
+      "takeup": 21.9,
+      "policies": 993,
+      "zoneHomes": 4529,
+      "aidRegs": 15903,
+      "aidApproved": 7635,
+      "aidUsd": 19061308,
+      "aidDisasters": 10,
+      "aidPerApproved": 2497,
+      "aidApprovalShare": 0.48009809469911335,
+      "topDisaster": {
+        "title": "Hurricane Jeanne (2004)",
+        "regs": 4379,
+        "approved": 2804,
+        "usd": 8242629
+      }
+    },
+    {
+      "county": "Palm Beach",
+      "households": true,
+      "claims": 10422,
+      "outsideShare": 50,
+      "paidOutside": 32270985,
+      "flRank": 5,
+      "takeup": 43.4,
+      "policies": 18933,
+      "zoneHomes": 43577,
+      "aidRegs": 272422,
+      "aidApproved": 100923,
+      "aidUsd": 161480386,
+      "aidDisasters": 9,
+      "aidPerApproved": 1600,
+      "aidApprovalShare": 0.37046567457841145,
+      "topDisaster": {
+        "title": "Hurricane Wilma (2005)",
+        "regs": 81528,
+        "approved": 33343,
+        "usd": 52556522
+      }
+    },
+    {
+      "county": "St. Lucie",
+      "households": true,
+      "claims": 3953,
+      "outsideShare": 25,
+      "paidOutside": 14339335,
+      "flRank": 19,
+      "takeup": 44,
+      "policies": 2702,
+      "zoneHomes": 6144,
+      "aidRegs": 91840,
+      "aidApproved": 34988,
+      "aidUsd": 72083473,
+      "aidDisasters": 8,
+      "aidPerApproved": 2060,
+      "aidApprovalShare": 0.3809668989547038,
+      "topDisaster": {
+        "title": "Hurricane Frances (2004)",
+        "regs": 33300,
+        "approved": 15282,
+        "usd": 23774447
+      }
+    }
+  ]
+}

@@ -616,6 +616,17 @@ async function run() {
         return `Every ${g.year} HMDA home-purchase application a lender approved or denied (${n(g.records)} records, FFIEC), counted by denial reason. ${n(g.national.denied)} denied; ${n(g.national.collateralDenials)} named collateral (HMDA reason 4; Regulation B sample notice: "Value or type of collateral not sufficient"). Typical buyer (first lien, principal residence, single unit): collateral in ${(t.collateralShareOfDeniedWithReasons * 100).toFixed(1)}% of denials with reasons, ${t.collateralDenialsPer1000.toFixed(1)} per 1,000 applications. Site-built homes by census-tract median housing age: ${age.map((a: { tractMedianAge: string; all: { collateralDenialsPer1000: number } }) => `${a.tractMedianAge} ${a.all.collateralDenialsPer1000.toFixed(1)}`).join(', ')} per 1,000. HMDA does not say whether collateral meant value, condition or property type. Buyer rights: appraisal copy (12 CFR 1002.14), specific reasons within 30 days (12 CFR 1002.9). By county and state. Embeddable county lookup: https://www.beforeregret.com/research/mortgage-denied-collateral/embed/`;
       })(),
       data: ['mortgage-denied-collateral-by-county.csv', 'mortgage-denied-collateral-by-state.csv', 'mortgage-denied-collateral-figures.json'] },
+    // Thirteenth study (2026-11-27), tied to FEMA declaration DR-4956-FL. Summary READ from its figures file.
+    { slug: 'florida-flood-declaration', title: 'The Flood-Zone Line in Florida’s Newest Disaster Counties',
+      summary: ((): string => {
+        const p = path.join(process.cwd(), 'docs', 'data', 'florida-flood-declaration-figures.json');
+        if (!fs.existsSync(p)) throw new Error('[prerender-guides] llms.txt lists florida-flood-declaration but its figures file is missing -- run scripts/build-florida-flood-declaration-study.ts');
+        const g = JSON.parse(fs.readFileSync(p, 'utf8'));
+        const n = (v: number) => Math.round(v).toLocaleString('en-US');
+        const parts = g.counties.map((c: { county: string; outsideShare: number; claims: number; takeup: number }) => `${c.county} ${c.outsideShare}% of ${n(c.claims)} claims, take-up ${c.takeup}%`).join('; ');
+        return `The ${g.counties.length} Florida counties in FEMA major disaster declaration DR-${g.declaration.disasterNumber}-FL (severe storms and flooding, declared ${g.declaration.declared}), read from OpenFEMA, against our earlier NFIP and FEMA aid analyses. Share of classifiable NFIP claims (to June 2026) rated outside the mapped high-risk zone, and NFIP take-up inside it: ${parts}. Florida: ${g.florida.outsideShare}% outside, ${g.florida.takeupInsideZone}% take-up. Past FEMA homeowner aid in these counties: ${n(g.sevenCounties.aidRegistrations)} registrations, $${n(g.sevenCounties.aidPerApprovedUsd)} per approved. Housing assistance maximum for this declaration $${n(g.ihpMaximumUsd)}. Figures predate the storms in this declaration.`;
+      })(),
+      data: ['florida-flood-declaration-by-county.csv', 'florida-flood-declaration-figures.json'] },
   ];
   // Asserted against docs/ rather than dist/, because prerender-research.tsx runs AFTER this script
   // in the build, so dist/research/ does not exist yet at this point. docs/<slug>.html is the source

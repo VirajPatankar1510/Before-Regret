@@ -97,6 +97,13 @@ export const RESEARCHER_META: Record<string, ResearcherMeta> = {
     isBasedOn: ['FEMA OpenFEMA, Individuals and Households Program - Housing Assistance Program Data - Owners, v2', 'FEMA OpenFEMA, Disaster Declarations Summaries, v2'],
     glance: { what: 'What FEMA approved for homeowners after major disasters, against the damage its inspectors recorded, by county and by disaster.', unit: 'County; disaster by state', key: 'State and county as reported to FEMA (no FIPS column); FEMA disaster number', period: 'Major disasters declared 2002 to 2026' },
   },
+  'florida-flood-declaration': {
+    alternateName: ['FEMA DR-4956-FL counties: NFIP claims outside the mapped flood zone, flood insurance take-up and past FEMA homeowner aid', 'Florida flood disaster declaration November 2026 county flood data'],
+    keywords: ['DR-4956 Florida flood data', 'Brevard County flood claims outside flood zone', 'NFIP claims by county Florida', 'flood insurance take-up Florida counties', 'FEMA homeowner aid Florida counties', 'Treasure Coast flood insurance data', 'Florida flood zone X claims'],
+    measurementTechnique: 'The seven counties in FEMA declaration DR-4956-FL (read from Disaster Declarations Summaries) looked up in three earlier Before Regret analyses: NFIP claims by rated flood zone, NFIP residential penetration rates, and FEMA Housing Assistance for owners; compared with Florida statewide.',
+    isBasedOn: ['FEMA OpenFEMA, Disaster Declarations Summaries, v2', 'FEMA OpenFEMA, FIMA NFIP Redacted Claims', 'FEMA OpenFEMA, NFIP Residential Penetration Rates', 'FEMA OpenFEMA, Individuals and Households Program - Housing Assistance Program Data - Owners, v2'],
+    glance: { what: 'For each county in Florida\'s November 2026 flood declaration: the share of past flood claims outside the mapped high-risk zone, flood insurance take-up inside it, and past FEMA aid to homeowners.', unit: 'County (seven Florida counties)', key: 'County name, state FL', period: 'NFIP claims 1970s to June 2026; take-up as of August 2026; FEMA aid for disasters declared 2002 to October 2026' },
+  },
   'mortgage-denied-collateral': {
     alternateName: ['HMDA mortgage denials citing collateral by county', 'Home purchase loan denial reasons, HMDA 2024'],
     keywords: ['HMDA denial reasons by county', 'mortgage denial collateral data', 'HMDA denial_reason collateral analysis', 'appraisal-related mortgage denials data', 'home purchase loan denial rates by county', 'HMDA 2024 loan application register analysis', 'mortgage denials by tract median housing age'],

@@ -1,0 +1,8 @@
+county,state,household_aid_declared_dr4956,classifiable_nfip_claims,pct_claims_outside_mapped_zone,paid_on_out_of_zone_claims_usd,florida_rank_out_of_zone_share,nfip_takeup_inside_mapped_zone_pct,nfip_policies_inside_zone,homes_inside_mapped_zone,fema_owner_registrations_since_2002,fema_owner_approved,fema_owner_aid_usd,fema_aid_per_approved_usd
+Brevard,FL,true,5667,61,39854838,1,47,8018,17068,131796,48340,85860696,1776
+Hardee,FL,false,128,44.5,2469453,,14.9,72,484,12539,6577,25193211,3831
+Indian River,FL,true,3336,39.6,20081151,11,51.7,4985,9634,45100,19901,36900326,1854
+Martin,FL,true,2583,40.5,13603594,10,77.8,3037,3905,34868,15780,27847962,1765
+Okeechobee,FL,true,293,26.3,673125,,21.9,993,4529,15903,7635,19061308,2497
+Palm Beach,FL,true,10422,50,32270985,5,43.4,18933,43577,272422,100923,161480386,1600
+St. Lucie,FL,true,3953,25,14339335,19,44,2702,6144,91840,34988,72083473,2060

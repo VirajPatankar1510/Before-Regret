@@ -216,6 +216,7 @@ export async function generateChildSitemapXml(name: string): Promise<string | nu
       { loc: `${BASE_URL}/research/built-to-code/`, lastmod: '2026-11-25', changefreq: 'yearly', priority: '0.8' },
       { loc: `${BASE_URL}/research/fema-aid-gap/`, lastmod: '2026-11-25', changefreq: 'yearly', priority: '0.8' },
       { loc: `${BASE_URL}/research/mortgage-denied-collateral/`, lastmod: '2026-11-25', changefreq: 'yearly', priority: '0.8' },
+      { loc: `${BASE_URL}/research/florida-flood-declaration/`, lastmod: '2026-11-27', changefreq: 'yearly', priority: '0.8' },
       // Recognition pages (2026-11-23). Re-checked and re-dated when the tests are re-run, so monthly.
       { loc: `${BASE_URL}/research/permit-search-done-right/`, lastmod: '2026-11-23', changefreq: 'monthly', priority: '0.7' },
       { loc: `${BASE_URL}/research/explainer-awards/`, lastmod: '2026-11-23', changefreq: 'monthly', priority: '0.7' },
