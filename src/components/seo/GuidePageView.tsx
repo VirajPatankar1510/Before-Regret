@@ -57,17 +57,17 @@ function readPreloadedGuide(slug: string): Article | null {
 }
 
 export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavigate }) => {
-  const [article, setArticle] = useState<Article | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Seeded from the article embedded in the page, so the first render is the guide itself rather
+  // than a loading spinner over the prerendered HTML (measured 2026-11-27; createRoot() discards
+  // that HTML, so a spinner on first render was visible to every visitor).
+  const [article, setArticle] = useState<Article | null>(() => readPreloadedGuide(guideSlug));
+  const [loading, setLoading] = useState(() => article === null);
   const [notFound, setNotFound] = useState(false);
   const [allGuides, setAllGuides] = useState<GuideSummary[]>([]);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    setNotFound(false);
-    setArticle(null);
 
     // Skip the network entirely when the exact guide being rendered is already embedded in the
     // page -- see readPreloadedGuide above. This is the fix for a real production bug: Google's
@@ -77,10 +77,16 @@ export const GuidePageView: React.FC<GuidePageViewProps> = ({ guideSlug, onNavig
     // guide genuinely not existing. A fetch that never has to happen can't fail like that.
     const preloaded = readPreloadedGuide(guideSlug);
     if (preloaded) {
-      setArticle(preloaded);
+      // Keep the object the initial state already holds, so the first render isn't redone.
+      setArticle((prev) => (prev?.slug === guideSlug ? prev : preloaded));
+      setNotFound(false);
       setLoading(false);
       return;
     }
+
+    setLoading(true);
+    setNotFound(false);
+    setArticle(null);
 
     fetch(`/api/guides/${encodeURIComponent(guideSlug)}`)
       .then((res) => {

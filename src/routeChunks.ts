@@ -12,8 +12,9 @@
 // What makes it safe now is that main.tsx awaits the chunk this module names BEFORE it calls
 // createRoot(). Until React mounts, the prerendered HTML is simply still sitting in the document
 // being displayed, so "not mounted yet" looks identical to "mounted" -- there is no intermediate
-// state to flash. The Suspense boundary in App.tsx is never reached for these routes, because by
-// the time the tree renders, lazy() already has its module resolved synchronously in cache.
+// state to flash. The Suspense boundary in App.tsx is never reached for these routes because App.tsx
+// renders the preloaded module directly (getPreloadedRouteModule below), not through lazy(); lazy()
+// alone would still suspend once even with the module cached (measured 2026-11-27).
 //
 // The homepage is the entire point: it matches none of these, awaits nothing, and no longer
 // carries any of their code. PageSpeed measured 58.9 KiB of the 119 KiB entry bundle as never
@@ -117,10 +118,31 @@ export function prerenderedRouteForPath(pathname: string): PrerenderedRouteKey |
  * Suspense spinner and React's own retry, which is a far better failure mode than a page that
  * never boots. That is why main.tsx can call this without a catch.
  */
+type RouteModules = { [K in PrerenderedRouteKey]: Awaited<ReturnType<(typeof routeChunkLoaders)[K]>> };
+
+// Modules main.tsx finished loading BEFORE createRoot(). Measured 2026-11-27: awaiting the chunk was
+// NOT enough on its own. React.lazy() does not know a module is already in cache -- on its first
+// render it calls its factory, gets a fresh (pending) promise and suspends anyway, and React 19 then
+// keeps a revealed Suspense fallback on screen for at least 300ms. A prerendered guide went
+// article -> spinner -> article over ~330ms. App.tsx's preloadedLazy() reads this map and renders
+// the module directly when it is here, so lazy() is never reached for the page the visitor landed on.
+// Only written here (before mount), never by lazy() itself, so a component never switches between
+// its lazy and direct forms while mounted (that would remount it and drop its state).
+const preloadedModules: Partial<RouteModules> = {};
+
+export function getPreloadedRouteModule<K extends PrerenderedRouteKey>(key: K): RouteModules[K] | undefined {
+  return preloadedModules[key] as RouteModules[K] | undefined;
+}
+
 export function preloadRouteChunk(pathname: string): Promise<unknown> {
   const key = prerenderedRouteForPath(pathname);
   if (!key) return Promise.resolve();
-  return routeChunkLoaders[key]().catch((err) => {
-    console.warn(`[routeChunks] Could not preload the "${key}" chunk; mounting anyway.`, err);
-  });
+  return routeChunkLoaders[key]()
+    .then((mod) => {
+      preloadedModules[key] = mod;
+      return mod;
+    })
+    .catch((err) => {
+      console.warn(`[routeChunks] Could not preload the "${key}" chunk; mounting anyway.`, err);
+    });
 }

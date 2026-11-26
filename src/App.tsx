@@ -17,7 +17,7 @@ import { AdDetailsReminder } from './components/AdDetailsReminder';
 import { applyHeadSeo } from './utils/headSeo';
 import { WALKTHROUGH_JSON_LD } from './data/walkthroughChecks';
 import { RESEARCH_PATH, freshResearch, saveResearch } from './components/research/researchState';
-import { routeChunkLoaders } from './routeChunks';
+import { routeChunkLoaders, getPreloadedRouteModule, type PrerenderedRouteKey } from './routeChunks';
 // Not a new dependency on the homepage's bundle: Hero.tsx (rendered by this file, never lazy)
 // already imports FaqSection, so this module is in the homepage graph regardless.
 import { HOMEPAGE_FAQS, HOMEPAGE_DEFINITIONS } from './components/home/FaqSection';
@@ -47,7 +47,7 @@ const Vendors = lazy(() => import('./components/Vendors').then((m) => ({ default
 const GuideAdsCheckout = lazy(() => import('./components/GuideAdsCheckout').then((m) => ({ default: m.GuideAdsCheckout })));
 const GuideAdsCheckoutSuccess = lazy(() => import('./components/GuideAdsCheckoutSuccess').then((m) => ({ default: m.GuideAdsCheckoutSuccess })));
 const ZipAdsCheckoutSuccess = lazy(() => import('./components/ZipAdsCheckoutSuccess').then((m) => ({ default: m.ZipAdsCheckoutSuccess })));
-const AdvertiseCompare = lazy(() => import('./components/AdvertiseCompare').then((m) => ({ default: m.AdvertiseCompare })));
+
 const MyAdsPanel = lazy(() => import('./components/MyAdsPanel').then((m) => ({ default: m.MyAdsPanel })));
 // Inspection Report Decoder (2026-10-30): an in-browser tool, no AI or outside API. Noindex while it's a preview.
 const InspectionDecoder = lazy(() => import('./components/InspectionDecoder').then((m) => ({ default: m.InspectionDecoder })));
@@ -62,16 +62,33 @@ const PaymentCancelled = lazy(() => import('./components/PaymentCancelled').then
 // import() so this file and main.tsx's pre-mount await resolve the identical module specifier --
 // if the two ever drifted apart, main.tsx would dutifully warm one chunk while lazy() requested a
 // different one, and the flash these are ordered around would come straight back.
-const GuidePageView = lazy(() => routeChunkLoaders.guide().then((m) => ({ default: m.GuidePageView })));
-const GuidesIndexView = lazy(() => routeChunkLoaders.guidesIndex().then((m) => ({ default: m.GuidesIndexView })));
-const AboutMethodology = lazy(() => routeChunkLoaders.about().then((m) => ({ default: m.AboutMethodology })));
-const ContactUs = lazy(() => routeChunkLoaders.support().then((m) => ({ default: m.ContactUs })));
-const TermsConditions = lazy(() => routeChunkLoaders.terms().then((m) => ({ default: m.TermsConditions })));
-const PrivacyPolicy = lazy(() => routeChunkLoaders.privacy().then((m) => ({ default: m.PrivacyPolicy })));
-const RefundPolicy = lazy(() => routeChunkLoaders.refunds().then((m) => ({ default: m.RefundPolicy })));
-const Disclaimer = lazy(() => routeChunkLoaders.disclaimer().then((m) => ({ default: m.Disclaimer })));
-const WalkthroughRadar = lazy(() => routeChunkLoaders.walkthrough().then((m) => ({ default: m.WalkthroughRadar })));
-const Accessibility = lazy(() => routeChunkLoaders.accessibility().then((m) => ({ default: m.Accessibility })));
+// lazy(), except that a module main.tsx already loaded before mount is rendered directly. See
+// getPreloadedRouteModule in routeChunks.ts for why lazy() alone still flashed a spinner. The choice
+// is made per render but cannot flip while mounted: the preloaded map is only written before mount.
+function preloadedLazy<K extends PrerenderedRouteKey, P extends object>(
+  key: K,
+  pick: (m: Awaited<ReturnType<(typeof routeChunkLoaders)[K]>>) => React.ComponentType<P>,
+): React.FC<P> {
+  const Lazy = lazy(() => routeChunkLoaders[key]().then((m) => ({ default: pick(m as Awaited<ReturnType<(typeof routeChunkLoaders)[K]>>) })));
+  const Preloadable: React.FC<P> = (props) => {
+    const mod = getPreloadedRouteModule(key);
+    const Component = (mod ? pick(mod) : Lazy) as React.ComponentType<P>;
+    return <Component {...props} />;
+  };
+  return Preloadable;
+}
+
+const GuidePageView = preloadedLazy('guide', (m) => m.GuidePageView);
+const GuidesIndexView = preloadedLazy('guidesIndex', (m) => m.GuidesIndexView);
+const AboutMethodology = preloadedLazy('about', (m) => m.AboutMethodology);
+const ContactUs = preloadedLazy('support', (m) => m.ContactUs);
+const TermsConditions = preloadedLazy('terms', (m) => m.TermsConditions);
+const PrivacyPolicy = preloadedLazy('privacy', (m) => m.PrivacyPolicy);
+const RefundPolicy = preloadedLazy('refunds', (m) => m.RefundPolicy);
+const Disclaimer = preloadedLazy('disclaimer', (m) => m.Disclaimer);
+const WalkthroughRadar = preloadedLazy('walkthrough', (m) => m.WalkthroughRadar);
+const Accessibility = preloadedLazy('accessibility', (m) => m.Accessibility);
+const AdvertiseCompare = preloadedLazy('advertise', (m) => m.AdvertiseCompare);
 
 /** Shown only while a split chunk above is in flight -- never on a prerendered landing page. */
 const RouteChunkFallback: React.FC = () => (
@@ -80,11 +97,134 @@ const RouteChunkFallback: React.FC = () => (
   </div>
 );
 
+// Active PSEO / legal route.
+type PseoRoute = {
+  type: 'admin' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'disclaimer' | 'accessibility' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'inspectionDecoder' | 'houseResearch' | 'walkthrough' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'reportUnavailable' | 'none';
+  guideSlug?: string;
+  // 'reportUnavailable' only. A report permalink is the link people actually SHARE, so the two
+  // reasons it can fail need different words: a generic "404 — Page Not Found" tells someone who
+  // was sent a link that the site is broken, and tells someone hitting a transient database blip
+  // that their report is gone. Neither is true.
+  reportFailure?: 'not_found' | 'unavailable';
+};
+
+// Which pSEO / legal route a URL is, as plain data. Pure on purpose: App's useState initialisers call
+// it so the FIRST render already draws the page the URL names. Before 2026-11-27 the route was only
+// set in the mount effect, so a deep link rendered the homepage Hero for one commit, then the route
+// (measured: the prerendered guide was replaced by the homepage, then a spinner, for ~330ms).
+const routeForPath = (pathname: string): PseoRoute | null => {
+  // Normalize path trailing slash
+  const path = pathname.endsWith('/') ? pathname : `${pathname}/`;
+
+  // Checked before the generic /report-ads match below, same reasoning as /topic-ads/success
+  // above -- PayPal's return redirect must land on the capture page, not the checkout form.
+  if (path === '/report-ads/success/' || path.startsWith('/report-ads/success')) {
+    return { type: 'vendorsSuccess' };
+  }
+  if (path === '/report-ads/' || path.startsWith('/report-ads')) {
+    return { type: 'vendors' };
+  }
+
+  // /report-ads and /topic-ads are two structurally different products (per-ZIP-and-trade slots
+  // vs. per-guide-page slots) with their own checkout flows -- kept as separate routes so
+  // neither page has to explain the other. /advertise is deliberately neither: it's the shared
+  // funnel entry point (linked from GuideAdSlot.tsx's recruitment CTA and from outside links)
+  // that compares both before sending the vendor to whichever checkout fits. Checked before the
+  // two checkout routes below since /advertise no longer aliases straight to topic-ads.
+  if (path === '/advertise/' || path.startsWith('/advertise')) {
+    return { type: 'advertiseCompare' };
+  }
+
+  // The vendor placement manager -- checked here rather than folded into either checkout route,
+  // since a vendor with both a topic ad and a report ad needs one place that covers both.
+  if (path === '/my-ads/' || path.startsWith('/my-ads')) {
+    return { type: 'myAds' };
+  }
+
+  if (path === '/tools/inspection-decoder/' || path === '/tools/inspection-decoder') {
+    return { type: 'inspectionDecoder' };
+  }
+
+  if (path === '/tools/house-research/') {
+    return { type: 'houseResearch' };
+  }
+
+  if (path === '/topic-ads/success/' || path.startsWith('/topic-ads/success')) {
+    return { type: 'guideAdsSuccess' };
+  }
+  if (path === '/topic-ads/' || path.startsWith('/topic-ads')) {
+    return { type: 'guideAds' };
+  }
+
+  if (path === '/walkthrough/' || path.startsWith('/walkthrough')) {
+    return { type: 'walkthrough' };
+  }
+
+  if (path === '/about/' || path.startsWith('/about')) {
+    return { type: 'about' };
+  }
+
+  if (path === '/support/' || path.startsWith('/support')) {
+    return { type: 'support' };
+  }
+
+  if (path === '/terms/' || path.startsWith('/terms')) {
+    return { type: 'terms' };
+  }
+
+  if (path === '/privacy/' || path.startsWith('/privacy')) {
+    return { type: 'privacy' };
+  }
+
+  if (path === '/refunds/' || path.startsWith('/refunds') || path.startsWith('/refund-policy')) {
+    return { type: 'refunds' };
+  }
+
+  if (path === '/disclaimer/' || path.startsWith('/disclaimer')) {
+    return { type: 'disclaimer' };
+  }
+
+  if (path === '/accessibility/' || path.startsWith('/accessibility')) {
+    return { type: 'accessibility' };
+  }
+
+  if (path === '/payment-success/' || path.startsWith('/payment-success')) {
+    return { type: 'paymentSuccess' };
+  }
+
+  if (path === '/payment-cancelled/' || path.startsWith('/payment-cancelled')) {
+    return { type: 'paymentCancelled' };
+  }
+
+  if (path.startsWith('/admin/seo')) {
+    return { type: 'admin' };
+  }
+
+  if (path.startsWith('/guides/')) {
+    const parts = path.split('/').filter(Boolean);
+    if (parts.length >= 2) {
+      return { type: 'guide', guideSlug: parts[1] };
+    }
+    // Exact /guides/ (no slug) -- the hub every guide should be reachable from. Checked after
+    // the slug case above only for readability; parts.length distinguishes them unambiguously.
+    return { type: 'guidesIndex' };
+  }
+
+  // /state/* and /compare/* routes (city/state/zip hubs, topic pages, zip comparisons) were
+  // removed along with the fabricated per-ZIP dataset they rendered. Old URLs in those two
+  // trees fall through to `return false` below, which the caller treats as "no route matched."
+
+  return null;
+};
+
 export function App() {
   const { getToken } = useAuth();
 
   // Session state restoration to continue where left off after auth login/signup
   const [currentStep, setCurrentStep] = useState<'HOME' | 'RESEARCHING' | 'SUMMARY' | 'REPORT' | 'PSEO'>(() => {
+    // A pSEO / legal URL renders that page on the first render (see routeForPath), whatever a
+    // previous page left in sessionStorage -- the mount effect would override it to 'PSEO' anyway.
+    if (typeof window !== 'undefined' && routeForPath(window.location.pathname)) return 'PSEO';
     try {
       const saved = sessionStorage.getItem('beforeregret_session_state');
       if (saved) {
@@ -158,164 +298,20 @@ export function App() {
     } catch (e) {}
   }, [currentStep, selectedProperty, summaryData, report]);
 
-  // Active PSEO / Legal Route State
-  const [pseoRoute, setPseoRoute] = useState<{
-    type: 'admin' | 'guidesIndex' | 'guide' | 'countiesIndex' | 'county' | 'about' | 'support' | 'terms' | 'privacy' | 'refunds' | 'disclaimer' | 'accessibility' | 'vendors' | 'vendorsSuccess' | 'guideAds' | 'guideAdsSuccess' | 'advertiseCompare' | 'myAds' | 'inspectionDecoder' | 'houseResearch' | 'walkthrough' | 'paymentSuccess' | 'paymentCancelled' | 'notFound' | 'reportUnavailable' | 'none';
-    guideSlug?: string;
-    // 'reportUnavailable' only. A report permalink is the link people actually SHARE, so the two
-    // reasons it can fail need different words: a generic "404 — Page Not Found" tells someone who
-    // was sent a link that the site is broken, and tells someone hitting a transient database blip
-    // that their report is gone. Neither is true.
-    reportFailure?: 'not_found' | 'unavailable';
-  }>({ type: 'none' });
+  // Active PSEO / Legal Route State (resolved from the URL on the first render; see routeForPath)
+  const [pseoRoute, setPseoRoute] = useState<PseoRoute>(() =>
+    (typeof window !== 'undefined' && routeForPath(window.location.pathname)) || { type: 'none' },
+  );
 
-  // Function to resolve current URL path to route
   const resolveRouteFromPath = (pathname: string) => {
-    // Normalize path trailing slash
-    const path = pathname.endsWith('/') ? pathname : `${pathname}/`;
-
-    // Checked before the generic /report-ads match below, same reasoning as /topic-ads/success
-    // above -- PayPal's return redirect must land on the capture page, not the checkout form.
-    if (path === '/report-ads/success/' || path.startsWith('/report-ads/success')) {
-      setPseoRoute({ type: 'vendorsSuccess' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-    if (path === '/report-ads/' || path.startsWith('/report-ads')) {
-      setPseoRoute({ type: 'vendors' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    // /report-ads and /topic-ads are two structurally different products (per-ZIP-and-trade slots
-    // vs. per-guide-page slots) with their own checkout flows -- kept as separate routes so
-    // neither page has to explain the other. /advertise is deliberately neither: it's the shared
-    // funnel entry point (linked from GuideAdSlot.tsx's recruitment CTA and from outside links)
-    // that compares both before sending the vendor to whichever checkout fits. Checked before the
-    // two checkout routes below since /advertise no longer aliases straight to topic-ads.
-    if (path === '/advertise/' || path.startsWith('/advertise')) {
-      setPseoRoute({ type: 'advertiseCompare' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    // The vendor placement manager -- checked here rather than folded into either checkout route,
-    // since a vendor with both a topic ad and a report ad needs one place that covers both.
-    if (path === '/my-ads/' || path.startsWith('/my-ads')) {
-      setPseoRoute({ type: 'myAds' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path === '/tools/inspection-decoder/' || path === '/tools/inspection-decoder') {
-      setPseoRoute({ type: 'inspectionDecoder' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path === '/tools/house-research/') {
-      setPseoRoute({ type: 'houseResearch' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path === '/topic-ads/success/' || path.startsWith('/topic-ads/success')) {
-      setPseoRoute({ type: 'guideAdsSuccess' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-    if (path === '/topic-ads/' || path.startsWith('/topic-ads')) {
-      setPseoRoute({ type: 'guideAds' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path === '/walkthrough/' || path.startsWith('/walkthrough')) {
-      setPseoRoute({ type: 'walkthrough' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path === '/about/' || path.startsWith('/about')) {
-      setPseoRoute({ type: 'about' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path === '/support/' || path.startsWith('/support')) {
-      setPseoRoute({ type: 'support' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path === '/terms/' || path.startsWith('/terms')) {
-      setPseoRoute({ type: 'terms' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path === '/privacy/' || path.startsWith('/privacy')) {
-      setPseoRoute({ type: 'privacy' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path === '/refunds/' || path.startsWith('/refunds') || path.startsWith('/refund-policy')) {
-      setPseoRoute({ type: 'refunds' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path === '/disclaimer/' || path.startsWith('/disclaimer')) {
-      setPseoRoute({ type: 'disclaimer' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path === '/accessibility/' || path.startsWith('/accessibility')) {
-      setPseoRoute({ type: 'accessibility' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path === '/payment-success/' || path.startsWith('/payment-success')) {
-      setPseoRoute({ type: 'paymentSuccess' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path === '/payment-cancelled/' || path.startsWith('/payment-cancelled')) {
-      setPseoRoute({ type: 'paymentCancelled' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path.startsWith('/admin/seo')) {
-      setPseoRoute({ type: 'admin' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    if (path.startsWith('/guides/')) {
-      const parts = path.split('/').filter(Boolean);
-      if (parts.length >= 2) {
-        setPseoRoute({ type: 'guide', guideSlug: parts[1] });
-        setCurrentStep('PSEO');
-        return true;
-      }
-      // Exact /guides/ (no slug) -- the hub every guide should be reachable from. Checked after
-      // the slug case above only for readability; parts.length distinguishes them unambiguously.
-      setPseoRoute({ type: 'guidesIndex' });
-      setCurrentStep('PSEO');
-      return true;
-    }
-
-    // /state/* and /compare/* routes (city/state/zip hubs, topic pages, zip comparisons) were
-    // removed along with the fabricated per-ZIP dataset they rendered. Old URLs in those two
-    // trees fall through to `return false` below, which the caller treats as "no route matched."
-
-    return false;
+    const route = routeForPath(pathname);
+    if (!route) return false;
+    setPseoRoute(route);
+    setCurrentStep('PSEO');
+    return true;
   };
+
+
 
   const handleNavigate = (targetPath: string) => {
     // Some real pages are NOT app routes: /sunlight/, and every /research/ study are
