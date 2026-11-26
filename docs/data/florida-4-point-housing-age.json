@@ -1,0 +1,27 @@
+{
+  "source": "ACS 2020-2024 5-year, tables B25034 and B25035, api.census.gov, built by scripts/build-florida-4-point-housing-age.ts",
+  "builtOn": "2026-11-26",
+  "name": "Florida",
+  "housingUnits": 10256470,
+  "medianYearBuilt": 1988,
+  "builtBy1999": 6946905,
+  "builtBy1999Pct": 67.7,
+  "built2000to2009": 1851658,
+  "builtBy2009Pct": 85.8,
+  "raw": {
+    "NAME": "Florida",
+    "B25034_001E": "10256470",
+    "B25034_002E": "328925",
+    "B25034_003E": "1128982",
+    "B25034_004E": "1851658",
+    "B25034_005E": "1501701",
+    "B25034_006E": "1953304",
+    "B25034_007E": "1623493",
+    "B25034_008E": "825344",
+    "B25034_009E": "664511",
+    "B25034_010E": "178564",
+    "B25034_011E": "199988",
+    "B25035_001E": "1988",
+    "state": "12"
+  }
+}

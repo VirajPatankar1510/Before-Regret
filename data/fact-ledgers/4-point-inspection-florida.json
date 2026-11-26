@@ -1,0 +1,94 @@
+{
+  "_about": "New guide 2026-11-26 (answer-ready-writing). Owner picked the Florida 4-point form decoder over the Accela status page. Every number and rule in the body traces to an entry here.",
+  "slug": "4-point-inspection-florida",
+  "question": "What does a 4-point inspection check in Florida, and what on the form can hold up insurance on a house I'm buying?",
+  "verdictConfirmed": "The roof, electrical, plumbing and HVAC, recorded on a form with set boxes: age, type and condition of each, plus named hazards. Citizens requires one for homes more than 20 years old, and an agent may not submit an application while a system is not in good working order or has a hazard.",
+  "demand": "Tier 2: Bing market counts 2026-11-26 (data/keywords/2026-11-26-demand-4-point-inspection-bing.json), relative only: '4 point inspection' 465 exact, '4 point inspection florida' 68. No GSC or Bing rows for this site. No existing guide owns the topic (13 mention it in passing; #23, #76, #373 each have one section). Format: insurance-question pages are a proven format; this one is a form decoder, so treated as an experiment with a stop condition.",
+  "ourWork": [
+    {
+      "what": "Line-by-line read of Citizens' Sample Form Insp4pt 03 25 (4 pages) on 2026-11-26, text read in memory from citizensfla.com",
+      "detail": "Electrical: panel type (circuit breaker / fuse), Total Amps, 'Is amperage sufficient for current usage?', cloth wiring, active knob and tube, branch circuit aluminum (COPALUM / AlumiConn repairs), 12 named hazards plus Other (double taps, blowing fuses, exposed wiring, tripping breakers, unsafe wiring, empty sockets, improper breaker size, loose wiring, scorching, improper grounding, corrosion, over fusing), panel age, year last updated, brand/model. Plumbing: supply and drain age (original / completely / partially re-piped), pipe types including polybutylene yes/no, 10 fixtures rated (dishwasher, refrigerator, washing machine, water heater, showers/tubs, toilets, sinks, sump pump, main shut off valve, all other visible), TPR valve, active leak, prior leak, water heater age and location. HVAC: central AC, central heat, good working order, date of last servicing, wood-burning stove or central gas fireplace, space heater as primary heat, air handler / condensate line / drain pan leakage, photo of dated manufacturer's plate. Roof: covering, roof age, remaining useful life, date of last roofing permit, full or partial replacement and %, 8 damage signs (cracking, cupping/curling, excessive granule loss, exposed asphalt, exposed felt, missing/loose/cracked tabs or tiles, soft spots in decking, visible hail damage), leaks in attic or interior ceilings. 6 photo requirements."
+    },
+    {
+      "what": "Census ACS 2020-2024 5-year, Florida, tables B25034 and B25035, run 2026-11-26",
+      "detail": "10,256,470 housing units; median year built 1988; built 1999 or earlier 67.7%; built 2009 or earlier 85.8%; the survey groups the 2000s into one 2000 to 2009 bin, so \"more than 20 years old\" can only be given as a range (docs/data/florida-4-point-housing-age.json, scripts/build-florida-4-point-housing-age.ts)"
+    },
+    {
+      "what": "Our report engine's repair ranges (src/engine/inspectionPriorities.ts)",
+      "detail": "electrical_panel_brand 'Panel replacement $1,500 – $4,000'; electrical_aluminum_wiring 'Typically $2,000 – $8,000+'; knob_and_tube 'Partial to whole-home rewire $8,000 – $30,000+'; polybutylene_supply 'Whole-home repipe $4,000 – $15,000'; hvac_age 'HVAC replacement $6,000 – $15,000; water heater replacement $1,200 – $3,000'; roof_age 'Full replacement $8,000 – $25,000+'"
+    }
+  ],
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "Citizens requires a four-point inspection for property owner, dwelling and mobile home applications for properties more than 20 years old, covering electrical, plumbing, HVAC and roof; serious hazards should be repaired before applying.",
+      "quote": "Citizens requires a four-point inspection for all property owner, dwelling and mobile home applications for properties more than 20 years old. A Florida-licensed inspector will check the home’s electrical system, plumbing, heating/cooling system (HVAC) and roof. The inspector must provide the age, type and condition of the wiring, heating and plumbing systems, and roof. Any serious hazards or deficiencies (such as exposed wiring, active leaks or evidence of leaks) should be repaired before an application for coverage is submitted.",
+      "url": "https://www.citizensfla.com/inspections",
+      "readOn": "2026-11-26",
+      "method": "curl"
+    },
+    {
+      "id": "f2",
+      "claim": "Citizens: roofs older than 25 years (soft, e.g. shingle) or 50 years (hard: tile, slate, clay, concrete, metal) need documentation of at least five years of remaining useful life; less than five means proof of full replacement before a policy is written.",
+      "quote": "Roofs older than 25 years ( soft such as shingle or similar) or 50 years ( hard such as tile, slate, clay, concrete or metal) require documentation showing at least five years of remaining useful life. ... When a roof has less than five years of remaining useful life, the property owner must provide proof of a full-roof replacement to the inspector before any policy is written on the property.",
+      "url": "https://www.citizensfla.com/inspections",
+      "readOn": "2026-11-26",
+      "method": "curl"
+    },
+    {
+      "id": "f3",
+      "claim": "Form Insp4pt 03 25 page 4: this specific form is not required, but any other report must include at least this level of detail.",
+      "quote": "This sample 4-Point Inspection Form includes the minimum data needed for Underwriting to properly evaluate a property application. While this specific form is not required, any other inspection report submitted for consideration must include at least this level of detail to be acceptable.",
+      "url": "https://www.citizensfla.com/documents/20702/48575/4-Point+Inspection+Form.pdf",
+      "readOn": "2026-11-26",
+      "method": "pdf"
+    },
+    {
+      "id": "f4",
+      "claim": "Form page 4: who may sign; a trade professional only their own section.",
+      "quote": "To be accepted, all inspection forms must be completed, signed and dated by a verifiable Florida-licensed professional. Examples include: A general, residential, or building contractor; A building code inspector; A home inspector. Note: A trade-specific, licensed professional may sign off only on the inspection form section for their trade. (e.g., an electrician may sign off only on the electrical section of the form.)",
+      "url": "https://www.citizensfla.com/documents/20702/48575/4-Point+Inspection+Form.pdf",
+      "readOn": "2026-11-26",
+      "method": "pdf"
+    },
+    {
+      "id": "f5",
+      "claim": "Form page 4: acceptable condition defined; agents may not submit applications with systems not in good working order or with existing hazards.",
+      "quote": "Acceptable Condition means that each system is working as intended and there are no visible hazards or deficiencies. ... Agents may not submit applications for properties with electrical, heating or plumbing systems not in good working order or with existing hazards/deficiencies.",
+      "url": "https://www.citizensfla.com/documents/20702/48575/4-Point+Inspection+Form.pdf",
+      "readOn": "2026-11-26",
+      "method": "pdf"
+    },
+    {
+      "id": "f6",
+      "claim": "Form page 1: the information is used only to determine insurability, not a warranty; single-strand aluminum remediation needs separate documentation certified by a licensed electrician.",
+      "quote": "This information only is used to determine insurability and is not a warranty or assurance of the suitability, fitness or longevity of any of the systems inspected. ... Separate documentation of any single strand aluminum wiring remediation must be provided and certified by a licensed electrician.",
+      "url": "https://www.citizensfla.com/documents/20702/48575/4-Point+Inspection+Form.pdf",
+      "readOn": "2026-11-26",
+      "method": "pdf"
+    },
+    {
+      "id": "f7",
+      "claim": "Form page 1 and 4: photo requirements; page 3: with photos of each roof slope the roof section can take the place of the Roof Inspection Form.",
+      "quote": "Photos must accompany each 4-Point Inspection Form. The minimum photo requirements include: Dwelling: Each side; Roof: Each slope; Plumbing: Water heater, under cabinet plumbing/drains, exposed valves; Open main electrical panel and interior door; Electrical box with the panel off; All hazards or deficiencies. ... Roof (With photos of each roof slope, this section can take the place of the Roof Inspection Form.)",
+      "url": "https://www.citizensfla.com/documents/20702/48575/4-Point+Inspection+Form.pdf",
+      "readOn": "2026-11-26",
+      "method": "pdf"
+    },
+    {
+      "id": "f8",
+      "claim": "Fla. Stat. 627.7011(5): an insurer may not refuse to issue or renew solely because of the age of a roof under 15 years old; for a roof at least 15 years old it must allow an inspection, and may not refuse solely on roof age if the inspection shows 5 years or more of useful life remaining; applies to policies issued or renewed on or after July 1, 2022.",
+      "quote": "An insurer may not refuse to issue or refuse to renew a homeowner’s policy insuring a residential structure with a roof that is less than 15 years old solely because of the age of the roof. ... The insurer may not refuse to issue or refuse to renew a homeowner’s insurance policy solely because of roof age if an inspection of the roof of the residential structure performed by an authorized inspector indicates that the roof has 5 years or more of useful life remaining.",
+      "url": "http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0600-0699/0627/Sections/0627.7011.html",
+      "readOn": "2026-11-26",
+      "method": "curl"
+    }
+  ],
+  "cut": [
+    { "claim": "Other Florida insurers' 4-point age thresholds (often quoted as 25, 30 or 40 years)", "why": "no insurer's own rule read; the page tells the reader to ask their agent" },
+    { "claim": "Typical price of a 4-point inspection in Florida", "why": "no first-party or primary source; not stated" },
+    { "claim": "That other insurers use form Insp4pt", "why": "not verified; the page says only that Citizens publishes it and accepts other reports with at least its detail" },
+    { "claim": "How long a 4-point inspection stays valid", "why": "no primary source read" }
+  ],
+  "blockedSources": []
+}
