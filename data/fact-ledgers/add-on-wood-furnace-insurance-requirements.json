@@ -1,0 +1,130 @@
+{
+  "slug": "add-on-wood-furnace-insurance-requirements",
+  "question": "What will an insurer want to see for a house with an add-on wood furnace tied into the existing furnace ductwork?",
+  "verdictConfirmed": "No public rulebook exists; what can be shown is checkable: a UL 391 testing-agency mark on the nameplate, the EPA permanent label on furnaces made on or after May 15, 2015, a permit record and a chimney inspection. Underwriting varies by carrier and state.",
+  "demand": {
+    "capture": "2026-11-24-gsc-queries",
+    "note": "Our own Search Console shows the site shown for 'add on wood furnace insurance requirements' (34 impressions, position 31.2, 28 days to 2026-11-24; 49 at 34.2 in the 2026-11-23 desk read). Relative only, never on the page."
+  },
+  "ourWork": {
+    "date": "2026-11-24",
+    "observations": [
+      "EPA certified wood heater database (cfpub.epa.gov/oarweb/woodstove), Central Heaters basic search, all records, default filters (heat output 0 - 600000 BTUs, emission 0.01 - 0.93 lb/mmBTU, efficiency 0 - 100), 'Include Previously Certified Models' UNCHECKED: 41 central heaters listed, 6 of them Type 'Forced Air Furnace' (5 certified fuel Cord Wood, 1 Wood Pellets), all 6 marked NSPS Compliance 2020 Yes.",
+      "Same search with 'Include Previously Certified Models' CHECKED: 192 central heaters, 27 of them Forced Air Furnace; 18 of the 27 marked NSPS Compliance 2020 No, 9 marked Yes.",
+      "2021 IRC M1402.1 (Central furnaces, General) names oil-fired (ANSI/UL 727) and electric (UL 1995 or UL/CSA/ANCE 60335-2-40) furnaces only; no solid-fuel line. The 2021 IMC 918.1 does name UL 391 for solid fuel furnaces. Read side by side on codes.iccsafe.org."
+    ]
+  },
+  "facts": [
+    {
+      "id": "f1",
+      "claim": "UL 391's scope (section 1.1) covers manually fueled solid-fuel central furnaces, including supplementary central furnaces meant to interconnect with forced-air furnaces using other fuels, i.e. add-on furnaces. Furnaces are intended for chimneys per NFPA 211 and installation per NFPA 90B.",
+      "quote": "1.1 These requirements apply to manually fueled, solid-fuel-fired central furnaces. Included are supplementary central furnaces intended for interconnection with forced-air central furnaces utilizing other fuels, and combination oil-fired and solid-fuel-fired, forced-air central furnaces. 1.2 The furnaces are intended to burn solid fuels, such as wood, coal, or any other biomass fuel, as specified by the manufacturer. 1.3 The furnaces are intended for connection to chimneys for residential and building heating appliances in compliance with the Standard for Chimneys, Fireplaces, Vents, and Solid Fuel Burning Appliances, NFPA 211, and intended for installation in compliance with the Standard for Installation of Warm Air Heating and Air Conditioning Systems, NFPA 90B",
+      "url": "https://www.shopulstandards.com/ProductDetail.aspx?productId=UL391",
+      "readOn": "2026-11-24",
+      "method": "browser"
+    },
+    {
+      "id": "f2",
+      "claim": "UL 391 is titled Standard for Solid-Fuel and Combination-Fuel Central and Supplementary Furnaces; Edition 6, published October 21, 2024.",
+      "quote": "UL 391 ACTIVE Standard for Solid-Fuel and Combination-Fuel Central and Supplementary Furnaces UL Standard Edition 6 (Active) Published Date: October 21, 2024",
+      "url": "https://www.shopulstandards.com/ProductDetail.aspx?productId=UL391",
+      "readOn": "2026-11-24",
+      "method": "browser"
+    },
+    {
+      "id": "f3",
+      "claim": "2021 IRC M1402.1 names standards for oil-fired (UL 727) and electric (UL 1995) central furnaces and nothing for solid fuel; M1402.2 says clearances follow the listing and the manufacturer's instructions.",
+      "quote": "SECTION M1402 CENTRAL FURNACES M1402.1 General. Oil-fired central furnaces shall conform to ANSI/UL 727. Electric furnaces shall conform to UL 1995 or UL/CSA/ANCE 60335-2-40. M1402.2 Clearances. Clearances shall be provided in accordance with the listing and the manufacturer's installation instructions.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-14-heating-and-cooling-equipment-and-appliances",
+      "readOn": "2026-11-24",
+      "method": "browser"
+    },
+    {
+      "id": "f4",
+      "claim": "2021 IRC M1410.1: vented room heaters burning solid fuel are tested to UL 1482 (a wood stove's standard, not a furnace's).",
+      "quote": "SECTION M1410 VENTED ROOM HEATERS M1410.1 General. Vented room heaters shall be tested in accordance with ASTM E1509 for pellet-fuel burning, UL 896 for oil-fired or UL 1482 for solid fuel-fired and installed in accordance with their listing, the manufacturer's installation instructions and the requirements of this code",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-14-heating-and-cooling-equipment-and-appliances",
+      "readOn": "2026-11-24",
+      "method": "browser"
+    },
+    {
+      "id": "f5",
+      "claim": "2021 IRC M1301.1: installations not addressed by the IRC comply with the International Mechanical Code. M1302.1: appliances must be listed and labeled for the application. M1303.1: a permanent factory nameplate shows maker, model number, serial number and the seal or mark of the testing agency.",
+      "quote": "M1301.1 Scope. ... Installations of mechanical appliances, equipment and systems not addressed by this code shall comply with the applicable provisions of the International Fuel Gas Code and the International Mechanical Code. M1302.1 Listed and labeled. Appliances regulated by this code shall be listed and labeled for the application in which they are installed and used, unless otherwise approved in accordance with Section R104.11. M1303.1 Label information. A permanent factory-applied nameplate(s) shall be affixed to appliances on which shall appear, in legible lettering, the manufacturer's name or trademark, the model number, a serial number and the seal or mark of the testing agency.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-13-general-mechanical-system-requirements",
+      "readOn": "2026-11-24",
+      "method": "browser"
+    },
+    {
+      "id": "f6",
+      "claim": "2021 IMC 918.1: solid fuel furnaces are tested to UL 391, and forced-air furnaces are installed per their listings and the manufacturer's instructions.",
+      "quote": "SECTION 918 FORCED-AIR WARM-AIR FURNACES 918.1 Forced-air furnaces. Oil-fired furnaces shall be tested in accordance with UL 727. Electric furnaces shall be tested in accordance with UL 1995 or UL/CSA 60335-2-40. Solid fuel furnaces shall be tested in accordance with UL 391. Forced-air furnaces shall be installed in accordance with the listings and the manufacturer's instructions.",
+      "url": "https://codes.iccsafe.org/content/IMC2021P2/chapter-9-specific-appliances-fireplaces-and-solid-fuel-burning-equipment",
+      "readOn": "2026-11-24",
+      "method": "browser"
+    },
+    {
+      "id": "f7",
+      "claim": "40 CFR 60.5472(a): Subpart QQQQ covers anyone who sells, installs or operates a residential forced-air furnace manufactured on or after May 15, 2015.",
+      "quote": "§ 60.5472 Am I subject to this subpart? (a) You are subject to this subpart if you manufacture, sell, offer for sale, import for sale, distribute, offer to distribute, introduce or deliver for introduction into commerce in the United States, or install or operate a residential hydronic heater, forced-air furnace or other central heater manufactured on or after May 15, 2015",
+      "url": "https://www.ecfr.gov/current/title-40/chapter-I/subchapter-C/part-60/subpart-QQQQ",
+      "readOn": "2026-11-24",
+      "method": "browser"
+    },
+    {
+      "id": "f8",
+      "claim": "40 CFR 60.5474: on or after May 15, 2020 no small or large residential forced-air furnace may be manufactured or sold at retail unless certified to the 2020 limit of 0.15 lb/mmBtu; the earlier 2016 (small) and 2017 (large) limits were 0.93 lb/mmBtu. Small means under 65,000 BTU per hour (60.5473).",
+      "quote": "(6) On or after May 15, 2020 manufacture or sell at retail a small or large residential forced-air furnace unless it has been certified to meet the 2020 particulate matter emission limit in paragraph (b)(6) of this section. ... (4) 2016 small forced-air furnace particulate matter emission limit: A weighted average of 0.93 lb/mmBtu (0.40 g/MJ) heat output ... (6) 2020 forced-air furnace particulate matter emission limit: 0.15 lb/mmBtu (0.064 g/MJ) heat output per individual burn rate ... Small residential forced-air furnace means a residential forced-air furnace that is only capable of a maximum heat output of less than 65,000 BTU per hour.",
+      "url": "https://www.ecfr.gov/current/title-40/chapter-I/subchapter-C/part-60/subpart-QQQQ",
+      "readOn": "2026-11-24",
+      "method": "browser"
+    },
+    {
+      "id": "f9",
+      "claim": "40 CFR 60.5478(a): the permanent label shows month and year of manufacture, model name and number, certification test emission value, test method and standard met, and serial number; it must be readily visible before and after installation and at least 3.5 inches long by 2 inches wide.",
+      "quote": "The permanent label must contain the following information: (i) Month and year of manufacture of the individual unit; (ii) Model name and number; (iii) Certification test emission value, test method, and standard met; and (iv) Serial number. (3) The permanent label must: (i) Be affixed in a readily visible or accessible location in such a manner that it can be easily viewed before and after the appliance is installed ... (ii) Be at least 8.9 cm long and 5.1 cm wide (3 1/2 inches long and 2 inches wide); 3.5 inches",
+      "url": "https://www.ecfr.gov/current/title-40/chapter-I/subchapter-C/part-60/subpart-QQQQ",
+      "readOn": "2026-11-24",
+      "method": "browser"
+    },
+    {
+      "id": "f10",
+      "claim": "40 CFR 60.5480: no one may operate an affected forced-air furnace without its permanent label (a); install or operate it except as its label and owner's manual say, including fuels (e); or remove the permanent label (h).",
+      "quote": "(a) No person is permitted to advertise for sale, offer for sale, sell or operate an affected residential hydronic heater or forced-air furnace or other central heater that does not have affixed to it a permanent label ... (e) No person is permitted to install or operate an affected central heater except in a manner consistent with the instructions on its permanent label and in the owner's manual pursuant to § 60.5478(f), including only using fuels for which the unit is certified. ... (h) No person is permitted to alter, deface, or remove any permanent label",
+      "url": "https://www.ecfr.gov/current/title-40/chapter-I/subchapter-C/part-60/subpart-QQQQ",
+      "readOn": "2026-11-24",
+      "method": "browser"
+    },
+    {
+      "id": "f11",
+      "claim": "The NAIC's 2022 consumer guide to home insurance lists having a wood furnace or wood stove among the household characteristics that can affect what you pay.",
+      "quote": "A CONSUMER'S GUIDE TO HOME INSURANCE: SMART SHOPPING 2022 NATIONAL ASSOCIATION OF INSURANCE COMMISSIONERS ... Other characteristics ... Having a wood furnace or wood stove.",
+      "url": "https://content.naic.org/sites/default/files/publication-hoi-pp-consumer-homeowners.pdf",
+      "readOn": "2026-10-08",
+      "method": "pdf",
+      "note": "Quote carried from data/fact-ledgers/home-insurance-with-wood-stove.json (read 2026-10-08). URL re-checked 2026-11-24: HTTP 200. Not re-read: the browser offered it as a download, which we did not take."
+    },
+    {
+      "id": "f12",
+      "claim": "Engine rule chimney_level2: NFPA 211 calls for a Level 2 chimney inspection when a property is sold or transferred; $250 – $600 with a video flue scan; book a CSIA-certified chimney sweep.",
+      "quote": "NFPA 211, the national standard for chimneys, fireplaces, and solid-fuel-burning appliances, calls for a Level 2 inspection when a property is sold or transferred ... $250 – $600 for a Level 2 inspection with a video flue scan. Book a CSIA-certified chimney sweep for a Level 2 inspection.",
+      "url": "src/engine/inspectionPriorities.ts",
+      "readOn": "2026-11-24",
+      "method": "engine"
+    },
+    {
+      "id": "f13",
+      "claim": "EPA database counts (our search, 2026-11-24): current models 41 central heaters, 6 forced-air furnace entries (5 cord wood, 1 pellets); with previously certified models 192 central heaters, 27 forced-air furnace entries, 18 of them not marked 2020 compliant.",
+      "quote": "Our observation, see ourWork. 41 / 6 / 5 / 1 / 192 / 27 / 18 / 9.",
+      "url": "https://cfpub.epa.gov/oarweb/woodstove/index.cfm?fuseaction=app.searchwh",
+      "readOn": "2026-11-24",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    { "claim": "Any insurer's filed eligibility rule for wood furnaces specifically", "why": "None read. The Maine filing used by the wood-stove guide (me-qh2.0-underwriting-guidelines.pdf) returned 404 on 2026-11-24, and it spoke of stoves." },
+    { "claim": "NFPA 211 / NFPA 90B clearance figures", "why": "Standards not freely readable; not read." },
+    { "claim": "Which code edition a given county enforces", "why": "Varies by state and town; told the reader to ask the building department instead." }
+  ],
+  "blockedSources": ["maine.gov underwriting-guidelines PDF: 404 (moved or removed), 2026-11-24", "content.naic.org PDF: served as a file download in the browser; not downloaded"]
+}
