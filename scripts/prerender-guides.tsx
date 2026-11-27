@@ -627,6 +627,17 @@ async function run() {
         return `The ${g.counties.length} Florida counties in FEMA major disaster declaration DR-${g.declaration.disasterNumber}-FL (severe storms and flooding, declared ${g.declaration.declared}), read from OpenFEMA, against our earlier NFIP and FEMA aid analyses. Share of classifiable NFIP claims (to June 2026) rated outside the mapped high-risk zone, and NFIP take-up inside it: ${parts}. Florida: ${g.florida.outsideShare}% outside, ${g.florida.takeupInsideZone}% take-up. Past FEMA homeowner aid in these counties: ${n(g.sevenCounties.aidRegistrations)} registrations, $${n(g.sevenCounties.aidPerApprovedUsd)} per approved. Housing assistance maximum for this declaration $${n(g.ihpMaximumUsd)}. Figures predate the storms in this declaration. Embeddable county lookup: https://www.beforeregret.com/research/florida-flood-declaration/embed/`;
       })(),
       data: ['florida-flood-declaration-by-county.csv', 'florida-flood-declaration-figures.json'] },
+    // Fourteenth study (2026-11-27). Summary READ from its data file.
+    { slug: 'florida-flood-premiums', title: 'Florida Flood Insurance: What Owners Pay Now, and FEMA’s Full-Risk Price',
+      summary: ((): string => {
+        const p = path.join(process.cwd(), 'docs', 'data', 'florida-flood-premiums.json');
+        if (!fs.existsSync(p)) throw new Error('[prerender-guides] llms.txt lists florida-flood-premiums but its data file is missing -- run scripts/fetch-florida-flood-premiums.ts');
+        const g = JSON.parse(fs.readFileSync(p, 'utf8'));
+        const n = (v: number) => Math.round(v).toLocaleString('en-US');
+        const f = g.florida;
+        return `Every Florida single-family NFIP policy in force on ${g.snapshot} (${n(f.policies)} policies, OpenFEMA NFIP Policies v3): premium against FEMA's own full-risk premium. ${f.shareBelowFullRisk}% priced below full risk; median gap for those $${n(f.medianGapBelow)} a year; median policy cost $${n(f.medianPolicyCost)} with fees. At the 18% yearly cap (42 U.S.C. 4015(e)) the median below-full policy needs at least ${f.medianYearsToFullAt18} years to reach full risk; ${f.shareTenPlusYears}% of all policies need ten or more. Elevated homes: ${g.byFoundation.elevated.shareBelowFullRisk}% below full risk. By ZIP (${g.zipsPublished} published, fewer than ${g.minPoliciesPerFigure} policies suppressed) and county. Area medians, not a quote for any house.`;
+      })(),
+      data: ['florida-flood-premiums-by-zip.csv', 'florida-flood-premiums.json'] },
   ];
   // Asserted against docs/ rather than dist/, because prerender-research.tsx runs AFTER this script
   // in the build, so dist/research/ does not exist yet at this point. docs/<slug>.html is the source

@@ -104,6 +104,13 @@ export const RESEARCHER_META: Record<string, ResearcherMeta> = {
     isBasedOn: ['FEMA OpenFEMA, Disaster Declarations Summaries, v2', 'FEMA OpenFEMA, FIMA NFIP Redacted Claims', 'FEMA OpenFEMA, NFIP Residential Penetration Rates', 'FEMA OpenFEMA, Individuals and Households Program - Housing Assistance Program Data - Owners, v2'],
     glance: { what: 'For each county in Florida\'s November 2026 flood declaration: the share of past flood claims outside the mapped high-risk zone, flood insurance take-up inside it, and past FEMA aid to homeowners.', unit: 'County (seven Florida counties)', key: 'County name, state FL', period: 'NFIP claims 1970s to June 2026; take-up as of August 2026; FEMA aid for disasters declared 2002 to October 2026' },
   },
+  'florida-flood-premiums': {
+    alternateName: ['NFIP premium vs full-risk premium by ZIP code, Florida single-family homes', 'Florida flood insurance glide path to full-risk rates, OpenFEMA NFIP Policies v3'],
+    keywords: ['Florida flood insurance cost by ZIP code', 'NFIP full-risk premium Florida', 'Risk Rating 2.0 glide path data', 'flood insurance premium increases Florida', 'NFIP policies by ZIP code dataset', 'elevated homes flood insurance premium'],
+    measurementTechnique: 'Every Florida record in OpenFEMA NFIP Policies v3 in force on 1 September 2026, filtered to single-family homes insuring one unit with a recorded full-risk premium; medians and shares by ZIP code, county, foundation, rated zone, build era and CRS class; years to full risk are the fewest 18% yearly increases (42 U.S.C. 4015(e)) that close the gap.',
+    isBasedOn: ['FEMA OpenFEMA, NFIP Policies, v3'],
+    glance: { what: 'For each Florida ZIP code and county: what single-family homes pay for NFIP flood insurance now, FEMA\'s full-risk premium for the same policies, and how many are still below it.', unit: 'ZIP code and county (single-family NFIP policies)', key: '5-digit ZIP code; county name, state FL', period: 'Policies in force on 1 September 2026' },
+  },
   'mortgage-denied-collateral': {
     alternateName: ['HMDA mortgage denials citing collateral by county', 'Home purchase loan denial reasons, HMDA 2024'],
     keywords: ['HMDA denial reasons by county', 'mortgage denial collateral data', 'HMDA denial_reason collateral analysis', 'appraisal-related mortgage denials data', 'home purchase loan denial rates by county', 'HMDA 2024 loan application register analysis', 'mortgage denials by tract median housing age'],
