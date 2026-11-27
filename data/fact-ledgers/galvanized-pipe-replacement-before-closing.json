@@ -1,0 +1,117 @@
+{
+  "slug": "galvanized-pipe-replacement-before-closing",
+  "question": "The house I'm buying still has galvanized water pipes. Do they have to be replaced before closing, and how do I decide?",
+  "verdictConfirmed": "No model code requires existing galvanized supply pipe to be removed (2021 IRC R102.7 lets existing structures continue; galvanized steel is still a listed material in Table P2906.5). The pressure to replace comes from the pipe's condition, an insurer's or lender's requirements, and the price a buyer can negotiate before contingencies end.",
+  "demand": {
+    "capture": "2026-11-27-demand-galvanized-pipe-replacement",
+    "note": "Tier 3: no Search Console or Bing signal for 'galvanized pipe replacement', 'replace galvanized pipes', 'galvanized pipes buying house' or 'galvanized plumbing insurance' (topic-demand.ts 2026-11-27). Our galvanized impressions are all PEX/copper connection searches on #324. Experiment, owner told 2026-11-27. Never on the page."
+  },
+  "ourWork": {
+    "date": "2026-11-27",
+    "observations": [
+      "scripts/build-galvanized-era-housing.ts -> docs/data/galvanized-era-housing.json: from our committed Census ACS 2020-2024 5-year B25034 county file, 51.0 million of 143.8 million US housing units (35.5%) were built through 1969, the last year of the report engine's galvanized_supply rule (1800-1969). Of 1,773 counties with 10,000 or more units, 279 have half or more built through 1969. Highest shares: St. Louis city, Missouri 81.9%; Nassau County, New York 79.3%; Queens County, New York 76.3%; Baltimore city, Maryland 75.8%; Philadelphia County, Pennsylvania 75.6%.",
+      "Bucket arithmetic from 2021 IRC Table P2903.1 design flow rates: at 1.75 gpm (sink) one gallon takes about 34 seconds; at 4 gpm (bathtub) about 15 seconds; at 5 gpm (hose bibb) 12 seconds. 60 / 1.75 = 34.3; 60 / 4 = 15; 60 / 5 = 12.",
+      "Read Citizens' sample 4-Point Inspection Form (Insp4pt 03 25) plumbing section in memory, 2026-11-27: supply piping age boxes are Original to home / Completely re-piped / Partially re-piped, with year installed, and the pipe-type boxes include Galvanized."
+    ]
+  },
+  "facts": [
+    {
+      "id": "g1",
+      "claim": "Our report engine's galvanized_supply rule covers homes built 1800-1969; it prices a whole-home repipe at $4,000 – $15,000 and has the inspector identify the material at the water heater and under sinks.",
+      "quote": "galvanized_supply minYear 1800 maxYear 1969; typicalRepairCost 'Whole-home repipe $4,000 – $15,000'; howToCheck 'Ask your inspector to identify the supply pipe material where it is visible — typically at the water heater and under sinks.'",
+      "url": "src/engine/inspectionPriorities.ts (PRIORITY_RULES) -- read at publish time, never retyped",
+      "readOn": "2026-11-27",
+      "method": "engine"
+    },
+    {
+      "id": "g2",
+      "claim": "2021 IRC R102.7: the legal occupancy of a structure existing when the code is adopted may continue without change, except as specifically covered or deemed necessary by the building official.",
+      "quote": "The legal occupancy of any structure existing on the date of adoption of this code shall be permitted to continue without change, except as is specifically covered in this code, the International Property Maintenance Code or the International Fire Code, or as is deemed necessary by the building official for the general safety and welfare of the occupants and the public.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-1-scope-and-administration",
+      "readOn": "2026-11-27",
+      "method": "browser"
+    },
+    {
+      "id": "g3",
+      "claim": "2021 IRC R102.7.1: new work conforms to the code for new structures without requiring the existing structure to comply.",
+      "quote": "Additions, alterations or repairs to any structure shall conform to the requirements for a new structure without requiring the existing structure to comply with the requirements of this code, unless otherwise stated.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-1-scope-and-administration",
+      "readOn": "2026-11-27",
+      "method": "browser"
+    },
+    {
+      "id": "g4",
+      "claim": "2021 IRC Table P2906.5 (water distribution pipe) and Table P2906.4 (water service pipe) both still list galvanized steel pipe, to ASTM A53.",
+      "quote": "Galvanized steel pipe ASTM A53",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-29-water-supply-and-distribution",
+      "readOn": "2026-11-27",
+      "method": "browser"
+    },
+    {
+      "id": "g5",
+      "claim": "2021 IRC P2903.1 and Table P2903.1: systems are sized for peak demand using required capacities at the outlet; sink 1.75 gpm at 8 psi, lavatory 0.8 gpm at 8 psi, bathtub (balanced-pressure/thermostatic valve) 4 gpm at 20 psi, shower 2.5 gpm at 20 psi, sillcock/hose bibb 5 gpm at 8 psi.",
+      "quote": "The water service and water distribution systems shall be designed and sized for peak demand using values shown in Table P2903.1. ... REQUIRED CAPACITIES AT POINT OF OUTLET DISCHARGE ... Bathtub, balanced-pressure, thermostatic or combination balanced-pressure/thermostatic mixing valve 4 20 ... Lavatory 0.8 8 ... Shower, balanced-pressure, thermostatic or combination balanced-pressure/thermostatic mixing valve 2.5 20 ... Sillcock, hose bibb 5 8 ... Sink 1.75 8",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-29-water-supply-and-distribution",
+      "readOn": "2026-11-27",
+      "method": "browser"
+    },
+    {
+      "id": "g6",
+      "claim": "2021 IRC P2903.3.2: static water pressure not greater than 80 psi; P2903.3: where supply pressure is insufficient for the minimum pressures and quantities, it must be increased (tank, hydropneumatic system or booster pump).",
+      "quote": "The static water pressure shall be not greater than 80 psi (551 kPa). ... Where the water pressure supplied by the public water main or an individual water supply system is insufficient to provide for the minimum pressures and quantities for the plumbing fixtures in the building, the pressure shall be increased",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-29-water-supply-and-distribution",
+      "readOn": "2026-11-27",
+      "method": "browser"
+    },
+    {
+      "id": "g7",
+      "claim": "2021 IRC R105.2 plumbing exemption 1: stopping leaks needs no permit, but replacing a defective concealed water pipe with new material is new work needing a permit and inspection; exemption 2 covers repairs only where pipes are not replaced.",
+      "quote": "The stopping of leaks in drains, water, soil, waste or vent pipe; provided, however, that if any concealed trap, drainpipe, water, soil, waste or vent pipe becomes defective and it becomes necessary to remove and replace the same with new material, such work shall be considered as new work and a permit shall be obtained and inspection made as provided in this code. ... provided such repairs do not involve or require the replacement or rearrangement of valves, pipes or fixtures.",
+      "url": "https://codes.iccsafe.org/content/IRC2021P2/chapter-1-scope-and-administration",
+      "readOn": "2026-11-27",
+      "method": "browser"
+    },
+    {
+      "id": "g8",
+      "claim": "Citizens' sample 4-Point Inspection Form (Insp4pt 03 25) asks whether the supply piping is original, completely re-piped or partially re-piped, with the year, and lists Galvanized among pipe types.",
+      "quote": "(Provide year and extent of renovation in the comments below) Age of Piping Supply System: Original to home Completely re-piped Partially re-piped ... Type of pipes (check all that apply) Copper PVC/CPVC Galvanized PEX Other (specify) Year Installed",
+      "url": "https://www.citizensfla.com/documents/20702/48575/4-Point+Inspection+Form.pdf",
+      "readOn": "2026-11-27",
+      "method": "pdf"
+    },
+    {
+      "id": "g9",
+      "claim": "Same form: agents may not submit applications for properties whose plumbing is not in good working order or has existing hazards or deficiencies.",
+      "quote": "Agents may not submit applications for properties with electrical, heating or plumbing systems not in good working order or with existing hazards/deficiencies.",
+      "url": "https://www.citizensfla.com/documents/20702/48575/4-Point+Inspection+Form.pdf",
+      "readOn": "2026-11-26",
+      "method": "pdf"
+    },
+    {
+      "id": "g10",
+      "claim": "40 CFR 141.2: 'galvanized requiring replacement' service line is one that is or ever was downstream of a lead service line, or is downstream of a lead status unknown line.",
+      "quote": "Galvanized requiring replacement service line, for the purpose of subpart I of this part only, means a galvanized service line that currently is or ever was downstream of a lead service line; or is currently downstream of a lead status unknown service line.",
+      "url": "https://www.ecfr.gov/current/title-40/chapter-I/subchapter-D/part-141/subpart-A/section-141.2",
+      "readOn": "2026-11-27",
+      "method": "browser"
+    },
+    {
+      "id": "g11",
+      "claim": "40 CFR 141.2: a service line is the pipe connecting the water main to the building inlet.",
+      "quote": "Service line, for the purpose of subpart I of this part only, means a portion of pipe that connects the water main (or other conduit for distributing water to individual consumers or groups of consumers) to the building inlet.",
+      "url": "https://www.ecfr.gov/current/title-40/chapter-I/subchapter-D/part-141/subpart-A/section-141.2",
+      "readOn": "2026-11-27",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    { "claim": "Galvanized pipe inside a house can collect lead released from an upstream lead service line", "why": "EPA's basic lead page has no galvanized text and the LCRI page URL tried returned 404 on 2026-11-27; not stated." },
+    { "claim": "A 40 psi minimum static pressure", "why": "Not in the 2021 IRC (P2903.3 has no number); that figure is from other plumbing codes. Not stated." },
+    { "claim": "FHA/VA appraisal rules on galvanized pipe", "why": "Not read today; HUD 4000.1 has no galvanized-specific line that we have verified." },
+    { "claim": "Typical service life of galvanized pipe in years", "why": "No primary source; not stated." }
+  ],
+  "blockedSources": [
+    "citizensfla.com 4-Point Inspection Form PDF opened in the browser pane triggers a file download; read in memory with curl instead, never saved",
+    "epa.gov final-lead-and-copper-rule-improvements: 404 on 2026-11-27"
+  ]
+}

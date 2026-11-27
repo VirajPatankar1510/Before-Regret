@@ -1,0 +1,93 @@
+{
+ "title": "US housing units built through 1969 (the galvanized_supply era in our report engine)",
+ "source": "U.S. Census Bureau, American Community Survey 2020-2024 5-year estimates, table B25034 (Year Structure Built), via docs/data/oldest-housing-by-county.csv",
+ "generated": "2026-11-27",
+ "engineRule": {
+  "id": "galvanized_supply",
+  "minYear": 1800,
+  "maxYear": 1969
+ },
+ "national": {
+  "counties": 3144,
+  "housingUnits": 143775355,
+  "builtThrough1969": 51028217,
+  "share": 0.355
+ },
+ "countiesWithMinUnits": {
+  "minUnits": 10000,
+  "counties": 1773,
+  "halfOrMoreBuiltThrough1969": 279
+ },
+ "topByShare": [
+  {
+   "county": "St. Louis city",
+   "state": "Missouri",
+   "units": 174111,
+   "pre1970": 142560,
+   "share": 0.819
+  },
+  {
+   "county": "Nassau County",
+   "state": "New York",
+   "units": 479044,
+   "pre1970": 379811,
+   "share": 0.793
+  },
+  {
+   "county": "Queens County",
+   "state": "New York",
+   "units": 910206,
+   "pre1970": 694288,
+   "share": 0.763
+  },
+  {
+   "county": "Baltimore city",
+   "state": "Maryland",
+   "units": 295032,
+   "pre1970": 223607,
+   "share": 0.758
+  },
+  {
+   "county": "Philadelphia County",
+   "state": "Pennsylvania",
+   "units": 748270,
+   "pre1970": 565568,
+   "share": 0.756
+  },
+  {
+   "county": "Kings County",
+   "state": "New York",
+   "units": 1100772,
+   "pre1970": 826508,
+   "share": 0.751
+  },
+  {
+   "county": "New York County",
+   "state": "New York",
+   "units": 923472,
+   "pre1970": 651974,
+   "share": 0.706
+  },
+  {
+   "county": "Union County",
+   "state": "New Jersey",
+   "units": 212385,
+   "pre1970": 149415,
+   "share": 0.704
+  },
+  {
+   "county": "Montgomery County",
+   "state": "New York",
+   "units": 22981,
+   "pre1970": 16161,
+   "share": 0.703
+  },
+  {
+   "county": "Wayne County",
+   "state": "Michigan",
+   "units": 801083,
+   "pre1970": 563257,
+   "share": 0.703
+  }
+ ]
+}
