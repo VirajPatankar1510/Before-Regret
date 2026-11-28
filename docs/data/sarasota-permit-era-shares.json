@@ -1,0 +1,43 @@
+{
+  "generatedAt": "2026-11-28T09:04:30.077Z",
+  "source": "U.S. Census Bureau, American Community Survey 2020-2024 5-year estimates, table B25034: county (050) minus each municipality's Sarasota County part (155)",
+  "note": "Estimates. County-served = Sarasota County outside Sarasota, Venice, North Port and Longboat Key (Sarasota County part). Year built is not permit year.",
+  "countyServed": {
+    "housingUnits": 168024,
+    "builtBefore1990Pct": 58.7,
+    "built1990to2019Pct": 38.2,
+    "built2020OrLaterPct": 3.1
+  },
+  "countyServedShareOfAllUnitsPct": 63.1,
+  "outsideThreeCities": {
+    "housingUnits": 174272,
+    "builtBefore1990Pct": 59,
+    "built1990to2019Pct": 38,
+    "built2020OrLaterPct": 3,
+    "shareOfCountyPct": 65.4
+  },
+  "countywide": {
+    "housingUnits": 266492,
+    "builtBefore1990Pct": 54.3,
+    "built1990to2019Pct": 41.7,
+    "built2020OrLaterPct": 4.1
+  },
+  "municipalities": {
+    "Longboat Key town": {
+      "housingUnits": 6248,
+      "shareOfCountyPct": 2.3
+    },
+    "North Port city": {
+      "housingUnits": 38930,
+      "shareOfCountyPct": 14.6
+    },
+    "Sarasota city": {
+      "housingUnits": 32324,
+      "shareOfCountyPct": 12.1
+    },
+    "Venice city": {
+      "housingUnits": 20966,
+      "shareOfCountyPct": 7.9
+    }
+  }
+}

@@ -1,0 +1,177 @@
+{
+  "slug": "check-building-permits-sarasota-county-fl",
+  "question": "How do I search Sarasota County, FL building permits by address, and what if the portal makes me log in?",
+  "verdictConfirmed": "Sarasota County's permits are in the Accela Civic Application (SARASOTACO), and the county's own FAQ says an account is needed to search records; permits closed before August 18, 2023 are in the older AMANDA system at building.scgov.net. The City of Sarasota, Venice and North Port keep their own permits.",
+  "demand": {
+    "capture": "2026-11-28-demand-sarasota-county-permit-search",
+    "note": "Tier 2: Bing 'sarasota county permit search' 1,556 exact, 'sarasota county permit portal' 324 exact (90 days, relative only); not yet shown on our site. County permit format is proven. Never on the page."
+  },
+  "ourWork": {
+    "date": "2026-11-28",
+    "observations": [
+      "Opened https://aca-prod.accela.com/SARASOTACO/Cap/CapHome.aspx?module=Building&TabName=Building with no account on 2026-11-28: redirected to Login.aspx with 'This feature requires registration and/or login, please login to continue.' The portal home links 'Search for Permits Closed Prior to August 18, 2023' to https://building.scgov.net/.",
+      "building.scgov.net did not load from here on 2026-11-28 (curl timed out after 30 s; browser navigation failed).",
+      "The county's Online Permitting page stars Public Works, Enforcement and General Information Request as 'No information and/or search options are available without an account/login' and does NOT star Building, while the Building search itself redirected to login and the county FAQ says an account is needed. The two county pages disagree; the portal behaved as the FAQ says.",
+      "North Port's Permit Lookup link (northportfl.gov/Building-Planning/Permitting/Permit-Lookup) sent us to https://aca-prod.accela.com/NORTHPORT/Default.aspx, a separate Accela agency from SARASOTACO; it returned a Cloudflare 502 on 2026-11-28.",
+      "City of Sarasota Building Permit Lookup https://ftgportal.sarasotafl.gov/Permits/Search.aspx?microapp=c failed to load from here on 2026-11-28.",
+      "Venice's Online Permitting link redirected to trakit.venicegov.com, which failed to load from here on 2026-11-28.",
+      "scripts/build-sarasota-permit-era-shares.ts -> docs/data/sarasota-permit-era-shares.json (Census ACS 2020-2024 B25034): Sarasota County 266,492 housing units. City of Sarasota 32,324 (12.1%), Venice 20,966 (7.9%), North Port 38,930 (14.6%), Longboat Key's Sarasota County part 6,248 (2.3%). Outside the three cities: 174,272 units, 65.4% of the county, 59% built before 1990, 38% built 1990-2019, 3% built 2020 or later. Excluding Longboat Key's part too: 168,024 units (63.1%), 58.7% before 1990."
+    ]
+  },
+  "facts": [
+    {
+      "id": "s1",
+      "claim": "Sarasota County FAQ: an account is required to search records/permits in Accela; register via Create an Account / Register for an Account.",
+      "quote": "Do I need an Account? Yes. To search records/permits in Accela, you must have an account. To register for an account: Go to Accela Civic Application. Click the CREATE AN ACCOUNT button at the bottom of the page OR click on Register for an Account at the top right of the page. Complete the Registration.",
+      "url": "https://www.scgov.net/government/planning-and-development-services/frequently-asked-questions-faqs",
+      "readOn": "2026-11-28",
+      "method": "browser"
+    },
+    {
+      "id": "s2",
+      "claim": "Same FAQ: search inside each module; General Search options include record/permit number, record type, contractor license number or name, location/address and PID; results can be downloaded.",
+      "quote": "General Search gives several choices:record/permit number, record type, contractor license number, contractor name, location/address, PID, etc. ... You can download your search results if needed by clicking Download Results at the top of your search results list",
+      "url": "https://www.scgov.net/government/planning-and-development-services/frequently-asked-questions-faqs",
+      "readOn": "2026-11-28",
+      "method": "browser"
+    },
+    {
+      "id": "s3",
+      "claim": "Same FAQ: permits closed before August 18, 2023 are in the AMANDA system; official lien searches need a General Information Request application.",
+      "quote": "Looking for Permits Closed Prior to August 18, 2023? Search records that were in the AMANDA system. ... Note: For official Lien searches, you must create an application for a General Information Request.",
+      "url": "https://www.scgov.net/government/planning-and-development-services/frequently-asked-questions-faqs",
+      "readOn": "2026-11-28",
+      "method": "browser"
+    },
+    {
+      "id": "s4",
+      "claim": "County Online Permitting page: everyone must have an account to do business in the system; Public Works, Enforcement and General Information Request show nothing without login.",
+      "quote": "*No information and/or search options are available without an account/login. Account Registration To do business in the new Online Permitting system, everyone must have an account.",
+      "url": "https://www.scgov.net/government/planning-and-development-services/online-permitting",
+      "readOn": "2026-11-28",
+      "method": "browser"
+    },
+    {
+      "id": "s5",
+      "claim": "County Building page: from July 1, 2026, under HB 803, specific work under $7,500 on single-family homes may be exempt from permitting, with steps to qualify (Bulletin 2026-0002).",
+      "quote": "Beginning, July 1, 2026, several provisions of Florida House Bill (HB) 803 will go into effect that will impact building permitting. ... Specific types of work less than $7,500 on single-family homes may be exempt from permitting but there are specific requirements and steps to qualify for this exemption. Please see Bulletin 2026-0002 for details on whether you qualify and how to document.",
+      "url": "https://www.scgov.net/government/planning-and-development-services/building",
+      "readOn": "2026-11-28",
+      "method": "browser"
+    },
+    {
+      "id": "s6",
+      "claim": "County Building contacts: PDS One Stop at 870 Apex Road, Sarasota 34240, and the R.L. Anderson Administration Center, 4000 S. Tamiami Trail, Venice; phone 941-861-5000; building@scgov.net.",
+      "quote": "Building PDS One Stop 870 Apex Road, Sarasota, Florida 34240 ... R.L. Anderson Administration Center 4000 S. Tamiami Trail, Venice, FL 34293 ... Phone: 941-861-5000 Email: building@scgov.net",
+      "url": "https://www.scgov.net/government/planning-and-development-services/building",
+      "readOn": "2026-11-28",
+      "method": "browser"
+    },
+    {
+      "id": "s7",
+      "claim": "County Building page: FY 2022 permit and inspection report: 42,766 building permits issued or approved.",
+      "quote": "Fiscal Year 2022 ... b. # of building permits issued or approved: 42,766",
+      "url": "https://www.scgov.net/government/planning-and-development-services/building",
+      "readOn": "2026-11-28",
+      "method": "browser"
+    },
+    {
+      "id": "s8",
+      "claim": "City of Sarasota runs its own Building & Permitting office (1575 2nd Street, 2nd floor; permitting phone (941) 263-6494; CityPermits@sarasotafl.gov) with a Building Permit Lookup on ftgportal.sarasotafl.gov.",
+      "quote": "Building & Permitting staff review building plans and provide technical inspections to ensure every building project in the City conforms to the appropriate codes and regulations. ... Permitting Phone (941) 263-6494 ... Permitting Email CityPermits@sarasotafl.gov Location 1575 2nd Street, 2nd Floor Sarasota, FL 34236 ... Building Permit Lookup",
+      "url": "https://www.sarasotafl.gov/Department-Pages/Development-Services/Building-Permitting",
+      "readOn": "2026-11-28",
+      "method": "browser"
+    },
+    {
+      "id": "s9",
+      "claim": "City of Venice runs its own Building and Code Enforcement Department; permit information is on the City's Online Permitting service; phone (941) 882-7547; permitsonline@venicefl.gov.",
+      "quote": "The Building and Code Enforcement Department facilitates effective solutions for promoting the safety, health and welfare of the citizens of the City of Venice. ... Permit information, inspection scheduling and payment of fees are available using the City's Online Permitting service. ... Main Phone: (941) 882-7547 email: permitsonline@venicefl.gov",
+      "url": "https://www.venicegov.com/government/building-and-code",
+      "readOn": "2026-11-28",
+      "method": "browser"
+    },
+    {
+      "id": "s10",
+      "claim": "City of North Port has its own Permitting section with a Permit Lookup page.",
+      "quote": "Building & Planning ... Permitting ... Permit Lookup https://www.northportfl.gov/Building-Planning/Permitting/Permit-Lookup",
+      "url": "https://www.northportfl.gov/Home",
+      "readOn": "2026-11-28",
+      "method": "browser"
+    },
+    {
+      "id": "s11",
+      "claim": "Florida Statutes s. 553.79(1)(g)1 (2026): local governments shall exempt single-family owners or their contractors from a permit for work valued at less than $7,500.",
+      "quote": "A local government that issues building permits shall exempt an owner of a single-family dwelling or the owner’s contractor from the requirement to obtain a building permit to perform any work valued at less than $7,500 on the owner’s property.",
+      "url": "http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0500-0599/0553/Sections/0553.79.html",
+      "readOn": "2026-11-17",
+      "method": "browser (The 2026 Florida Statutes)"
+    },
+    {
+      "id": "s12",
+      "claim": "s. 553.79(1)(g)2-3: the exemption does not apply in a flood hazard area or to electrical, plumbing, structural, mechanical or gas work; the owner or contractor must submit a written exemption request with the contract or documentation.",
+      "quote": "The exemption under subparagraph 1. does not apply to any of the following: a. Work on a property that is partially or entirely located in a flood hazard area as defined by the Florida Building Code. b. Any electrical, plumbing, structural, mechanical, or gas work performed on property containing a single-family dwelling. ... To qualify for the exemption under subparagraph 1., the owner or the owner’s contractor must submit a written request for exemption to the local enforcement agency with a copy of the contract or other documentation demonstrating the nature and the value of the work to be performed.",
+      "url": "http://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0500-0599/0553/Sections/0553.79.html",
+      "readOn": "2026-11-17",
+      "method": "browser (The 2026 Florida Statutes)"
+    },
+    {
+      "id": "s13",
+      "claim": "Florida Statutes s. 553.79(17)(a): a local enforcement agency may not penalize an arm's-length purchaser solely because a previous owner's permit was not closed.",
+      "quote": "A local enforcement agency may not deny issuance of a building permit to; issue a notice of violation to; or fine, penalize, sanction, or assess fees against an arms-length purchaser of a property for value solely because a building permit applied for by a previous owner of the property was not closed.",
+      "url": "https://www.flsenate.gov/Laws/Statutes/2026/553.79",
+      "readOn": "2026-11-12",
+      "method": "webfetch"
+    },
+    {
+      "id": "s14",
+      "claim": "Opening the county's Accela Building search with no account redirects to the login page.",
+      "quote": "Advanced Search Notice: This feature requires registration and/or login, please login to continue. Please Login",
+      "url": "https://aca-prod.accela.com/SARASOTACO/Cap/CapHome.aspx?module=Building&TabName=Building",
+      "readOn": "2026-11-28",
+      "method": "browser"
+    },
+    {
+      "id": "s15",
+      "claim": "Accela portal home links the pre-August 18, 2023 permit search to building.scgov.net.",
+      "quote": "We have a NEW LOOK!! - Click here to Search for Permits Closed Prior to August 18, 2023.",
+      "url": "https://aca-prod.accela.com/SARASOTACO/Default.aspx",
+      "readOn": "2026-11-28",
+      "method": "browser"
+    },
+    {
+      "id": "s16",
+      "claim": "County FAQ lists the searchable Accela modules: Building, Community Development, Public Works, Enforcement, Fire (plus Licenses on the portal tabs).",
+      "quote": "Searchable Modules MODULES Building Residential and Commercial Building Permits Community Development ... Public Works ... Enforcement ... Fire",
+      "url": "https://www.scgov.net/government/planning-and-development-services/frequently-asked-questions-faqs",
+      "readOn": "2026-11-28",
+      "method": "browser"
+    }
+  ],
+  "cut": [
+    {
+      "claim": "What the AMANDA archive at building.scgov.net shows or how far back it goes",
+      "why": "Did not load from here on 2026-11-28 (and on 11-26/11-27 per the growth desk); not worked around."
+    },
+    {
+      "claim": "Bulletin 2026-0002 details",
+      "why": "The PDF is behind an Akamai Access Denied for curl, and the county site stopped loading in the browser mid-session; not read. The page states only what the Building page says plus the statute."
+    },
+    {
+      "claim": "Longboat Key's permit office and search",
+      "why": "longboatkey.org behind a Cloudflare bot check on 2026-11-28; not worked around. The page says we could not confirm it."
+    },
+    {
+      "claim": "A walkthrough of a real Sarasota County permit record",
+      "why": "Building search requires a login; no account was created (owner had no preference, so the no-account path was taken)."
+    }
+  ],
+  "blockedSources": [
+    "building.scgov.net (AMANDA archive): timed out / failed, 2026-11-28",
+    "ftgportal.sarasotafl.gov (City of Sarasota permit lookup): failed to load, 2026-11-28",
+    "trakit.venicegov.com (Venice permit portal): failed to load, 2026-11-28",
+    "aca-prod.accela.com/NORTHPORT: Cloudflare 502, 2026-11-28",
+    "longboatkey.org: Cloudflare bot check, 2026-11-28",
+    "scgov.net showpublisheddocument PDFs: Akamai Access Denied for curl, 2026-11-28"
+  ]
+}

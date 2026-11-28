@@ -304,6 +304,24 @@ const BLOCKS: Block[] = [
       return `${lead} These are countywide Census figures, so they include permits issued by Palm Bay, Melbourne, Titusville and Brevard's other cities, which BASS doesn't hold.`;
     },
   },
+  {
+    // Added 2026-11-28 with the new Sarasota guide. Sarasota's total fell mostly because multifamily roughly halved while
+    // houses barely moved, so the multifamily line leads only while both signs hold. The Census county file counts every
+    // permit office in Sarasota County, while the county's Accela holds only unincorporated areas (65.4% of homes outside
+    // the three cities, docs/data/sarasota-permit-era-shares.json), so the closing line names the cities it includes.
+    slug: 'check-building-permits-sarasota-county-fl', fips: '12115',
+    heading: 'What Sarasota County Is Permitting Right Now',
+    prose: (c) => {
+      const houses = c.sfCurrent >= MIN_SF_FOR_PCT && c.sfPrior >= MIN_SF_FOR_PCT
+        ? `${dir(c.sfChangePct)}, ${n(c.sfPrior)} homes a year ago and ${n(c.sfCurrent)} now`
+        : `${n(c.sfPrior)} homes a year ago against ${n(c.sfCurrent)} now`;
+      const mfLead = c.unitsChangePct < 0 && c.mfChangePct < c.sfChangePct && c.mfChangePct < 0;
+      const lead = mfLead
+        ? `Sarasota County's permit count is ${dir(c.unitsChangePct)}, from ${n(c.unitsPrior)} units to ${n(c.unitsCurrent)}, and most of the fall is in buildings with two or more units: multifamily went from ${n(c.mfPrior)} units to ${n(c.mfCurrent)}. Single-family permits are ${houses}.`
+        : `Sarasota County's permit count is ${dir(c.unitsChangePct)} at ${n(c.unitsCurrent)} units; single-family permits are ${houses}, and multifamily went from ${n(c.mfPrior)} to ${n(c.mfCurrent)} units.`;
+      return `${lead} The Census figures cover the whole county, so they include permits issued by the City of Sarasota, Venice, North Port and Longboat Key, which the county's Accela portal doesn't hold.`;
+    },
+  },
 ];
 
 const trigrams = (s: string) => {
